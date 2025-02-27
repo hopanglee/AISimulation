@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 258da8d3a57a4de4da3b86d65dd0d6cb
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 258316
+  packageName: Anime Tokyo (Japanese City)
+  packageVersion: 1.0
+  assetPath: Assets/Anime Tokyo/Prefabs/Traffic Assets/SM_trafficlight_pedestrian_02.prefab
+  uploadId: 608024
