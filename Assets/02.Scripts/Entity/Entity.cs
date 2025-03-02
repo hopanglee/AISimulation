@@ -68,7 +68,7 @@ public abstract class Entity : MonoBehaviour, ILocation
     [SerializeField]
     private readonly string _preposition;
 
-    public void Init()
+    public virtual void Init()
     {
         locationName = AbsoluteKey;
         preposition = _preposition;
