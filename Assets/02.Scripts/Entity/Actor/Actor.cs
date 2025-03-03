@@ -42,5 +42,21 @@ public abstract class Actor : Entity
     {
         ;
     }
+
+    protected void UpdateEntity()
+    {
+        // entities 딕셔너리 초기화 (reset)
+        entities = new SerializableDictionary<string, Entity>();
+
+        // 현재 Actor의 curLocation에 있는 모든 Entity 가져옴
+        var curEntities = Services.Get<LocationManager>().Get(curLocation);
+
+        // 각 Entity를 돌면서 key를 Entity의 LocationToString() 값으로 지정하여 entities에 추가
+        foreach (Entity entity in curEntities)
+        {
+            string key = entity.LocationToString();
+            entities[key] = entity;
+        }
+    }
     #endregion
 }

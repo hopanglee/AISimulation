@@ -10,15 +10,7 @@ public interface ILocation
      * And by using curLocation of ILocation B, locationName is "room", repeat this until the curLocation of ILocation is null.
      * We can get like this "pencil -> desk -> room -> ..."
      */
-    public string LocationToString()
-    {
-        if (curLocation == null)
-        {
-            return locationName;
-        }
-        return locationName + curLocation.preposition + curLocation.LocationToString();
-    }
-
+    public string LocationToString();
     public string preposition { get; set; } // in the, on the, under the, near the, next to, ...
 }
 
@@ -75,4 +67,14 @@ public abstract class Entity : MonoBehaviour, ILocation
     }
 
     public abstract string Get();
+
+    // ILocation의 LocationToString() 구현
+    public virtual string LocationToString()
+    {
+        if (curLocation == null)
+        {
+            return locationName;
+        }
+        return locationName + curLocation.preposition + curLocation.LocationToString();
+    }
 }
