@@ -44,7 +44,7 @@ public class LocationManager : IService
             if (entities[key].Contains(value))
                 entities[key].Remove(value);
             else
-                Debug.LogError($"Wrong value {value.AbsoluteKey} in {key.locationName}");
+                Debug.LogError($"Wrong value {value.Name} in {key.locationName}");
         }
         Debug.LogError($"Wrong key {key.locationName}");
         return;

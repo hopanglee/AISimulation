@@ -63,14 +63,14 @@ public abstract class Entity : MonoBehaviour, ILocation
 
     public string preposition { get; set; }
 
-    public readonly string AbsoluteKey; // Never change. ex. "iPhone", "box", "Table"
+    public readonly string Name; // Never change. ex. "iPhone", "box", "Table"
 
     [SerializeField]
     private readonly string _preposition;
 
     public virtual void Init()
     {
-        locationName = AbsoluteKey;
+        locationName = Name;
         preposition = _preposition;
     }
 
