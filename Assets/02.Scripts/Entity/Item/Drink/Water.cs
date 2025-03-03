@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public class Sake : Drink
+public class Water : Drink
 {
     public override string Get()
     {

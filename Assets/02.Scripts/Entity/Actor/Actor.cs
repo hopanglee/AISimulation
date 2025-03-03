@@ -37,5 +37,10 @@ public abstract class Actor : Entity
     {
         ;
     }
+
+    public virtual void Death()
+    {
+        ;
+    }
     #endregion
 }
