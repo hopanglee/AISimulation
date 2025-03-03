@@ -1,5 +1,3 @@
-using Sirenix.OdinInspector.Editor;
-
 public class Clock : Block
 {
     public override string Interact(Actor actor)
@@ -9,7 +7,7 @@ public class Clock : Block
 
     private string LookClock()
     {
-        return GetTime() + "이라고 나와있다.";
+        return GetTime() + " is displayed.";
     }
 
     private string GetTime()

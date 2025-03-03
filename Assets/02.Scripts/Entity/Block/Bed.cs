@@ -8,7 +8,7 @@ public class Bed : Block
     private string Sleep(Actor actor)
     {
         actor.Sleep();
-        return $"{actor.Name}은 깊게 잠이 들었다.";
+        return $"{actor.Name} fell into a deep sleep.";
     }
 
     public override string Get()

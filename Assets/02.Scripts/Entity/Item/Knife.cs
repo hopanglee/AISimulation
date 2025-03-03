@@ -26,10 +26,10 @@ public class Knife : Item
             }
             else
             {
-                return "대상으로 사용할 수 없는 타입입니다.";
+                return "The target type cannot be used.";
             }
         }
-        return "잘못된 입력값입니다.";
+        return "Invalid input value.";
     }
 
     private string Kill(Actor actor, Actor target)
@@ -37,24 +37,24 @@ public class Knife : Item
         target.Death();
         if (actor == target)
         {
-            return "스스로를 찔러 자살했다.";
+            return "They stabbed themselves and committed suicide.";
         }
         else
         {
-            // Kill 로직 구현 (예시)
-            return $"{target.Name}을(를) 칼로 베어 죽였다.";
+            // Example kill logic
+            return $"Slashed {target.Name} to death with a knife.";
         }
     }
 
     private string Cut(Item item)
     {
-        // Item을 자르는 로직 구현 (예시)
-        return $"{item.GetType().Name}을(를) 칼로 잘랐다.";
+        // Example logic for cutting an item
+        return $"Cut the {item.Name} with a knife.";
     }
 
     private string Cut(Block block)
     {
-        // Block을 자르는 로직 구현 (예시)
-        return $"{block.GetType().Name}을(를) 칼로 잘랐다.";
+        // Example logic for cutting a block
+        return $"Cut the {block.Name} with a knife.";
     }
 }
