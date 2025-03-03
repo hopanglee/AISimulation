@@ -3,11 +3,11 @@ using UnityEngine;
 [System.Serializable]
 public abstract class Drink : Item
 {
-    // 음료를 마셨을 때 회복되는 배고픔 수치 (0~100 범위)
+    // The amount of hunger recovered by drinking (range: 0–100)
     [Range(0, 100)]
     public int HungerRecovery = 5;
 
-    // 음료를 마셨을 때 회복되는 갈증 수치 (0~100 범위)
+    // The amount of thirst recovered by drinking (range: 0–100)
     [Range(0, 100)]
     public int ThirstRecovery = 20;
 
@@ -17,7 +17,7 @@ public abstract class Drink : Item
     }
 
     /// <summary>
-    /// 가상 Eat 메서드: 음료를 마셔서 actor의 배고픔과 갈증 수치를 각각 HungerRecovery, ThirstRecovery만큼 증가시킵니다.
+    /// Virtual Eat method: Consumes the beverage, increasing the actor's hunger and thirst values by HungerRecovery and ThirstRecovery respectively.
     /// </summary>
     public virtual string Eat(Actor actor)
     {
@@ -29,6 +29,6 @@ public abstract class Drink : Item
         if (actor.Thirst > 100)
             actor.Thirst = 100;
 
-        return $"{actor.Name}가 {this.Name}을/를 마셔서 배고픔이 {HungerRecovery}만큼, 갈증이 {ThirstRecovery}만큼 해소되었다.";
+        return $"{actor.Name} drank {this.Name} and restored {HungerRecovery} hunger points and {ThirstRecovery} thirst points.";
     }
 }

@@ -18,18 +18,18 @@ public class Book : Item
     {
         if (variable is object[] args && args.Length > 1 && args[0] is int pageNum)
         {
-            // maxPageNum을 활용하여 유효한 페이지 번호 범위(1 ~ maxPageNum)인지 확인합니다.
+            // Check if the page number is within the valid range (1 ~ maxPageNum) using maxPageNum.
             if (pageNum < 1 || pageNum > maxPageNum)
             {
-                return $"페이지 번호는 1부터 {maxPageNum}까지만 유효합니다.";
+                return $"Page numbers are valid only from 1 to {maxPageNum}.";
             }
 
             if (pages.ContainsKey(pageNum))
             {
-                return pages[pageNum].Read() + $"\n{pageNum}번째 페이지를 읽었다.";
+                return pages[pageNum].Read() + $"\nPage {pageNum} has been read.";
             }
-            return "해당 페이지의 내용이 비어있다.";
+            return "The content of the page is empty.";
         }
-        return "잘못된 입력값이다.";
+        return "Invalid input value.";
     }
 }

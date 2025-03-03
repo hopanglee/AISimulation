@@ -5,14 +5,14 @@ using UnityEngine;
 [System.Serializable]
 public class iPhone : Item
 {
-    // 각 대화 상대(Actor.Name)를 키로 대화 내역을 저장
+    // Stores conversation history for each chat partner (key: Actor.Name)
     protected Dictionary<string, List<ChatMessage>> chatHistory = new();
 
-    // 채팅 알림 여부와 알림 내용 리스트
+    // Chat notification flag and list of notification messages
     protected bool chatNotification = false;
     protected List<string> notifications = new List<string>();
 
-    // Read 후 페이징 처리를 위한 대화별 현재 읽은 인덱스 (대화 내역의 시작 인덱스)
+    // For paging after calling Read: stores the starting index of conversation history for each chat
     protected Dictionary<string, int> conversationReadIndices = new Dictionary<string, int>();
 
     [System.Serializable]
@@ -36,11 +36,11 @@ public class iPhone : Item
     }
 
     /// <summary>
-    /// Use는 variable의 명령어에 따라 Chat, Read, Continue 기능을 수행합니다.
-    /// variable은 object[] 배열이며,
-    /// - Chat: ["Chat", target Actor, "보낼 메시지"]
-    /// - Read: ["Read", target Actor, 읽을 메시지 개수(int)]
-    /// - Continue: ["Continue", target Actor, 추가로 읽을 메시지 개수(int)]
+    /// The Use method performs Chat, Read, or Continue functions based on the command provided in the variable.
+    /// The variable is an object[] array, where:
+    /// - Chat: ["Chat", target Actor, "message to send"]
+    /// - Read: ["Read", target Actor, number of messages to read (int)]
+    /// - Continue: ["Continue", target Actor, number of additional messages to read (int)]
     /// </summary>
     public override string Use(Actor actor, object variable)
     {
@@ -54,7 +54,7 @@ public class iPhone : Item
                     return Chat(actor, target, text);
                 }
                 else
-                    return "잘못된 입력값이다.";
+                    return "Invalid input value.";
             }
             else if (cmd == "read")
             {
@@ -63,7 +63,7 @@ public class iPhone : Item
                     return Read(actor, target, 10);
                 }
                 else
-                    return "잘못된 입력값이다.";
+                    return "Invalid input value.";
             }
             else if (cmd == "continue")
             {
@@ -72,34 +72,34 @@ public class iPhone : Item
                     return Continue(actor, target, 10);
                 }
                 else
-                    return "잘못된 입력값이다.";
+                    return "Invalid input value.";
             }
             else
             {
-                return "알 수 없는 명령어다.";
+                return "Unknown command.";
             }
         }
-        return "잘못된 입력값이다.";
+        return "Invalid input value.";
     }
 
     /// <summary>
-    /// Chat: actor가 target에게 메시지를 보냅니다.
-    /// 현재 시간은 GetTime()으로 받아 메시지에 추가하고,
-    /// 양쪽 iPhone의 대화 내역에 해당 메시지를 저장하며,
-    /// 대상 iPhone의 알림 플래그와 알림 리스트를 업데이트합니다.
+    /// Chat: Sends a message from the actor to the target.
+    /// The current time is obtained via GetTime() and added to the message.
+    /// The message is stored in both iPhones' conversation histories,
+    /// and the target iPhone's notification flag and list are updated.
     /// </summary>
     private string Chat(Actor actor, Actor target, string text)
     {
-        // 대상 Actor의 iPhone 컴포넌트를 가져옴
+        // Retrieve the target Actor's iPhone component
         iPhone targetIPhone = target.iPhone;
         if (targetIPhone == null)
         {
-            return "대상에게 iPhone이 없습니다.";
+            return "The target does not have an iPhone.";
         }
         string time = GetTime();
         ChatMessage msg = new ChatMessage(time, actor.Name, text);
 
-        // 보낸 사람(현재 iPhone)에서 대상과의 대화 내역에 추가
+        // Add the message to the conversation history on the sender's iPhone using the target's name as the key
         string targetKey = target.Name;
         if (!chatHistory.ContainsKey(targetKey))
         {
@@ -107,7 +107,7 @@ public class iPhone : Item
         }
         chatHistory[targetKey].Add(msg);
 
-        // 대상 Actor의 iPhone에서 보낸 사람과의 대화 내역에 추가
+        // Add the message to the target Actor's iPhone conversation history using the sender's name as the key
         string senderKey = actor.Name;
         if (!targetIPhone.chatHistory.ContainsKey(senderKey))
         {
@@ -115,23 +115,24 @@ public class iPhone : Item
         }
         targetIPhone.chatHistory[senderKey].Add(msg);
 
-        // 대상 iPhone에 새 메시지 알림 추가
+        // Update the target iPhone's notifications: set flag to true and add a new notification message
         targetIPhone.chatNotification = true;
-        targetIPhone.notifications.Add($"새로운 메시지 from {actor.Name} at {time}");
+        targetIPhone.notifications.Add($"New message from {actor.Name} at {time}");
 
-        return $"{target.Name}에게 메시지를 보냈습니다.";
+        return $"Message sent to {target.Name}.";
     }
 
     /// <summary>
-    /// Read: 대상 Actor와의 대화 내역에서 최근 count개의 메시지를 날짜 및 송신자와 함께 출력합니다.
-    /// 이후 페이징을 위해 대화의 읽은 시작 인덱스를 저장합니다.
+    /// Read: Displays the latest 'count' messages from the conversation with the target Actor,
+    /// along with their timestamps and sender information.
+    /// The starting index of the conversation is stored for paging purposes.
     /// </summary>
     private string Read(Actor actor, Actor target, int count)
     {
         string key = target.Name;
         if (!chatHistory.ContainsKey(key) || chatHistory[key].Count == 0)
         {
-            return "읽을 채팅 내용이 없습니다.";
+            return "There is no chat content to read.";
         }
         List<ChatMessage> conversation = chatHistory[key];
         int totalMessages = conversation.Count;
@@ -143,10 +144,10 @@ public class iPhone : Item
             totalMessages - startIndex
         );
 
-        // 페이징을 위해 현재 읽은 인덱스를 저장 (이후 Continue에서 사용)
+        // Store the starting index for paging (to be used by Continue)
         conversationReadIndices[key] = startIndex;
 
-        // 채팅 읽음 처리: 해당 대화 상대(target)와 관련된 알림만 제거
+        // Process chat read: remove only the notifications related to the target conversation
         notifications.RemoveAll(n => n.Contains($"from {target.Name}"));
         if (notifications.Count == 0)
         {
@@ -162,23 +163,23 @@ public class iPhone : Item
     }
 
     /// <summary>
-    /// Continue: 이전에 Read를 호출한 대화에서, 현재 읽은 메시지 이전의 count개의 메시지를 추가로 불러옵니다.
+    /// Continue: Retrieves additional 'count' messages preceding the current messages from the conversation with the target Actor.
     /// </summary>
     private string Continue(Actor actor, Actor target, int count)
     {
         string key = target.Name;
         if (!chatHistory.ContainsKey(key) || chatHistory[key].Count == 0)
         {
-            return "읽을 채팅 내용이 없습니다.";
+            return "There is no chat content to read.";
         }
         int currentIndex;
         if (!conversationReadIndices.TryGetValue(key, out currentIndex))
         {
-            return "먼저 Read를 호출하여 최신 채팅을 불러와야 합니다.";
+            return "You must call Read first to load the latest chat.";
         }
         if (currentIndex <= 0)
         {
-            return "더 이상 이전 채팅이 없습니다.";
+            return "No older chat messages available.";
         }
         int startIndex = currentIndex - count;
         if (startIndex < 0)
@@ -196,7 +197,8 @@ public class iPhone : Item
     }
 
     /// <summary>
-    /// 테스트용 현재 시간 반환 함수 (실제 상황에서는 DateTime.Now 등으로 대체 가능)
+    /// Test function that returns the current time.
+    /// (In a real scenario, this could be replaced by DateTime.Now or a similar method)
     /// </summary>
     private string GetTime()
     {

@@ -24,7 +24,7 @@ public class Note : Item
                         {
                             return Write(pageNum, writeText);
                         }
-                        return "잘못된 입력값이다.";
+                        return "Invalid input value.";
 
                     case Paper.PaperAction.Rewrite:
                         if (
@@ -35,17 +35,17 @@ public class Note : Item
                         {
                             return Rewrite(pageNum, lineNum, rewriteText);
                         }
-                        return "잘못된 입력값이다.";
+                        return "Invalid input value.";
 
                     case Paper.PaperAction.Read:
                         return Read(pageNum);
 
                     default:
-                        return "알 수 없는 동작이다.";
+                        return "Unknown action.";
                 }
             }
         }
-        return "잘못된 입력값이다.";
+        return "Invalid input value.";
     }
 
     public string Read(int pageNum)
@@ -54,14 +54,14 @@ public class Note : Item
         {
             return pages[pageNum].Read();
         }
-        return "해당 페이지는 존재하지 않는다.";
+        return "The page does not exist.";
     }
 
     public string Write(int pageNum, string text)
     {
         if (pageNum < 1 || pageNum > maxPageNum)
         {
-            return "유효하지 않은 페이지 번호다.";
+            return "Invalid page number.";
         }
 
         if (!pages.ContainsKey(pageNum))
@@ -75,14 +75,14 @@ public class Note : Item
     {
         if (pageNum < 1 || pageNum > maxPageNum)
         {
-            return "유효하지 않은 페이지 번호다.";
+            return "Invalid page number.";
         }
 
         if (pages.ContainsKey(pageNum))
         {
             return pages[pageNum].Rewrite(lineNum, text);
         }
-        return "해당 페이지는 존재하지 않는다.";
+        return "The page does not exist.";
     }
 
     public override string Get()

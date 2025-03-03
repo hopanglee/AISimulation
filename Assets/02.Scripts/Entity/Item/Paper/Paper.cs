@@ -22,7 +22,7 @@ public class Paper
     {
         if (lines.Count >= MaxLineNum)
         {
-            return "더 이상 작성할 공간이 없다.";
+            return "There is no more space to write.";
         }
 
         string[] newLines = text.Split('\n');
@@ -31,12 +31,12 @@ public class Paper
         {
             if (lines.Count >= MaxLineNum)
             {
-                return $"{startLine}번째 줄부터는 작성할 수 없다. 일부 내용만 작성되었다.";
+                return $"Cannot write from line {startLine} onwards. Only part of the content was written.";
             }
             lines.Add(line);
         }
         int endLine = lines.Count;
-        return $"{startLine}번째 줄부터 {endLine}번째 줄까지 글을 작성했다.";
+        return $"Wrote text from line {startLine} to line {endLine}.";
     }
 
     public string Rewrite(int lineNum, string text)
@@ -44,7 +44,7 @@ public class Paper
         int index = lineNum - 1;
         if (index < 0 || index >= MaxLineNum)
         {
-            return "유효하지 않은 줄 번호다.";
+            return "Invalid line number.";
         }
 
         string[] newLines = text.Split('\n');
@@ -53,7 +53,7 @@ public class Paper
         {
             if (index + i >= MaxLineNum)
             {
-                return $"{startLine + i}번째 줄부터는 작성할 수 없다.";
+                return $"Cannot write from line {startLine + i} onwards.";
             }
 
             if (index + i < lines.Count)
@@ -66,14 +66,14 @@ public class Paper
             }
         }
         int endLine = startLine + newLines.Length - 1;
-        return $"{startLine}번째 줄부터 {endLine}번째 줄까지 글을 수정했다.";
+        return $"Rewritten text from line {startLine} to line {endLine}.";
     }
 
     public string Read()
     {
         if (lines.Count == 0)
         {
-            return "읽을 내용이 없다.";
+            return "There is no content to read.";
         }
 
         string result = "";
@@ -81,6 +81,6 @@ public class Paper
         {
             result += $"Line {i + 1}: {lines[i]}\n";
         }
-        return result + $"\n이 내용을 읽었다.";
+        return result + "\nThe content has been read.";
     }
 }
