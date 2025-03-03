@@ -9,6 +9,11 @@ public class Book : Item
     [SerializeField]
     private SerializableDictionary<int, Paper> pages = new();
 
+    public override string Get()
+    {
+        throw new System.NotImplementedException();
+    }
+
     public override string Use(Actor actor, object variable)
     {
         if (variable is object[] args && args.Length > 1 && args[0] is int pageNum)

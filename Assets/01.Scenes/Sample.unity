@@ -157,9 +157,15 @@ MonoBehaviour:
     keys: 0100000000000000
     values:
     - MaxLineNum: 100
-      lines: []
+      lines:
+      - 
+      - 
+      - 
     - MaxLineNum: 100
-      lines: []
+      lines:
+      - 
+      - 
+      - 
 --- !u!65 &91995356
 BoxCollider:
   m_ObjectHideFlags: 0
