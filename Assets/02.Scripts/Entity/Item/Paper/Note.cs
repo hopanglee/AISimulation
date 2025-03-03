@@ -84,4 +84,9 @@ public class Note : Item
         }
         return "해당 페이지는 존재하지 않는다.";
     }
+
+    public override string Get()
+    {
+        throw new NotImplementedException();
+    }
 }

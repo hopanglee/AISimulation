@@ -73,4 +73,6 @@ public abstract class Entity : MonoBehaviour, ILocation
         locationName = AbsoluteKey;
         preposition = _preposition;
     }
+
+    public abstract string Get();
 }
