@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f1f443f486d2a064e95980c13d2c6427
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 126497
+  packageName: Japanese Apartment
+  packageVersion: 1.0
+  assetPath: Assets/JP_Apartment/Prefabs/lamp04.prefab
+  uploadId: 267020

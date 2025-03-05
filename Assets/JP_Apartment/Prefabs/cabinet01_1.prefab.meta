@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 54241bbb4298096409ac1b4dcd703811
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 126497
+  packageName: Japanese Apartment
+  packageVersion: 1.0
+  assetPath: Assets/JP_Apartment/Prefabs/cabinet01_1.prefab
+  uploadId: 267020
