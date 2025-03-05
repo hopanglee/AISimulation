@@ -29,12 +29,22 @@ public class LocationManager : IService
 
     public List<Entity> Get(ILocation key)
     {
-        if (entities.ContainsKey(key))
+        if (entities.ContainsKey(key) && entities[key].Count > 0)
         {
             return entities[key];
         }
-        Debug.LogError($"Wrong key {key.locationName}");
+        Debug.LogWarning($"Wrong key {key.locationName}");
         return null;
+    }
+
+    public Area GetArea(ILocation location)
+    {
+        if (location is Area area)
+        {
+            return area;
+        }
+
+        return GetArea(location.curLocation);
     }
 
     public void Remove(ILocation key, Entity value)
