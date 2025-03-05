@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 232d7b10fdb62cc4ab85fe42e5784699
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 15667
+  packageName: Taichi Character Pack
+  packageVersion: 1.15
+  assetPath: Assets/TaichiCharacterPack/Shaders/toon_cutoff.shader
+  uploadId: 231919

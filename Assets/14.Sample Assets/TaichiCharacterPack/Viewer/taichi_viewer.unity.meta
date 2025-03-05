@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: d3cdabf769911844e936013c54a0e3a1
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 15667
+  packageName: Taichi Character Pack
+  packageVersion: 1.15
+  assetPath: Assets/TaichiCharacterPack/Viewer/taichi_viewer.unity
+  uploadId: 231919

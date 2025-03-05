@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 73dd13549cb0fd445a3f16936cd24d2d
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 15667
+  packageName: Taichi Character Pack
+  packageVersion: 1.15
+  assetPath: Assets/TaichiCharacterPack/TwinViewer/Resources/Taichi/TwinViewer Settings/stage_texture_list.txt
+  uploadId: 231919

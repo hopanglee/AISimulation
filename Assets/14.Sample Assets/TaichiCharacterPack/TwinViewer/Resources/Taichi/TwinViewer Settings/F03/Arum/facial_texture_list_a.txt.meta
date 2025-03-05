@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: e7fb4134c7d72aa46b476549aa9da326
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 15667
+  packageName: Taichi Character Pack
+  packageVersion: 1.15
+  assetPath: Assets/TaichiCharacterPack/TwinViewer/Resources/Taichi/TwinViewer Settings/F03/Arum/facial_texture_list_a.txt
+  uploadId: 231919

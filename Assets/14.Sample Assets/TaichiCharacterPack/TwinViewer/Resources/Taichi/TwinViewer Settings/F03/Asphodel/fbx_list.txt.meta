@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 2d9366f4cc802944b8b0491ada40a5a1
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 15667
+  packageName: Taichi Character Pack
+  packageVersion: 1.15
+  assetPath: Assets/TaichiCharacterPack/TwinViewer/Resources/Taichi/TwinViewer Settings/F03/Asphodel/fbx_list.txt
+  uploadId: 231919

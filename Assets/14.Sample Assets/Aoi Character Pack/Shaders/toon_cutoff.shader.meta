@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: fc6cf5216cdb90046ae7966d0e82f12a
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 12495
+  packageName: Aoi Character Pack
+  packageVersion: 1.16
+  assetPath: Assets/Aoi Character Pack/Shaders/toon_cutoff.shader
+  uploadId: 231904

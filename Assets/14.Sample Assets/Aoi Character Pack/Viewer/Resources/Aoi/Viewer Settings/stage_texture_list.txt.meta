@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 335978b84ad896f469c373892bcdc897
+timeCreated: 1426921007
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 12495
+  packageName: Aoi Character Pack
+  packageVersion: 1.16
+  assetPath: Assets/Aoi Character Pack/Viewer/Resources/Aoi/Viewer Settings/stage_texture_list.txt
+  uploadId: 231904

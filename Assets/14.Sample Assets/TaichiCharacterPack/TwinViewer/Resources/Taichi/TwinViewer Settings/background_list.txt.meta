@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 181351e0fa6408f44a8e023b3dba8006
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 15667
+  packageName: Taichi Character Pack
+  packageVersion: 1.15
+  assetPath: Assets/TaichiCharacterPack/TwinViewer/Resources/Taichi/TwinViewer Settings/background_list.txt
+  uploadId: 231919

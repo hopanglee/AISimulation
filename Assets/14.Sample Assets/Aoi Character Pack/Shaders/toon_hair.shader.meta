@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: d30e6390ad6cd0f4d83280110567bb39
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 12495
+  packageName: Aoi Character Pack
+  packageVersion: 1.16
+  assetPath: Assets/Aoi Character Pack/Shaders/toon_hair.shader
+  uploadId: 231904

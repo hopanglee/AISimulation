@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0ebdd51def1f58d468de07e1c81fbb8c
+timeCreated: 1426920945
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 12495
+  packageName: Aoi Character Pack
+  packageVersion: 1.16
+  assetPath: Assets/Aoi Character Pack/Viewer/GUI/CustomGuiSkin.guiskin
+  uploadId: 231904

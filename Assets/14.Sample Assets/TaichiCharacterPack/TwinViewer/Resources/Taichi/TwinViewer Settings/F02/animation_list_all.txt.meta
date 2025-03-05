@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: c099df3b4d16f0c42bf769da7835bc86
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 15667
+  packageName: Taichi Character Pack
+  packageVersion: 1.15
+  assetPath: Assets/TaichiCharacterPack/TwinViewer/Resources/Taichi/TwinViewer Settings/F02/animation_list_all.txt
+  uploadId: 231919

@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: cf5483cd784ca0246b34900b24a91c52
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 15667
+  packageName: Taichi Character Pack
+  packageVersion: 1.15
+  assetPath: Assets/TaichiCharacterPack/TwinViewer/Resources/Taichi/TwinViewer Settings/F03/Asphodel/animation_list_b.txt
+  uploadId: 231919
