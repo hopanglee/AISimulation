@@ -37,6 +37,16 @@ public class LocationManager : IService
         return null;
     }
 
+    public Area GetArea(ILocation location)
+    {
+        if (location is Area area)
+        {
+            return area;
+        }
+
+        return GetArea(location.curLocation);
+    }
+
     public void Remove(ILocation key, Entity value)
     {
         if (entities.ContainsKey(key))
