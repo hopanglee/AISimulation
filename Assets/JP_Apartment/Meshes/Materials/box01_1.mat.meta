@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c01ce541e4bbf324c966b7f9671c9ba9
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 126497
+  packageName: Japanese Apartment
+  packageVersion: 1.0
+  assetPath: Assets/JP_Apartment/Meshes/Materials/box01_1.mat
+  uploadId: 267020

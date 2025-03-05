@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 82da5429c622b5e4382f19f568c48808
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 126497
+  packageName: Japanese Apartment
+  packageVersion: 1.0
+  assetPath: Assets/JP_Apartment/Prefabs/towel01.prefab
+  uploadId: 267020
