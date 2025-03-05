@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1c80d7160b01e5f4180c754d9bbbef71
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 262670
+  packageName: The Mini Smartphone
+  packageVersion: 1.0
+  assetPath: Assets/TheMiniPhone/Materials/BLACK/MAT_MINI_BLACK_Screen.mat
+  uploadId: 615157

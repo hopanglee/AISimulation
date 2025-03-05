@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: fe629b491cbeed343bc69a27dfac2b4a
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 262670
+  packageName: The Mini Smartphone
+  packageVersion: 1.0
+  assetPath: Assets/TheMiniPhone/Materials/BrokenGlass/MAT_BrokenGlass02_Screen.mat
+  uploadId: 615157

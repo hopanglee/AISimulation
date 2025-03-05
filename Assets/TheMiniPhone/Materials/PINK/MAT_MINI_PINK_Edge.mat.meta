@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 030a09de54a6fb545989cc514f7fbbcb
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 262670
+  packageName: The Mini Smartphone
+  packageVersion: 1.0
+  assetPath: Assets/TheMiniPhone/Materials/PINK/MAT_MINI_PINK_Edge.mat
+  uploadId: 615157

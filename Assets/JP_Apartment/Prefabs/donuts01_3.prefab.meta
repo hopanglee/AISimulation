@@ -1,15 +1,8 @@
 fileFormatVersion: 2
-guid: 82c83942e1ac4ff4ba4879b3d5feebd9
+guid: ef3ccb89875780b458032ffe7b522947
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 100100000
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 126497
-  packageName: Japanese Apartment
-  packageVersion: 1.0
-  assetPath: Assets/JP_Apartment/Prefabs/donuts01_3.prefab
-  uploadId: 267020
