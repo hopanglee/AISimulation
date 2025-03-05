@@ -66,7 +66,7 @@ public class MoveController : MonoBehaviour
         Reset();
         OnReached?.Invoke();
 
-        //OnReached = null;
+        OnReached = null;
     }
 
     public void Pause()
@@ -99,5 +99,7 @@ public class MoveController : MonoBehaviour
             StopCoroutine(CheckArrival());
             isMoving = false;
         }
+
+        OnReached = null;
     }
 }

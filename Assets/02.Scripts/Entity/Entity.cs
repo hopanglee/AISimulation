@@ -13,7 +13,7 @@ public interface ILocation
     public string LocationToString();
     public string preposition { get; set; } // in the, on the, under the, near the, next to, ...
 
-    public bool IsHide { get; set; }
+    public bool IsHide { get; set; } // 감지 되는가 안되는가.
 }
 
 public abstract class Entity : MonoBehaviour, ILocation

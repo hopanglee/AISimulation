@@ -1,9 +1,14 @@
 using System.Collections.Generic;
 using Mono.Cecil.Cil;
+using Unity.VisualScripting;
 using UnityEngine;
 
+[RequireComponent(typeof(MoveController))]
 public abstract class Actor : Entity
 {
+    #region Component
+    private MoveController moveController;
+    #endregion
     #region Varaible
     public int Money;
     public iPhone iPhone;
@@ -54,7 +59,13 @@ public abstract class Actor : Entity
     public Block InvenBlock;
     private List<string> happend = new();
 
+    private SerializableDictionary<string, ILocation> areas;
     #endregion
+
+    void Awake()
+    {
+        moveController = GetComponent<MoveController>();
+    }
 
     #region Base Function
     // All Entities in same location
@@ -218,19 +229,47 @@ public abstract class Actor : Entity
             if (location != null) // Put down there
             {
                 HandItem.curLocation = location;
+                HandItem.transform.localPosition = new(0, 0, 0);
                 HandItem = null;
             }
             else // Put down here
             {
                 HandItem.curLocation = curLocation;
+                HandItem.transform.localPosition = new(0, 0, 0);
                 HandItem = null;
             }
         }
     }
 
-    public void Move()
+    public void Move(string locationKey)
     {
-        ;
+        var canMove = new SerializableDictionary<string, Vector3>();
+
+        foreach (var actor in actors)
+        {
+            canMove.Add(actor.Key, actor.Value.transform.position);
+        }
+
+        foreach (var block in blocks)
+        {
+            canMove.Add(block.Key, block.Value.transform.position);
+        }
+
+        // foreach (var item in items)
+        // {
+        //     canMove.Add(item.Key, item.Value.transform.position);
+        // }
+
+        var curArea = Services.Get<LocationManager>().GetArea(curLocation);
+        foreach (var area in curArea.connectedAreas)
+        {
+            canMove.Add(area.Key, area.Value.position);
+        }
+
+        var targetPos = canMove[locationKey];
+
+        moveController.SetTarget(targetPos);
+        moveController.OnReached += () => { };
     }
 
     public void Talk(Actor target, string text)
