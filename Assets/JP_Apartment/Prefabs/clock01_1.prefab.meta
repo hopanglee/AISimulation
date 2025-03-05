@@ -1,15 +1,8 @@
 fileFormatVersion: 2
-guid: ceff8b2c6aaaec447a747047f5d0a6cf
+guid: 3f39d774589ea454c8ac11e68cce4ec8
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 100100000
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 126497
-  packageName: Japanese Apartment
-  packageVersion: 1.0
-  assetPath: Assets/JP_Apartment/Prefabs/clock01_1.prefab
-  uploadId: 267020

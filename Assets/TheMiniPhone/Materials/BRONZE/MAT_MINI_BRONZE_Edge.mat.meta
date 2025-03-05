@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c57c30b511e5ea64c8f51e249b384ee5
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 262670
+  packageName: The Mini Smartphone
+  packageVersion: 1.0
+  assetPath: Assets/TheMiniPhone/Materials/BRONZE/MAT_MINI_BRONZE_Edge.mat
+  uploadId: 615157
