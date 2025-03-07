@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 70198f54101c9d94b85000485bdcf66b
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 15667
+  packageName: Taichi Character Pack
+  packageVersion: 1.15
+  assetPath: Assets/TaichiCharacterPack/TwinViewer/Resources/Taichi/TwinViewer Settings/F03/Arum/fbx_list.txt
+  uploadId: 231919

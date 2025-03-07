@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 13d8e43bee9c71e4fb58ac205fb73acf
+timeCreated: 1519195479
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 12495
+  packageName: Aoi Character Pack
+  packageVersion: 1.16
+  assetPath: Assets/Aoi Character Pack/Viewer/Scripts/SceneScript.cs
+  uploadId: 231904

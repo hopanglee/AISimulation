@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0c38d6d6427818c4d889275ccda719cf
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 126497
+  packageName: Japanese Apartment
+  packageVersion: 1.0
+  assetPath: Assets/JP_Apartment/Prefabs/remote-control02.prefab
+  uploadId: 267020

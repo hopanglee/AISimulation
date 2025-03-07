@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 26f6e0d9c6a3e104795c81a365bc3d5c
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 15667
+  packageName: Taichi Character Pack
+  packageVersion: 1.15
+  assetPath: Assets/TaichiCharacterPack/TwinViewer/Resources/Taichi/TwinViewer Settings/Puppet/animation_list.txt
+  uploadId: 231919

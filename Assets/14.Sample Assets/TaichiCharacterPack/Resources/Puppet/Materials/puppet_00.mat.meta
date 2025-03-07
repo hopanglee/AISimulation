@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 892904e84e37e244cadd967d9f82995e
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 15667
+  packageName: Taichi Character Pack
+  packageVersion: 1.15
+  assetPath: Assets/TaichiCharacterPack/Resources/Puppet/Materials/puppet_00.mat
+  uploadId: 231919

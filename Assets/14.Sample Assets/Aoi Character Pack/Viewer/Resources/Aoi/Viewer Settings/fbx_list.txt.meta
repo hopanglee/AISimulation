@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 6ebb4c3157ab0d04e8fc0cc66cb8138c
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 12495
+  packageName: Aoi Character Pack
+  packageVersion: 1.16
+  assetPath: Assets/Aoi Character Pack/Viewer/Resources/Aoi/Viewer Settings/fbx_list.txt
+  uploadId: 231904

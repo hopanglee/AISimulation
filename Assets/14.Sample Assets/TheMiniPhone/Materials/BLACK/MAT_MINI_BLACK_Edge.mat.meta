@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 886e16d0b9eeb1a4f81587c635d924f1
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 262670
+  packageName: The Mini Smartphone
+  packageVersion: 1.0
+  assetPath: Assets/TheMiniPhone/Materials/BLACK/MAT_MINI_BLACK_Edge.mat
+  uploadId: 615157

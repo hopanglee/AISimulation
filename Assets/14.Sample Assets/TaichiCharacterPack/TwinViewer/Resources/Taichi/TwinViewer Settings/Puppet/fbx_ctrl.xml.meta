@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: ce10613f3ebb5b4439e7817b88de18b1
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 15667
+  packageName: Taichi Character Pack
+  packageVersion: 1.15
+  assetPath: Assets/TaichiCharacterPack/TwinViewer/Resources/Taichi/TwinViewer Settings/Puppet/fbx_ctrl.xml
+  uploadId: 231919

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 01f6b69f28601c84da5912275b005892
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 262670
+  packageName: The Mini Smartphone
+  packageVersion: 1.0
+  assetPath: Assets/TheMiniPhone/Materials/BRONZE/MAT_BRONZE_Screen.mat
+  uploadId: 615157

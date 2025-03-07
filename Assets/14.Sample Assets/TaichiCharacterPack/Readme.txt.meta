@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 13927b97bc1ea8f40be12b8dfda9a257
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 15667
+  packageName: Taichi Character Pack
+  packageVersion: 1.15
+  assetPath: Assets/TaichiCharacterPack/Readme.txt
+  uploadId: 231919

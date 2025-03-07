@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: cb528dc1cd9fd5c4fa6238a9f3a806d4
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 15667
+  packageName: Taichi Character Pack
+  packageVersion: 1.15
+  assetPath: Assets/TaichiCharacterPack/TwinViewer/Resources/Taichi/TwinViewer Settings/F03/Asphodel/facial_texture_list_b.txt
+  uploadId: 231919

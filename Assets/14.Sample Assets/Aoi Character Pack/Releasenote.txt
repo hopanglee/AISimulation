@@ -1,0 +1,71 @@
+-------------------------------------------
+
+GameAssetStudio
+http://gameassetstudio.com/
+
+-------------------------------------------
+
+===========================================
+ Ver 1.16 Update Information
+===========================================
+1. The viewer script has been changed from javascript to C#.
+
+
+===========================================
+ Ver 1.15 Update Information
+===========================================
+[Unity5]
+1. We have adjusted the Shader default value according to DirectionalLight intensity 1.0.
+
+
+ ===========================================
+ Ver 1.14 Update Information
+ ===========================================
+
+1.In Unity 4.6.2 and higher versions the Cutoff in the toon_cutoff shader wasn't working properly. This has been fixed.
+2.Added more background and floor graphics to the viewer.
+3.Adjusted the light in viewer.
+4. You can now set the Alpha cutoff of the toon_cutoff shader. 0.9 is the recommended setting.
+
+
+ ===========================================
+ Ver 1.13 Update Information
+ ===========================================
+
+1.The following simplified versions of the idle animations have been added.
+
+- f02@f02_idle_01
+- f02@f02_idle_11
+
+2.Some directory names have been changed.
+3.Some file names have been changed.
+
+ ===========================================
+ Ver 1.11 Update Information
+ ===========================================
+
+1.Fixed a bug where importing GameAssetStudio assets at the same time would overwrite some files.
+2.The Viewer's Key Configuration Settings are no longer needed.
+3.Stopped compilation of the previous version which contained a bug.
+4.The directory structure has been changed. 
+5.The name of directory has been changed.
+6.The name of file has been changed.
+
+ ===========================================
+ Ver 1.10 Update Information
+ ===========================================
+
+1. Animations have been added.
+
+- Damage (to face from right)
+- Damage (to face from left)
+- Damage (to stomach)
+- Damage (to leg from right)
+- Damage (to leg from left)
+- Damage (large damage from front)
+
+
+2. The following motions have been corrected.
+
+- The sparkle on act02_F02_Walk was removed.
+- The sparkle on act03_F02_Run was removed.

@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: fd7b6d615975a2a49b801a278cb677c5
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 15667
+  packageName: Taichi Character Pack
+  packageVersion: 1.15
+  assetPath: Assets/TaichiCharacterPack/Resources/Taichi/Materials/m01_face_00_l.mat
+  uploadId: 231919

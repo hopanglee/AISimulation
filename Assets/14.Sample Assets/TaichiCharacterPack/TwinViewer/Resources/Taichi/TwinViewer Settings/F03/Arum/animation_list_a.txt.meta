@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 3bdfdca9876112c4c84cc7d03d501b82
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 15667
+  packageName: Taichi Character Pack
+  packageVersion: 1.15
+  assetPath: Assets/TaichiCharacterPack/TwinViewer/Resources/Taichi/TwinViewer Settings/F03/Arum/animation_list_a.txt
+  uploadId: 231919
