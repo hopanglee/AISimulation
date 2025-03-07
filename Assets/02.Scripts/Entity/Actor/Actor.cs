@@ -52,11 +52,11 @@ public abstract class Actor : Entity
         get => _handItem;
         set { _handItem = value; }
     }
-    public Block HandBlock;
+    public Hand Hand;
 
     [SerializeField]
-    private Item[] BaseInven;
-    public Block InvenBlock;
+    private Item[] InvenItems;
+    public Inven Inven;
     private List<string> happend = new();
 
     private SerializableDictionary<string, ILocation> areas;
@@ -147,25 +147,25 @@ public abstract class Actor : Entity
         if (HandItem == null)
         {
             HandItem = item;
-            HandItem.curLocation = HandBlock;
+            HandItem.curLocation = Hand;
             item.transform.localPosition = new(0, 0, 0);
             return true;
         }
 
-        if (BaseInven[0] == null)
+        if (InvenItems[0] == null)
         {
             InvenItemSet(0, HandItem);
             HandItem = item;
-            HandItem.curLocation = HandBlock;
+            HandItem.curLocation = Hand;
             item.transform.localPosition = new(0, 0, 0);
             return true;
         }
 
-        if (BaseInven[1] == null)
+        if (InvenItems[1] == null)
         {
             InvenItemSet(1, HandItem);
             HandItem = item;
-            HandItem.curLocation = HandBlock;
+            HandItem.curLocation = Hand;
             item.transform.localPosition = new(0, 0, 0);
             return true;
         }
@@ -175,8 +175,10 @@ public abstract class Actor : Entity
 
     private void InvenItemSet(int index, Item item)
     {
-        BaseInven[index] = item;
+        InvenItems[index] = item;
         // Disable Mesh and Collider
+
+        item.curLocation = Inven;
     }
 
     #endregion
