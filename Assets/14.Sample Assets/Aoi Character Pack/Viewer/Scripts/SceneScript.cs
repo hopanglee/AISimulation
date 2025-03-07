@@ -1500,6 +1500,7 @@ namespace Aoi
                 viewCam.ModelTarget(GetBone(obj, boneName));
 
                 int i = 0;
+
                 foreach (Material mat in SM.GetComponent<Renderer>().sharedMaterials)
                 {
                     if (mat.name == facialMatName + "_m")
