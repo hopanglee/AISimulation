@@ -1,4 +1,4 @@
-public class Bed : Block
+public class Bed : Prop
 {
     public override string Interact(Actor actor)
     {
