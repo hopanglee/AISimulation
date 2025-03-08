@@ -13,7 +13,8 @@ public interface ILocation
     public string LocationToString();
     public string preposition { get; set; } // in the, on the, under the, near the, next to, ...
 
-    public bool IsHide { get; set; } // 감지 되는가 안되는가.
+    public bool IsHideChild { get; set; } // 자식들은 감지 될 수 있는가?
+    // public bool IsHideMe { get; set; } // 본인은 감지 되는가 안되는가.
 }
 
 public abstract class Entity : MonoBehaviour, ILocation
@@ -58,12 +59,20 @@ public abstract class Entity : MonoBehaviour, ILocation
     public string preposition { get; set; }
 
     [SerializeField]
-    private bool _isHide;
-    public bool IsHide
+    private bool _isHideChild;
+    public bool IsHideChild
     {
-        get { return _isHide; }
-        set { _isHide = value; }
+        get { return _isHideChild; }
+        set { _isHideChild = value; }
     }
+
+    // [SerializeField]
+    // private bool _isHideMe;
+    // public bool IsHideMe
+    // {
+    //     get { return _isHideMe; }
+    //     set { _isHideMe = value; }
+    // }
 
     public readonly string Name; // Never change. ex. "iPhone", "box", "Table"
 

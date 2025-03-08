@@ -13,13 +13,23 @@ public abstract class Actor : Entity
     public int Money;
     public iPhone iPhone;
 
-    [SerializeField]
-    private SerializableDictionary<string, Actor> actors = new();
-    private SerializableDictionary<string, Item> items = new(); // Key is Entity's Relative Key, e.g., "iPhone on my right hand".
-    private SerializableDictionary<string, Block> blocks = new();
+    [System.Serializable]
+    public class EntityDictionary
+    {
+        public SerializableDictionary<string, Actor> actors = new();
 
-    private SerializableDictionary<string, Entity> interactableEntities = new();
+        public SerializableDictionary<string, Item> items = new(); // Key is Entity's Relative Key, e.g., "iPhone on my right hand".
 
+        public SerializableDictionary<string, Building> buildings = new();
+
+        public SerializableDictionary<string, Prop> props = new();
+    }
+
+    private SerializableDictionary<string, Entity> lookable = new();
+    private EntityDictionary interactable = new();
+    private SerializableDictionary<string, Vector3> toMovable = new();
+
+    #region Status
     [Header("Physical Needs (0 ~ 100)")]
     [Range(0, 100)]
     public int Hunger; // 배고픔
@@ -40,7 +50,7 @@ public abstract class Actor : Entity
     [Header("Sleepiness")]
     [Range(0, 100)]
     public int Sleepiness; // 졸림 수치. 일정 수치(예: 80 이상) 이상이면 강제로 잠들게 할 수 있음.
-
+    #endregion
     [Header("Interactable Range")]
     [SerializeField]
     private float interactableRange = 2 * 2; // 인터렉트 가능한 범위 (제곱)
@@ -67,81 +77,158 @@ public abstract class Actor : Entity
         moveController = GetComponent<MoveController>();
     }
 
-    #region Base Function
+    #region Update Function
     // All Entities in same location
     protected void UpdateLookableEntity()
     {
         // entities 딕셔너리 초기화 (reset)
-        actors = new();
-        blocks = new();
-        items = new();
+        lookable = new();
 
-        // 현재 Actor의 curLocation에 있는 모든 Entity 가져옴
-        var curEntities = Services.Get<LocationManager>().Get(curLocation);
+        var locationManager = Services.Get<LocationManager>();
+        var curArea = locationManager.GetArea(curLocation);
+        var curEntities = locationManager.Get(curArea, this);
 
-        AllEntityDFS(curEntities);
+        AllLookableEntityDFS(curEntities);
     }
 
-    private void AllEntityDFS(List<Entity> entities)
+    private void AllLookableEntityDFS(List<Entity> entities)
     {
-        // 각 Entity를 돌면서 key를 Entity의 LocationToString() 값으로 지정하여 entities에 추가
         foreach (Entity entity in entities)
         {
-            if (entity.IsHide)
-                continue;
-
             if (entity is Actor actor)
             {
-                actors.Add(actor.Name, actor);
+                lookable.Add(actor.Name, actor);
+
+                if (actor.IsHideChild)
+                    continue;
+
+                var handItems = Services.Get<LocationManager>().Get(actor.HandItem, this);
+                if (handItems != null)
+                    AllLookableEntityDFS(handItems);
+                continue;
             }
-            else if (entity is Block block)
+            else if (entity is Prop prop)
             {
-                blocks.Add(block.Name, block);
+                lookable.Add(prop.Name, prop);
+            }
+            else if (entity is Building building)
+            {
+                lookable.Add(building.Name, building);
             }
             else if (entity is Item item)
             {
-                items.Add(item.LocationToString(), item);
+                lookable.Add(item.LocationToString(), item);
             }
 
-            var curEntities = Services.Get<LocationManager>().Get(entity);
+            if (entity.IsHideChild)
+                continue;
+
+            var curEntities = Services.Get<LocationManager>().Get(entity, this);
             if (curEntities != null)
-                AllEntityDFS(curEntities);
+                AllLookableEntityDFS(curEntities);
         }
     }
 
     // the entites, near the actor in same location
     protected void UpdateInteractableEntity()
     {
-        interactableEntities = new();
+        interactable = new();
+        var locationManager = Services.Get<LocationManager>();
+        var curArea = locationManager.GetArea(curLocation);
+
         Vector3 curPos = transform.position;
-        foreach (var actor in actors)
+
+        var _actors = locationManager.GetActor(curArea, this);
+
+        foreach (var actor in _actors)
         {
-            var distance = MathExtension.SquaredDistance2D(curPos, actor.Value.transform.position); // 높이는 계산x
+            var distance = MathExtension.SquaredDistance2D(curPos, actor.transform.position); // 높이는 계산x
             if (distance <= interactableRange)
             {
-                interactableEntities.Add(actor.Key, actor.Value);
+                interactable.actors.Add(actor.Name, actor);
             }
         }
 
-        foreach (var block in blocks)
+        var _props = locationManager.GetProps(curArea);
+        foreach (var prop in _props)
         {
-            var distance = MathExtension.SquaredDistance2D(curPos, block.Value.transform.position); // 높이는 계산x
+            var distance = MathExtension.SquaredDistance2D(curPos, prop.toMovePos.position); // 높이는 계산x
             if (distance <= interactableRange)
             {
-                interactableEntities.Add(block.Key, block.Value);
+                interactable.props.Add(prop.Name, prop);
+                // if (prop.IsHideChild)
+                // {
+                //     continue;
+                // }
+                var _entities = locationManager.Get(prop);
+                AllInteractableEntityDFS(_entities);
             }
         }
 
-        foreach (var item in items)
+        var _buildings = locationManager.GetBuilding(curArea);
+        foreach (var building in _buildings)
         {
-            var distance = MathExtension.SquaredDistance2D(curPos, item.Value.transform.position); // 높이는 계산x
+            var distance = MathExtension.SquaredDistance2D(curPos, building.transform.position); // 높이는 계산x
             if (distance <= interactableRange)
             {
-                interactableEntities.Add(item.Key, item.Value);
+                interactable.buildings.Add(building.Name, building);
+                // 빌딩은 겉만 보는거임.
             }
         }
     }
 
+    private void AllInteractableEntityDFS(List<Entity> entities)
+    {
+        foreach (var _entity in entities)
+        {
+            if (_entity is Actor actor)
+            {
+                interactable.actors.Add(actor.Name, actor);
+            }
+            else if (_entity is Prop prop)
+            {
+                interactable.props.Add(prop.Name, prop);
+
+                var _entities = Services.Get<LocationManager>().Get(prop);
+                AllInteractableEntityDFS(_entities);
+            }
+            else if (_entity is Item item)
+            {
+                interactable.items.Add(item.LocationToString(), item);
+            }
+        }
+    }
+
+    protected void UpdateMovablePos()
+    {
+        toMovable = new();
+
+        var locationManager = Services.Get<LocationManager>();
+        var curArea = locationManager.GetArea(curLocation);
+        var _actors = locationManager.GetActor(curArea, this);
+        foreach (var actor in _actors)
+        {
+            toMovable.Add(actor.Name, actor.transform.position);
+        }
+
+        var _props = locationManager.GetProps(curArea);
+        foreach (var prop in _props)
+        {
+            toMovable.Add(prop.Name, prop.toMovePos.position);
+        }
+
+        var _buildings = locationManager.GetProps(curArea);
+        foreach (var building in _buildings)
+        {
+            toMovable.Add(building.Name, building.toMovePos.position);
+        }
+
+        foreach (var area in curArea.connectedAreas)
+        {
+            toMovable.Add(area.locationName, area.toMovePos[area].position);
+        }
+    }
+    #endregion
     public bool CanSaveItem(Item item)
     {
         if (HandItem == null)
@@ -181,8 +268,6 @@ public abstract class Actor : Entity
         item.curLocation = Inven;
     }
 
-    #endregion
-
     #region Agent Selectable Fucntion
     public void GiveMoney(Actor target, int amount)
     {
@@ -205,17 +290,21 @@ public abstract class Actor : Entity
 
     public void Interact(string blockKey)
     {
-        if (blocks.ContainsKey(blockKey))
+        if (interactable.props.ContainsKey(blockKey))
         {
-            blocks[blockKey].Interact(this);
+            interactable.props[blockKey].Interact(this);
+        }
+        else if (interactable.buildings.ContainsKey(blockKey))
+        {
+            interactable.buildings[blockKey].Interact(this);
         }
     }
 
     public void Give(string actorKey)
     {
-        if (HandItem != null && actors.ContainsKey(actorKey))
+        if (HandItem != null && interactable.actors.ContainsKey(actorKey))
         {
-            var target = actors[actorKey];
+            var target = interactable.actors[actorKey];
 
             if (target.CanSaveItem(HandItem))
             {
@@ -245,33 +334,13 @@ public abstract class Actor : Entity
 
     public void Move(string locationKey)
     {
-        var canMove = new SerializableDictionary<string, Vector3>();
-
-        foreach (var actor in actors)
-        {
-            canMove.Add(actor.Key, actor.Value.transform.position);
-        }
-
-        foreach (var block in blocks)
-        {
-            canMove.Add(block.Key, block.Value.transform.position);
-        }
-
-        // foreach (var item in items)
-        // {
-        //     canMove.Add(item.Key, item.Value.transform.position);
-        // }
-
-        var curArea = Services.Get<LocationManager>().GetArea(curLocation);
-        foreach (var area in curArea.connectedAreas)
-        {
-            canMove.Add(area.Key, area.Value.position);
-        }
-
-        var targetPos = canMove[locationKey];
+        var targetPos = toMovable[locationKey];
 
         moveController.SetTarget(targetPos);
-        moveController.OnReached += () => { };
+        moveController.OnReached += () =>
+        {
+            ;
+        };
     }
 
     public void Talk(Actor target, string text)

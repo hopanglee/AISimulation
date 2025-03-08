@@ -1,4 +1,4 @@
-public class Clock : Block
+public class Clock : Prop
 {
     public override string Interact(Actor actor)
     {

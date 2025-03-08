@@ -1,29 +1,8 @@
 using UnityEngine;
 
-public class Hand : MonoBehaviour, ILocation
+public class Hand : Entity
 {
-    public string locationName
-    {
-        get => throw new System.NotImplementedException();
-        set => throw new System.NotImplementedException();
-    }
-    public ILocation curLocation
-    {
-        get => throw new System.NotImplementedException();
-        set => throw new System.NotImplementedException();
-    }
-    public string preposition
-    {
-        get => throw new System.NotImplementedException();
-        set => throw new System.NotImplementedException();
-    }
-    public bool IsHide
-    {
-        get => throw new System.NotImplementedException();
-        set => throw new System.NotImplementedException();
-    }
-
-    public string LocationToString()
+    public override string Get()
     {
         throw new System.NotImplementedException();
     }

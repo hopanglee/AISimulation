@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Area : MonoBehaviour, ILocation
@@ -17,13 +18,10 @@ public class Area : MonoBehaviour, ILocation
         get => throw new System.NotImplementedException();
         set => throw new System.NotImplementedException();
     }
-    public bool IsHide
-    {
-        get => throw new System.NotImplementedException();
-        set => throw new System.NotImplementedException();
-    }
+    public bool IsHideChild { get; set; }
 
-    public SerializableDictionary<string, Transform> connectedAreas = new();
+    public List<Area> connectedAreas = new();
+    public SerializableDictionary<Area, Transform> toMovePos = new(); // area : from, transform : target pos
 
     public string LocationToString()
     {
