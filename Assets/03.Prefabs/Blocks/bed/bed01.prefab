@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 33280556120609448}
   - component: {fileID: 23688067758207658}
   - component: {fileID: 6162088561761804479}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: bed01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,5 +99,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a71190c67fa872b4f884a5890bfc3a8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isHide: 0
+  _curLocation: {fileID: 0}
+  _preposition: 
+  _isHideChild: 0
+  Name: 
   Description: 
+  toMovePos: {fileID: 0}

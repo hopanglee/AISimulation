@@ -156,6 +156,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hino Maori
       objectReference: {fileID: 0}
+    - target: {fileID: 100062, guid: e367da6665e14a446be68ddcb33bbd9f, type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 100064, guid: e367da6665e14a446be68ddcb33bbd9f, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -233,6 +237,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100062, guid: e367da6665e14a446be68ddcb33bbd9f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1706414985559823690}
+    - targetCorrespondingSourceObject: {fileID: 100062, guid: e367da6665e14a446be68ddcb33bbd9f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5546478074513875818}
   m_SourcePrefab: {fileID: 100100000, guid: e367da6665e14a446be68ddcb33bbd9f, type: 3}
 --- !u!1 &529616869720701619 stripped
 GameObject:
@@ -435,22 +442,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1073741831
   shape:
-    radius: 0.5
+    radius: 0.4
     height: 2
   movement:
     follower:
       rotationSpeed: 600
-      speed: 5
+      speed: 0.5
       maxRotationSpeed: 720
       maxOnSpotRotationSpeed: 720
       slowdownTime: 0.5
-      slowdownTimeWhenTurningOnSpot: 0
-      desiredWallDistance: 0.5
+      slowdownTimeWhenTurningOnSpot: 0.1
+      desiredWallDistance: 0.2
       leadInRadiusWhenApproachingDestination: 1
       allowRotatingOnSpotBacking: 1
     debugFlags: 64
-    stopDistance: 0.2
-    rotationSmoothing: 0
+    stopDistance: 0
+    rotationSmoothing: 0.1
     positionSmoothing: 0
     groundMask:
       serializedVersion: 2
@@ -471,7 +478,7 @@ MonoBehaviour:
         value: -1
       tagPenalties: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
       traversableTags: -1
-    enableLocalAvoidance: 0
+    enableLocalAvoidance: 1
     enableGravity: 1
   autoRepathBacking:
     mode: 2
@@ -493,6 +500,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isMoving: 0
+--- !u!114 &5546478074513875818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 529616869720701619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9679e68a0f1144e79c664d9a11ca121, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 1073741824
+  target: {fileID: 0}
+  useRotation: 0
 --- !u!4 &529616869720991405 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400064, guid: e367da6665e14a446be68ddcb33bbd9f, type: 3}

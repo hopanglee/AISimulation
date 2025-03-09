@@ -60,6 +60,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MODEL_COLL_Mini_Phone_01
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 51336ae1c9872004799bf1cf17cc8c1d, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -153,20 +157,24 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -7511558181221131132, guid: 35e9b80903e5ab24caa2e957adc2cbf8, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: f46075c7129db984f8d91b0ffc29d486, type: 2}
     - target: {fileID: -7511558181221131132, guid: 35e9b80903e5ab24caa2e957adc2cbf8, type: 3}
-      propertyPath: m_Materials.Array.data[2]
+      propertyPath: 'm_Materials.Array.data[2]'
       value: 
       objectReference: {fileID: 2100000, guid: ffdede867c21697419a7025734c04062, type: 2}
     - target: {fileID: -7511558181221131132, guid: 35e9b80903e5ab24caa2e957adc2cbf8, type: 3}
-      propertyPath: m_Materials.Array.data[3]
+      propertyPath: 'm_Materials.Array.data[3]'
       value: 
       objectReference: {fileID: 2100000, guid: c2dc5ac44cbecb74c84f2c2b51d75ef0, type: 2}
     - target: {fileID: 919132149155446097, guid: 35e9b80903e5ab24caa2e957adc2cbf8, type: 3}
       propertyPath: m_Name
       value: PREFAB_MINI_SILVER_BrokenGlass01
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 35e9b80903e5ab24caa2e957adc2cbf8, type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

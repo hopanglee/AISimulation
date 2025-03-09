@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4975729078200840}
   - component: {fileID: 1225905012873556285}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: clock01_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -48,8 +48,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 994fbb3d4a439a340b33c752012202ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isHide: 0
+  _curLocation: {fileID: 0}
+  _preposition: 
+  _isHideChild: 0
+  Name: 
   Description: 
+  toMovePos: {fileID: 0}
 --- !u!1 &1400498328790404
 GameObject:
   m_ObjectHideFlags: 0
@@ -61,7 +65,7 @@ GameObject:
   - component: {fileID: 4435278803340824}
   - component: {fileID: 33838865241061064}
   - component: {fileID: 23162614368272584}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: clock01_hand_second
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -147,7 +151,7 @@ GameObject:
   - component: {fileID: 4637555208056042}
   - component: {fileID: 33121264498289556}
   - component: {fileID: 23376084487049072}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: clock01_hand_hour
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -233,7 +237,7 @@ GameObject:
   - component: {fileID: 4926233096873984}
   - component: {fileID: 33419528491345826}
   - component: {fileID: 23440358837236508}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: clock01_hand_minute
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -319,7 +323,7 @@ GameObject:
   - component: {fileID: 4554989020390378}
   - component: {fileID: 33316347837894756}
   - component: {fileID: 23836289470318328}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: clock01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
