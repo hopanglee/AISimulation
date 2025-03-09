@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 33368045896958158}
   - component: {fileID: 23751685190633172}
   - component: {fileID: 4723702269283214291}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: book01_1_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,7 +99,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8043773221503074d947e4ba53cd83e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isHide: 0
+  _curLocation: {fileID: 0}
+  _preposition: 
+  _isHideChild: 0
+  Name: 
   Description: 
   maxPageNum: 100
   pages:

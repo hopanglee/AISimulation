@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 33608205700420196}
   - component: {fileID: 23571975863135632}
   - component: {fileID: 447417054401346394}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: donuts01_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,6 +99,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39852396b183d6f48b738910632e850b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isHide: 0
+  _curLocation: {fileID: 0}
+  _preposition: 
+  _isHideChild: 0
+  Name: 
   Description: 
   Nutrition: 10

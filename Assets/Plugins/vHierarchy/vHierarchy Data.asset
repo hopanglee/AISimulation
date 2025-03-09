@@ -17,5 +17,8 @@ MonoBehaviour:
     - 3593ce073bd93f74797273054295fb74
     values:
     - goDatas_byGlobalId:
-        keys: []
-        values: []
+        keys:
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1913537844-0
+        values:
+        - colorIndex: 0
+          iconNameOrGuid: ScriptableObject Icon
