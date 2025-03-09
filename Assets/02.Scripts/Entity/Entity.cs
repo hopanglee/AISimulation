@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public interface ILocation
@@ -20,10 +22,13 @@ public interface ILocation
 public abstract class Entity : MonoBehaviour, ILocation
 {
     public string locationName { get; set; }
-    private ILocation _curLocation;
+
+    [ValueDropdown("GetCurLocationCandidates")]
+    [SerializeField]
+    private MonoBehaviour _curLocation;
     public ILocation curLocation
     {
-        get { return _curLocation; } // 필드 반환
+        get { return _curLocation as ILocation; } // 필드 반환
         set
         {
             LocationManager locationManager = Services.Get<LocationManager>();
@@ -31,21 +36,17 @@ public abstract class Entity : MonoBehaviour, ILocation
             // 기존 위치에서 제거
             if (_curLocation != null)
             {
-                locationManager.Remove(_curLocation, this);
+                locationManager.Remove(_curLocation as ILocation, this);
             }
 
             // 새 위치 설정
-            _curLocation = value;
+            _curLocation = value as MonoBehaviour;
 
             if (_curLocation != null)
             {
-                locationManager.Add(_curLocation, this);
+                locationManager.Add(_curLocation as ILocation, this);
 
-                // 부모 설정 (location이 MonoBehaviour일 경우)
-                if (value is MonoBehaviour monoLocation)
-                {
-                    this.transform.parent = monoLocation.transform;
-                }
+                this.transform.parent = _curLocation.transform;
             }
             else
             {
@@ -56,7 +57,33 @@ public abstract class Entity : MonoBehaviour, ILocation
         } // SetLocation 호출
     }
 
-    public string preposition { get; set; }
+    // Odin Inspector의 ValueDropdown에서 사용할 드롭다운 옵션을 생성하는 프로퍼티.
+    // 부모 오브젝트들 중 ILocation을 구현한 컴포넌트를 찾아서 반환함.
+    private IEnumerable<ValueDropdownItem<ILocation>> GetCurLocationCandidates
+    {
+        get
+        {
+            // null 옵션 추가
+            yield return new ValueDropdownItem<ILocation>("None", null);
+
+            foreach (var component in transform.GetComponentsInParent<MonoBehaviour>())
+            {
+                if (component == this)
+                    continue;
+
+                if (component is ILocation location)
+                    yield return new ValueDropdownItem<ILocation>(component.name, location);
+            }
+        }
+    }
+
+    [SerializeField]
+    private string _preposition;
+    public string preposition
+    {
+        get { return _preposition; }
+        set { _preposition = value; }
+    }
 
     [SerializeField]
     private bool _isHideChild;
@@ -74,10 +101,7 @@ public abstract class Entity : MonoBehaviour, ILocation
     //     set { _isHideMe = value; }
     // }
 
-    public readonly string Name; // Never change. ex. "iPhone", "box", "Table"
-
-    [SerializeField]
-    private readonly string _preposition;
+    public string Name; // Never change. ex. "iPhone", "box", "Table"
 
     public virtual void Init()
     {

@@ -51,9 +51,6 @@ public abstract class Actor : Entity
     [Range(0, 100)]
     public int Sleepiness; // 졸림 수치. 일정 수치(예: 80 이상) 이상이면 강제로 잠들게 할 수 있음.
     #endregion
-    [Header("Interactable Range")]
-    [SerializeField]
-    private float interactableRange = 2 * 2; // 인터렉트 가능한 범위 (제곱)
 
     [SerializeField]
     private Item _handItem;
@@ -143,7 +140,7 @@ public abstract class Actor : Entity
         foreach (var actor in _actors)
         {
             var distance = MathExtension.SquaredDistance2D(curPos, actor.transform.position); // 높이는 계산x
-            if (distance <= interactableRange)
+            if (distance <= 1 * 1)
             {
                 interactable.actors.Add(actor.Name, actor);
             }
@@ -153,13 +150,13 @@ public abstract class Actor : Entity
         foreach (var prop in _props)
         {
             var distance = MathExtension.SquaredDistance2D(curPos, prop.toMovePos.position); // 높이는 계산x
-            if (distance <= interactableRange)
+            if (distance <= 1 * 1)
             {
                 interactable.props.Add(prop.Name, prop);
-                // if (prop.IsHideChild)
-                // {
-                //     continue;
-                // }
+                if (prop.IsHideChild)
+                {
+                    continue;
+                }
                 var _entities = locationManager.Get(prop);
                 AllInteractableEntityDFS(_entities);
             }
@@ -169,10 +166,26 @@ public abstract class Actor : Entity
         foreach (var building in _buildings)
         {
             var distance = MathExtension.SquaredDistance2D(curPos, building.transform.position); // 높이는 계산x
-            if (distance <= interactableRange)
+            if (distance <= 1 * 1)
             {
                 interactable.buildings.Add(building.Name, building);
                 // 빌딩은 겉만 보는거임.
+            }
+        }
+
+        var _items = locationManager.GetItem(curArea);
+        foreach (var item in _items)
+        {
+            var distance = MathExtension.SquaredDistance2D(curPos, item.transform.position); // 높이는 계산x
+            if (distance <= 1 * 1)
+            {
+                interactable.items.Add(item.LocationToString(), item);
+                if (item.IsHideChild)
+                {
+                    continue;
+                }
+                var _entities = locationManager.Get(item);
+                AllInteractableEntityDFS(_entities);
             }
         }
     }
@@ -189,12 +202,21 @@ public abstract class Actor : Entity
             {
                 interactable.props.Add(prop.Name, prop);
 
+                if (prop.IsHideChild)
+                    continue;
+
                 var _entities = Services.Get<LocationManager>().Get(prop);
                 AllInteractableEntityDFS(_entities);
             }
             else if (_entity is Item item)
             {
                 interactable.items.Add(item.LocationToString(), item);
+
+                if (item.IsHideChild)
+                    continue;
+
+                var _entities = Services.Get<LocationManager>().Get(item);
+                AllInteractableEntityDFS(_entities);
             }
         }
     }

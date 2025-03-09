@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class HinoMaori : Entity
+public class HinoMaori : Actor
 {
     public override string Get()
     {
