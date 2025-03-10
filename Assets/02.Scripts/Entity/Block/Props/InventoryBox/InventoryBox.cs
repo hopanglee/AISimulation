@@ -5,7 +5,7 @@ public abstract class InventoryBox : Prop
 {
     public int maxItems;
 
-    public List<Item> items;
+    public List<Entity> items;
     public List<Transform> transforms;
 
     public override string Get()
