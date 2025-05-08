@@ -626,6 +626,38 @@ ReflectionProbe:
   m_UseOcclusionCulling: 1
   m_Importance: 1
   m_CustomBakedTexture: {fileID: 0}
+--- !u!1 &936739215862737959
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7591108782180431481}
+  m_Layer: 0
+  m_Name: Triggers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7591108782180431481
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 936739215862737959}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 9213144771051673468}
+  m_Father: {fileID: 2094710996527102018}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &972035876866175201
 GameObject:
   m_ObjectHideFlags: 0
@@ -1519,6 +1551,7 @@ Transform:
   - {fileID: 4524474112811909162}
   - {fileID: 8215177598758984029}
   - {fileID: 7182380006560249178}
+  - {fileID: 7591108782180431481}
   m_Father: {fileID: 2568869340716771903}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2411087390148694712
@@ -8591,7 +8624,7 @@ MonoBehaviour:
   _curLocation: {fileID: 5301720456392187889}
   _preposition: 
   _isHideChild: 0
-  Name: 
+  _name: 
   Description: 
   Nutrition: 10
 --- !u!1001 &715498996882203356
@@ -9414,7 +9447,7 @@ MonoBehaviour:
   _curLocation: {fileID: 3187469858088934068}
   _preposition: 
   _isHideChild: 0
-  Name: 
+  _name: 
   Description: 
   HungerRecovery: 5
   ThirstRecovery: 20
@@ -9844,7 +9877,7 @@ MonoBehaviour:
   _curLocation: {fileID: 5301720456392187889}
   _preposition: 
   _isHideChild: 0
-  Name: 
+  _name: 
   Description: 
   Nutrition: 10
 --- !u!4 &1335099351501685692 stripped
@@ -13957,7 +13990,7 @@ MonoBehaviour:
   _curLocation: {fileID: 1686275174503654562}
   _preposition: 
   _isHideChild: 0
-  Name: 
+  _name: 
   Description: 
   toMovePos: {fileID: 934641233982087729}
 --- !u!1001 &3606749282614764889
@@ -17275,7 +17308,7 @@ MonoBehaviour:
   _curLocation: {fileID: 5301720456392187889}
   _preposition: 
   _isHideChild: 0
-  Name: 
+  _name: 
   Description: 
   Nutrition: 10
 --- !u!4 &5547572218082690704 stripped
@@ -17425,7 +17458,7 @@ MonoBehaviour:
   _curLocation: {fileID: 7845839950389305091}
   _preposition: 
   _isHideChild: 0
-  Name: 
+  _name: 
   Description: 
   toMovePos: {fileID: 4898290608762593706}
   maxItems: 0
@@ -17798,7 +17831,7 @@ MonoBehaviour:
   _curLocation: {fileID: 7663787633039031306}
   _preposition: 
   _isHideChild: 0
-  Name: 
+  _name: 
   Description: 
   toMovePos: {fileID: 5483043772208718735}
 --- !u!4 &5722982767548890064 stripped
@@ -18750,6 +18783,68 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 4262015187430754, guid: 0bae892b463604b42b586fae058541aa, type: 3}
   m_PrefabInstance: {fileID: 6243267383505776470}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &6319370457579562002
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 7591108782180431481}
+    m_Modifications:
+    - target: {fileID: 2911933023960757102, guid: 204beaec301706a4b89020781ad4de4f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2911933023960757102, guid: 204beaec301706a4b89020781ad4de4f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2911933023960757102, guid: 204beaec301706a4b89020781ad4de4f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2911933023960757102, guid: 204beaec301706a4b89020781ad4de4f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2911933023960757102, guid: 204beaec301706a4b89020781ad4de4f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2911933023960757102, guid: 204beaec301706a4b89020781ad4de4f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2911933023960757102, guid: 204beaec301706a4b89020781ad4de4f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2911933023960757102, guid: 204beaec301706a4b89020781ad4de4f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2911933023960757102, guid: 204beaec301706a4b89020781ad4de4f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2911933023960757102, guid: 204beaec301706a4b89020781ad4de4f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6362212501688136985, guid: 204beaec301706a4b89020781ad4de4f, type: 3}
+      propertyPath: m_Name
+      value: Livingroom <-> Entry way
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 204beaec301706a4b89020781ad4de4f, type: 3}
+--- !u!4 &9213144771051673468 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2911933023960757102, guid: 204beaec301706a4b89020781ad4de4f, type: 3}
+  m_PrefabInstance: {fileID: 6319370457579562002}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6328385479463191973
 PrefabInstance:
@@ -21214,7 +21309,7 @@ MonoBehaviour:
   _curLocation: {fileID: 7845839950389305091}
   _preposition: 
   _isHideChild: 0
-  Name: 
+  _name: 
   Description: 
   toMovePos: {fileID: 9028871841394943710}
   maxItems: 4
@@ -22455,7 +22550,7 @@ MonoBehaviour:
   _curLocation: {fileID: 3187469858088934068}
   _preposition: 
   _isHideChild: 0
-  Name: 
+  _name: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 3

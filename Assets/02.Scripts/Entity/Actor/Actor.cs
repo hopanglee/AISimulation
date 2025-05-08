@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using Mono.Cecil.Cil;
+using Sirenix.OdinInspector;
 using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(MoveController))]
-public abstract class Actor : Entity
+public abstract class Actor : Entity, ILocationAware
 {
     #region Component
     private MoveController moveController;
@@ -25,8 +26,13 @@ public abstract class Actor : Entity
         public SerializableDictionary<string, Prop> props = new();
     }
 
+    [ShowInInspector, ReadOnly]
     private SerializableDictionary<string, Entity> lookable = new();
+
+    [ShowInInspector, ReadOnly]
     private EntityDictionary interactable = new();
+
+    [ShowInInspector, ReadOnly]
     private SerializableDictionary<string, Vector3> toMovable = new();
 
     #region Status
@@ -65,12 +71,11 @@ public abstract class Actor : Entity
     private Item[] InvenItems;
     public Inven Inven;
     private List<string> happend = new();
-
-    private SerializableDictionary<string, ILocation> areas;
     #endregion
 
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         moveController = GetComponent<MoveController>();
     }
 
@@ -81,7 +86,7 @@ public abstract class Actor : Entity
         // entities 딕셔너리 초기화 (reset)
         lookable = new();
 
-        var locationManager = Services.Get<LocationManager>();
+        var locationManager = Services.Get<ILocationService>();
         var curArea = locationManager.GetArea(curLocation);
         var curEntities = locationManager.Get(curArea, this);
 
@@ -99,7 +104,7 @@ public abstract class Actor : Entity
                 if (actor.IsHideChild)
                     continue;
 
-                var handItems = Services.Get<LocationManager>().Get(actor.HandItem, this);
+                var handItems = Services.Get<ILocationService>().Get(actor.HandItem, this);
                 if (handItems != null)
                     AllLookableEntityDFS(handItems);
                 continue;
@@ -114,13 +119,14 @@ public abstract class Actor : Entity
             }
             else if (entity is Item item)
             {
-                lookable.Add(item.LocationToString(), item);
+                //Debug.Log($"DEBUG >> {item.LocationToString()}");
+                lookable.Add(item.Name, item);
             }
 
             if (entity.IsHideChild)
                 continue;
 
-            var curEntities = Services.Get<LocationManager>().Get(entity, this);
+            var curEntities = Services.Get<ILocationService>().Get(entity, this);
             if (curEntities != null)
                 AllLookableEntityDFS(curEntities);
         }
@@ -130,7 +136,7 @@ public abstract class Actor : Entity
     protected void UpdateInteractableEntity()
     {
         interactable = new();
-        var locationManager = Services.Get<LocationManager>();
+        var locationManager = Services.Get<ILocationService>();
         var curArea = locationManager.GetArea(curLocation);
 
         Vector3 curPos = transform.position;
@@ -205,7 +211,7 @@ public abstract class Actor : Entity
                 if (prop.IsHideChild)
                     continue;
 
-                var _entities = Services.Get<LocationManager>().Get(prop);
+                var _entities = Services.Get<ILocationService>().Get(prop);
                 AllInteractableEntityDFS(_entities);
             }
             else if (_entity is Item item)
@@ -215,7 +221,7 @@ public abstract class Actor : Entity
                 if (item.IsHideChild)
                     continue;
 
-                var _entities = Services.Get<LocationManager>().Get(item);
+                var _entities = Services.Get<ILocationService>().Get(item);
                 AllInteractableEntityDFS(_entities);
             }
         }
@@ -225,7 +231,7 @@ public abstract class Actor : Entity
     {
         toMovable = new();
 
-        var locationManager = Services.Get<LocationManager>();
+        var locationManager = Services.Get<ILocationService>();
         var curArea = locationManager.GetArea(curLocation);
         var _actors = locationManager.GetActor(curArea, this);
         foreach (var actor in _actors)
@@ -239,15 +245,17 @@ public abstract class Actor : Entity
             toMovable.Add(prop.Name, prop.toMovePos.position);
         }
 
-        var _buildings = locationManager.GetProps(curArea);
+        var _buildings = locationManager.GetBuilding(curArea);
         foreach (var building in _buildings)
         {
             toMovable.Add(building.Name, building.toMovePos.position);
         }
 
+        Debug.Log($"curArea : {curArea.locationName}");
         foreach (var area in curArea.connectedAreas)
         {
-            toMovable.Add(area.locationName, area.toMovePos[area].position);
+            Debug.Log($"connectedAreas : {area.locationName}");
+            toMovable.Add(area.locationName, area.toMovePos[curArea].position);
         }
     }
     #endregion
@@ -385,4 +393,50 @@ public abstract class Actor : Entity
     {
         happend.Add($"");
     }
+
+    public void SetCurrentRoom(ILocation newLocation)
+    {
+        if (curLocation != newLocation)
+        {
+            curLocation = newLocation;
+            Debug.Log($"[LocationTracker] 현재 방 변경됨: {newLocation.locationName}");
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        var trigger = other.GetComponent<LocationTransitionTrigger>();
+        if (trigger == null)
+            return;
+
+        // 방향 벡터 계산
+        Vector3 toTrigger = (other.transform.position - transform.position).normalized;
+        Vector3 triggerForward = other.transform.forward;
+
+        float dot = Vector3.Dot(triggerForward, toTrigger);
+
+        ILocation targetRoom = dot < 0 ? trigger.forwardRoom : trigger.backwardRoom;
+        SetCurrentRoom(targetRoom);
+    }
+
+    #region Odin Inspector Buttons
+
+    [Button("Update Lookable Entities")]
+    private void Odin_UpdateLookableEntity()
+    {
+        UpdateLookableEntity();
+    }
+
+    [Button("Update Interactable Entities")]
+    private void Odin_UpdateInteractableEntity()
+    {
+        UpdateInteractableEntity();
+    }
+
+    [Button("Update Movable Positions")]
+    private void Odin_UpdateMovablePos()
+    {
+        UpdateMovablePos();
+    }
+    #endregion
 }
