@@ -63,6 +63,20 @@ public class Area : MonoBehaviour, ILocation
 
     public string LocationToString()
     {
-        throw new System.NotImplementedException();
+        if (curLocation == null)
+        {
+            return locationName;
+        }
+        return locationName + " " + curLocation.preposition + " " + curLocation.LocationToString();
     }
+
+    // void Awake()
+    // {
+    //     RegisterToLocationService();
+    // }
+
+    // public void RegisterToLocationService()
+    // {
+    //     ;
+    // }
 }

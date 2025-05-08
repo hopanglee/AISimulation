@@ -1,9 +1,11 @@
 using Cysharp.Threading.Tasks;
 
-public class GameManager : IService
+public interface IGameService : IService { }
+
+public class GameServcie : IGameService
 {
-    public UniTask Initialize()
+    public async UniTask Initialize()
     {
-        return UniTask.CompletedTask;
+        return;
     }
 }

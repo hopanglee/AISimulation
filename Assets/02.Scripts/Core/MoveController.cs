@@ -15,7 +15,7 @@ public class MoveController : MonoBehaviour
     {
         followerEntity = GetComponent<FollowerEntity>();
         aIDestinationSetter = GetComponent<AIDestinationSetter>();
-        followerEntity.stopDistance = 1.25f; // 목적지와 1m 거리에서도 멈추도록 설정
+        //followerEntity.stopDistance = 0f; // 목적지와 1m 거리에서도 멈추도록 설정
     }
 
     public void SetTarget(Vector3 vector)

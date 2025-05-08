@@ -39,7 +39,7 @@ public static class Services
     }
 
     public static T Get<T>()
-        where T : IService, new()
+        where T : IService
     {
         var type = typeof(T);
         if (services.TryGetValue(type, out var service))
@@ -48,8 +48,9 @@ public static class Services
         }
         else
         {
-            var provided = Provide<T>();
-            return provided;
+            throw new Exception($"Service of type {type} is not registered.");
+            // var provided = Provide<T>();
+            // return provided;
         }
     }
 

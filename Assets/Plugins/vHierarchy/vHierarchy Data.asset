@@ -19,6 +19,213 @@ MonoBehaviour:
     - goDatas_byGlobalId:
         keys:
         - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1913537844-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1339748199-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1204953009-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1488705634-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-343500116-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-112195938-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1286226531-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-2111962261-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1748597871-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1118751505-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-793957038-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-616642168-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1450378979-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-963581008-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-439945660-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-700599861-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-45656122-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1479506768-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-2111423019-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1504600063-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-972504243-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-887104517-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-509451291-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-779511874-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1768330929-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-618418243-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1954950610-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1152412907-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-668812620-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1497442664-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1593692000-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1842465775-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-565124873-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1435710839-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-466669653-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1998694833-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1517156775-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1381988236-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-689081827-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1450839099-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1180709891-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-102021716-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-282084328-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1749257640-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1497637816-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-298059097-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-701860827-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-79325174-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1450617901-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-452563954-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-325801694-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-2100637803-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1531274389-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-2098018517-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1416204999-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-2139808568-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-457981015-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-993625081-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-2127877715-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1062901133-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1372888295-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-230340689-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1381213998-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-2047991897-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-943438038-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-360805762-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-143976289-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1320660361-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1269372326-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-716880538-0
         values:
         - colorIndex: 0
           iconNameOrGuid: ScriptableObject Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 0
+          iconNameOrGuid: PreMatSphere
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: AudioReverbZone Icon
+        - colorIndex: 1
+          iconNameOrGuid: BoxCollider Icon

@@ -16,7 +16,10 @@ public interface ILocation
     public string preposition { get; set; } // in the, on the, under the, near the, next to, ...
 
     public bool IsHideChild { get; set; } // 자식들은 감지 될 수 있는가?
+
     // public bool IsHideMe { get; set; } // 본인은 감지 되는가 안되는가.
+
+    //public void RegisterToLocationService();
 }
 
 public abstract class Entity : MonoBehaviour, ILocation
@@ -31,7 +34,7 @@ public abstract class Entity : MonoBehaviour, ILocation
         get { return _curLocation as ILocation; } // 필드 반환
         set
         {
-            LocationManager locationManager = Services.Get<LocationManager>();
+            ILocationService locationManager = Services.Get<ILocationService>();
 
             // 기존 위치에서 제거
             if (_curLocation != null)
@@ -101,7 +104,13 @@ public abstract class Entity : MonoBehaviour, ILocation
     //     set { _isHideMe = value; }
     // }
 
-    public string Name; // Never change. ex. "iPhone", "box", "Table"
+    [SerializeField]
+    private string _name; // Never change. ex. "iPhone", "box", "Table"
+    public string Name
+    {
+        get { return _name; }
+        set { _name = value; }
+    }
 
     public virtual void Init()
     {
@@ -118,6 +127,17 @@ public abstract class Entity : MonoBehaviour, ILocation
         {
             return locationName;
         }
-        return locationName + curLocation.preposition + curLocation.LocationToString();
+        return locationName + " " + curLocation.preposition + " " + curLocation.LocationToString();
+    }
+
+    protected virtual void Awake()
+    {
+        RegisterToLocationService();
+        Init();
+    }
+
+    public void RegisterToLocationService()
+    {
+        Services.Get<ILocationService>().Add(this.curLocation, this);
     }
 }

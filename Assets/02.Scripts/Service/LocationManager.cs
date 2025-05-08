@@ -3,7 +3,26 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class LocationManager : IService
+public interface ILocationService : IService
+{
+    public void Add(ILocation key, Entity value);
+
+    public List<Entity> Get(ILocation key, Actor actor = null);
+
+    public List<Actor> GetActor(ILocation key, Actor actor = null);
+
+    public List<Item> GetItem(ILocation key);
+
+    public List<Prop> GetProps(ILocation key);
+
+    public List<Building> GetBuilding(ILocation key);
+
+    public Area GetArea(ILocation location);
+
+    public void Remove(ILocation key, Entity value);
+}
+
+public class LocationService : ILocationService
 {
     // Use if you want to find the entites in curLocation.
     // [SerializeField]
@@ -90,10 +109,30 @@ public class LocationManager : IService
         var _items = GetItem(key);
 
         List<Entity> results = new();
-        results.AddRange(_actors);
-        results.AddRange(_buildings);
-        results.AddRange(_props);
-        results.AddRange(_items);
+        if (_actors != null)
+        {
+            results.AddRange(_actors);
+        }
+
+        if (_buildings != null)
+        {
+            results.AddRange(_buildings);
+        }
+
+        if (_props != null)
+        {
+            results.AddRange(_props);
+        }
+
+        if (_items != null)
+        {
+            results.AddRange(_items);
+        }
+
+        if (results.Count <= 0)
+        {
+            return new();
+        }
 
         return results;
     }
@@ -112,8 +151,8 @@ public class LocationManager : IService
                 return actors[key].Where(a => a != actor).ToList();
             }
         }
-        Debug.LogWarning($"Wrong key {key.locationName}");
-        return null;
+        Debug.Log($"There is no Actor in {key.locationName}");
+        return new();
     }
 
     public List<Item> GetItem(ILocation key)
@@ -122,8 +161,8 @@ public class LocationManager : IService
         {
             return items[key];
         }
-        Debug.LogWarning($"Wrong key {key.locationName}");
-        return null;
+        Debug.Log($"There is no Item in {key.locationName}");
+        return new();
     }
 
     public List<Prop> GetProps(ILocation key)
@@ -132,8 +171,8 @@ public class LocationManager : IService
         {
             return props[key];
         }
-        Debug.LogWarning($"Wrong key {key.locationName}");
-        return null;
+        Debug.Log($"There is no Prop in {key.locationName}");
+        return new();
     }
 
     public List<Building> GetBuilding(ILocation key)
@@ -142,8 +181,8 @@ public class LocationManager : IService
         {
             return buildings[key];
         }
-        Debug.LogWarning($"Wrong key {key.locationName}");
-        return null;
+        Debug.Log($"There is no building in {key.locationName}");
+        return new();
     }
 
     public Area GetArea(ILocation location)
