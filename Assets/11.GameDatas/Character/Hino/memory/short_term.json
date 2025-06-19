@@ -1,0 +1,50 @@
+{
+    "memory":
+    [
+        {
+            "date": "2025-01-21 Tuesday 07:00:00",
+            "location": "Home",
+            "title": "Waking Up Confused",
+            "people": ["Self"],
+            "emotion": "confused",
+            "action": "waking up",
+            "memory": "I woke up this morning and couldn't remember yesterday again. I don't understand why this keeps happening to me. I feel scared and confused."
+        },
+        {
+            "date": "2025-01-21 Tuesday 07:15:00",
+            "location": "Home",
+            "title": "Reading My Diary",
+            "people": ["Self"],
+            "emotion": "shocked",
+            "action": "reading diary",
+            "memory": "I read my diary and saw entries I wrote yesterday but don't remember writing. It's like someone else wrote them. I'm trying to understand what's happening to me."
+        },
+        {
+            "date": "2025-01-21 Tuesday 07:30:00",
+            "location": "Home",
+            "title": "Diary Entry About Kamiya",
+            "people": ["Self"],
+            "emotion": "curious",
+            "action": "reading about Kamiya",
+            "memory": "In my diary, I wrote about meeting a boy named Kamiya Tooru yesterday. He joined our literature club and seemed interested in me. I don't remember meeting him, but my diary says he was kind and liked photography."
+        },
+        {
+            "date": "2025-01-21 Tuesday 08:00:00",
+            "location": "Home",
+            "title": "Family Support",
+            "people": ["Mother", "Father"],
+            "emotion": "grateful",
+            "action": "breakfast",
+            "memory": "My parents helped me understand what day it is and what I need to do today. They seem to know something about my situation but I'm too confused to ask questions."
+        },
+        {
+            "date": "2025-01-21 Tuesday 08:30:00",
+            "location": "Home",
+            "title": "Getting Ready for School",
+            "people": ["Self"],
+            "emotion": "focused",
+            "action": "getting ready",
+            "memory": "I'm getting ready for school. I know I'm a high school student and I love literature. I'm trying to focus on what I can remember and not think about what I can't. I wonder if I'll see Kamiya today."
+        }
+    ]
+}
