@@ -88,6 +88,9 @@ MonoBehaviour:
         - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1320660361-0
         - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1269372326-0
         - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-716880538-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1752598725-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-608328551-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-185473519-0
         values:
         - colorIndex: 0
           iconNameOrGuid: ScriptableObject Icon
@@ -229,3 +232,9 @@ MonoBehaviour:
           iconNameOrGuid: AudioReverbZone Icon
         - colorIndex: 1
           iconNameOrGuid: BoxCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: MeshCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: MeshCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: MeshCollider Icon

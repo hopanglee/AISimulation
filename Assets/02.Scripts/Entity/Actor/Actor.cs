@@ -401,22 +401,6 @@ public abstract class Actor : Entity, ILocationAware
         }
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        var trigger = other.GetComponent<LocationTransitionTrigger>();
-        if (trigger == null)
-            return;
-
-        // 방향 벡터 계산
-        Vector3 toTrigger = (other.transform.position - transform.position).normalized;
-        Vector3 triggerForward = other.transform.forward;
-
-        float dot = Vector3.Dot(triggerForward, toTrigger);
-
-        ILocation targetRoom = dot < 0 ? trigger.forwardRoom : trigger.backwardRoom;
-        SetCurrentRoom(targetRoom);
-    }
-
     #region Odin Inspector Buttons
 
     [Button("Update Lookable Entities")]
