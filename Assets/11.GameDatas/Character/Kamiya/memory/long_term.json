@@ -1,0 +1,131 @@
+{
+    "memory":
+    [
+        {
+            "date": "2007-05-20 Sunday 16:00:00",
+            "location": "Hospital",
+            "title": "Birth",
+            "people": ["Mother", "Father"],
+            "emotion": "new",
+            "action": "born",
+            "memory": "I was born on a warm spring day. My parents named me Kamiya Tooru. I was their first child and they were overjoyed."
+        },
+        {
+            "date": "2010-03-15 Monday 10:00:00",
+            "location": "Home",
+            "title": "Learning Photography",
+            "people": ["Father"],
+            "emotion": "excited",
+            "action": "learning photography",
+            "memory": "My father taught me how to use a camera for the first time. I was fascinated by how I could capture moments forever."
+        },
+        {
+            "date": "2012-09-01 Saturday 09:00:00",
+            "location": "Elementary School",
+            "title": "First Day of School",
+            "people": ["Teacher", "Classmates"],
+            "emotion": "nervous",
+            "action": "starting school",
+            "memory": "My first day at elementary school. I was nervous but excited to meet new friends and learn new things."
+        },
+        {
+            "date": "2015-06-20 Friday 15:00:00",
+            "location": "School",
+            "title": "Photography Award",
+            "people": ["Teacher", "Parents"],
+            "emotion": "proud",
+            "action": "receiving award",
+            "memory": "I received an award for my photography project. My parents were so proud and encouraged me to pursue my passion."
+        },
+        {
+            "date": "2018-07-15 Sunday 14:00:00",
+            "location": "Park",
+            "title": "Photography Friend",
+            "people": ["Childhood Friend"],
+            "emotion": "happy",
+            "action": "playing",
+            "memory": "I made my first best friend at the park. We shared a love for photography and spent hours taking pictures together."
+        },
+        {
+            "date": "2021-03-20 Wednesday 14:00:00",
+            "location": "Middle School",
+            "title": "Middle School Graduation",
+            "people": ["Family", "Teachers", "Classmates"],
+            "emotion": "bittersweet",
+            "action": "graduating",
+            "memory": "I graduated from middle school. It was bittersweet saying goodbye to friends, but I was excited for high school."
+        },
+        {
+            "date": "2021-04-08 Thursday 08:30:00",
+            "location": "High School",
+            "title": "High School Begins",
+            "people": ["New Classmates", "Teachers"],
+            "emotion": "excited",
+            "action": "first day",
+            "memory": "My first day as a high school student. Everything felt bigger and more serious. I was excited to start this new journey."
+        },
+        {
+            "date": "2025-01-10 Friday 18:00:00",
+            "location": "Home",
+            "title": "Parents Leaving for Europe",
+            "people": ["Mother", "Father"],
+            "emotion": "mixed",
+            "action": "saying goodbye",
+            "memory": "My parents left for a long trip today. They're going to Europe for several weeks. I'm a bit nervous about living alone, but they trust me to take care of the house."
+        },
+        {
+            "date": "2025-01-12 Sunday 12:00:00",
+            "location": "Home",
+            "title": "Getting Used to Living Alone",
+            "people": ["Self"],
+            "emotion": "independent",
+            "action": "managing household",
+            "memory": "I'm getting used to living alone. I have to cook, clean, and manage everything myself. It's challenging but also gives me more freedom."
+        },
+        {
+            "date": "2025-01-19 Sunday 16:00:00",
+            "location": "School Library",
+            "title": "Meeting Hino for the First Time",
+            "people": ["Hino Maori"],
+            "emotion": "curious",
+            "action": "first meeting",
+            "memory": "I first met Hino Maori in the school library. She was reading a book and looked so focused and beautiful. I felt an immediate connection and decided to approach her."
+        },
+        {
+            "date": "2025-01-20 Monday 15:30:00",
+            "location": "School",
+            "title": "Joining Literature Club for Hino",
+            "people": ["Hino Maori", "Club Members"],
+            "emotion": "happy",
+            "action": "joining literature club",
+            "memory": "I joined the literature club to spend more time with Hino. She was passionate about books and writing. I fell in love with her enthusiasm and wanted to get to know her better."
+        },
+        {
+            "date": "2025-01-20 Monday 17:00:00",
+            "location": "School",
+            "title": "Discovering Hino's Memory Condition",
+            "people": ["Hino Maori", "Teacher"],
+            "emotion": "shocked",
+            "action": "learning about memory loss",
+            "memory": "After the literature club meeting, I overheard a teacher talking about Hino's condition. She loses her memories every day when she sleeps. I was shocked and heartbroken, but I knew I had to help her."
+        },
+        {
+            "date": "2025-01-20 Monday 19:00:00",
+            "location": "Home",
+            "title": "Researching Memory Conditions",
+            "people": ["Self"],
+            "emotion": "determined",
+            "action": "researching",
+            "memory": "I spent hours researching memory conditions and how to help someone with daily amnesia. I wanted to understand how to support Hino better and find ways to help her remember."
+        },
+        {
+            "date": "2025-01-21 Tuesday 08:00:00",
+            "location": "Home",
+            "title": "Planning to Help Hino",
+            "people": ["Self"],
+            "emotion": "focused",
+            "action": "planning",
+            "memory": "I'm planning how to help Hino today. Since she won't remember me from yesterday, I need to be gentle and patient. I'll use my photography to document our time together and help her remember."
+        }
+    ]
+}
