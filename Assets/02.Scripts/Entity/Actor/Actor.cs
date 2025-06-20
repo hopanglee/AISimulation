@@ -5,6 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof(MoveController))]
 public abstract class Actor : Entity, ILocationAware
 {
+    public Brain brain;
+    public Sensor sensor;
     #region Component
     private MoveController moveController;
     #endregion
@@ -12,23 +14,11 @@ public abstract class Actor : Entity, ILocationAware
     public int Money;
     public iPhone iPhone;
 
-    [System.Serializable]
-    public class EntityDictionary
-    {
-        public SerializableDictionary<string, Actor> actors = new();
-
-        public SerializableDictionary<string, Item> items = new(); // Key is Entity's Relative Key, e.g., "iPhone on my right hand".
-
-        public SerializableDictionary<string, Building> buildings = new();
-
-        public SerializableDictionary<string, Prop> props = new();
-    }
-
     [ShowInInspector, ReadOnly]
     private SerializableDictionary<string, Entity> lookable = new();
 
     [ShowInInspector, ReadOnly]
-    private EntityDictionary interactable = new();
+    private Sensor.EntityDictionary interactable = new();
 
     [ShowInInspector, ReadOnly]
     private SerializableDictionary<string, Vector3> toMovable = new();
@@ -75,186 +65,29 @@ public abstract class Actor : Entity, ILocationAware
     {
         base.Awake();
         moveController = GetComponent<MoveController>();
+        brain = new(this);
+        sensor = new(this);
     }
 
     #region Update Function
     // All Entities in same location
     protected void UpdateLookableEntity()
     {
-        // entities 딕셔너리 초기화 (reset)
-        lookable = new();
-
-        var locationManager = Services.Get<ILocationService>();
-        var curArea = locationManager.GetArea(curLocation);
-        var curEntities = locationManager.Get(curArea, this);
-
-        AllLookableEntityDFS(curEntities);
-    }
-
-    private void AllLookableEntityDFS(List<Entity> entities)
-    {
-        foreach (Entity entity in entities)
-        {
-            if (entity is Actor actor)
-            {
-                lookable.Add(actor.Name, actor);
-
-                if (actor.IsHideChild)
-                    continue;
-
-                var handItems = Services.Get<ILocationService>().Get(actor.HandItem, this);
-                if (handItems != null)
-                    AllLookableEntityDFS(handItems);
-                continue;
-            }
-            else if (entity is Prop prop)
-            {
-                lookable.Add(prop.Name, prop);
-            }
-            else if (entity is Building building)
-            {
-                lookable.Add(building.Name, building);
-            }
-            else if (entity is Item item)
-            {
-                //Debug.Log($"DEBUG >> {item.LocationToString()}");
-                lookable.Add(item.Name, item);
-            }
-
-            if (entity.IsHideChild)
-                continue;
-
-            var curEntities = Services.Get<ILocationService>().Get(entity, this);
-            if (curEntities != null)
-                AllLookableEntityDFS(curEntities);
-        }
+        sensor.UpdateLookableEntities();
+        lookable = sensor.GetLookableEntities();
     }
 
     // the entites, near the actor in same location
     protected void UpdateInteractableEntity()
     {
-        interactable = new();
-        var locationManager = Services.Get<ILocationService>();
-        var curArea = locationManager.GetArea(curLocation);
-
-        Vector3 curPos = transform.position;
-
-        var _actors = locationManager.GetActor(curArea, this);
-
-        foreach (var actor in _actors)
-        {
-            var distance = MathExtension.SquaredDistance2D(curPos, actor.transform.position); // 높이는 계산x
-            if (distance <= 1 * 1)
-            {
-                interactable.actors.Add(actor.Name, actor);
-            }
-        }
-
-        var _props = locationManager.GetProps(curArea);
-        foreach (var prop in _props)
-        {
-            var distance = MathExtension.SquaredDistance2D(curPos, prop.toMovePos.position); // 높이는 계산x
-            if (distance <= 1 * 1)
-            {
-                interactable.props.Add(prop.Name, prop);
-                if (prop.IsHideChild)
-                {
-                    continue;
-                }
-                var _entities = locationManager.Get(prop);
-                AllInteractableEntityDFS(_entities);
-            }
-        }
-
-        var _buildings = locationManager.GetBuilding(curArea);
-        foreach (var building in _buildings)
-        {
-            var distance = MathExtension.SquaredDistance2D(curPos, building.transform.position); // 높이는 계산x
-            if (distance <= 1 * 1)
-            {
-                interactable.buildings.Add(building.Name, building);
-                // 빌딩은 겉만 보는거임.
-            }
-        }
-
-        var _items = locationManager.GetItem(curArea);
-        foreach (var item in _items)
-        {
-            var distance = MathExtension.SquaredDistance2D(curPos, item.transform.position); // 높이는 계산x
-            if (distance <= 1 * 1)
-            {
-                interactable.items.Add(item.LocationToString(), item);
-                if (item.IsHideChild)
-                {
-                    continue;
-                }
-                var _entities = locationManager.Get(item);
-                AllInteractableEntityDFS(_entities);
-            }
-        }
-    }
-
-    private void AllInteractableEntityDFS(List<Entity> entities)
-    {
-        foreach (var _entity in entities)
-        {
-            if (_entity is Actor actor)
-            {
-                interactable.actors.Add(actor.Name, actor);
-            }
-            else if (_entity is Prop prop)
-            {
-                interactable.props.Add(prop.Name, prop);
-
-                if (prop.IsHideChild)
-                    continue;
-
-                var _entities = Services.Get<ILocationService>().Get(prop);
-                AllInteractableEntityDFS(_entities);
-            }
-            else if (_entity is Item item)
-            {
-                interactable.items.Add(item.LocationToString(), item);
-
-                if (item.IsHideChild)
-                    continue;
-
-                var _entities = Services.Get<ILocationService>().Get(item);
-                AllInteractableEntityDFS(_entities);
-            }
-        }
+        sensor.UpdateInteractableEntities();
+        interactable = sensor.GetInteractableEntities();
     }
 
     protected void UpdateMovablePos()
     {
-        toMovable = new();
-
-        var locationManager = Services.Get<ILocationService>();
-        var curArea = locationManager.GetArea(curLocation);
-        var _actors = locationManager.GetActor(curArea, this);
-        foreach (var actor in _actors)
-        {
-            toMovable.Add(actor.Name, actor.transform.position);
-        }
-
-        var _props = locationManager.GetProps(curArea);
-        foreach (var prop in _props)
-        {
-            toMovable.Add(prop.Name, prop.toMovePos.position);
-        }
-
-        var _buildings = locationManager.GetBuilding(curArea);
-        foreach (var building in _buildings)
-        {
-            toMovable.Add(building.Name, building.toMovePos.position);
-        }
-
-        Debug.Log($"curArea : {curArea.locationName}");
-        foreach (var area in curArea.connectedAreas)
-        {
-            Debug.Log($"connectedAreas : {area.locationName}");
-            toMovable.Add(area.locationName, area.toMovePos[curArea].position);
-        }
+        sensor.UpdateMovablePositions();
+        toMovable = sensor.GetMovablePositions();
     }
     #endregion
     public bool CanSaveItem(Item item)
