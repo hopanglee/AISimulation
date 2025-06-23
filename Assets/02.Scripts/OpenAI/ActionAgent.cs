@@ -2,35 +2,37 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
+using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using OpenAI.Chat;
 using UnityEngine;
-using Cysharp.Threading.Tasks;
 
 public class ActionAgent : GPT
 {
+    private Actor actor;
+
     /// <summary>
     /// AI 에이전트가 수행할 수 있는 액션 타입들 (이것이 곧 함수명 역할)
     /// </summary>
     public enum ActionType
     {
-        MoveToPosition,      // 지정된 위치로 이동
-        MoveToObject,        // 지정된 오브젝트로 이동
-        MoveAway,           // 현재 위치에서 멀어지기
-        TalkToNPC,          // NPC와 대화
-        RespondToPlayer,    // 플레이어에게 응답
-        AskQuestion,        // 질문하기
-        UseObject,          // 오브젝트 사용
-        PickUpItem,         // 아이템 줍기
-        OpenDoor,           // 문 열기
-        PressSwitch,        // 스위치 누르기
+        MoveToPosition, // 지정된 위치로 이동
+        MoveToObject, // 지정된 오브젝트로 이동
+        MoveAway, // 현재 위치에서 멀어지기
+        TalkToNPC, // NPC와 대화
+        RespondToPlayer, // 플레이어에게 응답
+        AskQuestion, // 질문하기
+        UseObject, // 오브젝트 사용
+        PickUpItem, // 아이템 줍기
+        OpenDoor, // 문 열기
+        PressSwitch, // 스위치 누르기
         InteractWithObject, // 오브젝트와 상호작용
-        InteractWithNPC,    // NPC와 상호작용
+        InteractWithNPC, // NPC와 상호작용
         ObserveEnvironment, // 환경 관찰
-        ExamineObject,      // 오브젝트 자세히 살펴보기
-        ScanArea,           // 영역 스캔
-        Wait,               // 대기
-        WaitForEvent        // 이벤트 대기
+        ExamineObject, // 오브젝트 자세히 살펴보기
+        ScanArea, // 영역 스캔
+        Wait, // 대기
+        WaitForEvent, // 이벤트 대기
     }
 
     /// <summary>
@@ -54,27 +56,173 @@ public class ActionAgent : GPT
         public ActionType ActionType { get; set; }
 
         [JsonProperty("parameters")]
-        public Dictionary<string, object> Parameters { get; set; } = new Dictionary<string, object>();
+        public Dictionary<string, object> Parameters { get; set; } =
+            new Dictionary<string, object>();
     }
 
-    public ActionAgent(string systemPrompt)
+    protected override void ExecuteToolCall(ChatToolCall toolCall)
+    {
+        switch (toolCall.FunctionName)
+        {
+            case nameof(GetWorldAreaInfo):
+            {
+                string toolResult = GetWorldAreaInfo();
+                messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
+                break;
+            }
+
+            case nameof(GetPathToLocation):
+            {
+                using JsonDocument argumentsJson = JsonDocument.Parse(toolCall.FunctionArguments);
+                bool hasTargetLocation = argumentsJson.RootElement.TryGetProperty(
+                    "target_location",
+                    out JsonElement targetLocation
+                );
+
+                if (!hasTargetLocation)
+                {
+                    throw new ArgumentNullException(
+                        nameof(targetLocation),
+                        "The target_location argument is required."
+                    );
+                }
+
+                string toolResult = GetPathToLocation(targetLocation.GetString());
+                messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
+                break;
+            }
+
+            case nameof(GetCurrentLocationInfo):
+            {
+                string toolResult = GetCurrentLocationInfo();
+                messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
+                break;
+            }
+
+            default:
+            {
+                Debug.LogWarning($"Unknown tool call: {toolCall.FunctionName}");
+                messages.Add(new ToolChatMessage(toolCall.Id, "Tool not implemented"));
+                break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 전체 월드의 Area 정보를 반환
+    /// </summary>
+    private string GetWorldAreaInfo()
+    {
+        Debug.Log("GetWorldAreaInfo called");
+        try
+        {
+            var pathfindingService = Services.Get<IPathfindingService>();
+            var allAreas = pathfindingService.GetAllAreaInfo();
+
+            var result = new System.Text.StringBuilder();
+            result.AppendLine("World Area Information:");
+            foreach (var kvp in allAreas)
+            {
+                var areaInfo = kvp.Value;
+                result.AppendLine(
+                    $"- {areaInfo.locationName}: Connected to {string.Join(", ", areaInfo.connectedAreas)}"
+                );
+            }
+
+            return result.ToString();
+        }
+        catch (System.Exception e)
+        {
+            return $"Error getting world area info: {e.Message}";
+        }
+    }
+
+    /// <summary>
+    /// 특정 위치로 가는 경로를 반환
+    /// </summary>
+    private string GetPathToLocation(string targetLocation)
+    {
+        Debug.Log($"GetPathToLocation called for {targetLocation}");
+        try
+        {
+            var pathfindingService = Services.Get<IPathfindingService>();
+            var locationManager = Services.Get<ILocationService>();
+
+            var areas = UnityEngine.Object.FindObjectsByType<Area>(FindObjectsSortMode.None);
+            if (areas.Length == 0)
+                return "No areas found in the world";
+
+            var startArea = locationManager.GetArea(actor.curLocation);
+
+            var path = pathfindingService.FindPathToLocation(startArea, targetLocation);
+
+            if (path.Count > 0)
+            {
+                return $"Path to {targetLocation}: {string.Join(" -> ", path)}";
+            }
+            else
+            {
+                return $"No path found to {targetLocation}";
+            }
+        }
+        catch (System.Exception e)
+        {
+            return $"Error finding path to {targetLocation}: {e.Message}";
+        }
+    }
+
+    /// <summary>
+    /// 현재 위치 정보를 반환
+    /// </summary>
+    private string GetCurrentLocationInfo()
+    {
+        Debug.Log("GetCurrentLocationInfo called");
+        return $"Current location: {actor.curLocation?.locationName ?? "Unknown"}";
+    }
+
+    // Tool 정의들 (필드 초기화)
+    private readonly ChatTool getWorldAreaInfoTool = ChatTool.CreateFunctionTool(
+        functionName: nameof(GetWorldAreaInfo),
+        functionDescription: "Get information about all areas in the world and their connections"
+    );
+
+    private readonly ChatTool getPathToLocationTool = ChatTool.CreateFunctionTool(
+        functionName: nameof(GetPathToLocation),
+        functionDescription: "Find the path from current location to a target location",
+        functionParameters: BinaryData.FromBytes(
+            Encoding.UTF8.GetBytes(
+                @"{
+                    ""type"": ""object"",
+                    ""properties"": {
+                        ""target_location"": {
+                            ""type"": ""string"",
+                            ""description"": ""The target location to find path to""
+                        }
+                    },
+                    ""required"": [""target_location""]
+                }"
+            )
+        )
+    );
+
+    private readonly ChatTool getCurrentLocationInfoTool = ChatTool.CreateFunctionTool(
+        functionName: nameof(GetCurrentLocationInfo),
+        functionDescription: "Get information about the current location of the agent"
+    );
+
+    public ActionAgent(Actor actor)
         : base()
     {
-        messages = new List<ChatMessage>()
-        {
-            new SystemChatMessage(
-                systemPrompt
-            ),
-        };
+        this.actor = actor;
+
+        // ActionAgent 프롬프트 로드 및 초기화
+        string systemPrompt = PromptLoader.LoadActionAgentPrompt();
+
+        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
 
         options = new()
         {
-            Tools = {
-                getCurrentLocationTool,
-                getCurrentWeatherTool,
-                getEnvironmentInfoTool,
-                getAgentStatusTool
-            },
+            Tools = { getWorldAreaInfoTool, getPathToLocationTool, getCurrentLocationInfoTool },
             ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                 jsonSchemaFormatName: "action_reasoning",
                 jsonSchema: BinaryData.FromBytes(
@@ -121,152 +269,6 @@ public class ActionAgent : GPT
             ),
         };
     }
-
-    protected override void ExecuteToolCall(ChatToolCall toolCall)
-    {
-        switch (toolCall.FunctionName)
-        {
-            case nameof(GetCurrentLocation):
-                {
-                    string toolResult = GetCurrentLocation();
-                    messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
-                    break;
-                }
-
-            case nameof(GetCurrentWeather):
-                {
-                    using JsonDocument argumentsJson = JsonDocument.Parse(toolCall.FunctionArguments);
-                    bool hasLocation = argumentsJson.RootElement.TryGetProperty("location", out JsonElement location);
-                    bool hasUnit = argumentsJson.RootElement.TryGetProperty("unit", out JsonElement unit);
-
-                    if (!hasLocation)
-                    {
-                        throw new ArgumentNullException(nameof(location), "The location argument is required.");
-                    }
-
-                    string toolResult = hasUnit
-                        ? GetCurrentWeather(location.GetString(), unit.GetString())
-                        : GetCurrentWeather(location.GetString());
-                    messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
-                    break;
-                }
-
-            case nameof(GetEnvironmentInfo):
-                {
-                    using JsonDocument argumentsJson = JsonDocument.Parse(toolCall.FunctionArguments);
-                    bool hasArea = argumentsJson.RootElement.TryGetProperty("area", out JsonElement area);
-
-                    string toolResult = hasArea
-                        ? GetEnvironmentInfo(area.GetString())
-                        : GetEnvironmentInfo();
-                    messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
-                    break;
-                }
-
-            case nameof(GetAgentStatus):
-                {
-                    string toolResult = GetAgentStatus();
-                    messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
-                    break;
-                }
-
-            default:
-                {
-                    Debug.LogWarning($"Unknown tool call: {toolCall.FunctionName}");
-                    messages.Add(new ToolChatMessage(toolCall.Id, "Tool not implemented"));
-                    break;
-                }
-        }
-    }
-
-    /// <summary>
-    /// 현재 위치 정보를 반환
-    /// </summary>
-    private static string GetCurrentLocation()
-    {
-        Debug.Log("GetCurrentLocation called");
-        return "Unity Simulation Environment - Main Area";
-    }
-
-    /// <summary>
-    /// 현재 날씨 정보를 반환
-    /// </summary>
-    private static string GetCurrentWeather(string location, string unit = "celsius")
-    {
-        Debug.Log($"GetCurrentWeather called for {location} in {unit}");
-        return $"Current weather in {location}: 22 {unit}, Sunny";
-    }
-
-    /// <summary>
-    /// 환경 정보를 반환
-    /// </summary>
-    private static string GetEnvironmentInfo(string area = "current")
-    {
-        Debug.Log($"GetEnvironmentInfo called for area: {area}");
-        return $"Environment in {area}: Objects available for interaction, NPCs present, Safe area";
-    }
-
-    /// <summary>
-    /// 에이전트 상태 정보를 반환
-    /// </summary>
-    private static string GetAgentStatus()
-    {
-        Debug.Log("GetAgentStatus called");
-        return "Agent Status: Healthy, Energy: 85%, Position: (10, 0, 5), Inventory: Empty";
-    }
-
-    // Tool 정의들
-    private static readonly ChatTool getCurrentLocationTool = ChatTool.CreateFunctionTool(
-        functionName: nameof(GetCurrentLocation),
-        functionDescription: "Get the current location of the agent in the simulation environment"
-    );
-
-    private static readonly ChatTool getCurrentWeatherTool = ChatTool.CreateFunctionTool(
-        functionName: nameof(GetCurrentWeather),
-        functionDescription: "Get the current weather information for a specific location",
-        functionParameters: BinaryData.FromBytes(
-            Encoding.UTF8.GetBytes(
-                @"{
-                    ""type"": ""object"",
-                    ""properties"": {
-                        ""location"": {
-                            ""type"": ""string"",
-                            ""description"": ""The location to get weather for""
-                        },
-                        ""unit"": {
-                            ""type"": ""string"",
-                            ""enum"": [""celsius"", ""fahrenheit""],
-                            ""description"": ""Temperature unit""
-                        }
-                    },
-                    ""required"": [""location""]
-                }"
-            )
-        )
-    );
-
-    private static readonly ChatTool getEnvironmentInfoTool = ChatTool.CreateFunctionTool(
-        functionName: nameof(GetEnvironmentInfo),
-        functionDescription: "Get information about the current environment and available objects",
-        functionParameters: BinaryData.FromBytes(
-            Encoding.UTF8.GetBytes(
-                @"{
-                    ""type"": ""object"",
-                    ""properties"": {
-                        ""area"": {
-                            ""type"": ""string"",
-                            ""description"": ""The area to get environment info for""
-                        }
-                    }
-                }"
-            )
-        )
-    );
-
-    private static readonly ChatTool getAgentStatusTool = ChatTool.CreateFunctionTool(
-        functionName: nameof(GetAgentStatus),
-        functionDescription: "Get the current status of the agent including health, energy, position, and inventory"
-    );
 
     /// <summary>
     /// AI 에이전트에게 상황을 제시하고 적절한 액션을 요청

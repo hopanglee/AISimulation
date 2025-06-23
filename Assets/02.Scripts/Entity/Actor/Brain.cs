@@ -12,110 +12,180 @@ public class Brain
     public Actor actor;
     public ActionAgent actionAgent;
     private ActionExecutor actionExecutor;
+    private CharacterMemoryManager memoryManager;
 
     public Brain(Actor actor)
     {
         this.actor = actor;
-        
-        // ActionAgent 프롬프트 로드 및 초기화
-        string systemPrompt = PromptLoader.LoadActionAgentPrompt();
-        actionAgent = new ActionAgent(systemPrompt);
-        
+
+        actionAgent = new ActionAgent(actor);
+
         // ActionExecutor 초기화 및 핸들러 등록
         actionExecutor = new ActionExecutor();
         RegisterActionHandlers();
+
+        // CharacterMemoryManager 초기화
+        memoryManager = new CharacterMemoryManager(actor.Name);
     }
-    
+
     private void RegisterActionHandlers()
     {
         // 이동 관련 핸들러
-        actionExecutor.RegisterHandler(ActionAgent.ActionType.MoveToPosition, (parameters) => {
-            Debug.Log($"[{actor.Name}] MoveToPosition: {string.Join(", ", parameters)}");
-            if (parameters.TryGetValue("position", out var posObj) && posObj is Vector3 position)
+        actionExecutor.RegisterHandler(
+            ActionAgent.ActionType.MoveToPosition,
+            (parameters) =>
             {
-                // actor.moveController.SetTarget(position); // moveController가 private이므로 접근 불가
-                // TODO: Actor에 public 이동 메서드 추가 필요
+                Debug.Log($"[{actor.Name}] MoveToPosition: {string.Join(", ", parameters)}");
+                if (
+                    parameters.TryGetValue("location_key", out var locationKeyObj)
+                    && locationKeyObj is string locationKey
+                )
+                {
+                    // 경로 계획을 통한 이동
+                    ExecutePathfindingMove(locationKey);
+                }
+                else if (
+                    parameters.TryGetValue("position", out var posObj) && posObj is Vector3 position
+                )
+                {
+                    // Vector3 위치를 전체 Area에서 가장 가까운 위치로 변환
+                    string nearestLocationKey = FindNearestLocationInAllAreas(position);
+                    if (!string.IsNullOrEmpty(nearestLocationKey))
+                    {
+                        ExecutePathfindingMove(nearestLocationKey);
+                    }
+                    else
+                    {
+                        Debug.LogWarning(
+                            $"[{actor.Name}] No suitable location found for position: {position}"
+                        );
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning(
+                        $"[{actor.Name}] MoveToPosition requires either 'location_key' (string) or 'position' (Vector3) parameter"
+                    );
+                }
             }
-        });
-        
-        actionExecutor.RegisterHandler(ActionAgent.ActionType.MoveToObject, (parameters) => {
-            Debug.Log($"[{actor.Name}] MoveToObject: {string.Join(", ", parameters)}");
-            if (parameters.TryGetValue("object_name", out var objName))
+        );
+
+        actionExecutor.RegisterHandler(
+            ActionAgent.ActionType.MoveToObject,
+            (parameters) =>
             {
-                // 객체 이름으로 이동 로직 구현
+                Debug.Log($"[{actor.Name}] MoveToObject: {string.Join(", ", parameters)}");
+                if (parameters.TryGetValue("object_name", out var objName))
+                {
+                    // 객체 이름으로 이동 로직 구현
+                }
             }
-        });
-        
+        );
+
         // 상호작용 관련 핸들러
-        actionExecutor.RegisterHandler(ActionAgent.ActionType.InteractWithObject, (parameters) => {
-            Debug.Log($"[{actor.Name}] InteractWithObject: {string.Join(", ", parameters)}");
-            if (parameters.TryGetValue("object_name", out var objName))
+        actionExecutor.RegisterHandler(
+            ActionAgent.ActionType.InteractWithObject,
+            (parameters) =>
             {
-                actor.Interact(objName.ToString());
+                Debug.Log($"[{actor.Name}] InteractWithObject: {string.Join(", ", parameters)}");
+                if (parameters.TryGetValue("object_name", out var objName))
+                {
+                    actor.Interact(objName.ToString());
+                }
             }
-        });
-        
-        actionExecutor.RegisterHandler(ActionAgent.ActionType.UseObject, (parameters) => {
-            Debug.Log($"[{actor.Name}] UseObject: {string.Join(", ", parameters)}");
-            actor.Use(parameters);
-        });
-        
+        );
+
+        actionExecutor.RegisterHandler(
+            ActionAgent.ActionType.UseObject,
+            (parameters) =>
+            {
+                Debug.Log($"[{actor.Name}] UseObject: {string.Join(", ", parameters)}");
+                actor.Use(parameters);
+            }
+        );
+
         // 대화 관련 핸들러
-        actionExecutor.RegisterHandler(ActionAgent.ActionType.TalkToNPC, (parameters) => {
-            Debug.Log($"[{actor.Name}] TalkToNPC: {string.Join(", ", parameters)}");
-            if (parameters.TryGetValue("npc_name", out var npcName) && 
-                parameters.TryGetValue("message", out var message))
+        actionExecutor.RegisterHandler(
+            ActionAgent.ActionType.TalkToNPC,
+            (parameters) =>
             {
-                // NPC와 대화 로직 구현
+                Debug.Log($"[{actor.Name}] TalkToNPC: {string.Join(", ", parameters)}");
+                if (
+                    parameters.TryGetValue("npc_name", out var npcName)
+                    && parameters.TryGetValue("message", out var message)
+                )
+                {
+                    // NPC와 대화 로직 구현
+                }
             }
-        });
-        
+        );
+
         // 아이템 관련 핸들러
-        actionExecutor.RegisterHandler(ActionAgent.ActionType.PickUpItem, (parameters) => {
-            Debug.Log($"[{actor.Name}] PickUpItem: {string.Join(", ", parameters)}");
-            if (parameters.TryGetValue("item_name", out var itemName))
+        actionExecutor.RegisterHandler(
+            ActionAgent.ActionType.PickUpItem,
+            (parameters) =>
             {
-                // 아이템 줍기 로직 구현
+                Debug.Log($"[{actor.Name}] PickUpItem: {string.Join(", ", parameters)}");
+                if (parameters.TryGetValue("item_name", out var itemName))
+                {
+                    // 아이템 줍기 로직 구현
+                }
             }
-        });
-        
+        );
+
         // 관찰 관련 핸들러
-        actionExecutor.RegisterHandler(ActionAgent.ActionType.ObserveEnvironment, (parameters) => {
-            Debug.Log($"[{actor.Name}] ObserveEnvironment: {string.Join(", ", parameters)}");
-            actor.sensor.UpdateAllSensors();
-        });
+        actionExecutor.RegisterHandler(
+            ActionAgent.ActionType.ObserveEnvironment,
+            (parameters) =>
+            {
+                Debug.Log($"[{actor.Name}] ObserveEnvironment: {string.Join(", ", parameters)}");
+                actor.sensor.UpdateAllSensors();
+            }
+        );
     }
-    
+
     public async UniTask Think()
     {
         // 1. 센서를 통해 주변 환경 정보 수집
         actor.sensor.UpdateAllSensors();
-        
+
         // 2. 수집된 정보를 바탕으로 상황 분석
         var lookableEntities = actor.sensor.GetLookableEntities();
         var interactableEntities = actor.sensor.GetInteractableEntities();
         var movablePositions = actor.sensor.GetMovablePositions();
-        
+
         // 3. 상황 설명 생성
-        string situation = GenerateSituationDescription(lookableEntities, interactableEntities, movablePositions);
-        
+        string situation = GenerateSituationDescription(
+            lookableEntities,
+            interactableEntities,
+            movablePositions
+        );
+
         // 4. ActionAgent를 통해 적절한 액션 결정
         var reasoning = await actionAgent.ProcessSituationAsync(situation);
-        
+
         // 5. 결정된 액션 실행 (ActionExecutor를 통해)
         await ExecuteAction(reasoning);
     }
-    
+
     private string GenerateSituationDescription(
         SerializableDictionary<string, Entity> lookable,
         Sensor.EntityDictionary interactable,
-        SerializableDictionary<string, Vector3> movable)
+        SerializableDictionary<string, Vector3> movable
+    )
     {
         var sb = new System.Text.StringBuilder();
-        
+
         sb.AppendLine($"당신은 {actor.curLocation.locationName}에 있습니다.");
-        sb.AppendLine($"현재 상태: 배고픔({actor.Hunger}), 갈증({actor.Thirst}), 피로({actor.Stamina}), 스트레스({actor.Stress}), 졸림({actor.Sleepiness})");
-        
+        sb.AppendLine(
+            $"현재 상태: 배고픔({actor.Hunger}), 갈증({actor.Thirst}), 피로({actor.Stamina}), 스트레스({actor.Stress}), 졸림({actor.Sleepiness})"
+        );
+
+        // 캐릭터의 메모리 정보 추가
+        var memorySummary = memoryManager.GetMemorySummary();
+        sb.AppendLine("\n=== 당신의 기억 ===");
+        sb.AppendLine(memorySummary);
+
         if (interactable.actors.Count > 0)
         {
             sb.AppendLine("주변에 상호작용 가능한 사람들:");
@@ -124,7 +194,7 @@ public class Brain
                 sb.AppendLine($"- {kvp.Key}");
             }
         }
-        
+
         if (interactable.items.Count > 0)
         {
             sb.AppendLine("주변에 상호작용 가능한 아이템들:");
@@ -133,7 +203,7 @@ public class Brain
                 sb.AppendLine($"- {kvp.Key}");
             }
         }
-        
+
         if (interactable.props.Count > 0)
         {
             sb.AppendLine("주변에 상호작용 가능한 물건들:");
@@ -142,7 +212,7 @@ public class Brain
                 sb.AppendLine($"- {kvp.Key}");
             }
         }
-        
+
         if (interactable.buildings.Count > 0)
         {
             sb.AppendLine("주변에 상호작용 가능한 건물들:");
@@ -151,12 +221,35 @@ public class Brain
                 sb.AppendLine($"- {kvp.Key}");
             }
         }
-        
+
+        // 이동 가능한 위치들 정보 추가
+        if (movable.Count > 0)
+        {
+            sb.AppendLine("현재 위치에서 이동 가능한 위치들:");
+            foreach (var kvp in movable)
+            {
+                sb.AppendLine($"- {kvp.Key} (위치: {kvp.Value})");
+            }
+        }
+
+        // 전체 월드의 Area 정보 제공
+        var pathfindingService = Services.Get<IPathfindingService>();
+        var allAreas = pathfindingService.GetAllAreaInfo();
+
+        sb.AppendLine("전체 월드의 모든 위치들:");
+        foreach (var kvp in allAreas)
+        {
+            var areaInfo = kvp.Value;
+            sb.AppendLine(
+                $"- {areaInfo.locationName}: Connected to {string.Join(", ", areaInfo.connectedAreas)}"
+            );
+        }
+
         sb.AppendLine("어떻게 하시겠습니까?");
-        
+
         return sb.ToString();
     }
-    
+
     private async UniTask ExecuteAction(ActionAgent.ActionReasoning reasoning)
     {
         // 액션 실행
@@ -168,6 +261,63 @@ public class Brain
         else
         {
             Debug.LogError($"[{actor.Name}] Action failed: {result.Message}");
+        }
+    }
+
+    private string FindNearestLocationInAllAreas(Vector3 position)
+    {
+        // 전체 Area에서 가장 가까운 위치 찾기
+        var pathfindingService = Services.Get<IPathfindingService>();
+        return pathfindingService.FindNearestArea(position);
+    }
+
+    private void ExecutePathfindingMove(string targetLocationKey)
+    {
+        var movablePositions = actor.sensor.GetMovablePositions();
+
+        // 현재 Area의 toMovable에 목표가 있는지 확인
+        if (movablePositions.ContainsKey(targetLocationKey))
+        {
+            // 직접 이동 가능
+            actor.Move(targetLocationKey);
+            Debug.Log($"[{actor.Name}] Direct move to {targetLocationKey}");
+        }
+        else
+        {
+            // 경로 계획 필요 - PathfindingService 사용
+            var pathfindingService = Services.Get<IPathfindingService>();
+            var locationManager = Services.Get<ILocationService>();
+            var currentArea = locationManager.GetArea(actor.curLocation);
+
+            var path = pathfindingService.FindPathToLocation(currentArea, targetLocationKey);
+            if (path.Count > 0)
+            {
+                // 첫 번째 단계로 이동
+                var nextStep = path[1]; // path[0]은 현재 위치
+                if (movablePositions.ContainsKey(nextStep))
+                {
+                    actor.Move(nextStep);
+                    Debug.Log(
+                        $"[{actor.Name}] Moving to {nextStep} on path to {targetLocationKey}"
+                    );
+                }
+                else
+                {
+                    var errorMessage =
+                        $"Cannot move to next step {nextStep} on path to {targetLocationKey}. Available positions: {string.Join(", ", movablePositions.Keys)}";
+                    Debug.LogWarning($"[{actor.Name}] {errorMessage}");
+                    // TODO: 이 에러 메시지를 ActionAgent에 반환하는 방법 구현 필요
+                }
+            }
+            else
+            {
+                var allAreas = pathfindingService.GetAllAreaInfo();
+                var availableAreas = string.Join(", ", allAreas.Keys);
+                var errorMessage =
+                    $"No path found to {targetLocationKey}. Available areas in world: {availableAreas}. Current area: {currentArea.locationName}";
+                Debug.LogWarning($"[{actor.Name}] {errorMessage}");
+                // TODO: 이 에러 메시지를 ActionAgent에 반환하는 방법 구현 필요
+            }
         }
     }
 }

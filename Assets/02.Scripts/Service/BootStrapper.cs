@@ -8,5 +8,6 @@ public class BootStrapper : MonoBehaviour
     {
         Services.Provide<IGameService>(new GameServcie());
         Services.Provide<ILocationService>(new LocationService());
+        Services.Provide<IPathfindingService>(new PathfindingService());
     }
 }

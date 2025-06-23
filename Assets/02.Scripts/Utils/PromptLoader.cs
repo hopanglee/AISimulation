@@ -7,7 +7,7 @@ using UnityEngine;
 public static class PromptLoader
 {
     private const string PROMPT_BASE_PATH = "Assets/11.GameDatas/prompt/";
-    
+
     /// <summary>
     /// 지정된 프롬프트 파일을 로드합니다.
     /// </summary>
@@ -18,7 +18,7 @@ public static class PromptLoader
     {
         string promptPath = Path.Combine(PROMPT_BASE_PATH, promptFileName);
         string prompt = "";
-        
+
         if (File.Exists(promptPath))
         {
             prompt = File.ReadAllText(promptPath);
@@ -29,17 +29,31 @@ public static class PromptLoader
             Debug.LogWarning($"프롬프트 파일을 찾을 수 없습니다: {promptPath}");
             prompt = defaultPrompt;
         }
-        
+
         return prompt;
     }
-    
+
     /// <summary>
     /// ActionAgent용 프롬프트를 로드합니다.
     /// </summary>
     /// <returns>ActionAgent 시스템 프롬프트</returns>
     public static string LoadActionAgentPrompt()
     {
-        return LoadPrompt("ActionAgentPrompt", 
-            "당신은 Unity 시뮬레이션 환경에서 작동하는 AI 에이전트입니다.");
+        return LoadPrompt(
+            "ActionAgentPrompt",
+            "당신은 Unity 시뮬레이션 환경에서 작동하는 AI 에이전트입니다."
+        );
     }
-} 
+
+    /// <summary>
+    /// MemoryAgent용 프롬프트를 로드합니다.
+    /// </summary>
+    /// <returns>MemoryAgent 시스템 프롬프트</returns>
+    public static string LoadMemoryAgentPrompt()
+    {
+        return LoadPrompt(
+            "MemoryAgentPrompt",
+            "당신은 캐릭터의 위치 기억을 관리하는 AI 에이전트입니다. 각 area에 어떤 물건이 어디에 있었는지, 존재 여부를 기억하고 관리합니다."
+        );
+    }
+}
