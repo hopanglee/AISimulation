@@ -16,8 +16,8 @@ public class ActionAgent : GPT
     /// </summary>
     public enum ActionType
     {
-        MoveToPosition, // 지정된 위치로 이동
-        MoveToObject, // 지정된 오브젝트로 이동
+        MoveToArea, // 지정된 Area로 이동
+        MoveToEntity, // 지정된 Entity(Actor, Item, Block 등)로 이동
         MoveAway, // 현재 위치에서 멀어지기
         TalkToNPC, // NPC와 대화
         RespondToPlayer, // 플레이어에게 응답
@@ -241,7 +241,7 @@ public class ActionAgent : GPT
                                         ""action_type"": {
                                             ""type"": ""string"",
                                             ""enum"": [
-                                                ""MoveToPosition"", ""MoveToObject"", ""MoveAway"",
+                                                ""MoveToArea"", ""MoveToEntity"", ""MoveAway"",
                                                 ""TalkToNPC"", ""RespondToPlayer"", ""AskQuestion"",
                                                 ""UseObject"", ""PickUpItem"", ""OpenDoor"", ""PressSwitch"",
                                                 ""InteractWithObject"", ""InteractWithNPC"",

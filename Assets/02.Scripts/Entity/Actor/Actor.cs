@@ -204,6 +204,18 @@ public abstract class Actor : Entity, ILocationAware
         };
     }
 
+    /// <summary>
+    /// Vector3 위치로 직접 이동
+    /// </summary>
+    public void MoveToPosition(Vector3 position)
+    {
+        moveController.SetTarget(position);
+        moveController.OnReached += () =>
+        {
+            ;
+        };
+    }
+
     public void Talk(Actor target, string text)
     {
         target.Hear(this, text);

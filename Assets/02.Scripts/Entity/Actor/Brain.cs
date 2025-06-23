@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
@@ -11,6 +12,7 @@ public class Brain
 {
     public Actor actor;
     public ActionAgent actionAgent;
+    public MemoryAgent memoryAgent;
     private ActionExecutor actionExecutor;
     private CharacterMemoryManager memoryManager;
 
@@ -24,124 +26,177 @@ public class Brain
         actionExecutor = new ActionExecutor();
         RegisterActionHandlers();
 
+        memoryAgent = new MemoryAgent(actor);
+
         // CharacterMemoryManager 초기화
         memoryManager = new CharacterMemoryManager(actor.Name);
     }
 
     private void RegisterActionHandlers()
     {
-        // 이동 관련 핸들러
+        // Area 이동 관련 핸들러
         actionExecutor.RegisterHandler(
-            ActionAgent.ActionType.MoveToPosition,
-            (parameters) =>
-            {
-                Debug.Log($"[{actor.Name}] MoveToPosition: {string.Join(", ", parameters)}");
-                if (
-                    parameters.TryGetValue("location_key", out var locationKeyObj)
-                    && locationKeyObj is string locationKey
-                )
-                {
-                    // 경로 계획을 통한 이동
-                    ExecutePathfindingMove(locationKey);
-                }
-                else if (
-                    parameters.TryGetValue("position", out var posObj) && posObj is Vector3 position
-                )
-                {
-                    // Vector3 위치를 전체 Area에서 가장 가까운 위치로 변환
-                    string nearestLocationKey = FindNearestLocationInAllAreas(position);
-                    if (!string.IsNullOrEmpty(nearestLocationKey))
-                    {
-                        ExecutePathfindingMove(nearestLocationKey);
-                    }
-                    else
-                    {
-                        Debug.LogWarning(
-                            $"[{actor.Name}] No suitable location found for position: {position}"
-                        );
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning(
-                        $"[{actor.Name}] MoveToPosition requires either 'location_key' (string) or 'position' (Vector3) parameter"
-                    );
-                }
-            }
+            ActionAgent.ActionType.MoveToArea,
+            (parameters) => HandleMoveToArea(parameters)
         );
 
+        // Entity 이동 관련 핸들러
         actionExecutor.RegisterHandler(
-            ActionAgent.ActionType.MoveToObject,
-            (parameters) =>
-            {
-                Debug.Log($"[{actor.Name}] MoveToObject: {string.Join(", ", parameters)}");
-                if (parameters.TryGetValue("object_name", out var objName))
-                {
-                    // 객체 이름으로 이동 로직 구현
-                }
-            }
+            ActionAgent.ActionType.MoveToEntity,
+            (parameters) => HandleMoveToEntity(parameters)
         );
 
         // 상호작용 관련 핸들러
         actionExecutor.RegisterHandler(
             ActionAgent.ActionType.InteractWithObject,
-            (parameters) =>
-            {
-                Debug.Log($"[{actor.Name}] InteractWithObject: {string.Join(", ", parameters)}");
-                if (parameters.TryGetValue("object_name", out var objName))
-                {
-                    actor.Interact(objName.ToString());
-                }
-            }
+            (parameters) => HandleInteractWithObject(parameters)
         );
 
         actionExecutor.RegisterHandler(
             ActionAgent.ActionType.UseObject,
-            (parameters) =>
-            {
-                Debug.Log($"[{actor.Name}] UseObject: {string.Join(", ", parameters)}");
-                actor.Use(parameters);
-            }
+            (parameters) => HandleUseObject(parameters)
         );
 
         // 대화 관련 핸들러
         actionExecutor.RegisterHandler(
             ActionAgent.ActionType.TalkToNPC,
-            (parameters) =>
-            {
-                Debug.Log($"[{actor.Name}] TalkToNPC: {string.Join(", ", parameters)}");
-                if (
-                    parameters.TryGetValue("npc_name", out var npcName)
-                    && parameters.TryGetValue("message", out var message)
-                )
-                {
-                    // NPC와 대화 로직 구현
-                }
-            }
+            (parameters) => HandleTalkToNPC(parameters)
         );
 
         // 아이템 관련 핸들러
         actionExecutor.RegisterHandler(
             ActionAgent.ActionType.PickUpItem,
-            (parameters) =>
-            {
-                Debug.Log($"[{actor.Name}] PickUpItem: {string.Join(", ", parameters)}");
-                if (parameters.TryGetValue("item_name", out var itemName))
-                {
-                    // 아이템 줍기 로직 구현
-                }
-            }
+            (parameters) => HandlePickUpItem(parameters)
         );
 
         // 관찰 관련 핸들러
         actionExecutor.RegisterHandler(
             ActionAgent.ActionType.ObserveEnvironment,
-            (parameters) =>
-            {
-                Debug.Log($"[{actor.Name}] ObserveEnvironment: {string.Join(", ", parameters)}");
-                actor.sensor.UpdateAllSensors();
-            }
+            (parameters) => HandleObserveEnvironment(parameters)
         );
+    }
+
+    /// <summary>
+    /// Area로 이동하는 핸들러
+    /// </summary>
+    private void HandleMoveToArea(Dictionary<string, object> parameters)
+    {
+        Debug.Log($"[{actor.Name}] MoveToArea: {string.Join(", ", parameters)}");
+
+        if (parameters.TryGetValue("area_name", out var areaNameObj) && areaNameObj is string areaName)
+        {
+            // Area 이름으로 이동
+            ExecutePathfindingMove(areaName);
+        }
+        else if (parameters.TryGetValue("location_key", out var locationKeyObj) && locationKeyObj is string locationKey)
+        {
+            // Location key로 이동
+            ExecutePathfindingMove(locationKey);
+        }
+        else if (parameters.TryGetValue("position", out var posObj) && posObj is Vector3 position)
+        {
+            // Vector3 위치를 전체 Area에서 가장 가까운 위치로 변환
+            string nearestLocationKey = FindNearestLocationInAllAreas(position);
+            if (!string.IsNullOrEmpty(nearestLocationKey))
+            {
+                ExecutePathfindingMove(nearestLocationKey);
+            }
+            else
+            {
+                Debug.LogWarning($"[{actor.Name}] No suitable area found for position: {position}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[{actor.Name}] MoveToArea requires 'area_name', 'location_key', or 'position' parameter");
+        }
+    }
+
+    /// <summary>
+    /// Entity로 이동하는 핸들러 (현재 Area 내에서 movablePositions만 사용)
+    /// </summary>
+    private void HandleMoveToEntity(Dictionary<string, object> parameters)
+    {
+        Debug.Log($"[{actor.Name}] MoveToEntity: {string.Join(", ", parameters)}");
+        
+        if (parameters.TryGetValue("entity_name", out var entityNameObj) && entityNameObj is string entityName)
+        {
+            var movablePositions = actor.sensor.GetMovablePositions();
+            if (movablePositions.ContainsKey(entityName))
+            {
+                actor.Move(entityName);
+                Debug.Log($"[{actor.Name}] Moving to movable position: {entityName}");
+            }
+            else
+            {
+                Debug.LogWarning($"[{actor.Name}] Movable position for entity {entityName} not found in current area");
+            }
+        }
+        else if (parameters.TryGetValue("position", out var posObj) && posObj is Vector3 position)
+        {
+            actor.MoveToPosition(position);
+            Debug.Log($"[{actor.Name}] Moving to position {position} in current area");
+        }
+        else
+        {
+            Debug.LogWarning($"[{actor.Name}] MoveToEntity requires 'entity_name' or 'position' parameter");
+        }
+    }
+
+    /// <summary>
+    /// 오브젝트와 상호작용하는 핸들러
+    /// </summary>
+    private void HandleInteractWithObject(Dictionary<string, object> parameters)
+    {
+        Debug.Log($"[{actor.Name}] InteractWithObject: {string.Join(", ", parameters)}");
+        if (parameters.TryGetValue("object_name", out var objName))
+        {
+            actor.Interact(objName.ToString());
+        }
+    }
+
+    /// <summary>
+    /// 오브젝트를 사용하는 핸들러
+    /// </summary>
+    private void HandleUseObject(Dictionary<string, object> parameters)
+    {
+        Debug.Log($"[{actor.Name}] UseObject: {string.Join(", ", parameters)}");
+        actor.Use(parameters);
+    }
+
+    /// <summary>
+    /// NPC와 대화하는 핸들러
+    /// </summary>
+    private void HandleTalkToNPC(Dictionary<string, object> parameters)
+    {
+        Debug.Log($"[{actor.Name}] TalkToNPC: {string.Join(", ", parameters)}");
+        if (parameters.TryGetValue("npc_name", out var npcName) && parameters.TryGetValue("message", out var message))
+        {
+            // NPC와 대화 로직 구현
+            Debug.Log($"[{actor.Name}] Talking to {npcName}: {message}");
+        }
+    }
+
+    /// <summary>
+    /// 아이템을 줍는 핸들러
+    /// </summary>
+    private void HandlePickUpItem(Dictionary<string, object> parameters)
+    {
+        Debug.Log($"[{actor.Name}] PickUpItem: {string.Join(", ", parameters)}");
+        if (parameters.TryGetValue("item_name", out var itemName))
+        {
+            // 아이템 줍기 로직 구현
+            Debug.Log($"[{actor.Name}] Picking up item: {itemName}");
+        }
+    }
+
+    /// <summary>
+    /// 환경을 관찰하는 핸들러
+    /// </summary>
+    private void HandleObserveEnvironment(Dictionary<string, object> parameters)
+    {
+        Debug.Log($"[{actor.Name}] ObserveEnvironment: {string.Join(", ", parameters)}");
+        actor.sensor.UpdateAllSensors();
     }
 
     public async UniTask Think()

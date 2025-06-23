@@ -20,20 +20,20 @@ ActionAgent 시스템은 Unity 시뮬레이션 환경에서 GPT를 활용하여 
 public enum ActionType
 {
     // 이동 관련 액션들
-    MoveToPosition,      // 지정된 위치로 이동
-    MoveToObject,        // 지정된 오브젝트로 이동
-    MoveAway,           // 현재 위치에서 멀어지기
+    MoveToArea,      // 지정된 Area로 이동
+    MoveToEntity,    // 지정된 Entity(Actor, Item, Block 등)로 이동
+    MoveAway,        // 현재 위치에서 멀어지기
     
     // 대화 관련 액션들
-    TalkToNPC,          // NPC와 대화
-    RespondToPlayer,    // 플레이어에게 응답
-    AskQuestion,        // 질문하기
+    TalkToNPC,       // NPC와 대화
+    RespondToPlayer, // 플레이어에게 응답
+    AskQuestion,     // 질문하기
     
     // 사용/상호작용 관련 액션들
-    UseObject,          // 오브젝트 사용
-    PickUpItem,         // 아이템 줍기
-    OpenDoor,           // 문 열기
-    PressSwitch,        // 스위치 누르기
+    UseObject,       // 오브젝트 사용
+    PickUpItem,      // 아이템 줍기
+    OpenDoor,        // 문 열기
+    PressSwitch,     // 스위치 누르기
     
     // 상호작용 액션들
     InteractWithObject, // 오브젝트와 상호작용
@@ -122,8 +122,8 @@ actionAgent.TestActionAgent();
 ## 지원하는 액션들
 
 ### 이동 액션
-- `MoveToPosition`: 지정된 위치로 이동
-- `MoveToObject`: 지정된 오브젝트로 이동
+- `MoveToArea`: 지정된 Area로 이동
+- `MoveToEntity`: 지정된 Entity(Actor, Item, Block 등)로 이동
 - `MoveAway`: 현재 위치에서 멀어지기
 
 ### 대화 액션
