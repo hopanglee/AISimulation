@@ -7,7 +7,10 @@ using UnityEngine;
 /// </summary>
 public class ActionExecutor
 {
-    private readonly Dictionary<ActionAgent.ActionType, Action<Dictionary<string, object>>> actionHandlers = new();
+    private readonly Dictionary<
+        ActionAgent.ActionType,
+        Action<Dictionary<string, object>>
+    > actionHandlers = new();
     private readonly bool enableLogging;
     private readonly float actionDelay;
 
@@ -20,7 +23,10 @@ public class ActionExecutor
     /// <summary>
     /// 외부에서 액션 핸들러를 등록할 수 있도록 함
     /// </summary>
-    public void RegisterHandler(ActionAgent.ActionType actionType, Action<Dictionary<string, object>> handler)
+    public void RegisterHandler(
+        ActionAgent.ActionType actionType,
+        Action<Dictionary<string, object>> handler
+    )
     {
         actionHandlers[actionType] = handler;
     }
@@ -44,7 +50,9 @@ public class ActionExecutor
     /// <summary>
     /// ActionReasoning을 받아서 실제 액션을 실행
     /// </summary>
-    public async System.Threading.Tasks.Task<ActionExecutionResult> ExecuteActionAsync(ActionAgent.ActionReasoning reasoning)
+    public async System.Threading.Tasks.Task<ActionExecutionResult> ExecuteActionAsync(
+        ActionAgent.ActionReasoning reasoning
+    )
     {
         if (reasoning?.Action == null)
             return Fail("No action provided");
@@ -70,9 +78,19 @@ public class ActionExecutor
         return Fail($"Action handler not found: {action.ActionType}");
     }
 
-    private void Log(string msg) { if (enableLogging) Debug.Log($"[ActionExecutor] {msg}"); }
+    private void Log(string msg)
+    {
+        if (enableLogging)
+            Debug.Log($"[ActionExecutor] {msg}");
+    }
+
     private ActionExecutionResult Success(string msg) => new() { Success = true, Message = msg };
-    private ActionExecutionResult Fail(string msg) { Log(msg); return new() { Success = false, Message = msg }; }
+
+    private ActionExecutionResult Fail(string msg)
+    {
+        Log(msg);
+        return new() { Success = false, Message = msg };
+    }
 }
 
 /// <summary>
@@ -83,4 +101,4 @@ public class ActionExecutionResult
     public bool Success { get; set; }
     public string Message { get; set; }
     public object Data { get; set; }
-} 
+}
