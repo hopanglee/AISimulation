@@ -123,28 +123,35 @@ public class Sensor
         var locationManager = Services.Get<ILocationService>();
         var curArea = locationManager.GetArea(owner.curLocation);
 
-        Vector3 curPos = owner.transform.position;
+        //Vector3 curPos = owner.transform.position;
 
         // Props의 이동 가능한 위치들
         var _props = locationManager.GetProps(curArea);
         foreach (var prop in _props)
         {
-            var distance = MathExtension.SquaredDistance2D(curPos, prop.toMovePos.position);
-            if (distance <= interactionRange * interactionRange)
-            {
+            // var distance = MathExtension.SquaredDistance2D(curPos, prop.toMovePos.position);
+            // if (distance <= interactionRange * interactionRange)
+            // {
                 toMovable.Add(prop.Name, prop.toMovePos.position);
-            }
+            //}
         }
 
         // Buildings의 이동 가능한 위치들
         var _buildings = locationManager.GetBuilding(curArea);
         foreach (var building in _buildings)
         {
-            var distance = MathExtension.SquaredDistance2D(curPos, building.transform.position);
-            if (distance <= interactionRange * interactionRange)
-            {
+            // var distance = MathExtension.SquaredDistance2D(curPos, building.transform.position);
+            // if (distance <= interactionRange * interactionRange)
+            // {
                 toMovable.Add(building.Name, building.transform.position);
-            }
+            //}
+        }
+
+        // Actor 감지
+        var _actors = locationManager.GetActor(curArea, owner);
+        foreach (var actor in _actors)
+        {
+            toMovable.Add(actor.Name, actor.transform.position);
         }
 
         // Connected Areas 추가
