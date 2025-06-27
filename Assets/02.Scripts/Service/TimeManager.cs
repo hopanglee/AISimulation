@@ -1,6 +1,7 @@
 using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public interface ITimeService : IService
 {
@@ -43,6 +44,16 @@ public interface ITimeService : IService
     /// 시간 이벤트 구독 해제
     /// </summary>
     void UnsubscribeFromTimeEvent(Action<GameTime> callback);
+
+    /// <summary>
+    /// 시간 업데이트 (GameService에서 호출)
+    /// </summary>
+    void UpdateTime(float deltaTime);
+
+    /// <summary>
+    /// 시간 범위 내에 있는지 확인
+    /// </summary>
+    bool IsTimeBetween(int startHour, int startMinute, int endHour, int endMinute);
 }
 
 [System.Serializable]
@@ -63,18 +74,23 @@ public struct GameTime
         this.minute = minute;
     }
 
-    public GameTime(int hour, int minute, int day = 1, int month = 1, int year = 2024)
-    {
-        this.year = year;
-        this.month = month;
-        this.day = day;
-        this.hour = hour;
-        this.minute = minute;
-    }
-
     public override string ToString()
     {
         return $"{year:D4}-{month:D2}-{day:D2} {hour:D2}:{minute:D2}";
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is GameTime other)
+        {
+            return this == other;
+        }
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(year, month, day, hour, minute);
     }
 
     public static bool operator ==(GameTime a, GameTime b)
@@ -347,9 +363,9 @@ public class TimeManager : ITimeService
     /// </summary>
     public bool IsTimeBetween(int startHour, int startMinute, int endHour, int endMinute)
     {
-        var startTime = new GameTime(startHour, startMinute);
-        var endTime = new GameTime(endHour, endMinute);
-        var current = new GameTime(currentTime.hour, currentTime.minute);
+        var startTime = new GameTime(currentTime.year, currentTime.month, currentTime.day, startHour, startMinute);
+        var endTime = new GameTime(currentTime.year, currentTime.month, currentTime.day, endHour, endMinute);
+        var current = new GameTime(currentTime.year, currentTime.month, currentTime.day, currentTime.hour, currentTime.minute);
 
         if (startTime <= endTime)
         {
