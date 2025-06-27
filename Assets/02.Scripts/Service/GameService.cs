@@ -56,6 +56,7 @@ public class GameService : MonoBehaviour, IGameService
     {
         Debug.Log("[GameService] Initializing...");
         await UniTask.Yield();
+        Debug.Log("[GameService] Initialization completed.");
     }
 
     private void Update()
@@ -67,12 +68,12 @@ public class GameService : MonoBehaviour, IGameService
         }
     }
 
-    public async UniTask StartSimulation()
+    public UniTask StartSimulation()
     {
         if (isSimulationRunning)
         {
             Debug.LogWarning("[GameService] Simulation is already running!");
-            return;
+            return UniTask.CompletedTask;
         }
 
         Debug.Log("[GameService] Starting simulation...");
@@ -104,6 +105,8 @@ public class GameService : MonoBehaviour, IGameService
         _ = RunHybridDayPlanningRoutine();
 
         Debug.Log($"[GameService] Simulation started with {allActors.Count} actors");
+        
+        return UniTask.CompletedTask;
     }
 
     public void PauseSimulation()
@@ -256,7 +259,7 @@ public class GameService : MonoBehaviour, IGameService
                 Debug.LogError($"[GameService] Error in hybrid day planning routine: {ex.Message}");
             }
             
-            await UniTask.Delay(60000); // 1분마다 체크
+            await UniTask.Yield(); // 1분마다 체크
         }
     }
 
@@ -269,7 +272,7 @@ public class GameService : MonoBehaviour, IGameService
 
         while (isDayCycleRunning)
         {
-            await UniTask.WaitForSeconds(dayCycleInterval);
+            await UniTask.Yield();
 
             if (!isDayCycleRunning)
                 break;
@@ -278,7 +281,7 @@ public class GameService : MonoBehaviour, IGameService
             await ExecuteDayPlanning();
 
             // 하루 계획 완료 후 잠시 대기
-            await UniTask.WaitForSeconds(1f);
+            await UniTask.Yield();
         }
     }
 
@@ -290,17 +293,25 @@ public class GameService : MonoBehaviour, IGameService
         Debug.Log("[GameService] Starting think routine");
 
         // 첫 번째 하루 계획이 완료될 때까지 대기
-        await UniTask.WaitForSeconds(2f);
+        await UniTask.Yield();
 
         while (isSimulationRunning)
         {
-            await UniTask.WaitForSeconds(thinkInterval);
+            // thinkInterval만큼 대기
+            await UniTask.Yield();
+            
+            // 간단한 타이머 구현 (실제로는 더 정교한 타이밍이 필요할 수 있음)
+            lastThinkTime += Time.deltaTime;
+            if (lastThinkTime >= thinkInterval)
+            {
+                lastThinkTime = 0f;
+                
+                if (!isSimulationRunning)
+                    break;
 
-            if (!isSimulationRunning)
-                break;
-
-            // 모든 Actor의 Think 실행 (수면 중이 아닌 Actor만)
-            await ExecuteAllActorThinks();
+                // 모든 Actor의 Think 실행 (수면 중이 아닌 Actor만)
+                await ExecuteAllActorThinks();
+            }
         }
     }
 
