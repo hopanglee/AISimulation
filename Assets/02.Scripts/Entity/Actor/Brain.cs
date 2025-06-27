@@ -83,12 +83,18 @@ public class Brain
     {
         Debug.Log($"[{actor.Name}] MoveToArea: {string.Join(", ", parameters)}");
 
-        if (parameters.TryGetValue("area_name", out var areaNameObj) && areaNameObj is string areaName)
+        if (
+            parameters.TryGetValue("area_name", out var areaNameObj)
+            && areaNameObj is string areaName
+        )
         {
             // Area 이름으로 이동
             ExecutePathfindingMove(areaName);
         }
-        else if (parameters.TryGetValue("location_key", out var locationKeyObj) && locationKeyObj is string locationKey)
+        else if (
+            parameters.TryGetValue("location_key", out var locationKeyObj)
+            && locationKeyObj is string locationKey
+        )
         {
             // Location key로 이동
             ExecutePathfindingMove(locationKey);
@@ -108,7 +114,9 @@ public class Brain
         }
         else
         {
-            Debug.LogWarning($"[{actor.Name}] MoveToArea requires 'area_name', 'location_key', or 'position' parameter");
+            Debug.LogWarning(
+                $"[{actor.Name}] MoveToArea requires 'area_name', 'location_key', or 'position' parameter"
+            );
         }
     }
 
@@ -118,8 +126,11 @@ public class Brain
     private void HandleMoveToEntity(Dictionary<string, object> parameters)
     {
         Debug.Log($"[{actor.Name}] MoveToEntity: {string.Join(", ", parameters)}");
-        
-        if (parameters.TryGetValue("entity_name", out var entityNameObj) && entityNameObj is string entityName)
+
+        if (
+            parameters.TryGetValue("entity_name", out var entityNameObj)
+            && entityNameObj is string entityName
+        )
         {
             var movablePositions = actor.sensor.GetMovablePositions();
             if (movablePositions.ContainsKey(entityName))
@@ -129,7 +140,9 @@ public class Brain
             }
             else
             {
-                Debug.LogWarning($"[{actor.Name}] Movable position for entity {entityName} not found in current area");
+                Debug.LogWarning(
+                    $"[{actor.Name}] Movable position for entity {entityName} not found in current area"
+                );
             }
         }
         else if (parameters.TryGetValue("position", out var posObj) && posObj is Vector3 position)
@@ -139,7 +152,9 @@ public class Brain
         }
         else
         {
-            Debug.LogWarning($"[{actor.Name}] MoveToEntity requires 'entity_name' or 'position' parameter");
+            Debug.LogWarning(
+                $"[{actor.Name}] MoveToEntity requires 'entity_name' or 'position' parameter"
+            );
         }
     }
 
@@ -170,7 +185,10 @@ public class Brain
     private void HandleTalkToNPC(Dictionary<string, object> parameters)
     {
         Debug.Log($"[{actor.Name}] TalkToNPC: {string.Join(", ", parameters)}");
-        if (parameters.TryGetValue("npc_name", out var npcName) && parameters.TryGetValue("message", out var message))
+        if (
+            parameters.TryGetValue("npc_name", out var npcName)
+            && parameters.TryGetValue("message", out var message)
+        )
         {
             // NPC와 대화 로직 구현
             Debug.Log($"[{actor.Name}] Talking to {npcName}: {message}");
@@ -230,6 +248,12 @@ public class Brain
     )
     {
         var sb = new System.Text.StringBuilder();
+
+        // 시간 정보 추가
+        var timeService = Services.Get<ITimeService>();
+        var currentTime = timeService.CurrentTime;
+        sb.AppendLine($"현재 시간: {currentTime}");
+        sb.AppendLine($"수면 상태: {(actor.IsSleeping ? "수면 중" : "깨어있음")}");
 
         sb.AppendLine($"당신은 {actor.curLocation.locationName}에 있습니다.");
         sb.AppendLine(

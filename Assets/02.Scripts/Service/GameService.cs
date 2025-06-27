@@ -1,7 +1,7 @@
-using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
-using Sirenix.OdinInspector;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
+using Sirenix.OdinInspector;
 
 public interface IGameService : IService
 {
@@ -100,6 +100,9 @@ public class GameService : MonoBehaviour, IGameService
         // 주기적 Think 실행 루틴 시작
         _ = RunThinkRoutine();
 
+        // 하이브리드 하루 계획 루틴 시작
+        _ = RunHybridDayPlanningRoutine();
+
         Debug.Log($"[GameService] Simulation started with {allActors.Count} actors");
     }
 
@@ -133,6 +136,7 @@ public class GameService : MonoBehaviour, IGameService
         // 루틴 재시작
         _ = RunDayCycleRoutine();
         _ = RunThinkRoutine();
+        _ = RunHybridDayPlanningRoutine();
     }
 
     public void StopSimulation()
@@ -180,6 +184,80 @@ public class GameService : MonoBehaviour, IGameService
         allActors.AddRange(actors);
 
         Debug.Log($"[GameService] Found {allActors.Count} actors in the scene");
+    }
+
+    /// <summary>
+    /// 하이브리드 하루 계획 루틴 (전날 밤 + 기상 직후)
+    /// </summary>
+    private async UniTask RunHybridDayPlanningRoutine()
+    {
+        Debug.Log("[GameService] Starting hybrid day planning routine");
+
+        while (isSimulationRunning)
+        {
+            try
+            {
+                var currentTime = timeService.CurrentTime;
+                
+                // 전날 밤 21시에 기본 계획 생성
+                if (currentTime.hour == 21 && currentTime.minute == 0)
+                {
+                    Debug.Log("[GameService] Starting basic day planning for all actors...");
+                    
+                    var planningTasks = new List<UniTask>();
+                    foreach (var actor in allActors)
+                    {
+                        if (actor != null && !actor.IsSleeping) // 깨어있는 액터만 계획 생성
+                        {
+                            planningTasks.Add(actor.CreateBasicDayPlan());
+                        }
+                    }
+                    
+                    await UniTask.WhenAll(planningTasks);
+                    Debug.Log("[GameService] Basic day planning completed for all actors");
+                }
+                
+                // 기상 직후 6시에 계획 조정
+                if (currentTime.hour == 6 && currentTime.minute == 0)
+                {
+                    Debug.Log("[GameService] Starting day plan adjustment for all actors...");
+                    
+                    var adjustmentTasks = new List<UniTask>();
+                    foreach (var actor in allActors)
+                    {
+                        if (actor != null && actor.HasBasicPlan && !actor.HasFinalPlan)
+                        {
+                            adjustmentTasks.Add(actor.AdjustDayPlan());
+                        }
+                    }
+                    
+                    await UniTask.WhenAll(adjustmentTasks);
+                    Debug.Log("[GameService] Day plan adjustment completed for all actors");
+                }
+                
+                // 자정에 하루 계획 초기화
+                if (currentTime.hour == 0 && currentTime.minute == 0)
+                {
+                    Debug.Log("[GameService] Resetting day plans for all actors...");
+                    
+                    foreach (var actor in allActors)
+                    {
+                        if (actor != null)
+                        {
+                            actor.ResetDayPlan();
+                        }
+                    }
+                    
+                    Debug.Log("[GameService] Day plans reset for all actors");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[GameService] Error in hybrid day planning routine: {ex.Message}");
+            }
+            
+            await UniTask.Delay(60000); // 1분마다 체크
+        }
     }
 
     /// <summary>
@@ -231,7 +309,6 @@ public class GameService : MonoBehaviour, IGameService
     /// </summary>
     private async UniTask ExecuteDayPlanning()
     {
-        var timeService = Services.Get<ITimeService>();
         var currentTime = timeService.CurrentTime;
 
         Debug.Log($"[GameService] Checking day planning for {currentTime}");
@@ -268,7 +345,6 @@ public class GameService : MonoBehaviour, IGameService
             // Actor의 Brain을 통해 하루 계획 세우기
             await actor.brain.Think();
 
-            var timeService = Services.Get<ITimeService>();
             var currentTime = timeService.CurrentTime;
             Debug.Log($"[GameService] {actor.Name} completed day planning for {currentTime}");
         }
@@ -345,4 +421,4 @@ public class GameService : MonoBehaviour, IGameService
     {
         _ = ExecuteAllActorThinks();
     }
-}
+} 

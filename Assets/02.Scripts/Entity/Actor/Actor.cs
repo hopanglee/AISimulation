@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -46,6 +47,55 @@ public abstract class Actor : Entity, ILocationAware
     public int Sleepiness; // 졸림 수치. 일정 수치(예: 80 이상) 이상이면 강제로 잠들게 할 수 있음.
     #endregion
 
+    #region Sleep System
+    [Header("Sleep System")]
+    [SerializeField, Range(0, 23)]
+    private int wakeUpHour = 6; // 기상 시간
+
+    [SerializeField, Range(0, 23)]
+    private int sleepHour = 22; // 취침 시간
+
+    [SerializeField, Range(0, 100)]
+    private int sleepinessThreshold = 80; // 강제 수면 임계값
+
+    [SerializeField]
+    private bool isSleeping = false;
+
+    [SerializeField]
+    private GameTime sleepStartTime;
+
+    [SerializeField]
+    private GameTime wakeUpTime;
+
+    public bool IsSleeping => isSleeping;
+    public int WakeUpHour => wakeUpHour;
+    public int SleepHour => sleepHour;
+    public int SleepinessThreshold => sleepinessThreshold;
+    #endregion
+
+    #region Day Plan System
+    [Header("Day Plan System")]
+    [SerializeField]
+    private DayPlanAgent dayPlanAgent;
+
+    [SerializeField]
+    private DayPlanAgent.DayPlan basicDayPlan; // 전날 밤에 세운 기본 계획
+
+    [SerializeField]
+    private DayPlanAgent.DayPlan finalDayPlan; // 기상 직후 조정된 최종 계획
+
+    [SerializeField]
+    private bool hasBasicPlan = false;
+
+    [SerializeField]
+    private bool hasFinalPlan = false;
+
+    public bool HasBasicPlan => hasBasicPlan;
+    public bool HasFinalPlan => hasFinalPlan;
+    public DayPlanAgent.DayPlan BasicDayPlan => basicDayPlan;
+    public DayPlanAgent.DayPlan FinalDayPlan => finalDayPlan;
+    #endregion
+
     [SerializeField]
     private Item _handItem;
     public Item HandItem
@@ -67,6 +117,7 @@ public abstract class Actor : Entity, ILocationAware
         moveController = GetComponent<MoveController>();
         brain = new(this);
         sensor = new(this);
+        dayPlanAgent = new(this);
     }
 
     #region Update Function
@@ -90,6 +141,7 @@ public abstract class Actor : Entity, ILocationAware
         toMovable = sensor.GetMovablePositions();
     }
     #endregion
+
     public bool CanSaveItem(Item item)
     {
         if (HandItem == null)
@@ -224,7 +276,238 @@ public abstract class Actor : Entity, ILocationAware
 
     public virtual void Sleep()
     {
-        ;
+        if (isSleeping)
+        {
+            Debug.LogWarning($"[{Name}] Already sleeping!");
+            return;
+        }
+
+        var timeService = Services.Get<ITimeService>();
+        sleepStartTime = timeService.CurrentTime;
+
+        // 기상 시간 계산 (다음 날 기상 시간)
+        var currentTime = timeService.CurrentTime;
+        wakeUpTime = new GameTime(
+            currentTime.year,
+            currentTime.month,
+            currentTime.day + 1,
+            wakeUpHour,
+            0
+        );
+
+        // 월/연도 조정
+        int daysInMonth = GameTime.GetDaysInMonth(wakeUpTime.year, wakeUpTime.month);
+        if (wakeUpTime.day > daysInMonth)
+        {
+            wakeUpTime.day = 1;
+            wakeUpTime.month++;
+            if (wakeUpTime.month > 12)
+            {
+                wakeUpTime.month = 1;
+                wakeUpTime.year++;
+            }
+        }
+
+        isSleeping = true;
+        Sleepiness = 0; // 수면 중에는 졸림 수치 초기화
+
+        Debug.Log($"[{Name}] Started sleeping at {sleepStartTime}. Will wake up at {wakeUpTime}");
+    }
+
+    public virtual void WakeUp()
+    {
+        if (!isSleeping)
+        {
+            Debug.LogWarning($"[{Name}] Not sleeping!");
+            return;
+        }
+
+        var timeService = Services.Get<ITimeService>();
+        var currentTime = timeService.CurrentTime;
+
+        isSleeping = false;
+        Stamina = Mathf.Min(100, Stamina + 30); // 수면으로 체력 회복
+
+        Debug.Log($"[{Name}] Woke up at {currentTime}. Stamina restored to {Stamina}");
+    }
+
+    /// <summary>
+    /// 수면 상태 체크 (시간에 따른 자동 기상)
+    /// </summary>
+    public void CheckSleepStatus()
+    {
+        if (!isSleeping)
+            return;
+
+        var timeService = Services.Get<ITimeService>();
+        var currentTime = timeService.CurrentTime;
+
+        // 기상 시간이 되었는지 확인
+        if (currentTime >= wakeUpTime)
+        {
+            WakeUp();
+        }
+    }
+
+    /// <summary>
+    /// 수면 필요성 체크 (졸림 수치에 따른 강제 수면)
+    /// </summary>
+    public void CheckSleepNeed()
+    {
+        if (isSleeping)
+            return;
+
+        // 졸림 수치가 임계값을 넘으면 강제 수면
+        if (Sleepiness >= sleepinessThreshold)
+        {
+            Debug.Log(
+                $"[{Name}] Sleepiness threshold reached ({Sleepiness}/{sleepinessThreshold}). Forcing sleep."
+            );
+            Sleep();
+        }
+    }
+
+    /// <summary>
+    /// 수면 시간인지 확인
+    /// </summary>
+    public bool IsSleepTime()
+    {
+        var timeService = Services.Get<ITimeService>();
+        var currentTime = timeService.CurrentTime;
+
+        // 수면 시간 범위 확인 (22:00 ~ 06:00)
+        return timeService.IsTimeBetween(sleepHour, 0, wakeUpHour, 0);
+    }
+
+    /// <summary>
+    /// 기상 시간인지 확인
+    /// </summary>
+    public bool IsWakeUpTime()
+    {
+        var timeService = Services.Get<ITimeService>();
+        var currentTime = timeService.CurrentTime;
+        return currentTime.hour == wakeUpHour && currentTime.minute == 0;
+    }
+
+    /// <summary>
+    /// 수면 시간 설정
+    /// </summary>
+    public void SetSleepSchedule(int sleepHour, int wakeUpHour)
+    {
+        this.sleepHour = Mathf.Clamp(sleepHour, 0, 23);
+        this.wakeUpHour = Mathf.Clamp(wakeUpHour, 0, 23);
+
+        Debug.Log($"[{Name}] Sleep schedule set: {sleepHour:D2}:00 ~ {wakeUpHour:D2}:00");
+    }
+
+    /// <summary>
+    /// 기본 하루 계획 생성 (전날 밤)
+    /// </summary>
+    public async UniTask CreateBasicDayPlan()
+    {
+        if (hasBasicPlan)
+        {
+            Debug.LogWarning($"[{Name}] Basic day plan already exists!");
+            return;
+        }
+
+        try
+        {
+            basicDayPlan = await dayPlanAgent.CreateBasicDayPlanAsync();
+            hasBasicPlan = true;
+            Debug.Log($"[{Name}] Basic day plan created: {basicDayPlan.Summary}");
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[{Name}] Failed to create basic day plan: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// 하루 계획 조정 (기상 직후)
+    /// </summary>
+    public async UniTask AdjustDayPlan()
+    {
+        if (!hasBasicPlan)
+        {
+            Debug.LogWarning($"[{Name}] No basic day plan to adjust!");
+            return;
+        }
+
+        if (hasFinalPlan)
+        {
+            Debug.LogWarning($"[{Name}] Final day plan already exists!");
+            return;
+        }
+
+        try
+        {
+            var adjustment = await dayPlanAgent.AdjustDayPlanAsync(basicDayPlan);
+
+            // 조정된 계획을 최종 계획으로 설정
+            finalDayPlan = new DayPlanAgent.DayPlan
+            {
+                Summary = basicDayPlan.Summary + " (조정됨: " + adjustment.Reason + ")",
+                Mood = adjustment.MoodAdjustment,
+                PriorityGoals = basicDayPlan.PriorityGoals,
+            };
+
+            // 조정된 활동들로 업데이트
+            finalDayPlan.Activities.Clear();
+            finalDayPlan.Activities.AddRange(adjustment.AdjustedActivities);
+            finalDayPlan.Activities.AddRange(adjustment.NewActivities);
+
+            hasFinalPlan = true;
+            Debug.Log($"[{Name}] Day plan adjusted: {adjustment.Reason}");
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[{Name}] Failed to adjust day plan: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// 하루 계획 초기화 (새로운 하루 시작)
+    /// </summary>
+    public void ResetDayPlan()
+    {
+        hasBasicPlan = false;
+        hasFinalPlan = false;
+        basicDayPlan = null;
+        finalDayPlan = null;
+        Debug.Log($"[{Name}] Day plan reset for new day");
+    }
+
+    /// <summary>
+    /// 현재 시간에 맞는 활동 가져오기
+    /// </summary>
+    public DayPlanAgent.DailyActivity GetCurrentActivity()
+    {
+        if (!hasFinalPlan)
+            return null;
+
+        var timeService = Services.Get<ITimeService>();
+        var currentTime = timeService.CurrentTime;
+        string currentTimeStr = $"{currentTime.hour:D2}:{currentTime.minute:D2}";
+
+        foreach (var activity in finalDayPlan.Activities)
+        {
+            if (IsTimeInRange(currentTimeStr, activity.StartTime, activity.EndTime))
+            {
+                return activity;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// 시간이 범위 내에 있는지 확인
+    /// </summary>
+    private bool IsTimeInRange(string currentTime, string startTime, string endTime)
+    {
+        return string.Compare(currentTime, startTime) >= 0
+            && string.Compare(currentTime, endTime) <= 0;
     }
 
     public virtual void Death()
