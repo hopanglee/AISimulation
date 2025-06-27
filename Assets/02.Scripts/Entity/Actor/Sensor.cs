@@ -132,7 +132,7 @@ public class Sensor
             // var distance = MathExtension.SquaredDistance2D(curPos, prop.toMovePos.position);
             // if (distance <= interactionRange * interactionRange)
             // {
-                toMovable.Add(prop.Name, prop.toMovePos.position);
+            toMovable.Add(prop.Name, prop.toMovePos.position);
             //}
         }
 
@@ -143,7 +143,7 @@ public class Sensor
             // var distance = MathExtension.SquaredDistance2D(curPos, building.transform.position);
             // if (distance <= interactionRange * interactionRange)
             // {
-                toMovable.Add(building.Name, building.transform.position);
+            toMovable.Add(building.Name, building.transform.position);
             //}
         }
 

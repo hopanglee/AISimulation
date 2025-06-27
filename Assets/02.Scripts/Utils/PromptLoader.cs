@@ -56,4 +56,16 @@ public static class PromptLoader
             "당신은 캐릭터의 위치 기억을 관리하는 AI 에이전트입니다. 각 area에 어떤 물건이 어디에 있었는지, 존재 여부를 기억하고 관리합니다."
         );
     }
+
+    /// <summary>
+    /// DayPlanAgent용 프롬프트를 로드합니다.
+    /// </summary>
+    /// <returns>DayPlanAgent 시스템 프롬프트</returns>
+    public static string LoadDayPlanAgentPrompt()
+    {
+        return LoadPrompt(
+            "DayPlanAgentPrompt",
+            "당신은 AI 시뮬레이션에서 캐릭터의 하루 계획을 세우는 전문가입니다."
+        );
+    }
 }
