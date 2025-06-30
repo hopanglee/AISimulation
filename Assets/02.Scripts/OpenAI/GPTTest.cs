@@ -5,13 +5,49 @@ using System.Text.Json;
 using Newtonsoft.Json;
 using OpenAI.Chat;
 using UnityEngine;
+using Sirenix.OdinInspector;
+using Cysharp.Threading.Tasks;
 
 public class GPTTest : MonoBehaviour
 {
+    [Header("API Key Testing")]
+    [SerializeField] private bool testOnStart = false;
+
     public void Click()
     {
         var agent = new TestAgent();
         agent.Test();
+    }
+
+    [Button("Test API Key", ButtonStyle.Box)]
+    [InfoBox("Click this button to test if your OpenAI API key is working correctly.")]
+    public void TestApiKey()
+    {
+        StartCoroutine(TestApiKeyCoroutine());
+    }
+
+    [Button("Test API Key (Async)", ButtonStyle.FoldoutButton)]
+    [InfoBox("This will test the API key and show the result in the console.")]
+    public void TestApiKeyAsync()
+    {
+        StartCoroutine(TestApiKeyCoroutine());
+    }
+
+
+    private void Start()
+    {
+        if (testOnStart)
+        {
+            TestApiKey();
+        }
+    }
+
+    private System.Collections.IEnumerator TestApiKeyCoroutine()
+    {
+        Debug.Log("Testing API key...");
+
+        var agent = new SimpleTestAgent();
+        yield return agent.SimpleTest();
     }
 }
 
@@ -84,49 +120,49 @@ public class TestAgent : GPT
         switch (toolCall.FunctionName)
         {
             case nameof(GetCurrentLocation):
-            {
-                string toolResult = GetCurrentLocation();
-                messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
-
-                break;
-            }
-
-            case nameof(GetCurrentWeather):
-            {
-                // The arguments that the model wants to use to call the function are specified as a
-                // stringified JSON object based on the schema defined in the tool definition. Note that
-                // the model may hallucinate arguments too. Consequently, it is important to do the
-                // appropriate parsing and validation before calling the function.
-                using JsonDocument argumentsJson = JsonDocument.Parse(toolCall.FunctionArguments);
-                bool hasLocation = argumentsJson.RootElement.TryGetProperty(
-                    "location",
-                    out JsonElement location
-                );
-                bool hasUnit = argumentsJson.RootElement.TryGetProperty(
-                    "unit",
-                    out JsonElement unit
-                );
-
-                if (!hasLocation)
                 {
-                    throw new System.ArgumentNullException(
-                        nameof(location),
-                        "The location argument is required."
-                    );
+                    string toolResult = GetCurrentLocation();
+                    messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
+
+                    break;
                 }
 
-                string toolResult = hasUnit
-                    ? GetCurrentWeather(location.GetString(), unit.GetString())
-                    : GetCurrentWeather(location.GetString());
-                messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
-                break;
-            }
+            case nameof(GetCurrentWeather):
+                {
+                    // The arguments that the model wants to use to call the function are specified as a
+                    // stringified JSON object based on the schema defined in the tool definition. Note that
+                    // the model may hallucinate arguments too. Consequently, it is important to do the
+                    // appropriate parsing and validation before calling the function.
+                    using JsonDocument argumentsJson = JsonDocument.Parse(toolCall.FunctionArguments);
+                    bool hasLocation = argumentsJson.RootElement.TryGetProperty(
+                        "location",
+                        out JsonElement location
+                    );
+                    bool hasUnit = argumentsJson.RootElement.TryGetProperty(
+                        "unit",
+                        out JsonElement unit
+                    );
+
+                    if (!hasLocation)
+                    {
+                        throw new System.ArgumentNullException(
+                            nameof(location),
+                            "The location argument is required."
+                        );
+                    }
+
+                    string toolResult = hasUnit
+                        ? GetCurrentWeather(location.GetString(), unit.GetString())
+                        : GetCurrentWeather(location.GetString());
+                    messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
+                    break;
+                }
 
             default:
-            {
-                // Handle other unexpected calls.
-                throw new NotImplementedException();
-            }
+                {
+                    // Handle other unexpected calls.
+                    throw new NotImplementedException();
+                }
         }
     }
 
@@ -188,5 +224,35 @@ public class TestAgent : GPT
         }
 
         Debug.Log($"Final Answer : {output.FinalAnswer}");
+    }
+}
+
+public class SimpleTestAgent : GPT
+{
+    public SimpleTestAgent() : base()
+    {
+        messages = new List<ChatMessage>()
+        {
+            new SystemChatMessage("You are a helpful assistant. Please respond with a simple greeting."),
+        };
+
+        options = new ChatCompletionOptions();
+    }
+
+    public async UniTask SimpleTest()
+    {
+        try
+        {
+            messages.Add(new UserChatMessage("Say hello and confirm you're working."));
+            var response = await SendGPTAsync<string>(messages, options);
+
+            Debug.Log($"✅ API Key Test Successful!");
+            Debug.Log($"Response: {response}");
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"❌ API Key Test Failed: {ex.Message}");
+            throw;
+        }
     }
 }
