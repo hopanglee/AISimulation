@@ -73,28 +73,7 @@ public abstract class Actor : Entity, ILocationAware
     public int SleepinessThreshold => sleepinessThreshold;
     #endregion
 
-    #region Day Plan System
-    [Header("Day Plan System")]
-    [SerializeField]
-    private DayPlanAgent dayPlanAgent;
 
-    [SerializeField]
-    private DayPlanAgent.DayPlan basicDayPlan; // 전날 밤에 세운 기본 계획
-
-    [SerializeField]
-    private DayPlanAgent.DayPlan finalDayPlan; // 기상 직후 조정된 최종 계획
-
-    [SerializeField]
-    private bool hasBasicPlan = false;
-
-    [SerializeField]
-    private bool hasFinalPlan = false;
-
-    public bool HasBasicPlan => hasBasicPlan;
-    public bool HasFinalPlan => hasFinalPlan;
-    public DayPlanAgent.DayPlan BasicDayPlan => basicDayPlan;
-    public DayPlanAgent.DayPlan FinalDayPlan => finalDayPlan;
-    #endregion
 
     [SerializeField]
     private Item _handItem;
@@ -117,7 +96,6 @@ public abstract class Actor : Entity, ILocationAware
         moveController = GetComponent<MoveController>();
         brain = new(this);
         sensor = new(this);
-        dayPlanAgent = new(this);
     }
 
     #region Update Function
@@ -400,114 +378,14 @@ public abstract class Actor : Entity, ILocationAware
         Debug.Log($"[{Name}] Sleep schedule set: {sleepHour:D2}:00 ~ {wakeUpHour:D2}:00");
     }
 
-    /// <summary>
-    /// 기본 하루 계획 생성 (전날 밤)
-    /// </summary>
-    public async UniTask CreateBasicDayPlan()
-    {
-        if (hasBasicPlan)
-        {
-            Debug.LogWarning($"[{Name}] Basic day plan already exists!");
-            return;
-        }
 
-        try
-        {
-            basicDayPlan = await dayPlanAgent.CreateBasicDayPlanAsync();
-            hasBasicPlan = true;
-            Debug.Log($"[{Name}] Basic day plan created: {basicDayPlan.Summary}");
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"[{Name}] Failed to create basic day plan: {ex.Message}");
-        }
-    }
 
     /// <summary>
-    /// 하루 계획 조정 (기상 직후)
-    /// </summary>
-    public async UniTask AdjustDayPlan()
-    {
-        if (!hasBasicPlan)
-        {
-            Debug.LogWarning($"[{Name}] No basic day plan to adjust!");
-            return;
-        }
-
-        if (hasFinalPlan)
-        {
-            Debug.LogWarning($"[{Name}] Final day plan already exists!");
-            return;
-        }
-
-        try
-        {
-            var adjustment = await dayPlanAgent.AdjustDayPlanAsync(basicDayPlan);
-
-            // 조정된 계획을 최종 계획으로 설정
-            finalDayPlan = new DayPlanAgent.DayPlan
-            {
-                Summary = basicDayPlan.Summary + " (조정됨: " + adjustment.Reason + ")",
-                Mood = adjustment.MoodAdjustment,
-                PriorityGoals = basicDayPlan.PriorityGoals,
-            };
-
-            // 조정된 활동들로 업데이트
-            finalDayPlan.Activities.Clear();
-            finalDayPlan.Activities.AddRange(adjustment.AdjustedActivities);
-            finalDayPlan.Activities.AddRange(adjustment.NewActivities);
-
-            hasFinalPlan = true;
-            Debug.Log($"[{Name}] Day plan adjusted: {adjustment.Reason}");
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"[{Name}] Failed to adjust day plan: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// 하루 계획 초기화 (새로운 하루 시작)
-    /// </summary>
-    public void ResetDayPlan()
-    {
-        hasBasicPlan = false;
-        hasFinalPlan = false;
-        basicDayPlan = null;
-        finalDayPlan = null;
-        Debug.Log($"[{Name}] Day plan reset for new day");
-    }
-
-    /// <summary>
-    /// 현재 시간에 맞는 활동 가져오기
+    /// 현재 시간에 맞는 활동 가져오기 (Brain을 통해)
     /// </summary>
     public DayPlanAgent.DailyActivity GetCurrentActivity()
     {
-        if (!hasFinalPlan)
-            return null;
-
-        var timeService = Services.Get<ITimeService>();
-        var currentTime = timeService.CurrentTime;
-        string currentTimeStr = $"{currentTime.hour:D2}:{currentTime.minute:D2}";
-
-        foreach (var activity in finalDayPlan.Activities)
-        {
-            if (IsTimeInRange(currentTimeStr, activity.StartTime, activity.EndTime))
-            {
-                return activity;
-            }
-        }
-
-        return null;
-    }
-
-    /// <summary>
-    /// 시간이 범위 내에 있는지 확인
-    /// </summary>
-    private bool IsTimeInRange(string currentTime, string startTime, string endTime)
-    {
-        return string.Compare(currentTime, startTime) >= 0
-            && string.Compare(currentTime, endTime) <= 0;
+        return brain?.GetCurrentActivity();
     }
 
     public virtual void Death()

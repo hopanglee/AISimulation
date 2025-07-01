@@ -15,6 +15,8 @@ public class Brain
     public MemoryAgent memoryAgent;
     private ActionExecutor actionExecutor;
     private CharacterMemoryManager memoryManager;
+    private DayPlanAgent dayPlanAgent;
+    private DayPlanAgent.DayPlan currentDayPlan; // 현재 하루 계획 저장
 
     public Brain(Actor actor)
     {
@@ -30,6 +32,9 @@ public class Brain
 
         // CharacterMemoryManager 초기화
         memoryManager = new CharacterMemoryManager(actor.Name);
+        
+        // DayPlanAgent 초기화
+        dayPlanAgent = new DayPlanAgent(actor);
     }
 
     private void RegisterActionHandlers()
@@ -241,6 +246,148 @@ public class Brain
         await ExecuteAction(reasoning);
     }
 
+    /// <summary>
+    /// 매일 아침 기상 시 오늘 하루 스케줄을 계획
+    /// </summary>
+    public async UniTask PlanToday()
+    {
+        Debug.Log($"[{actor.Name}] Planning today's schedule...");
+
+        // 1. 현재 상황 정보 수집
+        actor.sensor.UpdateAllSensors();
+        
+        // 2. 하루 계획을 위한 상황 설명 생성
+        string planningSituation = GenerateDayPlanningSituation();
+        
+        // 3. DayPlanAgent를 통해 하루 계획 생성 (상황 설명을 포함한 프롬프트 사용)
+        var dayPlan = await CreateDayPlanWithSituation(planningSituation);
+        
+        // 4. 계획을 메모리에 저장
+        StoreDayPlan(dayPlan);
+        
+        Debug.Log($"[{actor.Name}] Today's schedule planned successfully");
+    }
+
+    /// <summary>
+    /// 하루 계획을 저장
+    /// </summary>
+    private void StoreDayPlan(DayPlanAgent.DayPlan dayPlan)
+    {
+        currentDayPlan = dayPlan;
+        Debug.Log($"[{actor.Name}] Day plan stored: {dayPlan.Summary}");
+    }
+
+    /// <summary>
+    /// 현재 시간에 맞는 활동 가져오기
+    /// </summary>
+    public DayPlanAgent.DailyActivity GetCurrentActivity()
+    {
+        if (currentDayPlan == null)
+        {
+            Debug.Log($"[{actor.Name}] No day plan available");
+            return null;
+        }
+
+        var timeService = Services.Get<ITimeService>();
+        var currentTime = timeService.CurrentTime;
+        string currentTimeStr = $"{currentTime.hour:D2}:{currentTime.minute:D2}";
+
+        foreach (var activity in currentDayPlan.Activities)
+        {
+            if (IsTimeInRange(currentTimeStr, activity.StartTime, activity.EndTime))
+            {
+                Debug.Log($"[{actor.Name}] Current activity: {activity.Description} ({activity.StartTime}-{activity.EndTime})");
+                return activity;
+            }
+        }
+
+        Debug.Log($"[{actor.Name}] No activity scheduled for current time: {currentTimeStr}");
+        return null;
+    }
+
+    /// <summary>
+    /// 시간이 범위 내에 있는지 확인
+    /// </summary>
+    private bool IsTimeInRange(string currentTime, string startTime, string endTime)
+    {
+        return string.Compare(currentTime, startTime) >= 0
+            && string.Compare(currentTime, endTime) <= 0;
+    }
+
+    /// <summary>
+    /// 시간 정보를 HH:mm 형식으로 반환
+    /// </summary>
+    private string FormatTime(GameTime time)
+    {
+        return $"{time.hour:D2}:{time.minute:D2}";
+    }
+
+    /// <summary>
+    /// 하루 계획을 위한 상황 설명 생성
+    /// </summary>
+    private string GenerateDayPlanningSituation()
+    {
+        var sb = new System.Text.StringBuilder();
+
+        // 시간 정보 추가
+        var timeService = Services.Get<ITimeService>();
+        var currentTime = timeService.CurrentTime;
+        sb.AppendLine($"현재 시간: {FormatTime(currentTime)}");
+        sb.AppendLine($"오늘은 {GetDayOfWeek(currentTime)}입니다.");
+
+        sb.AppendLine($"당신은 {actor.curLocation.locationName}에 있습니다.");
+        sb.AppendLine($"현재 상태: 배고픔({actor.Hunger}), 갈증({actor.Thirst}), 피로({actor.Stamina}), 스트레스({actor.Stress}), 졸림({actor.Sleepiness})");
+
+        // 캐릭터의 메모리 정보 추가
+        var memorySummary = memoryManager.GetMemorySummary();
+        sb.AppendLine("\n=== 당신의 기억 ===");
+        sb.AppendLine(memorySummary);
+
+        // 전체 월드의 Area 정보 제공
+        var pathfindingService = Services.Get<IPathfindingService>();
+        var allAreas = pathfindingService.GetAllAreaInfo();
+
+        sb.AppendLine("\n=== 사용 가능한 장소들 ===");
+        foreach (var kvp in allAreas)
+        {
+            var areaInfo = kvp.Value;
+            sb.AppendLine($"- {areaInfo.locationName}: {string.Join(", ", areaInfo.connectedAreas)}와 연결됨");
+        }
+
+        sb.AppendLine("\n오늘 하루 동안 어떤 일을 하고 싶으신가요? 구체적인 시간대별 계획을 세워주세요.");
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// 상황 설명을 포함한 하루 계획 생성
+    /// </summary>
+    private async UniTask<DayPlanAgent.DayPlan> CreateDayPlanWithSituation(string situation)
+    {
+        // DayPlanAgent의 메시지에 상황 설명 추가
+        dayPlanAgent.messages.Add(new OpenAI.Chat.UserChatMessage(situation));
+        
+        // 하루 계획 생성
+        var dayPlan = await dayPlanAgent.CreateBasicDayPlanAsync();
+        
+        return dayPlan;
+    }
+
+    /// <summary>
+    /// 요일 계산 (간단한 구현)
+    /// </summary>
+    private string GetDayOfWeek(GameTime time)
+    {
+        // 2024년 1월 1일이 월요일이라고 가정
+        var startDate = new System.DateTime(2024, 1, 1);
+        var currentDate = new System.DateTime(time.year, time.month, time.day);
+        var daysDiff = (currentDate - startDate).Days;
+        var dayOfWeek = (daysDiff % 7);
+        
+        string[] days = { "월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일" };
+        return days[dayOfWeek];
+    }
+
     private string GenerateSituationDescription(
         SerializableDictionary<string, Entity> lookable,
         Sensor.EntityDictionary interactable,
@@ -252,7 +399,7 @@ public class Brain
         // 시간 정보 추가
         var timeService = Services.Get<ITimeService>();
         var currentTime = timeService.CurrentTime;
-        sb.AppendLine($"현재 시간: {currentTime}");
+        sb.AppendLine($"현재 시간: {FormatTime(currentTime)}");
         sb.AppendLine($"수면 상태: {(actor.IsSleeping ? "수면 중" : "깨어있음")}");
 
         sb.AppendLine($"당신은 {actor.curLocation.locationName}에 있습니다.");
