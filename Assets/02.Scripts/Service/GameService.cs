@@ -37,18 +37,13 @@ public class GameService : MonoBehaviour, IGameService
     [SerializeField, Range(1f, 10f)]
     private float thinkInterval = 3.0f; // Think 실행 간격 (초)
 
-    [SerializeField, Range(0.1f, 2f)]
-    private float dayCycleInterval = 0.5f; // 하루 사이클 간격 (초)
-
     [Header("Time Settings")]
-    [SerializeField, Range(0.1f, 10f)]
+    [SerializeField, Range(1f, 60f)]
     private float timeScale = 1f; // 시간 흐름 속도
 
     private bool isSimulationRunning = false;
-    private bool isDayCycleRunning = false;
     private List<Actor> allActors = new List<Actor>();
     private float lastThinkTime = 0f;
-    private float lastDayCycleTime = 0f;
 
     private ITimeService timeService;
 
@@ -84,25 +79,21 @@ public class GameService : MonoBehaviour, IGameService
         // 모든 Actor 찾기
         FindAllActors();
 
+        // 시간 흐름 시작 전, 시간을 5:50으로 맞춤
+        timeService.SetTime(5, 50);
+
         // 시간 흐름 시작
         timeService.TimeScale = timeScale;
         timeService.StartTimeFlow();
 
         // 시뮬레이션 시작
         isSimulationRunning = true;
-        isDayCycleRunning = true;
 
         // 시간 이벤트 구독
         timeService.SubscribeToTimeEvent(OnTimeChanged);
 
-        // 하루 계획 및 행동 실행 루틴 시작
-        _ = RunDayCycleRoutine();
-
-        // 주기적 Think 실행 루틴 시작
-        _ = RunThinkRoutine();
-
-        // 하이브리드 하루 계획 루틴 시작
-        _ = RunHybridDayPlanningRoutine();
+        // 기상 시 하루 계획 루틴 시작 (DayPlan이 끝난 후에만 Think 루틴 시작)
+        _ = RunDayPlanningRoutine(true);
 
         Debug.Log($"[GameService] Simulation started with {allActors.Count} actors");
         
@@ -119,7 +110,6 @@ public class GameService : MonoBehaviour, IGameService
 
         Debug.Log("[GameService] Pausing simulation...");
         isSimulationRunning = false;
-        isDayCycleRunning = false;
         timeService?.StopTimeFlow();
     }
 
@@ -133,22 +123,18 @@ public class GameService : MonoBehaviour, IGameService
 
         Debug.Log("[GameService] Resuming simulation...");
         isSimulationRunning = true;
-        isDayCycleRunning = true;
         timeService?.StartTimeFlow();
 
         // 루틴 재시작
-        _ = RunDayCycleRoutine();
+        _ = RunDayPlanningRoutine();
         _ = RunThinkRoutine();
-        _ = RunHybridDayPlanningRoutine();
     }
 
     public void StopSimulation()
     {
         Debug.Log("[GameService] Stopping simulation...");
         isSimulationRunning = false;
-        isDayCycleRunning = false;
         lastThinkTime = 0f;
-        lastDayCycleTime = 0f;
 
         timeService?.StopTimeFlow();
         timeService?.UnsubscribeFromTimeEvent(OnTimeChanged);
@@ -190,11 +176,12 @@ public class GameService : MonoBehaviour, IGameService
     }
 
     /// <summary>
-    /// 하이브리드 하루 계획 루틴 (전날 밤 + 기상 직후)
+    /// 기상 시 하루 계획 루틴 (계획 중에는 게임 시간 정지)
     /// </summary>
-    private async UniTask RunHybridDayPlanningRoutine()
+    private async UniTask RunDayPlanningRoutine(bool startThinkAfter = false)
     {
-        Debug.Log("[GameService] Starting hybrid day planning routine");
+        Debug.Log("[GameService] Starting day planning routine");
+        bool firstDayPlanDone = false;
 
         while (isSimulationRunning)
         {
@@ -202,61 +189,53 @@ public class GameService : MonoBehaviour, IGameService
             {
                 var currentTime = timeService.CurrentTime;
                 
-                // 전날 밤 21시에 기본 계획 생성
-                if (currentTime.hour == 21 && currentTime.minute == 0)
+                // 기상 시간(6시)에 하루 계획 생성
+                if (currentTime.hour == 6 && currentTime.minute == 0)
                 {
-                    Debug.Log("[GameService] Starting basic day planning for all actors...");
+                    Debug.Log("[GameService] Starting day planning for all actors...");
+                    
+                    // DayPlan 실행 중에는 게임 시간 정지
+                    timeService.StopTimeFlow();
+                    Debug.Log("[GameService] Time paused for DayPlan execution");
+                    
+                    // 모든 Actor 기상 처리
+                    foreach (var actor in allActors)
+                    {
+                        if (actor != null && actor.IsSleeping)
+                        {
+                            actor.WakeUp();
+                        }
+                    }
                     
                     var planningTasks = new List<UniTask>();
                     foreach (var actor in allActors)
                     {
                         if (actor != null && !actor.IsSleeping) // 깨어있는 액터만 계획 생성
                         {
-                            planningTasks.Add(actor.CreateBasicDayPlan());
+                            planningTasks.Add(actor.brain.PlanToday());
                         }
                     }
                     
                     await UniTask.WhenAll(planningTasks);
-                    Debug.Log("[GameService] Basic day planning completed for all actors");
-                }
-                
-                // 기상 직후 6시에 계획 조정
-                if (currentTime.hour == 6 && currentTime.minute == 0)
-                {
-                    Debug.Log("[GameService] Starting day plan adjustment for all actors...");
                     
-                    var adjustmentTasks = new List<UniTask>();
-                    foreach (var actor in allActors)
+                    // DayPlan 완료 후 게임 시간 재개
+                    timeService.StartTimeFlow();
+                    Debug.Log("[GameService] Time resumed after DayPlan execution");
+                    Debug.Log("[GameService] Day planning completed for all actors");
+
+                    if (startThinkAfter && !firstDayPlanDone)
                     {
-                        if (actor != null && actor.HasBasicPlan && !actor.HasFinalPlan)
-                        {
-                            adjustmentTasks.Add(actor.AdjustDayPlan());
-                        }
+                        firstDayPlanDone = true;
+                        // 첫 DayPlan이 끝난 후에만 Think 루틴 시작
+                        _ = RunThinkRoutine();
                     }
-                    
-                    await UniTask.WhenAll(adjustmentTasks);
-                    Debug.Log("[GameService] Day plan adjustment completed for all actors");
-                }
-                
-                // 자정에 하루 계획 초기화
-                if (currentTime.hour == 0 && currentTime.minute == 0)
-                {
-                    Debug.Log("[GameService] Resetting day plans for all actors...");
-                    
-                    foreach (var actor in allActors)
-                    {
-                        if (actor != null)
-                        {
-                            actor.ResetDayPlan();
-                        }
-                    }
-                    
-                    Debug.Log("[GameService] Day plans reset for all actors");
                 }
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"[GameService] Error in hybrid day planning routine: {ex.Message}");
+                Debug.LogError($"[GameService] Error in day planning routine: {ex.Message}");
+                // 에러 발생 시에도 시간 재개
+                timeService.StartTimeFlow();
             }
             
             await UniTask.Yield(); // 1분마다 체크
@@ -264,29 +243,7 @@ public class GameService : MonoBehaviour, IGameService
     }
 
     /// <summary>
-    /// 하루 계획 및 행동 실행 루틴
-    /// </summary>
-    private async UniTask RunDayCycleRoutine()
-    {
-        Debug.Log($"[GameService] Starting day cycle routine");
-
-        while (isDayCycleRunning)
-        {
-            await UniTask.Yield();
-
-            if (!isDayCycleRunning)
-                break;
-
-            // 기상 시간에 하루 계획 실행
-            await ExecuteDayPlanning();
-
-            // 하루 계획 완료 후 잠시 대기
-            await UniTask.Yield();
-        }
-    }
-
-    /// <summary>
-    /// 주기적 Think 실행 루틴
+    /// 주기적 Think 실행 루틴 (Think 중에는 게임 시간 정지)
     /// </summary>
     private async UniTask RunThinkRoutine()
     {
@@ -309,59 +266,17 @@ public class GameService : MonoBehaviour, IGameService
                 if (!isSimulationRunning)
                     break;
 
+                // Think 실행 중에는 게임 시간 정지
+                timeService.StopTimeFlow();
+                Debug.Log("[GameService] Time paused for Think execution");
+
                 // 모든 Actor의 Think 실행 (수면 중이 아닌 Actor만)
                 await ExecuteAllActorThinks();
+
+                // Think 완료 후 게임 시간 재개
+                timeService.StartTimeFlow();
+                Debug.Log("[GameService] Time resumed after Think execution");
             }
-        }
-    }
-
-    /// <summary>
-    /// 하루 계획 실행 (기상 시간에만)
-    /// </summary>
-    private async UniTask ExecuteDayPlanning()
-    {
-        var currentTime = timeService.CurrentTime;
-
-        Debug.Log($"[GameService] Checking day planning for {currentTime}");
-
-        var tasks = new List<UniTask>();
-
-        foreach (var actor in allActors)
-        {
-            if (actor != null && actor.brain != null && !actor.IsSleeping)
-            {
-                // 기상 시간인 Actor만 하루 계획 실행
-                if (actor.IsWakeUpTime())
-                {
-                    tasks.Add(ExecuteActorDayPlanning(actor));
-                }
-            }
-        }
-
-        // 모든 Actor의 하루 계획을 병렬로 실행
-        if (tasks.Count > 0)
-        {
-            await UniTask.WhenAll(tasks);
-            Debug.Log($"[GameService] Day planning completed for {currentTime}");
-        }
-    }
-
-    /// <summary>
-    /// 개별 Actor의 하루 계획 실행
-    /// </summary>
-    private async UniTask ExecuteActorDayPlanning(Actor actor)
-    {
-        try
-        {
-            // Actor의 Brain을 통해 하루 계획 세우기
-            await actor.brain.Think();
-
-            var currentTime = timeService.CurrentTime;
-            Debug.Log($"[GameService] {actor.Name} completed day planning for {currentTime}");
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"[GameService] Error in day planning for {actor.Name}: {ex.Message}");
         }
     }
 

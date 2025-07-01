@@ -99,6 +99,13 @@ public class ActionAgent : GPT
                 break;
             }
 
+            case nameof(GetCurrentActivity):
+            {
+                string toolResult = GetCurrentActivity();
+                messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
+                break;
+            }
+
             default:
             {
                 Debug.LogWarning($"Unknown tool call: {toolCall.FunctionName}");
@@ -180,6 +187,30 @@ public class ActionAgent : GPT
         return $"Current location: {actor.curLocation?.locationName ?? "Unknown"}";
     }
 
+    /// <summary>
+    /// 현재 시간에 맞는 하루 계획 활동을 반환
+    /// </summary>
+    private string GetCurrentActivity()
+    {
+        Debug.Log("GetCurrentActivity called");
+        try
+        {
+            var currentActivity = actor.brain.GetCurrentActivity();
+            if (currentActivity != null)
+            {
+                return $"Current scheduled activity: {currentActivity.Description} ({currentActivity.StartTime}-{currentActivity.EndTime}) at {currentActivity.Location}";
+            }
+            else
+            {
+                return "No scheduled activity for current time";
+            }
+        }
+        catch (System.Exception e)
+        {
+            return $"Error getting current activity: {e.Message}";
+        }
+    }
+
     // Tool 정의들 (필드 초기화)
     private readonly ChatTool getWorldAreaInfoTool = ChatTool.CreateFunctionTool(
         functionName: nameof(GetWorldAreaInfo),
@@ -210,6 +241,11 @@ public class ActionAgent : GPT
         functionDescription: "Get information about the current location of the agent"
     );
 
+    private readonly ChatTool getCurrentActivityTool = ChatTool.CreateFunctionTool(
+        functionName: nameof(GetCurrentActivity),
+        functionDescription: "Get the currently scheduled activity from today's plan"
+    );
+
     public ActionAgent(Actor actor)
         : base()
     {
@@ -222,7 +258,7 @@ public class ActionAgent : GPT
 
         options = new()
         {
-            Tools = { getWorldAreaInfoTool, getPathToLocationTool, getCurrentLocationInfoTool },
+            Tools = { getWorldAreaInfoTool, getPathToLocationTool, getCurrentLocationInfoTool, getCurrentActivityTool },
             ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                 jsonSchemaFormatName: "action_reasoning",
                 jsonSchema: BinaryData.FromBytes(

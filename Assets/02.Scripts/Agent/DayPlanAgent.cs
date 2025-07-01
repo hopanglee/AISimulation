@@ -53,26 +53,7 @@ public class DayPlanAgent : GPT
         public int Priority { get; set; } = 1; // 1-5, 높을수록 중요
     }
 
-    /// <summary>
-    /// 계획 조정 요청 구조
-    /// </summary>
-    public class PlanAdjustment
-    {
-        [JsonProperty("reason")]
-        public string Reason { get; set; } = "";
 
-        [JsonProperty("adjusted_activities")]
-        public List<DailyActivity> AdjustedActivities { get; set; } = new List<DailyActivity>();
-
-        [JsonProperty("removed_activities")]
-        public List<string> RemovedActivities { get; set; } = new List<string>();
-
-        [JsonProperty("new_activities")]
-        public List<DailyActivity> NewActivities { get; set; } = new List<DailyActivity>();
-
-        [JsonProperty("mood_adjustment")]
-        public string MoodAdjustment { get; set; } = "";
-    }
 
     public DayPlanAgent(Actor actor)
         : base()
@@ -169,23 +150,7 @@ public class DayPlanAgent : GPT
         return response;
     }
 
-    /// <summary>
-    /// 하루 계획 조정 (기상 직후)
-    /// </summary>
-    public async UniTask<PlanAdjustment> AdjustDayPlanAsync(DayPlan basicPlan)
-    {
-        var timeService = Services.Get<ITimeService>();
-        var currentTime = timeService.CurrentTime;
 
-        string prompt = GenerateAdjustmentPrompt(currentTime, basicPlan);
-        messages.Add(new UserChatMessage(prompt));
-
-        var response = await SendGPTAsync<PlanAdjustment>(messages, options);
-
-        Debug.Log($"[DayPlanAgent] {actor.Name}의 하루 계획 조정 완료: {response.Reason}");
-
-        return response;
-    }
 
     /// <summary>
     /// 기본 계획 프롬프트 생성
@@ -212,35 +177,7 @@ public class DayPlanAgent : GPT
         return sb.ToString();
     }
 
-    /// <summary>
-    /// 계획 조정 프롬프트 생성
-    /// </summary>
-    private string GenerateAdjustmentPrompt(GameTime currentTime, DayPlan basicPlan)
-    {
-        var sb = new StringBuilder();
 
-        sb.AppendLine($"기상 직후({currentTime}) 계획 조정이 필요합니다.");
-        sb.AppendLine(
-            $"현재 상태: 배고픔({actor.Hunger}), 갈증({actor.Thirst}), 피로({actor.Stamina}), 스트레스({actor.Stress}), 졸림({actor.Sleepiness})"
-        );
-
-        sb.AppendLine("\n=== 기본 계획 ===");
-        sb.AppendLine(basicPlan.Summary);
-        sb.AppendLine("활동들:");
-        foreach (var activity in basicPlan.Activities)
-        {
-            sb.AppendLine(
-                $"- {activity.StartTime}-{activity.EndTime}: {activity.Description} ({activity.Location})"
-            );
-        }
-
-        sb.AppendLine("\n현재 컨디션과 상황을 고려해서 계획을 조정해주세요.");
-        sb.AppendLine(
-            "너무 피곤하다면 쉬는 시간을 늘리고, 컨디션이 좋다면 더 활발한 활동을 추가해주세요."
-        );
-
-        return sb.ToString();
-    }
 
     /// <summary>
     /// 다음 날 계산
