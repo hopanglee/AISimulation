@@ -1,10 +1,12 @@
  using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using OpenAI.Chat;
 using UnityEngine;
+using System.Linq; // Added for .Select()
 
 /// <summary>
 /// 구체적 행동을 담당하는 전문화된 Agent (Stanford Generative Agent 스타일)
@@ -62,6 +64,11 @@ public class ActionPlannerAgent : GPT
         public string Status { get; set; } = "pending";
     }
 
+    private readonly ChatTool getUserMemoryTool = ChatTool.CreateFunctionTool(
+        functionName: "GetUserMemory",
+        functionDescription: "Query the agent's memory (recent events, observations, conversations, etc.)"
+    );
+
     public ActionPlannerAgent(Actor actor)
         : base()
     {
@@ -74,11 +81,9 @@ public class ActionPlannerAgent : GPT
         string systemPrompt = PromptLoader.LoadActionPlannerAgentPrompt();
         messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
 
-        // 실제 존재하는 Area 목록 가져오기
-        var availableLocations = GetAvailableLocations();
-
         options = new()
         {
+            Tools = { getWorldAreaInfoTool, getUserMemoryTool },
             ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                 jsonSchemaFormatName: "action_plan",
                 jsonSchema: BinaryData.FromBytes(
@@ -89,11 +94,11 @@ public class ActionPlannerAgent : GPT
                             ""properties"": {{
                                 ""summary"": {{
                                     ""type"": ""string"",
-                                    ""description"": ""Overall summary of the specific actions""
+                                    ""description"": ""Brief summary of the action plan""
                                 }},
                                 ""mood"": {{
                                     ""type"": ""string"",
-                                    ""description"": ""Today's mood or condition""
+                                    ""description"": ""Expected mood for tomorrow""
                                 }},
                                 ""specific_actions"": {{
                                     ""type"": ""array"",
@@ -101,47 +106,22 @@ public class ActionPlannerAgent : GPT
                                         ""type"": ""object"",
                                         ""additionalProperties"": false,
                                         ""properties"": {{
-                                            ""action_name"": {{
-                                                ""type"": ""string"",
-                                                ""description"": ""Name of the specific action""
-                                            }},
-                                            ""description"": {{
-                                                ""type"": ""string"",
-                                                ""description"": ""Detailed description of the specific action""
-                                            }},
-                                            ""start_time"": {{
-                                                ""type"": ""string"",
-                                                ""description"": ""Start time (HH:MM format)""
-                                            }},
-                                            ""duration_minutes"": {{
-                                                ""type"": ""integer"",
-                                                ""description"": ""Duration in minutes""
-                                            }},
+                                            ""action_name"": {{ ""type"": ""string"" }},
+                                            ""description"": {{ ""type"": ""string"" }},
+                                            ""start_time"": {{ ""type"": ""string"", ""pattern"": ""^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"" }},
+                                            ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 5, ""maximum"": 120 }},
                                             ""parameters"": {{
                                                 ""type"": ""object"",
-                                                ""additionalProperties"": false,
-                                                ""description"": ""Parameters for the specific action""
+                                                ""description"": ""Parameters for the action (e.g., target location, object name)""
                                             }},
-                                            ""location"": {{
-                                                ""type"": ""string"",
-                                                ""enum"": {JsonConvert.SerializeObject(availableLocations)},
-                                                ""description"": ""Location of the specific action""
-                                            }},
-                                            ""parent_activity"": {{
-                                                ""type"": ""string"",
-                                                ""description"": ""Which detailed activity this specific action belongs to""
-                                            }},
-                                            ""parent_high_level_task"": {{
-                                                ""type"": ""string"",
-                                                ""description"": ""Which high-level task this specific action belongs to""
-                                            }},
-                                            ""status"": {{
-                                                ""type"": ""string"",
-                                                ""description"": ""Status of the specific action (e.g., 'pending', 'completed', 'failed')""
-                                            }}
+                                            ""location"": {{ ""type"": ""string"" }},
+                                            ""parent_activity"": {{ ""type"": ""string"" }},
+                                            ""parent_high_level_task"": {{ ""type"": ""string"" }},
+                                            ""status"": {{ ""type"": ""string"", ""enum"": [""pending"", ""in_progress"", ""completed""] }}
                                         }},
-                                        ""required"": [""action_name"", ""description"", ""start_time"", ""duration_minutes"", ""location"", ""parent_activity"", ""parent_high_level_task"", ""status""]
-                                    }}
+                                        ""required"": [""action_name"", ""description"", ""start_time"", ""duration_minutes"", ""parameters"", ""location"", ""parent_activity"", ""parent_high_level_task"", ""status""]
+                                    }},
+                                    ""description"": ""List of specific actions for tomorrow""
                                 }}
                             }},
                             ""required"": [""summary"", ""mood"", ""specific_actions""]
@@ -151,6 +131,42 @@ public class ActionPlannerAgent : GPT
                 jsonSchemaIsStrict: true
             ),
         };
+    }
+
+    // Tool 정의들
+    private readonly ChatTool getWorldAreaInfoTool = ChatTool.CreateFunctionTool(
+        functionName: "GetWorldAreaInfo",
+        functionDescription: "Get information about all areas in the world and their connections"
+    );
+
+    protected override void ExecuteToolCall(ChatToolCall toolCall)
+    {
+        switch (toolCall.FunctionName)
+        {
+            case "GetWorldAreaInfo":
+            {
+                string toolResult = GetWorldAreaInfo();
+                messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
+                break;
+            }
+
+            default:
+            {
+                Debug.LogWarning($"Unknown tool call: {toolCall.FunctionName}");
+                messages.Add(new ToolChatMessage(toolCall.Id, "Tool not implemented"));
+                break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 전체 월드의 Area 정보를 반환
+    /// </summary>
+    private string GetWorldAreaInfo()
+    {
+        Debug.Log("GetWorldAreaInfo called from ActionPlannerAgent");
+        var locationService = Services.Get<ILocationService>();
+        return locationService.GetWorldAreaInfo();
     }
 
     /// <summary>
@@ -177,17 +193,16 @@ public class ActionPlannerAgent : GPT
     private string GenerateActionPlanPrompt(DetailedPlannerAgent.DetailedPlan detailedPlan, GameTime tomorrow)
     {
         var sb = new StringBuilder();
+        var timeService = Services.Get<ITimeService>();
+        var currentTime = $"{timeService.CurrentTime.hour:D2}:{timeService.CurrentTime.minute:D2}";
         sb.AppendLine($"Create specific actions for the detailed activities in the plan for tomorrow ({tomorrow}) based on the following context:");
         sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({actor.Sleepiness})");
         sb.AppendLine($"Current location: {actor.curLocation.LocationToString()}");
-
-        // 캐릭터의 메모리 정보 추가
-        var memoryManager = new CharacterMemoryManager(actor.Name);
-        var memorySummary = memoryManager.GetMemorySummary();
-        sb.AppendLine("\n=== Memory Information ===");
-        sb.AppendLine(memorySummary);
-
-        // 세부 활동 계획 정보 제공
+        sb.AppendLine($"The first activity MUST start exactly at the current time: {currentTime}.");
+        sb.AppendLine("Do not leave any gap before the first activity. If the agent is awake, the first activity should begin at the current time.");
+        sb.AppendLine("Example:");
+        sb.AppendLine($"- {currentTime}: Wake up and stretch");
+        sb.AppendLine($"- {currentTime}: Go to Kitchen and drink water");
         sb.AppendLine("\n=== Detailed Activities Plan ===");
         sb.AppendLine($"Summary: {detailedPlan.Summary}");
         sb.AppendLine($"Mood: {detailedPlan.Mood}");
@@ -197,30 +212,6 @@ public class ActionPlannerAgent : GPT
             sb.AppendLine($"- {activity.ActivityName}: {activity.Description} ({activity.StartTime}-{activity.EndTime}) at {activity.Location}");
             sb.AppendLine($"  Parent Task: {activity.ParentTask}");
         }
-
-        // 실제 존재하는 Area 정보 제공
-        var areas = UnityEngine.Object.FindObjectsByType<Area>(FindObjectsSortMode.None);
-        sb.AppendLine("\n=== Available Locations (Full Path) ===");
-        foreach (var area in areas)
-        {
-            if (string.IsNullOrEmpty(area.locationName))
-                continue;
-                
-            var fullLocationPath = area.LocationToString();
-            var connectedAreaNames = new List<string>();
-            foreach (var connectedArea in area.connectedAreas)
-            {
-                connectedAreaNames.Add(connectedArea.locationName);
-            }
-            sb.AppendLine($"- {fullLocationPath}: Connected to {string.Join(", ", connectedAreaNames)}");
-        }
-
-        sb.AppendLine("\nFor each detailed activity in the plan, create 1-3 specific actions.");
-        sb.AppendLine("Each specific action should have an action name, description, start and end time, duration in minutes, parameters, and location.");
-        sb.AppendLine("Use only the actual locations listed above.");
-        sb.AppendLine("For locations, use the exact full path format (e.g., 'Kitchen in Apartment').");
-        sb.AppendLine("Make sure each specific action is executable and has appropriate parameters.");
-
         return sb.ToString();
     }
 
@@ -267,5 +258,15 @@ public class ActionPlannerAgent : GPT
             // 기본 장소들 반환 (에러 시)
             return new List<string> { "Apartment", "Living Room in Apartment", "Kitchen in Apartment", "Bedroom in Apartment" };
         }
+    }
+
+    // Tool 핸들러
+    private string GetUserMemory(string query = null)
+    {
+        var memoryManager = new CharacterMemoryManager(actor.Name);
+        if (string.IsNullOrEmpty(query))
+            return memoryManager.GetMemorySummary();
+        // 쿼리 기반 필터링은 필요시 구현
+        return memoryManager.GetMemorySummary();
     }
 } 

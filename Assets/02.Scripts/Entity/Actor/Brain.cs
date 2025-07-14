@@ -737,24 +737,25 @@ public class Brain
         sb.AppendLine(memorySummary);
 
         // 전체 월드의 Area 정보 제공
-        var pathfindingService = Services.Get<IPathfindingService>();
-        var allAreas = pathfindingService.GetAllAreaInfo();
-        var allAreasByFullPath = pathfindingService.GetAllAreaInfoByFullPath();
+        // Area 정보는 Tool에서만 제공하므로 여기서는 제거
+        // var pathfindingService = Services.Get<IPathfindingService>();
+        // var allAreas = pathfindingService.GetAllAreaInfo();
 
-        sb.AppendLine("\n=== Available Locations ===");
-        foreach (var kvp in allAreas)
-        {
-            var areaInfo = kvp.Value;
-            sb.AppendLine($"- {areaInfo.locationName}: Connected to {string.Join(", ", areaInfo.connectedAreas)}");
-        }
+        // sb.AppendLine("\n=== Available Locations ===");
+        // foreach (var kvp in allAreas)
+        // {
+        //     var areaInfo = kvp.Value;
+        //     sb.AppendLine($"- {areaInfo.locationName}: Connected to {string.Join(", ", areaInfo.connectedAreas)}");
+        // }
 
-        sb.AppendLine("\n=== Available Locations (Full Path) ===");
-        foreach (var kvp in allAreasByFullPath)
-        {
-            var fullPath = kvp.Key;
-            var areaInfo = kvp.Value;
-            sb.AppendLine($"- {fullPath}: Connected to {string.Join(", ", areaInfo.connectedAreasFullPath)}");
-        }
+        // Full Path 정보는 Tool에서만 제공하므로 여기서는 제거
+        // sb.AppendLine("\n=== Available Locations (Full Path) ===");
+        // foreach (var kvp in allAreasByFullPath)
+        // {
+        //     var fullPath = kvp.Key;
+        //     var areaInfo = kvp.Value;
+        //     sb.AppendLine($"- {fullPath}: Connected to {string.Join(", ", areaInfo.connectedAreasFullPath)}");
+        // }
 
         sb.AppendLine("\nWhat would you like to do today? Please create a specific time-based plan.");
 
@@ -873,17 +874,26 @@ public class Brain
         }
 
         // Provide information about all areas in the world
-        var pathfindingService = Services.Get<IPathfindingService>();
-        var allAreas = pathfindingService.GetAllAreaInfo();
+        // Area 정보는 Tool에서만 제공하므로 여기서는 제거
+        // var pathfindingService = Services.Get<IPathfindingService>();
+        // var allAreas = pathfindingService.GetAllAreaInfo();
+        // sb.AppendLine("All locations in the world:");
+        // foreach (var kvp in allAreas)
+        // {
+        //     var areaInfo = kvp.Value;
+        //     sb.AppendLine(
+        //         $"- {areaInfo.locationName}: Connected to {string.Join(", ", areaInfo.connectedAreas)}"
+        //     );
+        // }
 
-        sb.AppendLine("All locations in the world:");
-        foreach (var kvp in allAreas)
-        {
-            var areaInfo = kvp.Value;
-            sb.AppendLine(
-                $"- {areaInfo.locationName}: Connected to {string.Join(", ", areaInfo.connectedAreas)}"
-            );
-        }
+        // Full Path 정보는 Tool에서만 제공하므로 여기서는 제거
+        // sb.AppendLine("\n=== Available Locations (Full Path) ===");
+        // foreach (var kvp in allAreasByFullPath)
+        // {
+        //     var fullPath = kvp.Key;
+        //     var areaInfo = kvp.Value;
+        //     sb.AppendLine($"- {fullPath}: Connected to {string.Join(", ", areaInfo.connectedAreasFullPath)}");
+        // }
 
         sb.AppendLine("What would you like to do?");
 

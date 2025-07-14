@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using OpenAI.Chat;
 using UnityEngine;
+using System.Linq; // Added for .Select()
 
 /// <summary>
 /// 세부 활동을 담당하는 전문화된 Agent (Stanford Generative Agent 스타일)
-/// 고수준 작업을 분 단위의 구체적 활동으로 분해
+/// 고수준 작업을 구체적이고 실행 가능한 세부 활동으로 분해
 /// </summary>
 public class DetailedPlannerAgent : GPT
 {
@@ -30,7 +32,7 @@ public class DetailedPlannerAgent : GPT
     }
 
     /// <summary>
-    /// 세부 활동 (분 단위 구체적 행동)
+    /// 세부 활동 (시간 기반 세부 활동)
     /// </summary>
     public class DetailedActivity
     {
@@ -62,11 +64,16 @@ public class DetailedPlannerAgent : GPT
         public string Status { get; set; } = "pending";
     }
 
+    private readonly ChatTool getUserMemoryTool = ChatTool.CreateFunctionTool(
+        functionName: "GetUserMemory",
+        functionDescription: "Query the agent's memory (recent events, observations, conversations, etc.)"
+    );
+
     public DetailedPlannerAgent(Actor actor)
         : base()
     {
         this.actor = actor;
-        
+
         // Actor 이름 설정 (로깅용)
         SetActorName(actor.Name);
 
@@ -74,11 +81,9 @@ public class DetailedPlannerAgent : GPT
         string systemPrompt = PromptLoader.LoadDetailedPlannerAgentPrompt();
         messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
 
-        // 실제 존재하는 Area 목록 가져오기
-        var availableLocations = GetAvailableLocations();
-
         options = new()
         {
+            Tools = { getWorldAreaInfoTool, getUserMemoryTool },
             ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                 jsonSchemaFormatName: "detailed_plan",
                 jsonSchema: BinaryData.FromBytes(
@@ -89,11 +94,11 @@ public class DetailedPlannerAgent : GPT
                             ""properties"": {{
                                 ""summary"": {{
                                     ""type"": ""string"",
-                                    ""description"": ""Overall summary of the detailed activities""
+                                    ""description"": ""Brief summary of the detailed plan""
                                 }},
                                 ""mood"": {{
                                     ""type"": ""string"",
-                                    ""description"": ""Today's mood or condition""
+                                    ""description"": ""Expected mood for tomorrow""
                                 }},
                                 ""detailed_activities"": {{
                                     ""type"": ""array"",
@@ -101,46 +106,19 @@ public class DetailedPlannerAgent : GPT
                                         ""type"": ""object"",
                                         ""additionalProperties"": false,
                                         ""properties"": {{
-                                            ""activity_name"": {{
-                                                ""type"": ""string"",
-                                                ""description"": ""Name of the detailed activity""
-                                            }},
-                                            ""description"": {{
-                                                ""type"": ""string"",
-                                                ""description"": ""Detailed description of the detailed activity""
-                                            }},
-                                            ""start_time"": {{
-                                                ""type"": ""string"",
-                                                ""description"": ""Start time (HH:MM format)""
-                                            }},
-                                            ""end_time"": {{
-                                                ""type"": ""string"",
-                                                ""description"": ""End time (HH:MM format)""
-                                            }},
-                                            ""duration_minutes"": {{
-                                                ""type"": ""integer"",
-                                                ""description"": ""Duration in minutes""
-                                            }},
-                                            ""location"": {{
-                                                ""type"": ""string"",
-                                                ""enum"": {JsonConvert.SerializeObject(availableLocations)},
-                                                ""description"": ""Location of the detailed activity""
-                                            }},
-                                            ""parent_task"": {{
-                                                ""type"": ""string"",
-                                                ""description"": ""Which high-level task this detailed activity belongs to""
-                                            }},
-                                            ""parent_high_level_task"": {{
-                                                ""type"": ""string"",
-                                                ""description"": ""Which high-level task this detailed activity belongs to""
-                                            }},
-                                            ""status"": {{
-                                                ""type"": ""string"",
-                                                ""description"": ""Status of the detailed activity (e.g., 'pending', 'completed', 'failed')""
-                                            }}
+                                            ""activity_name"": {{ ""type"": ""string"" }},
+                                            ""description"": {{ ""type"": ""string"" }},
+                                            ""start_time"": {{ ""type"": ""string"", ""pattern"": ""^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"" }},
+                                            ""end_time"": {{ ""type"": ""string"", ""pattern"": ""^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"" }},
+                                            ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 15, ""maximum"": 240 }},
+                                            ""location"": {{ ""type"": ""string"" }},
+                                            ""parent_task"": {{ ""type"": ""string"" }},
+                                            ""parent_high_level_task"": {{ ""type"": ""string"" }},
+                                            ""status"": {{ ""type"": ""string"", ""enum"": [""pending"", ""in_progress"", ""completed""] }}
                                         }},
                                         ""required"": [""activity_name"", ""description"", ""start_time"", ""end_time"", ""duration_minutes"", ""location"", ""parent_task"", ""parent_high_level_task"", ""status""]
-                                    }}
+                                    }},
+                                    ""description"": ""List of detailed activities for tomorrow""
                                 }}
                             }},
                             ""required"": [""summary"", ""mood"", ""detailed_activities""]
@@ -150,6 +128,42 @@ public class DetailedPlannerAgent : GPT
                 jsonSchemaIsStrict: true
             ),
         };
+    }
+
+    // Tool 정의들
+    private readonly ChatTool getWorldAreaInfoTool = ChatTool.CreateFunctionTool(
+        functionName: "GetWorldAreaInfo",
+        functionDescription: "Get information about all areas in the world and their connections"
+    );
+
+    protected override void ExecuteToolCall(ChatToolCall toolCall)
+    {
+        switch (toolCall.FunctionName)
+        {
+            case "GetWorldAreaInfo":
+                {
+                    string toolResult = GetWorldAreaInfo();
+                    messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
+                    break;
+                }
+
+            default:
+                {
+                    Debug.LogWarning($"Unknown tool call: {toolCall.FunctionName}");
+                    messages.Add(new ToolChatMessage(toolCall.Id, "Tool not implemented"));
+                    break;
+                }
+        }
+    }
+
+    /// <summary>
+    /// 전체 월드의 Area 정보를 반환
+    /// </summary>
+    private string GetWorldAreaInfo()
+    {
+        Debug.Log("GetWorldAreaInfo called from DetailedPlannerAgent");
+        var locationService = Services.Get<ILocationService>();
+        return locationService.GetWorldAreaInfo();
     }
 
     /// <summary>
@@ -163,10 +177,10 @@ public class DetailedPlannerAgent : GPT
         Debug.Log($"[DetailedPlannerAgent] {actor.Name}의 세부 활동 계획 생성 시작...");
 
         var response = await SendGPTAsync<DetailedPlan>(messages, options);
-        
+
         Debug.Log($"[DetailedPlannerAgent] {actor.Name}의 세부 활동 계획 생성 완료: {response.Summary}");
         Debug.Log($"[DetailedPlannerAgent] 세부 활동: {response.DetailedActivities.Count}개");
-        
+
         return response;
     }
 
@@ -176,17 +190,16 @@ public class DetailedPlannerAgent : GPT
     private string GenerateDetailedPlanPrompt(HighLevelPlannerAgent.HighLevelPlan highLevelPlan, GameTime tomorrow)
     {
         var sb = new StringBuilder();
+        var timeService = Services.Get<ITimeService>();
+        var currentTime = $"{timeService.CurrentTime.hour:D2}:{timeService.CurrentTime.minute:D2}";
         sb.AppendLine($"Create detailed activities for the high-level tasks in the plan for tomorrow ({tomorrow}) based on the following context:");
         sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({actor.Sleepiness})");
         sb.AppendLine($"Current location: {actor.curLocation.LocationToString()}");
-
-        // 캐릭터의 메모리 정보 추가
-        var memoryManager = new CharacterMemoryManager(actor.Name);
-        var memorySummary = memoryManager.GetMemorySummary();
-        sb.AppendLine("\n=== Memory Information ===");
-        sb.AppendLine(memorySummary);
-
-        // 고수준 계획 정보 제공
+        sb.AppendLine($"The first activity MUST start exactly at the current time: {currentTime}.");
+        sb.AppendLine("Do not leave any gap before the first activity. If the agent is awake, the first activity should begin at the current time.");
+        sb.AppendLine("Example:");
+        sb.AppendLine($"- {currentTime}: Wake up and stretch");
+        sb.AppendLine($"- {currentTime}: Go to Kitchen and drink water");
         sb.AppendLine("\n=== High-Level Plan ===");
         sb.AppendLine($"Summary: {highLevelPlan.Summary}");
         sb.AppendLine($"Mood: {highLevelPlan.Mood}");
@@ -200,30 +213,6 @@ public class DetailedPlannerAgent : GPT
                 sb.AppendLine($"  Sub-tasks: {string.Join(", ", task.SubTasks)}");
             }
         }
-
-        // 실제 존재하는 Area 정보 제공
-        var areas = UnityEngine.Object.FindObjectsByType<Area>(FindObjectsSortMode.None);
-        sb.AppendLine("\n=== Available Locations (Full Path) ===");
-        foreach (var area in areas)
-        {
-            if (string.IsNullOrEmpty(area.locationName))
-                continue;
-                
-            var fullLocationPath = area.LocationToString();
-            var connectedAreaNames = new List<string>();
-            foreach (var connectedArea in area.connectedAreas)
-            {
-                connectedAreaNames.Add(connectedArea.locationName);
-            }
-            sb.AppendLine($"- {fullLocationPath}: Connected to {string.Join(", ", connectedAreaNames)}");
-        }
-
-        sb.AppendLine("\nFor each high-level task in the plan, create 1-3 detailed activities.");
-        sb.AppendLine("Each detailed activity should have a name, description, start and end time, duration, activity type, location, and parent task.");
-        sb.AppendLine("Use only the actual locations and action types listed above.");
-        sb.AppendLine("For locations, use the exact full path format (e.g., 'Kitchen in Apartment').");
-        sb.AppendLine("Make sure each detailed activity is specific and actionable.");
-
         return sb.ToString();
     }
 
@@ -236,32 +225,32 @@ public class DetailedPlannerAgent : GPT
         {
             var pathfindingService = Services.Get<IPathfindingService>();
             var allAreas = pathfindingService.GetAllAreaInfo();
-            
+
             Debug.Log($"[DetailedPlannerAgent] 전체 Area 수: {allAreas.Count}");
-            
+
             // 실제 Area 컴포넌트들을 찾아서 LocationToString() 사용
             var areas = UnityEngine.Object.FindObjectsByType<Area>(FindObjectsSortMode.None);
             var locations = new List<string>();
-            
+
             foreach (var area in areas)
             {
                 if (string.IsNullOrEmpty(area.locationName))
                     continue;
-                    
+
                 // LocationToString()을 사용해 전체 계층 구조 경로 가져오기
                 var fullLocationPath = area.LocationToString();
                 locations.Add(fullLocationPath);
                 Debug.Log($"[DetailedPlannerAgent] Area 추가: {area.locationName} -> 전체 경로: {fullLocationPath}");
             }
-            
+
             Debug.Log($"[DetailedPlannerAgent] 최종 사용 가능한 장소 목록 ({locations.Count}개): {string.Join(", ", locations)}");
-            
+
             if (locations.Count == 0)
             {
                 Debug.LogWarning("[DetailedPlannerAgent] 사용 가능한 장소가 없습니다! 기본 장소를 사용합니다.");
                 return new List<string> { "Apartment", "Living Room in Apartment", "Kitchen in Apartment", "Bedroom in Apartment" };
             }
-            
+
             return locations;
         }
         catch (System.Exception ex)
@@ -271,4 +260,14 @@ public class DetailedPlannerAgent : GPT
             return new List<string> { "Apartment", "Living Room in Apartment", "Kitchen in Apartment", "Bedroom in Apartment" };
         }
     }
-} 
+
+    // Tool 핸들러
+    private string GetUserMemory(string query = null)
+    {
+        var memoryManager = new CharacterMemoryManager(actor.Name);
+        if (string.IsNullOrEmpty(query))
+            return memoryManager.GetMemorySummary();
+        // 쿼리 기반 필터링은 필요시 구현
+        return memoryManager.GetMemorySummary();
+    }
+}
