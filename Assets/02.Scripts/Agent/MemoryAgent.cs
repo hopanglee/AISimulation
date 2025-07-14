@@ -72,8 +72,12 @@ public class MemoryAgent : GPT
         public MemoryActionType ActionType { get; set; }
 
         [JsonProperty("parameters")]
-        public Dictionary<string, object> Parameters { get; set; } =
-            new Dictionary<string, object>();
+        public Dictionary<string, object> Parameters { get; set; }
+
+        public bool ShouldSerializeParameters()
+        {
+            return Parameters != null && Parameters.Count > 0;
+        }
     }
 
     private Actor actor;
@@ -84,6 +88,9 @@ public class MemoryAgent : GPT
     {
         this.actor = actor;
         this.memoryManager = new CharacterMemoryManager(actor.Name);
+        
+        // Actor 이름 설정 (로깅용)
+        SetActorName(actor.Name);
 
         string systemPrompt = PromptLoader.LoadMemoryAgentPrompt();
         messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
@@ -96,14 +103,16 @@ public class MemoryAgent : GPT
                     Encoding.UTF8.GetBytes(
                         @"{
                             ""type"": ""object"",
+                            ""additionalProperties"": false,
                             ""properties"": {
                                 ""thoughts"": {
                                     ""type"": ""array"",
                                     ""items"": { ""type"": ""string"" },
-                                    ""description"": ""메모리 에이전트가 결정을 내리기까지의 사고 과정들""
+                                    ""description"": ""Thought processes leading to the memory agent's decision""
                                 },
                                 ""action"": {
                                     ""type"": ""object"",
+                                    ""additionalProperties"": false,
                                     ""properties"": {
                                         ""action_type"": {
                                             ""type"": ""string"",
@@ -111,20 +120,18 @@ public class MemoryAgent : GPT
                                                 ""UpdateLocationMemory"", ""GetLocationMemory"", ""RemoveLocationMemory"",
                                                 ""GetMemorySummary"", ""ClearAllMemories""
                                             ],
-                                            ""description"": ""수행할 메모리 액션의 타입""
+                                            ""description"": ""Type of memory action to perform""
                                         },
                                         ""parameters"": {
-                                            ""type"": ""object"",
-                                            ""description"": ""액션 실행에 필요한 매개변수들"",
-                                            ""additionalProperties"": true
+                                            ""type"": [""object"", ""null""],
+                                            ""additionalProperties"": false,
+                                            ""description"": ""Parameters needed to execute the action (null if not needed)""
                                         }
                                     },
-                                    ""required"": [""action_type"", ""parameters""],
-                                    ""additionalProperties"": false
+                                    ""required"": [""action_type""]
                                 }
                             },
-                            ""required"": [""thoughts"", ""action""],
-                            ""additionalProperties"": false
+                            ""required"": [""thoughts"", ""action""]
                         }"
                     )
                 ),

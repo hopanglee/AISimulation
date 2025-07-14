@@ -1,0 +1,336 @@
+﻿=== GPT Conversation Log ===
+Actor: Hino Maori
+Agent Type: GPT
+Time: 2024-01-01 06:01
+=====================================
+
+--- System ---
+You are an AI agent operating in a Unity simulation environment.
+
+Your role:
+- Analyze given situations and select appropriate actions
+- Record clear thought processes for each decision
+- Provide action types and necessary parameters for chosen actions
+
+Behavioral principles:
+1. First observe the environment and understand the current situation
+2. Consider possible actions and select the most appropriate one
+3. Make safe and logical decisions
+4. Consider interactions with players or other NPCs
+5. Refer to daily plans and prioritize activities appropriate for the current time
+
+Available tools:
+- GetWorldAreaInfo: Query information about all Areas in the world
+- GetPathToLocation: Find path to a specific location
+- GetCurrentLocationInfo: Query current location information
+- GetCurrentActivity: Query daily plan activity appropriate for current time
+- GetFullDaySchedule: Get the complete daily schedule for today
+
+Available actions:
+- MoveToArea: Move to specified area (requires "target_area" parameter)
+- MoveToEntity: Move to specified entity (requires "target_entity" parameter)
+- MoveAway: Move away from current location (no parameters needed)
+- TalkToNPC: Talk to NPC (requires "npc_name" and "message" parameters)
+- RespondToPlayer: Respond to player (requires "message" parameter)
+- AskQuestion: Ask a question (requires "question" parameter)
+- UseObject: Use an object (requires "object_name" parameter)
+- PickUpItem: Pick up an item (requires "item_name" parameter)
+- OpenDoor: Open a door (requires "door_name" parameter)
+- PressSwitch: Press a switch (requires "switch_name" parameter)
+- InteractWithObject: Interact with an object (requires "object_name" parameter)
+- InteractWithNPC: Interact with NPC (requires "npc_name" parameter)
+- ObserveEnvironment: Observe the environment (no parameters needed)
+- ExamineObject: Examine an object in detail (requires "object_name" parameter)
+- ScanArea: Scan an area (no parameters needed)
+- Wait: Wait (no parameters needed)
+- WaitForEvent: Wait for an event (no parameters needed)
+- PerformActivity: Perform a specific activity (requires "activity_name" parameter, optional "description" and "duration" parameters)
+
+Parameters usage:
+- Only include parameters that are actually needed for the action
+- For actions that don't require parameters (like Wait, ObserveEnvironment, ScanArea, MoveAway), you can omit the parameters field entirely or set it to null
+- For actions that require parameters, provide the specific parameter names and values as shown above
+
+Response format:
+- thoughts: Provide thought processes leading to the decision as an array
+- action: Specific action information including action_type and parameters (only if needed)
+
+Always select appropriate actions for the situation and clearly explain the reasons.
+
+
+--- User ---
+Current time: 06:00
+Sleep status: Awake
+You are at Living Room.
+Current state: Hunger(0), Thirst(0), Stamina(0), Stress(0), Sleepiness(0)
+
+=== Your Memories ===
+Character: Hino Maori
+Last Updated: 2025-06-28 오전 12:01:21
+
+
+Movable locations from current position:
+- Yellow Clock (position: (-38.37, 0.01, -78.82))
+- Bedside Table (position: (-43.55, 0.03, -76.84))
+- Bed (position: (-42.82, 0.01, -76.94))
+- Dining Table (position: (-38.98, 0.01, -77.50))
+- Entryway (position: (-40.64, 0.01, -80.04))
+All locations in the world:
+- 5-chome-14: Connected to 5-chome-1, 5-chome-8, 5-chome-13
+- Laundry Room: Connected to Entryway, Bathroom
+- Bathroom: Connected to Laundry Room
+- 1-chome-4: Connected to 1-chome-3, 1-chome-5
+- Living Room: Connected to Entryway
+- 5-chome-2: Connected to 5-chome-1, 5-chome-3
+- 1-chome-3: Connected to 1-chome-2, 1-chome-4
+- 1-chome-9: Connected to 1-chome-2, 1-chome-8, 1-chome-1
+- 1-chome-5: Connected to 1-chome-4, 1-chome-6, 1-chome-2
+- 1-chome-7: Connected to 1-chome-1, 1-chome-6
+- 5-chome-1: Connected to 5-chome-2, 5-chome-8, 5-chome-14, 1-chome-8
+- Kitchen: Connected to Entryway
+- Tokyo To: Connected to 
+- 5-chome-8: Connected to Nakamise-dori, 5-chome-9, 5-chome-11, 5-chome-1, 5-chome-14, 5-chome-4
+- 5-chome-4: Connected to 5-chome-3, Nakamise-dori, 5-chome-8
+- 1-chome-2: Connected to 1-chome-1, 1-chome-3, 1-chome-5, 1-chome-6, 1-chome-9
+- 5-chome-11: Connected to 5-chome-8, 5-chome-10, 5-chome-12
+- Kabukicho: Connected to 
+- Toilet: Connected to Entryway
+- 5-chome-12: Connected to 5-chome-11, 5-chome-13
+- Hino Maori's Apartment: Connected to 
+- 1-chome-8: Connected to 5-chome-1, 1-chome-1, 1-chome-9
+- 1-chome-6: Connected to 1-chome-1, 1-chome-2, 1-chome-5, 1-chome-7
+- Entryway: Connected to Toilet, Living Room, Kitchen, Laundry Room, 5-chome-3
+- Kamiya Tooru's Apartment: Connected to 
+- Nakamise-dori: Connected to 5-chome-4, 5-chome-8
+- 5-chome-3: Connected to 5-chome-2, 5-chome-4
+- Setagaya Ku: Connected to 
+- 5-chome-13: Connected to 5-chome-12, 5-chome-14
+- 5-chome-10: Connected to 5-chome-9, 5-chome-11
+- Minami Karasuyama: Connected to 
+- 1-chome-1: Connected to 1-chome-8, 1-chome-9, 1-chome-2, 1-chome-6, 1-chome-7
+- Sinjuku ku: Connected to 
+- 5-chome-9: Connected to 5-chome-8, 5-chome-10
+What would you like to do?
+
+
+--- Assistant ---
+[Empty content]
+
+[Tool Calls:]
+  - Function: GetCurrentActivity
+    Arguments: {}
+  - Function: GetWorldAreaInfo
+    Arguments: {}
+  - Function: GetCurrentLocationInfo
+    Arguments: {}
+
+
+--- Tool ---
+Tool Result: No scheduled activity for current time
+
+--- Tool ---
+Tool Result: World Area Information:
+- 5-chome-14: Connected to 5-chome-1, 5-chome-8, 5-chome-13
+- Laundry Room: Connected to Entryway, Bathroom
+- Bathroom: Connected to Laundry Room
+- 1-chome-4: Connected to 1-chome-3, 1-chome-5
+- Living Room: Connected to Entryway
+- 5-chome-2: Connected to 5-chome-1, 5-chome-3
+- 1-chome-3: Connected to 1-chome-2, 1-chome-4
+- 1-chome-9: Connected to 1-chome-2, 1-chome-8, 1-chome-1
+- 1-chome-5: Connected to 1-chome-4, 1-chome-6, 1-chome-2
+- 1-chome-7: Connected to 1-chome-1, 1-chome-6
+- 5-chome-1: Connected to 5-chome-2, 5-chome-8, 5-chome-14, 1-chome-8
+- Kitchen: Connected to Entryway
+- Tokyo To: Connected to 
+- 5-chome-8: Connected to Nakamise-dori, 5-chome-9, 5-chome-11, 5-chome-1, 5-chome-14, 5-chome-4
+- 5-chome-4: Connected to 5-chome-3, Nakamise-dori, 5-chome-8
+- 1-chome-2: Connected to 1-chome-1, 1-chome-3, 1-chome-5, 1-chome-6, 1-chome-9
+- 5-chome-11: Connected to 5-chome-8, 5-chome-10, 5-chome-12
+- Kabukicho: Connected to 
+- Toilet: Connected to Entryway
+- 5-chome-12: Connected to 5-chome-11, 5-chome-13
+- Hino Maori's Apartment: Connected to 
+- 1-chome-8: Connected to 5-chome-1, 1-chome-1, 1-chome-9
+- 1-chome-6: Connected to 1-chome-1, 1-chome-2, 1-chome-5, 1-chome-7
+- Entryway: Connected to Toilet, Living Room, Kitchen, Laundry Room, 5-chome-3
+- Kamiya Tooru's Apartment: Connected to 
+- Nakamise-dori: Connected to 5-chome-4, 5-chome-8
+- 5-chome-3: Connected to 5-chome-2, 5-chome-4
+- Setagaya Ku: Connected to 
+- 5-chome-13: Connected to 5-chome-12, 5-chome-14
+- 5-chome-10: Connected to 5-chome-9, 5-chome-11
+- Minami Karasuyama: Connected to 
+- 1-chome-1: Connected to 1-chome-8, 1-chome-9, 1-chome-2, 1-chome-6, 1-chome-7
+- Sinjuku ku: Connected to 
+- 5-chome-9: Connected to 5-chome-8, 5-chome-10
+
+World Area Information (Full Path):
+- 5-chome-14 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to 5-chome-1 , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-8 , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- Laundry Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to Entryway in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To, Bathroom in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- Bathroom in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to Laundry Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- Laundry Room in Kamiya Tooru's Apartment in 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to Entryway in Kamiya Tooru's Apartment in 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To, Bathroom in Kamiya Tooru's Apartment in 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- 1-chome-4 , Kabukicho , Sinjuku ku , Tokyo To: Connected to 1-chome-3 , Kabukicho , Sinjuku ku , Tokyo To, 1-chome-5 , Kabukicho , Sinjuku ku , Tokyo To
+- Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to Entryway in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- 5-chome-2 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to 5-chome-1 , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- 1-chome-3 , Kabukicho , Sinjuku ku , Tokyo To: Connected to 1-chome-2 , Kabukicho , Sinjuku ku , Tokyo To, 1-chome-4 , Kabukicho , Sinjuku ku , Tokyo To
+- 1-chome-9 , Kabukicho , Sinjuku ku , Tokyo To: Connected to 1-chome-2 , Kabukicho , Sinjuku ku , Tokyo To, 1-chome-8 , Kabukicho , Sinjuku ku , Tokyo To, 1-chome-1 , Kabukicho , Sinjuku ku , Tokyo To
+- 1-chome-5 , Kabukicho , Sinjuku ku , Tokyo To: Connected to 1-chome-4 , Kabukicho , Sinjuku ku , Tokyo To, 1-chome-6 , Kabukicho , Sinjuku ku , Tokyo To, 1-chome-2 , Kabukicho , Sinjuku ku , Tokyo To
+- 1-chome-7 , Kabukicho , Sinjuku ku , Tokyo To: Connected to 1-chome-1 , Kabukicho , Sinjuku ku , Tokyo To, 1-chome-6 , Kabukicho , Sinjuku ku , Tokyo To
+- 5-chome-1 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to 5-chome-2 , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-8 , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-14 , Minami Karasuyama , Setagaya Ku , Tokyo To, 1-chome-8 , Kabukicho , Sinjuku ku , Tokyo To
+- Bathroom in Kamiya Tooru's Apartment in 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to Laundry Room in Kamiya Tooru's Apartment in 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to Entryway in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- Tokyo To: Connected to 
+- 5-chome-8 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to Nakamise-dori , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-9 , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-11 , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-1 , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-14 , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-4 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- 5-chome-4 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To, Nakamise-dori , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-8 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- 1-chome-2 , Kabukicho , Sinjuku ku , Tokyo To: Connected to 1-chome-1 , Kabukicho , Sinjuku ku , Tokyo To, 1-chome-3 , Kabukicho , Sinjuku ku , Tokyo To, 1-chome-5 , Kabukicho , Sinjuku ku , Tokyo To, 1-chome-6 , Kabukicho , Sinjuku ku , Tokyo To, 1-chome-9 , Kabukicho , Sinjuku ku , Tokyo To
+- 5-chome-11 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to 5-chome-8 , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-10 , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-12 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- Kabukicho , Sinjuku ku , Tokyo To: Connected to 
+- Toilet in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to Entryway in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- 5-chome-12 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to 5-chome-11 , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to 
+- 1-chome-8 , Kabukicho , Sinjuku ku , Tokyo To: Connected to 5-chome-1 , Minami Karasuyama , Setagaya Ku , Tokyo To, 1-chome-1 , Kabukicho , Sinjuku ku , Tokyo To, 1-chome-9 , Kabukicho , Sinjuku ku , Tokyo To
+- Toilet in Kamiya Tooru's Apartment in 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to Entryway in Kamiya Tooru's Apartment in 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- 1-chome-6 , Kabukicho , Sinjuku ku , Tokyo To: Connected to 1-chome-1 , Kabukicho , Sinjuku ku , Tokyo To, 1-chome-2 , Kabukicho , Sinjuku ku , Tokyo To, 1-chome-5 , Kabukicho , Sinjuku ku , Tokyo To, 1-chome-7 , Kabukicho , Sinjuku ku , Tokyo To
+- Entryway in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to Toilet in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To, Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To, Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To, Laundry Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- Kamiya Tooru's Apartment in 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to 
+- Nakamise-dori , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to 5-chome-4 , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-8 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to 5-chome-2 , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-4 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- Kitchen in Kamiya Tooru's Apartment in 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to Entryway in Kamiya Tooru's Apartment in 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- Setagaya Ku , Tokyo To: Connected to 
+- 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to 5-chome-12 , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-14 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- 5-chome-10 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to 5-chome-9 , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-11 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to 
+- Living Room in Kamiya Tooru's Apartment in 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to Entryway in Kamiya Tooru's Apartment in 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- 1-chome-1 , Kabukicho , Sinjuku ku , Tokyo To: Connected to 1-chome-8 , Kabukicho , Sinjuku ku , Tokyo To, 1-chome-9 , Kabukicho , Sinjuku ku , Tokyo To, 1-chome-2 , Kabukicho , Sinjuku ku , Tokyo To, 1-chome-6 , Kabukicho , Sinjuku ku , Tokyo To, 1-chome-7 , Kabukicho , Sinjuku ku , Tokyo To
+- Sinjuku ku , Tokyo To: Connected to 
+- Entryway in Kamiya Tooru's Apartment in 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to Toilet in Kamiya Tooru's Apartment in 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To, Living Room in Kamiya Tooru's Apartment in 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To, Kitchen in Kamiya Tooru's Apartment in 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To, Laundry Room in Kamiya Tooru's Apartment in 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To
+- 5-chome-9 , Minami Karasuyama , Setagaya Ku , Tokyo To: Connected to 5-chome-8 , Minami Karasuyama , Setagaya Ku , Tokyo To, 5-chome-10 , Minami Karasuyama , Setagaya Ku , Tokyo To
+
+
+--- Tool ---
+Tool Result: Current location: Living Room (Full path: Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To)
+
+--- Assistant ---
+{"thoughts":["It's early in the morning, and there are no scheduled activities for this time.","I am currently in the living room with no immediate hunger, thirst, or other needs, indicating I'm physically okay.","There is no specific activity planned right now, so I could take the opportunity to start the day with something routine.","Checking the kitchen might be a logical next step to prepare for breakfast or assess available resources for the day."],"action":{"action_type":"MoveToArea","parameters":{}}}
+
+--- User ---
+Current time: 06:00
+Sleep status: Awake
+You are at Living Room.
+Current state: Hunger(0), Thirst(0), Stamina(0), Stress(0), Sleepiness(0)
+
+=== Your Memories ===
+Character: Hino Maori
+Last Updated: 2025-06-28 오전 12:01:21
+
+
+Movable locations from current position:
+- Yellow Clock (position: (-38.37, 0.01, -78.82))
+- Bedside Table (position: (-43.55, 0.03, -76.84))
+- Bed (position: (-42.82, 0.01, -76.94))
+- Dining Table (position: (-38.98, 0.01, -77.50))
+- Entryway (position: (-40.64, 0.01, -80.04))
+All locations in the world:
+- 5-chome-14: Connected to 5-chome-1, 5-chome-8, 5-chome-13
+- Laundry Room: Connected to Entryway, Bathroom
+- Bathroom: Connected to Laundry Room
+- 1-chome-4: Connected to 1-chome-3, 1-chome-5
+- Living Room: Connected to Entryway
+- 5-chome-2: Connected to 5-chome-1, 5-chome-3
+- 1-chome-3: Connected to 1-chome-2, 1-chome-4
+- 1-chome-9: Connected to 1-chome-2, 1-chome-8, 1-chome-1
+- 1-chome-5: Connected to 1-chome-4, 1-chome-6, 1-chome-2
+- 1-chome-7: Connected to 1-chome-1, 1-chome-6
+- 5-chome-1: Connected to 5-chome-2, 5-chome-8, 5-chome-14, 1-chome-8
+- Kitchen: Connected to Entryway
+- Tokyo To: Connected to 
+- 5-chome-8: Connected to Nakamise-dori, 5-chome-9, 5-chome-11, 5-chome-1, 5-chome-14, 5-chome-4
+- 5-chome-4: Connected to 5-chome-3, Nakamise-dori, 5-chome-8
+- 1-chome-2: Connected to 1-chome-1, 1-chome-3, 1-chome-5, 1-chome-6, 1-chome-9
+- 5-chome-11: Connected to 5-chome-8, 5-chome-10, 5-chome-12
+- Kabukicho: Connected to 
+- Toilet: Connected to Entryway
+- 5-chome-12: Connected to 5-chome-11, 5-chome-13
+- Hino Maori's Apartment: Connected to 
+- 1-chome-8: Connected to 5-chome-1, 1-chome-1, 1-chome-9
+- 1-chome-6: Connected to 1-chome-1, 1-chome-2, 1-chome-5, 1-chome-7
+- Entryway: Connected to Toilet, Living Room, Kitchen, Laundry Room, 5-chome-3
+- Kamiya Tooru's Apartment: Connected to 
+- Nakamise-dori: Connected to 5-chome-4, 5-chome-8
+- 5-chome-3: Connected to 5-chome-2, 5-chome-4
+- Setagaya Ku: Connected to 
+- 5-chome-13: Connected to 5-chome-12, 5-chome-14
+- 5-chome-10: Connected to 5-chome-9, 5-chome-11
+- Minami Karasuyama: Connected to 
+- 1-chome-1: Connected to 1-chome-8, 1-chome-9, 1-chome-2, 1-chome-6, 1-chome-7
+- Sinjuku ku: Connected to 
+- 5-chome-9: Connected to 5-chome-8, 5-chome-10
+What would you like to do?
+
+
+--- Assistant ---
+{"thoughts":["I am currently in the Living Room, and there are several movable locations nearby.","No current hunger or thirst indicates physical needs are met, but it's early morning with no planned activity yet.","Since it's morning, a logical step might be to consider preparing breakfast or getting ready for the day.","The Kitchen is nearby, which connects to the Entryway, so checking it out for breakfast might be a good idea."],"action":{"action_type":"MoveToArea","parameters":{}}}
+
+--- User ---
+Current time: 06:01
+Sleep status: Awake
+You are at Living Room.
+Current state: Hunger(0), Thirst(0), Stamina(0), Stress(0), Sleepiness(0)
+
+=== Your Memories ===
+Character: Hino Maori
+Last Updated: 2025-06-28 오전 12:01:21
+
+
+Movable locations from current position:
+- Yellow Clock (position: (-38.37, 0.01, -78.82))
+- Bedside Table (position: (-43.55, 0.03, -76.84))
+- Bed (position: (-42.82, 0.01, -76.94))
+- Dining Table (position: (-38.98, 0.01, -77.50))
+- Entryway (position: (-40.64, 0.01, -80.04))
+All locations in the world:
+- 5-chome-14: Connected to 5-chome-1, 5-chome-8, 5-chome-13
+- Laundry Room: Connected to Entryway, Bathroom
+- Bathroom: Connected to Laundry Room
+- 1-chome-4: Connected to 1-chome-3, 1-chome-5
+- Living Room: Connected to Entryway
+- 5-chome-2: Connected to 5-chome-1, 5-chome-3
+- 1-chome-3: Connected to 1-chome-2, 1-chome-4
+- 1-chome-9: Connected to 1-chome-2, 1-chome-8, 1-chome-1
+- 1-chome-5: Connected to 1-chome-4, 1-chome-6, 1-chome-2
+- 1-chome-7: Connected to 1-chome-1, 1-chome-6
+- 5-chome-1: Connected to 5-chome-2, 5-chome-8, 5-chome-14, 1-chome-8
+- Kitchen: Connected to Entryway
+- Tokyo To: Connected to 
+- 5-chome-8: Connected to Nakamise-dori, 5-chome-9, 5-chome-11, 5-chome-1, 5-chome-14, 5-chome-4
+- 5-chome-4: Connected to 5-chome-3, Nakamise-dori, 5-chome-8
+- 1-chome-2: Connected to 1-chome-1, 1-chome-3, 1-chome-5, 1-chome-6, 1-chome-9
+- 5-chome-11: Connected to 5-chome-8, 5-chome-10, 5-chome-12
+- Kabukicho: Connected to 
+- Toilet: Connected to Entryway
+- 5-chome-12: Connected to 5-chome-11, 5-chome-13
+- Hino Maori's Apartment: Connected to 
+- 1-chome-8: Connected to 5-chome-1, 1-chome-1, 1-chome-9
+- 1-chome-6: Connected to 1-chome-1, 1-chome-2, 1-chome-5, 1-chome-7
+- Entryway: Connected to Toilet, Living Room, Kitchen, Laundry Room, 5-chome-3
+- Kamiya Tooru's Apartment: Connected to 
+- Nakamise-dori: Connected to 5-chome-4, 5-chome-8
+- 5-chome-3: Connected to 5-chome-2, 5-chome-4
+- Setagaya Ku: Connected to 
+- 5-chome-13: Connected to 5-chome-12, 5-chome-14
+- 5-chome-10: Connected to 5-chome-9, 5-chome-11
+- Minami Karasuyama: Connected to 
+- 1-chome-1: Connected to 1-chome-8, 1-chome-9, 1-chome-2, 1-chome-6, 1-chome-7
+- Sinjuku ku: Connected to 
+- 5-chome-9: Connected to 5-chome-8, 5-chome-10
+What would you like to do?
+
+
+--- Assistant ---
+{"thoughts":["I am in the Living Room with no immediate physical needs and there is no specific plan for this time, meaning I have the freedom to act.","The Kitchen may have resources for beginning the day, such as making breakfast or at least assessing food supplies.","I should move towards the Entryway to then access the Kitchen from there, as the Kitchen is connected to the Entryway."],"action":{"action_type":"MoveToArea","parameters":{}}}
+
+--- Final Response ---
+{"thoughts":["I am in the Living Room with no immediate physical needs and there is no specific plan for this time, meaning I have the freedom to act.","The Kitchen may have resources for beginning the day, such as making breakfast or at least assessing food supplies.","I should move towards the Entryway to then access the Kitchen from there, as the Kitchen is connected to the Entryway."],"action":{"action_type":"MoveToArea","parameters":{}}}
+
+=== End of Conversation ===

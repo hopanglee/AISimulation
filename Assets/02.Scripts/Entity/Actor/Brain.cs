@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -15,8 +16,9 @@ public class Brain
     public MemoryAgent memoryAgent;
     private ActionExecutor actionExecutor;
     private CharacterMemoryManager memoryManager;
-    private DayPlanAgent dayPlanAgent;
-    private DayPlanAgent.DayPlan currentDayPlan; // 현재 하루 계획 저장
+    private HierarchicalPlanner hierarchicalPlanner;
+    private HierarchicalPlanner.HierarchicalPlan currentHierarchicalDayPlan; // 계층적 계획 저장
+    private bool forceNewDayPlan = false; // Flag to ignore existing plan and generate new one
 
     public Brain(Actor actor)
     {
@@ -24,34 +26,34 @@ public class Brain
 
         actionAgent = new ActionAgent(actor);
 
-        // ActionExecutor 초기화 및 핸들러 등록
+        // ActionExecutor initialization and handler registration
         actionExecutor = new ActionExecutor();
         RegisterActionHandlers();
 
         memoryAgent = new MemoryAgent(actor);
 
-        // CharacterMemoryManager 초기화
+        // CharacterMemoryManager initialization
         memoryManager = new CharacterMemoryManager(actor.Name);
         
-        // DayPlanAgent 초기화
-        dayPlanAgent = new DayPlanAgent(actor);
+        // HierarchicalPlanner initialization
+        hierarchicalPlanner = new HierarchicalPlanner(actor);
     }
 
     private void RegisterActionHandlers()
     {
-        // Area 이동 관련 핸들러
+        // Area movement related handlers
         actionExecutor.RegisterHandler(
             ActionAgent.ActionType.MoveToArea,
             (parameters) => HandleMoveToArea(parameters)
         );
 
-        // Entity 이동 관련 핸들러
+        // Entity movement related handlers
         actionExecutor.RegisterHandler(
             ActionAgent.ActionType.MoveToEntity,
             (parameters) => HandleMoveToEntity(parameters)
         );
 
-        // 상호작용 관련 핸들러
+        // Interaction related handlers
         actionExecutor.RegisterHandler(
             ActionAgent.ActionType.InteractWithObject,
             (parameters) => HandleInteractWithObject(parameters)
@@ -62,38 +64,53 @@ public class Brain
             (parameters) => HandleUseObject(parameters)
         );
 
-        // 대화 관련 핸들러
+        // Dialogue related handlers
         actionExecutor.RegisterHandler(
             ActionAgent.ActionType.TalkToNPC,
             (parameters) => HandleTalkToNPC(parameters)
         );
 
-        // 아이템 관련 핸들러
+        // Item related handlers
         actionExecutor.RegisterHandler(
             ActionAgent.ActionType.PickUpItem,
             (parameters) => HandlePickUpItem(parameters)
         );
 
-        // 관찰 관련 핸들러
+        // Observation related handlers
         actionExecutor.RegisterHandler(
             ActionAgent.ActionType.ObserveEnvironment,
             (parameters) => HandleObserveEnvironment(parameters)
         );
+
+        // Wait related handlers
+        actionExecutor.RegisterHandler(
+            ActionAgent.ActionType.Wait,
+            (parameters) => HandleWait(parameters)
+        );
+
+        // Activity related handlers
+        actionExecutor.RegisterHandler(
+            ActionAgent.ActionType.PerformActivity,
+            (parameters) => HandlePerformActivity(parameters)
+        );
     }
 
     /// <summary>
-    /// Area로 이동하는 핸들러
+    /// Area movement handler
     /// </summary>
     private void HandleMoveToArea(Dictionary<string, object> parameters)
     {
-        Debug.Log($"[{actor.Name}] MoveToArea: {string.Join(", ", parameters)}");
+        var parametersText = parameters != null && parameters.Count > 0 
+            ? string.Join(", ", parameters.Values) 
+            : "no parameters";
+        Debug.Log($"[{actor.Name}] MoveToArea: {parametersText}");
 
         if (
             parameters.TryGetValue("area_name", out var areaNameObj)
             && areaNameObj is string areaName
         )
         {
-            // Area 이름으로 이동
+            // Move to area by name
             ExecutePathfindingMove(areaName);
         }
         else if (
@@ -101,12 +118,12 @@ public class Brain
             && locationKeyObj is string locationKey
         )
         {
-            // Location key로 이동
+            // Move to location key
             ExecutePathfindingMove(locationKey);
         }
         else if (parameters.TryGetValue("position", out var posObj) && posObj is Vector3 position)
         {
-            // Vector3 위치를 전체 Area에서 가장 가까운 위치로 변환
+            // Convert Vector3 position to the nearest location key in all areas
             string nearestLocationKey = FindNearestLocationInAllAreas(position);
             if (!string.IsNullOrEmpty(nearestLocationKey))
             {
@@ -126,11 +143,14 @@ public class Brain
     }
 
     /// <summary>
-    /// Entity로 이동하는 핸들러 (현재 Area 내에서 movablePositions만 사용)
+    /// Entity movement handler (uses movablePositions within the current area)
     /// </summary>
     private void HandleMoveToEntity(Dictionary<string, object> parameters)
     {
-        Debug.Log($"[{actor.Name}] MoveToEntity: {string.Join(", ", parameters)}");
+        var parametersText = parameters != null && parameters.Count > 0 
+            ? string.Join(", ", parameters.Values) 
+            : "no parameters";
+        Debug.Log($"[{actor.Name}] MoveToEntity: {parametersText}");
 
         if (
             parameters.TryGetValue("entity_name", out var entityNameObj)
@@ -164,11 +184,14 @@ public class Brain
     }
 
     /// <summary>
-    /// 오브젝트와 상호작용하는 핸들러
+    /// Interaction with object handler
     /// </summary>
     private void HandleInteractWithObject(Dictionary<string, object> parameters)
     {
-        Debug.Log($"[{actor.Name}] InteractWithObject: {string.Join(", ", parameters)}");
+        var parametersText = parameters != null && parameters.Count > 0 
+            ? string.Join(", ", parameters.Values) 
+            : "no parameters";
+        Debug.Log($"[{actor.Name}] InteractWithObject: {parametersText}");
         if (parameters.TryGetValue("object_name", out var objName))
         {
             actor.Interact(objName.ToString());
@@ -176,137 +199,507 @@ public class Brain
     }
 
     /// <summary>
-    /// 오브젝트를 사용하는 핸들러
+    /// Object usage handler
     /// </summary>
     private void HandleUseObject(Dictionary<string, object> parameters)
     {
-        Debug.Log($"[{actor.Name}] UseObject: {string.Join(", ", parameters)}");
+        var parametersText = parameters != null && parameters.Count > 0 
+            ? string.Join(", ", parameters.Values) 
+            : "no parameters";
+        Debug.Log($"[{actor.Name}] UseObject: {parametersText}");
         actor.Use(parameters);
     }
 
     /// <summary>
-    /// NPC와 대화하는 핸들러
+    /// Dialogue with NPC handler
     /// </summary>
     private void HandleTalkToNPC(Dictionary<string, object> parameters)
     {
-        Debug.Log($"[{actor.Name}] TalkToNPC: {string.Join(", ", parameters)}");
+        var parametersText = parameters != null && parameters.Count > 0 
+            ? string.Join(", ", parameters.Values) 
+            : "no parameters";
+        Debug.Log($"[{actor.Name}] TalkToNPC: {parametersText}");
         if (
             parameters.TryGetValue("npc_name", out var npcName)
             && parameters.TryGetValue("message", out var message)
         )
         {
-            // NPC와 대화 로직 구현
+            // NPC dialogue logic implementation
             Debug.Log($"[{actor.Name}] Talking to {npcName}: {message}");
         }
     }
 
     /// <summary>
-    /// 아이템을 줍는 핸들러
+    /// Item pickup handler
     /// </summary>
     private void HandlePickUpItem(Dictionary<string, object> parameters)
     {
-        Debug.Log($"[{actor.Name}] PickUpItem: {string.Join(", ", parameters)}");
+        var parametersText = parameters != null && parameters.Count > 0 
+            ? string.Join(", ", parameters.Values) 
+            : "no parameters";
+        Debug.Log($"[{actor.Name}] PickUpItem: {parametersText}");
         if (parameters.TryGetValue("item_name", out var itemName))
         {
-            // 아이템 줍기 로직 구현
+            // Item pickup logic implementation
             Debug.Log($"[{actor.Name}] Picking up item: {itemName}");
         }
     }
 
     /// <summary>
-    /// 환경을 관찰하는 핸들러
+    /// Environment observation handler
     /// </summary>
     private void HandleObserveEnvironment(Dictionary<string, object> parameters)
     {
-        Debug.Log($"[{actor.Name}] ObserveEnvironment: {string.Join(", ", parameters)}");
+        var parametersText = parameters != null && parameters.Count > 0 
+            ? string.Join(", ", parameters.Values) 
+            : "no parameters";
+        Debug.Log($"[{actor.Name}] ObserveEnvironment: {parametersText}");
         actor.sensor.UpdateAllSensors();
     }
 
-    public async UniTask Think()
+    /// <summary>
+    /// Wait handler
+    /// </summary>
+    private void HandleWait(Dictionary<string, object> parameters)
     {
-        // 1. 센서를 통해 주변 환경 정보 수집
+        var parametersText = parameters != null && parameters.Count > 0 
+            ? string.Join(", ", parameters.Values) 
+            : "no parameters";
+        Debug.Log($"[{actor.Name}] Wait: {parametersText}");
+        // Wait action - just log for now, could add actual waiting logic later
+    }
+
+    /// <summary>
+    /// Activity related handler
+    /// </summary>
+    private void HandlePerformActivity(Dictionary<string, object> parameters)
+    {
+        var parametersText = parameters != null && parameters.Count > 0 
+            ? string.Join(", ", parameters.Values) 
+            : "no parameters";
+        Debug.Log($"[{actor.Name}] PerformActivity: {parametersText}");
+        
+        if (parameters.TryGetValue("activity_name", out var activityNameObj))
+        {
+            string activityName = activityNameObj.ToString();
+            string description = parameters.ContainsKey("description") ? parameters["description"].ToString() : "";
+            float duration = parameters.ContainsKey("duration") ? float.Parse(parameters["duration"].ToString()) : 0f;
+            
+            // Actor의 활동 시작
+            actor.StartActivity(activityName, description, duration);
+            Debug.Log($"[{actor.Name}] Started activity: {activityName} - {description} ({duration}s)");
+        }
+        else
+        {
+            Debug.LogWarning($"[{actor.Name}] PerformActivity requires 'activity_name' parameter");
+        }
+    }
+
+    public async UniTask<ActionAgent.ActionReasoning> Think()
+    {
+        // 1. Collect environment information through sensors
         actor.sensor.UpdateAllSensors();
 
-        // 2. 수집된 정보를 바탕으로 상황 분석
+        // 2. Analyze the collected information to determine the situation
         var lookableEntities = actor.sensor.GetLookableEntities();
         var interactableEntities = actor.sensor.GetInteractableEntities();
         var movablePositions = actor.sensor.GetMovablePositions();
 
-        // 3. 상황 설명 생성
+        // 3. Generate a situation description
         string situation = GenerateSituationDescription(
             lookableEntities,
             interactableEntities,
             movablePositions
         );
 
-        // 4. ActionAgent를 통해 적절한 액션 결정
-        var reasoning = await actionAgent.ProcessSituationAsync(situation);
+        // 4. GPT 요청 전에 시간 정지 (이미 정지된 상태가 아닐 때만)
+        var timeService = Services.Get<ITimeService>();
+        bool wasTimeFlowing = timeService.IsTimeFlowing;
+        
+        if (wasTimeFlowing)
+        {
+            timeService.StopTimeFlow();
+            Debug.Log($"[{actor.Name}] Time paused for Think execution");
+        }
 
-        // 5. 결정된 액션 실행 (ActionExecutor를 통해)
+        try
+        {
+            // 5. Decide on an appropriate action through ActionAgent
+            var reasoning = await actionAgent.ProcessSituationAsync(situation);
+
+            Debug.Log($"[{actor.Name}] Think completed - Action: {reasoning.Action.ActionType}");
+
+            return reasoning;
+        }
+        finally
+        {
+            // 6. GPT 응답 후 시간 재개 (원래 흐르고 있었던 상태였다면)
+            if (wasTimeFlowing)
+            {
+                timeService.StartTimeFlow();
+                Debug.Log($"[{actor.Name}] Time resumed after Think execution");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Execute the action based on reasoning from Think
+    /// </summary>
+    public async UniTask Act(ActionAgent.ActionReasoning reasoning)
+    {
+        if (reasoning == null)
+        {
+            Debug.LogWarning($"[{actor.Name}] Cannot act - no reasoning provided");
+            return;
+        }
+
+        var parametersText = reasoning.Action.Parameters != null && reasoning.Action.Parameters.Count > 0 
+            ? string.Join(", ", reasoning.Action.Parameters.Values) 
+            : "no parameters";
+        Debug.Log($"[{actor.Name}] Executing action: {reasoning.Action.ActionType} -> {parametersText}");
+        
+        // Execute the decided action (through ActionExecutor)
         await ExecuteAction(reasoning);
     }
 
     /// <summary>
-    /// 매일 아침 기상 시 오늘 하루 스케줄을 계획
+    /// Think and Act in sequence (for backward compatibility)
+    /// </summary>
+    public async UniTask ThinkAndAct()
+    {
+        var reasoning = await Think();
+        await Act(reasoning);
+    }
+
+    /// <summary>
+    /// Plan the daily schedule every morning
     /// </summary>
     public async UniTask PlanToday()
     {
         Debug.Log($"[{actor.Name}] Planning today's schedule...");
 
-        // 1. 현재 상황 정보 수집
+        // 1. Get current time information
+        var timeService = Services.Get<ITimeService>();
+        var currentTime = timeService.CurrentTime;
+
+        // 2. Check if there is an existing plan for today (only if forceNewDayPlan is false)
+        if (!forceNewDayPlan && HasDayPlanForDate(currentTime))
+        {
+            Debug.Log($"[{actor.Name}] Loading existing plan...");
+            var loadedDayPlan = await LoadHierarchicalDayPlanFromJsonAsync(currentTime);
+            if (loadedDayPlan != null)
+            {
+                currentHierarchicalDayPlan = loadedDayPlan;
+                Debug.Log($"[{actor.Name}] Existing plan loaded: {loadedDayPlan.Summary}");
+                return;
+            }
+        }
+        else if (forceNewDayPlan)
+        {
+            Debug.Log($"[{actor.Name}] forceNewDayPlan is activated, ignoring existing plan and generating new one.");
+        }
+
+        // 3. Generate a new plan
+        Debug.Log($"[{actor.Name}] Generating a new hierarchical plan...");
+        
+        // Collect current situation information
         actor.sensor.UpdateAllSensors();
         
-        // 2. 하루 계획을 위한 상황 설명 생성
-        string planningSituation = GenerateDayPlanningSituation();
+        // GPT 요청 전에 시간 정지 (이미 정지된 상태가 아닐 때만)
+        bool wasTimeFlowing = timeService.IsTimeFlowing;
         
-        // 3. DayPlanAgent를 통해 하루 계획 생성 (상황 설명을 포함한 프롬프트 사용)
-        var dayPlan = await CreateDayPlanWithSituation(planningSituation);
-        
-        // 4. 계획을 메모리에 저장
-        StoreDayPlan(dayPlan);
-        
-        Debug.Log($"[{actor.Name}] Today's schedule planned successfully");
-    }
-
-    /// <summary>
-    /// 하루 계획을 저장
-    /// </summary>
-    private void StoreDayPlan(DayPlanAgent.DayPlan dayPlan)
-    {
-        currentDayPlan = dayPlan;
-        Debug.Log($"[{actor.Name}] Day plan stored: {dayPlan.Summary}");
-    }
-
-    /// <summary>
-    /// 현재 시간에 맞는 활동 가져오기
-    /// </summary>
-    public DayPlanAgent.DailyActivity GetCurrentActivity()
-    {
-        if (currentDayPlan == null)
+        if (wasTimeFlowing)
         {
-            Debug.Log($"[{actor.Name}] No day plan available");
+            timeService.StopTimeFlow();
+            Debug.Log($"[{actor.Name}] Time paused for HierarchicalPlan generation");
+        }
+        
+        try
+        {
+            // Create a hierarchical day plan through HierarchicalPlanner (Stanford Generative Agent style)
+            var hierarchicalDayPlan = await hierarchicalPlanner.CreateHierarchicalPlanAsync(currentTime);
+            
+            // Store the hierarchical plan in memory
+            StoreHierarchicalDayPlan(hierarchicalDayPlan);
+            
+            Debug.Log($"[{actor.Name}] Today's hierarchical schedule planned successfully");
+        }
+        finally
+        {
+            // GPT 응답 후 시간 재개 (원래 흐르고 있었던 상태였다면)
+            if (wasTimeFlowing)
+            {
+                timeService.StartTimeFlow();
+                Debug.Log($"[{actor.Name}] Time resumed after HierarchicalPlan generation");
+            }
+        }
+    }
+
+
+
+    /// <summary>
+    /// Store the hierarchical daily plan
+    /// </summary>
+    private async void StoreHierarchicalDayPlan(HierarchicalPlanner.HierarchicalPlan hierarchicalDayPlan)
+    {
+        currentHierarchicalDayPlan = hierarchicalDayPlan;
+        Debug.Log($"[{actor.Name}] Hierarchical day plan stored: {hierarchicalDayPlan.Summary}");
+        
+        // Save to JSON file for the current date
+        var timeService = Services.Get<ITimeService>();
+        var currentTime = timeService.CurrentTime;
+        await SaveHierarchicalDayPlanToJsonAsync(hierarchicalDayPlan, currentTime);
+    }
+
+    /// <summary>
+    /// Save the daily plan to a JSON file
+    /// </summary>
+    private async UniTask SaveDayPlanToJsonAsync(DayPlanAgent.DayPlan dayPlan, GameTime date)
+    {
+        try
+        {
+            // Generate directory path for saving
+            string directoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "DayPlans");
+            
+            // Create directory if it doesn't exist
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            // Generate file name (characterName_date.json)
+            string fileName = $"{actor.Name}_{date.year:D4}{date.month:D2}{date.day:D2}.json";
+            string filePath = Path.Combine(directoryPath, fileName);
+
+            // Set JSON serialization options (include indentation for readability)
+            var jsonSettings = new Newtonsoft.Json.JsonSerializerSettings
+            {
+                Formatting = Newtonsoft.Json.Formatting.Indented,
+                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore
+            };
+
+            // Serialize DayPlan to JSON
+            string jsonContent = Newtonsoft.Json.JsonConvert.SerializeObject(dayPlan, jsonSettings);
+
+            // Save to file
+            await System.IO.File.WriteAllTextAsync(filePath, jsonContent, System.Text.Encoding.UTF8);
+
+            Debug.Log($"[Brain] {actor.Name}'s daily plan saved: {filePath}");
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[Brain] Error saving daily plan: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Save the hierarchical day plan to a JSON file
+    /// </summary>
+    private async UniTask SaveHierarchicalDayPlanToJsonAsync(HierarchicalPlanner.HierarchicalPlan hierarchicalDayPlan, GameTime date)
+    {
+        try
+        {
+            // Generate directory path for saving
+            string directoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "HierarchicalDayPlans");
+            
+            // Create directory if it doesn't exist
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            // Generate file name (characterName_date.json)
+            string fileName = $"{actor.Name}_{date.year:D4}{date.month:D2}{date.day:D2}.json";
+            string filePath = Path.Combine(directoryPath, fileName);
+
+            // Set JSON serialization options (include indentation for readability)
+            var jsonSettings = new Newtonsoft.Json.JsonSerializerSettings
+            {
+                Formatting = Newtonsoft.Json.Formatting.Indented,
+                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore
+            };
+
+            // Serialize HierarchicalPlan to JSON
+            string jsonContent = Newtonsoft.Json.JsonConvert.SerializeObject(hierarchicalDayPlan, jsonSettings);
+
+            // Save to file
+            await System.IO.File.WriteAllTextAsync(filePath, jsonContent, System.Text.Encoding.UTF8);
+
+            Debug.Log($"[Brain] {actor.Name}'s hierarchical day plan saved: {filePath}");
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[Brain] Error saving hierarchical day plan: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Load the daily plan from a JSON file
+    /// </summary>
+    public async UniTask<DayPlanAgent.DayPlan> LoadDayPlanFromJsonAsync(GameTime date)
+    {
+        try
+        {
+            // Generate file path
+            string directoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "DayPlans");
+            string fileName = $"{actor.Name}_{date.year:D4}{date.month:D2}{date.day:D2}.json";
+            string filePath = Path.Combine(directoryPath, fileName);
+
+            // Check if file exists
+            if (!File.Exists(filePath))
+            {
+                Debug.LogWarning($"[Brain] {actor.Name}'s plan file for {date.year:D4}-{date.month:D2}-{date.day:D2} does not exist: {filePath}");
+                return null;
+            }
+
+            // Read from file
+            string jsonContent = await File.ReadAllTextAsync(filePath, System.Text.Encoding.UTF8);
+
+            // Deserialize JSON to DayPlan object
+            var dayPlan = Newtonsoft.Json.JsonConvert.DeserializeObject<DayPlanAgent.DayPlan>(jsonContent);
+
+            Debug.Log($"[Brain] {actor.Name}'s daily plan loaded: {filePath}");
+            return dayPlan;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[Brain] Error loading daily plan: {ex.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Load the hierarchical day plan from a JSON file
+    /// </summary>
+    public async UniTask<HierarchicalPlanner.HierarchicalPlan> LoadHierarchicalDayPlanFromJsonAsync(GameTime date)
+    {
+        try
+        {
+            // Generate file path
+            string directoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "HierarchicalDayPlans");
+            string fileName = $"{actor.Name}_{date.year:D4}{date.month:D2}{date.day:D2}.json";
+            string filePath = Path.Combine(directoryPath, fileName);
+
+            // Check if file exists
+            if (!File.Exists(filePath))
+            {
+                Debug.LogWarning($"[Brain] {actor.Name}'s hierarchical plan file for {date.year:D4}-{date.month:D2}-{date.day:D2} does not exist: {filePath}");
+                return null;
+            }
+
+            // Read from file
+            string jsonContent = await File.ReadAllTextAsync(filePath, System.Text.Encoding.UTF8);
+
+            // Deserialize JSON to HierarchicalPlan object
+            var hierarchicalDayPlan = Newtonsoft.Json.JsonConvert.DeserializeObject<HierarchicalPlanner.HierarchicalPlan>(jsonContent);
+
+            Debug.Log($"[Brain] {actor.Name}'s hierarchical day plan loaded: {filePath}");
+            return hierarchicalDayPlan;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[Brain] Error loading hierarchical day plan: {ex.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Check if a daily plan exists for a specific date
+    /// </summary>
+    public bool HasDayPlanForDate(GameTime date)
+    {
+        try
+        {
+            string directoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "DayPlans");
+            string fileName = $"{actor.Name}_{date.year:D4}{date.month:D2}{date.day:D2}.json";
+            string filePath = Path.Combine(directoryPath, fileName);
+
+            return File.Exists(filePath);
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[Brain] Error checking daily plan file: {ex.Message}");
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// List all saved daily plan files (for debugging)
+    /// </summary>
+    public void ListAllSavedDayPlans()
+    {
+        try
+        {
+            string directoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "DayPlans");
+            
+            if (!Directory.Exists(directoryPath))
+            {
+                Debug.Log($"[Brain] {actor.Name}: No saved plan files. (Directory not found)");
+                return;
+            }
+
+            string[] files = Directory.GetFiles(directoryPath, $"{actor.Name}_*.json");
+            
+            if (files.Length == 0)
+            {
+                Debug.Log($"[Brain] {actor.Name}: No saved plan files.");
+                return;
+            }
+
+            Debug.Log($"[Brain] {actor.Name}'s saved plan files:");
+            foreach (string file in files)
+            {
+                string fileName = Path.GetFileName(file);
+                Debug.Log($"  - {fileName}");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[Brain] Error listing saved plan files: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Set to ignore existing plan and generate new one
+    /// </summary>
+    public void SetForceNewDayPlan(bool force)
+    {
+        forceNewDayPlan = force;
+        Debug.Log($"[Brain] {actor.Name}'s forceNewDayPlan is {(force ? "activated" : "deactivated")}.");
+    }
+
+    /// <summary>
+    /// Check forceNewDayPlan status
+    /// </summary>
+    public bool IsForceNewDayPlan()
+    {
+        return forceNewDayPlan;
+    }
+
+    /// <summary>
+    /// Get the current detailed activity
+    /// </summary>
+    public DetailedPlannerAgent.DetailedActivity GetCurrentActivity()
+    {
+        if (currentHierarchicalDayPlan == null)
+        {
+            Debug.Log($"[{actor.Name}] No hierarchical day plan available");
             return null;
         }
 
-        var timeService = Services.Get<ITimeService>();
-        var currentTime = timeService.CurrentTime;
-        string currentTimeStr = $"{currentTime.hour:D2}:{currentTime.minute:D2}";
-
-        foreach (var activity in currentDayPlan.Activities)
-        {
-            if (IsTimeInRange(currentTimeStr, activity.StartTime, activity.EndTime))
-            {
-                Debug.Log($"[{actor.Name}] Current activity: {activity.Description} ({activity.StartTime}-{activity.EndTime})");
-                return activity;
-            }
-        }
-
-        Debug.Log($"[{actor.Name}] No activity scheduled for current time: {currentTimeStr}");
-        return null;
+        return hierarchicalPlanner.GetCurrentDetailedActivity(currentHierarchicalDayPlan);
     }
 
     /// <summary>
-    /// 시간이 범위 내에 있는지 확인
+    /// Get the current hierarchical day plan
+    /// </summary>
+    public HierarchicalPlanner.HierarchicalPlan GetCurrentDayPlan()
+    {
+        return currentHierarchicalDayPlan;
+    }
+
+    /// <summary>
+    /// Check if time is within the range
     /// </summary>
     private bool IsTimeInRange(string currentTime, string startTime, string endTime)
     {
@@ -315,7 +708,7 @@ public class Brain
     }
 
     /// <summary>
-    /// 시간 정보를 HH:mm 형식으로 반환
+    /// Return time in HH:mm format
     /// </summary>
     private string FormatTime(GameTime time)
     {
@@ -323,69 +716,90 @@ public class Brain
     }
 
     /// <summary>
-    /// 하루 계획을 위한 상황 설명 생성
+    /// Generate a situation description for day planning
     /// </summary>
     private string GenerateDayPlanningSituation()
     {
         var sb = new System.Text.StringBuilder();
 
-        // 시간 정보 추가
+        // Add time information
         var timeService = Services.Get<ITimeService>();
         var currentTime = timeService.CurrentTime;
-        sb.AppendLine($"현재 시간: {FormatTime(currentTime)}");
-        sb.AppendLine($"오늘은 {GetDayOfWeek(currentTime)}입니다.");
+        sb.AppendLine($"Current time: {FormatTime(currentTime)}");
+        sb.AppendLine($"Today is {GetDayOfWeek(currentTime)}.");
 
-        sb.AppendLine($"당신은 {actor.curLocation.locationName}에 있습니다.");
-        sb.AppendLine($"현재 상태: 배고픔({actor.Hunger}), 갈증({actor.Thirst}), 피로({actor.Stamina}), 스트레스({actor.Stress}), 졸림({actor.Sleepiness})");
+        sb.AppendLine($"You are at {actor.curLocation.locationName}.");
+        sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({actor.Sleepiness})");
 
-        // 캐릭터의 메모리 정보 추가
+        // Add character's memory information
         var memorySummary = memoryManager.GetMemorySummary();
-        sb.AppendLine("\n=== 당신의 기억 ===");
+        sb.AppendLine("\n=== Your Memories ===");
         sb.AppendLine(memorySummary);
 
         // 전체 월드의 Area 정보 제공
         var pathfindingService = Services.Get<IPathfindingService>();
         var allAreas = pathfindingService.GetAllAreaInfo();
+        var allAreasByFullPath = pathfindingService.GetAllAreaInfoByFullPath();
 
-        sb.AppendLine("\n=== 사용 가능한 장소들 ===");
+        sb.AppendLine("\n=== Available Locations ===");
         foreach (var kvp in allAreas)
         {
             var areaInfo = kvp.Value;
-            sb.AppendLine($"- {areaInfo.locationName}: {string.Join(", ", areaInfo.connectedAreas)}와 연결됨");
+            sb.AppendLine($"- {areaInfo.locationName}: Connected to {string.Join(", ", areaInfo.connectedAreas)}");
         }
 
-        sb.AppendLine("\n오늘 하루 동안 어떤 일을 하고 싶으신가요? 구체적인 시간대별 계획을 세워주세요.");
+        sb.AppendLine("\n=== Available Locations (Full Path) ===");
+        foreach (var kvp in allAreasByFullPath)
+        {
+            var fullPath = kvp.Key;
+            var areaInfo = kvp.Value;
+            sb.AppendLine($"- {fullPath}: Connected to {string.Join(", ", areaInfo.connectedAreasFullPath)}");
+        }
+
+        sb.AppendLine("\nWhat would you like to do today? Please create a specific time-based plan.");
 
         return sb.ToString();
     }
 
-    /// <summary>
-    /// 상황 설명을 포함한 하루 계획 생성
-    /// </summary>
-    private async UniTask<DayPlanAgent.DayPlan> CreateDayPlanWithSituation(string situation)
-    {
-        // DayPlanAgent의 메시지에 상황 설명 추가
-        dayPlanAgent.messages.Add(new OpenAI.Chat.UserChatMessage(situation));
-        
-        // 하루 계획 생성
-        var dayPlan = await dayPlanAgent.CreateBasicDayPlanAsync();
-        
-        return dayPlan;
-    }
+
 
     /// <summary>
-    /// 요일 계산 (간단한 구현)
+    /// Calculate day of the week (simple implementation)
     /// </summary>
     private string GetDayOfWeek(GameTime time)
     {
-        // 2024년 1월 1일이 월요일이라고 가정
+        // Assume January 1, 2024 is Monday
         var startDate = new System.DateTime(2024, 1, 1);
         var currentDate = new System.DateTime(time.year, time.month, time.day);
         var daysDiff = (currentDate - startDate).Days;
         var dayOfWeek = (daysDiff % 7);
         
-        string[] days = { "월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일" };
+        string[] days = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
         return days[dayOfWeek];
+    }
+
+    /// <summary>
+    /// 다음 날 계산
+    /// </summary>
+    private GameTime GetNextDay(GameTime currentTime)
+    {
+        int nextDay = currentTime.day + 1;
+        int nextMonth = currentTime.month;
+        int nextYear = currentTime.year;
+
+        int daysInMonth = GameTime.GetDaysInMonth(currentTime.year, currentTime.month);
+        if (nextDay > daysInMonth)
+        {
+            nextDay = 1;
+            nextMonth++;
+            if (nextMonth > 12)
+            {
+                nextMonth = 1;
+                nextYear++;
+            }
+        }
+
+        return new GameTime(nextYear, nextMonth, nextDay, 6, 0);
     }
 
     private string GenerateSituationDescription(
@@ -396,25 +810,25 @@ public class Brain
     {
         var sb = new System.Text.StringBuilder();
 
-        // 시간 정보 추가
+        // Add time information
         var timeService = Services.Get<ITimeService>();
         var currentTime = timeService.CurrentTime;
-        sb.AppendLine($"현재 시간: {FormatTime(currentTime)}");
-        sb.AppendLine($"수면 상태: {(actor.IsSleeping ? "수면 중" : "깨어있음")}");
+        sb.AppendLine($"Current time: {FormatTime(currentTime)}");
+        sb.AppendLine($"Sleep status: {(actor.IsSleeping ? "Sleeping" : "Awake")}");
 
-        sb.AppendLine($"당신은 {actor.curLocation.locationName}에 있습니다.");
+        sb.AppendLine($"You are at {actor.curLocation.locationName}.");
         sb.AppendLine(
-            $"현재 상태: 배고픔({actor.Hunger}), 갈증({actor.Thirst}), 피로({actor.Stamina}), 스트레스({actor.Stress}), 졸림({actor.Sleepiness})"
+            $"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({actor.Sleepiness})"
         );
 
-        // 캐릭터의 메모리 정보 추가
+        // Add character's memory information
         var memorySummary = memoryManager.GetMemorySummary();
-        sb.AppendLine("\n=== 당신의 기억 ===");
+        sb.AppendLine("\n=== Your Memories ===");
         sb.AppendLine(memorySummary);
 
         if (interactable.actors.Count > 0)
         {
-            sb.AppendLine("주변에 상호작용 가능한 사람들:");
+            sb.AppendLine("Interactable people nearby:");
             foreach (var kvp in interactable.actors)
             {
                 sb.AppendLine($"- {kvp.Key}");
@@ -423,7 +837,7 @@ public class Brain
 
         if (interactable.items.Count > 0)
         {
-            sb.AppendLine("주변에 상호작용 가능한 아이템들:");
+            sb.AppendLine("Interactable items nearby:");
             foreach (var kvp in interactable.items)
             {
                 sb.AppendLine($"- {kvp.Key}");
@@ -432,7 +846,7 @@ public class Brain
 
         if (interactable.props.Count > 0)
         {
-            sb.AppendLine("주변에 상호작용 가능한 물건들:");
+            sb.AppendLine("Interactable objects nearby:");
             foreach (var kvp in interactable.props)
             {
                 sb.AppendLine($"- {kvp.Key}");
@@ -441,28 +855,28 @@ public class Brain
 
         if (interactable.buildings.Count > 0)
         {
-            sb.AppendLine("주변에 상호작용 가능한 건물들:");
+            sb.AppendLine("Interactable buildings nearby:");
             foreach (var kvp in interactable.buildings)
             {
                 sb.AppendLine($"- {kvp.Key}");
             }
         }
 
-        // 이동 가능한 위치들 정보 추가
+        // Add information about movable positions
         if (movable.Count > 0)
         {
-            sb.AppendLine("현재 위치에서 이동 가능한 위치들:");
+            sb.AppendLine("Movable locations from current position:");
             foreach (var kvp in movable)
             {
-                sb.AppendLine($"- {kvp.Key} (위치: {kvp.Value})");
+                sb.AppendLine($"- {kvp.Key} (position: {kvp.Value})");
             }
         }
 
-        // 전체 월드의 Area 정보 제공
+        // Provide information about all areas in the world
         var pathfindingService = Services.Get<IPathfindingService>();
         var allAreas = pathfindingService.GetAllAreaInfo();
 
-        sb.AppendLine("전체 월드의 모든 위치들:");
+        sb.AppendLine("All locations in the world:");
         foreach (var kvp in allAreas)
         {
             var areaInfo = kvp.Value;
@@ -471,14 +885,14 @@ public class Brain
             );
         }
 
-        sb.AppendLine("어떻게 하시겠습니까?");
+        sb.AppendLine("What would you like to do?");
 
         return sb.ToString();
     }
 
     private async UniTask ExecuteAction(ActionAgent.ActionReasoning reasoning)
     {
-        // 액션 실행
+        // Execute action
         var result = await actionExecutor.ExecuteActionAsync(reasoning);
         if (result.Success)
         {
@@ -492,7 +906,7 @@ public class Brain
 
     private string FindNearestLocationInAllAreas(Vector3 position)
     {
-        // 전체 Area에서 가장 가까운 위치 찾기
+        // Find the nearest location in all areas
         var pathfindingService = Services.Get<IPathfindingService>();
         return pathfindingService.FindNearestArea(position);
     }
@@ -501,16 +915,16 @@ public class Brain
     {
         var movablePositions = actor.sensor.GetMovablePositions();
 
-        // 현재 Area의 toMovable에 목표가 있는지 확인
+        // Check if the target is in the current area's toMovable
         if (movablePositions.ContainsKey(targetLocationKey))
         {
-            // 직접 이동 가능
+            // Direct move possible
             actor.Move(targetLocationKey);
             Debug.Log($"[{actor.Name}] Direct move to {targetLocationKey}");
         }
         else
         {
-            // 경로 계획 필요 - PathfindingService 사용
+            // Pathfinding needed - use PathfindingService
             var pathfindingService = Services.Get<IPathfindingService>();
             var locationManager = Services.Get<ILocationService>();
             var currentArea = locationManager.GetArea(actor.curLocation);
@@ -518,8 +932,8 @@ public class Brain
             var path = pathfindingService.FindPathToLocation(currentArea, targetLocationKey);
             if (path.Count > 0)
             {
-                // 첫 번째 단계로 이동
-                var nextStep = path[1]; // path[0]은 현재 위치
+                // Move to the first step
+                var nextStep = path[1]; // path[0] is the current position
                 if (movablePositions.ContainsKey(nextStep))
                 {
                     actor.Move(nextStep);
@@ -532,7 +946,7 @@ public class Brain
                     var errorMessage =
                         $"Cannot move to next step {nextStep} on path to {targetLocationKey}. Available positions: {string.Join(", ", movablePositions.Keys)}";
                     Debug.LogWarning($"[{actor.Name}] {errorMessage}");
-                    // TODO: 이 에러 메시지를 ActionAgent에 반환하는 방법 구현 필요
+                    // TODO: Implement a way to return this error message to ActionAgent
                 }
             }
             else
@@ -542,8 +956,36 @@ public class Brain
                 var errorMessage =
                     $"No path found to {targetLocationKey}. Available areas in world: {availableAreas}. Current area: {currentArea.locationName}";
                 Debug.LogWarning($"[{actor.Name}] {errorMessage}");
-                // TODO: 이 에러 메시지를 ActionAgent에 반환하는 방법 구현 필요
+                // TODO: Implement a way to return this error message to ActionAgent
             }
         }
     }
+
+    /// <summary>
+    /// Set logging enabled for all agents
+    /// </summary>
+    public void SetLoggingEnabled(bool enabled)
+    {
+        actionAgent.SetLoggingEnabled(enabled);
+        memoryAgent.SetLoggingEnabled(enabled);
+        // DayPlanAgent는 private이므로 여기서 직접 설정
+        // dayPlanAgent.SetLoggingEnabled(enabled); // DayPlanAgent가 public이면 이렇게 할 수 있음
+    }
+
+    /// <summary>
+    /// Set force new day plan flag
+    /// </summary>
+    public HighLevelPlannerAgent.HighLevelPlan GetHighLevelPlan()
+    {
+        return hierarchicalPlanner.GetHighLevelPlan(currentHierarchicalDayPlan);
+    }
+    public DetailedPlannerAgent.DetailedPlan GetDetailedPlan()
+    {
+        return hierarchicalPlanner.GetDetailedPlan(currentHierarchicalDayPlan);
+    }
+    public ActionPlannerAgent.ActionPlan GetActionPlan()
+    {
+        return hierarchicalPlanner.GetActionPlan(currentHierarchicalDayPlan);
+    }
 }
+
