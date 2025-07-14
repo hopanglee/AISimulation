@@ -70,11 +70,8 @@ public class GPT
                 Directory.CreateDirectory(directoryPath);
             }
 
-            // 파일명 생성 (날짜_시간_액터이름_에이전트타입.txt)
-            var timeService = Services.Get<ITimeService>();
-            var currentTime = timeService?.CurrentTime ?? new GameTime(2024, 1, 1, 0, 0);
-            
-            string fileName = $"{currentTime.year:D4}{currentTime.month:D2}{currentTime.day:D2}_{currentTime.hour:D2}{currentTime.minute:D2}_{actorName}_{agentType}.txt";
+            // 파일명 생성 (실제 시스템 시간 기반)
+            string fileName = $"ConversationLog_{System.DateTime.Now:yyyy-MM-dd_HH-mm-ss}_{actorName}_{agentType}.txt";
             string filePath = Path.Combine(directoryPath, fileName);
 
             // 로그 내용 생성
@@ -82,7 +79,8 @@ public class GPT
             logContent.AppendLine($"=== GPT Conversation Log ===");
             logContent.AppendLine($"Actor: {actorName}");
             logContent.AppendLine($"Agent Type: {agentType}");
-            logContent.AppendLine($"Time: {currentTime.year:D4}-{currentTime.month:D2}-{currentTime.day:D2} {currentTime.hour:D2}:{currentTime.minute:D2}");
+            logContent.AppendLine($"Game Time: {System.DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            logContent.AppendLine($"Real Time: {System.DateTime.Now:yyyy-MM-dd HH:mm:ss}");
             logContent.AppendLine($"=====================================");
             logContent.AppendLine();
 

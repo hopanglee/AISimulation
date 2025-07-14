@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using OpenAI.Chat;
 using UnityEngine;
+using System.Linq; // Added for .Select()
 
 public class ActionAgent : GPT
 {
@@ -132,39 +133,9 @@ public class ActionAgent : GPT
     /// </summary>
     private string GetWorldAreaInfo()
     {
-        Debug.Log("GetWorldAreaInfo called");
-        try
-        {
-            var pathfindingService = Services.Get<IPathfindingService>();
-            var allAreas = pathfindingService.GetAllAreaInfo();
-            var allAreasByFullPath = pathfindingService.GetAllAreaInfoByFullPath();
-
-            var result = new System.Text.StringBuilder();
-            result.AppendLine("World Area Information:");
-            foreach (var kvp in allAreas)
-            {
-                var areaInfo = kvp.Value;
-                result.AppendLine(
-                    $"- {areaInfo.locationName}: Connected to {string.Join(", ", areaInfo.connectedAreas)}"
-                );
-            }
-
-            result.AppendLine("\nWorld Area Information (Full Path):");
-            foreach (var kvp in allAreasByFullPath)
-            {
-                var fullPath = kvp.Key;
-                var areaInfo = kvp.Value;
-                result.AppendLine(
-                    $"- {fullPath}: Connected to {string.Join(", ", areaInfo.connectedAreasFullPath)}"
-                );
-            }
-
-            return result.ToString();
-        }
-        catch (System.Exception e)
-        {
-            return $"Error getting world area info: {e.Message}";
-        }
+        Debug.Log("GetWorldAreaInfo called from ActionAgent");
+        var locationService = Services.Get<ILocationService>();
+        return locationService.GetWorldAreaInfo();
     }
 
     /// <summary>

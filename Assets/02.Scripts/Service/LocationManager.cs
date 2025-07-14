@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using System.Text;
 
 public interface ILocationService : IService
 {
@@ -20,6 +21,11 @@ public interface ILocationService : IService
     public Area GetArea(ILocation location);
 
     public void Remove(ILocation key, Entity value);
+
+    /// <summary>
+    /// 전체 월드의 Area 정보를 반환 (Static Tool)
+    /// </summary>
+    public string GetWorldAreaInfo();
 }
 
 public class LocationService : ILocationService
@@ -246,4 +252,137 @@ public class LocationService : ILocationService
                 Debug.LogError($"Wrong key {key.locationName}");
         }
     }
+
+    /// <summary>
+    /// 전체 월드의 Area 정보를 반환 (Static Tool) - 그룹별로 정리, 중복 연결 제거, 연결 없는 Area 생략, 상위 지역명 압축
+    /// </summary>
+    public string GetWorldAreaInfo()
+    {
+        try
+        {
+            var areas = UnityEngine.Object.FindObjectsByType<Area>(FindObjectsSortMode.None);
+            var result = new StringBuilder();
+
+            // 1. Area별로 그룹화 (상위 지역명 → 하위 지역명 → Area)
+            var hierarchy = new Dictionary<string, Dictionary<string, List<Area>>>();
+            foreach (var area in areas)
+            {
+                if (string.IsNullOrEmpty(area.locationName)) continue;
+                string topGroup = GetTopGroupKey(area);
+                string midGroup = GetMidGroupKey(area);
+                if (!hierarchy.ContainsKey(topGroup))
+                    hierarchy[topGroup] = new Dictionary<string, List<Area>>();
+                if (!hierarchy[topGroup].ContainsKey(midGroup))
+                    hierarchy[topGroup][midGroup] = new List<Area>();
+                hierarchy[topGroup][midGroup].Add(area);
+            }
+
+            // 2. 중복 연결 방지용 Set (A-B, B-A 중 한 번만)
+            var printedConnections = new HashSet<string>();
+
+            // 3. 계층적으로 출력
+            foreach (var top in hierarchy.Keys.OrderBy(x => x))
+            {
+                result.AppendLine(top);
+                foreach (var mid in hierarchy[top].Keys.OrderBy(x => x))
+                {
+                    // 최상위 그룹과 중간 그룹이 같으면 중간 그룹 생략
+                    if (mid != top)
+                        result.AppendLine($"  {mid}");
+                    foreach (var area in hierarchy[top][mid].OrderBy(a => a.locationName))
+                    {
+                        // 연결된 Area 목록 (중복/역방향 제거)
+                        var connections = new List<string>();
+                        foreach (var connected in area.connectedAreas)
+                        {
+                            if (connected == null || string.IsNullOrEmpty(connected.locationName)) continue;
+                            // 중복 연결 제거: 사전순으로만 출력
+                            string aName = area.LocationToString();
+                            string bName = connected.LocationToString();
+                            string key = string.Compare(aName, bName) < 0 ? $"{aName}|{bName}" : $"{bName}|{aName}";
+                            if (printedConnections.Contains(key)) continue;
+                            // 실제로 새롭게 추가되는 연결만 리스트에 추가
+                            printedConnections.Add(key);
+                            // 같은 그룹이면 짧은 이름, 아니면 전체 경로
+                            string connectedTop = GetTopGroupKey(connected);
+                            string connectedMid = GetMidGroupKey(connected);
+                            if (connectedTop == top && connectedMid == mid)
+                                connections.Add(connected.locationName);
+                            else if (connectedTop == top)
+                                connections.Add($"{connectedMid} - {connected.locationName}");
+                            else
+                                connections.Add(bName);
+                        }
+                        // connections에 실제로 새롭게 추가된 연결이 하나라도 있을 때만 출력
+                        if (connections.Count > 0)
+                        {
+                            string indent = (mid == top) ? "  " : "    ";
+                            result.AppendLine($"{indent}{area.locationName}: {string.Join(", ", connections)}");
+                        }
+                    }
+                }
+            }
+            return result.ToString();
+        }
+        catch (System.Exception e)
+        {
+            return $"Error getting world area info: {e.Message}";
+        }
+    }
+
+    // 최상위 그룹 추출 - Area의 curLocation 체인을 직접 사용
+    private string GetTopGroupKey(Area area)
+    {
+        if (area == null) return "";
+        
+        // 최상위 Area까지 올라가기
+        var current = area;
+        while (current.curLocation != null && current.curLocation is Area parentArea)
+        {
+            current = parentArea;
+        }
+        return current.locationName; // 최상위 Area의 이름
+    }
+    
+    // 중간 그룹 추출 - Area의 curLocation 체인을 직접 사용
+    private string GetMidGroupKey(Area area)
+    {
+        if (area == null) return "";
+        
+        // 아파트 내부 공간인 경우 (특별 처리)
+        if (area.locationName.Contains("Apartment") || 
+            (area.curLocation != null && area.curLocation.locationName.Contains("Apartment")))
+        {
+            // 아파트 이름까지 포함한 전체 경로 반환
+            var current = area;
+            var apartmentName = "";
+            
+            // 아파트 이름 찾기
+            while (current != null)
+            {
+                if (current.locationName.Contains("Apartment"))
+                {
+                    apartmentName = current.LocationToString();
+                    break;
+                }
+                current = current.curLocation as Area;
+            }
+            
+            return apartmentName;
+        }
+        
+        // 일반 지역의 경우: 중간 레벨 Area 찾기
+        var midLevel = area;
+        var parent = area.curLocation as Area;
+        
+        // 최상위에서 두 번째 레벨까지 올라가기
+        while (parent != null && parent.curLocation != null && parent.curLocation is Area grandParent)
+        {
+            midLevel = parent;
+            parent = grandParent;
+        }
+        
+        return midLevel.locationName;
+    }
+
 }

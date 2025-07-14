@@ -20,32 +20,49 @@ Available tools:
 - GetFullDaySchedule: Get the complete daily schedule for today
 
 Available actions:
-- MoveToArea: Move to specified area (requires "target_area" parameter)
-- MoveToEntity: Move to specified entity (requires "target_entity" parameter)
+- MoveToArea: Move to specified area (parameters: must include "target_area")
+- MoveToEntity: Move to specified entity (parameters: must include "target_entity")
 - MoveAway: Move away from current location (no parameters needed)
-- TalkToNPC: Talk to NPC (requires "npc_name" and "message" parameters)
-- RespondToPlayer: Respond to player (requires "message" parameter)
-- AskQuestion: Ask a question (requires "question" parameter)
-- UseObject: Use an object (requires "object_name" parameter)
-- PickUpItem: Pick up an item (requires "item_name" parameter)
-- OpenDoor: Open a door (requires "door_name" parameter)
-- PressSwitch: Press a switch (requires "switch_name" parameter)
-- InteractWithObject: Interact with an object (requires "object_name" parameter)
-- InteractWithNPC: Interact with NPC (requires "npc_name" parameter)
+- TalkToNPC: Talk to NPC (parameters: must include "npc_name" and "message")
+- RespondToPlayer: Respond to player (parameters: must include "message")
+- AskQuestion: Ask a question (parameters: must include "question")
+- UseObject: Use an object (parameters: must include "object_name")
+- PickUpItem: Pick up an item (parameters: must include "item_name")
+- OpenDoor: Open a door (parameters: must include "door_name")
+- PressSwitch: Press a switch (parameters: must include "switch_name")
+- InteractWithObject: Interact with an object (parameters: must include "object_name")
+- InteractWithNPC: Interact with NPC (parameters: must include "npc_name")
 - ObserveEnvironment: Observe the environment (no parameters needed)
-- ExamineObject: Examine an object in detail (requires "object_name" parameter)
+- ExamineObject: Examine an object in detail (parameters: must include "object_name")
 - ScanArea: Scan an area (no parameters needed)
 - Wait: Wait (no parameters needed)
 - WaitForEvent: Wait for an event (no parameters needed)
-- PerformActivity: Perform a specific activity (requires "activity_name" parameter, optional "description" and "duration" parameters)
+- PerformActivity: Perform a specific activity (parameters: must include "activity_name", optional: "description", "duration")
 
 Parameters usage:
-- Only include parameters that are actually needed for the action
-- For actions that don't require parameters (like Wait, ObserveEnvironment, ScanArea, MoveAway), you can omit the parameters field entirely or set it to null
-- For actions that require parameters, provide the specific parameter names and values as shown above
+- Always include the "parameters" field in your action, even if it is empty (e.g., "parameters": {}).
+- For actions that require parameters, always include the required variable(s) in the parameters object with the correct names and values. Do not omit or rename required variables.
+- For actions that do not require parameters (like Wait, ObserveEnvironment, ScanArea, MoveAway), set "parameters": {}.
+
+Examples:
+- MoveToArea (with parameter):
+  {
+    "action_type": "MoveToArea",
+    "parameters": { "target_area": "Kitchen" }
+  }
+- TalkToNPC (with parameters):
+  {
+    "action_type": "TalkToNPC",
+    "parameters": { "npc_name": "Aoi", "message": "Good morning!" }
+  }
+- Wait (no parameters):
+  {
+    "action_type": "Wait",
+    "parameters": {}
+  }
 
 Response format:
 - thoughts: Provide thought processes leading to the decision as an array
-- action: Specific action information including action_type and parameters (only if needed)
+- action: Specific action information including action_type and parameters (parameters must always be present, and must include all required variables for the action)
 
 Always select appropriate actions for the situation and clearly explain the reasons.

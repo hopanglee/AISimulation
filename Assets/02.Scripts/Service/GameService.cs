@@ -170,8 +170,8 @@ public class GameService : MonoBehaviour, IGameService
         isSimulationRunning = true;
         timeService?.StartTimeFlow();
 
-        // 루틴 재시작
-        _ = RunDayPlanningRoutine(true); // 항상 startThinkAfter는 true로, enableThinkRoutine으로 제어
+        // 루틴 재시작 제거 - 이미 실행 중인 루틴이 있으므로 중복 시작 방지
+        // _ = RunDayPlanningRoutine(true); // 이 줄 제거
     }
 
     public void StopSimulation()
