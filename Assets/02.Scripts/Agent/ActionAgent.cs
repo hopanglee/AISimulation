@@ -12,31 +12,32 @@ public class ActionAgent : GPT
     private Actor actor;
 
     /// <summary>
-    /// AI 에이전트가 수행할 수 있는 액션 타입들 (이것이 곧 함수명 역할)
+    /// Action types that the AI agent can perform (these will serve as function names)
     /// </summary>
     public enum ActionType
     {
-        MoveToArea, // 지정된 Area로 이동
-        MoveToEntity, // 지정된 Entity(Actor, Item, Block 등)로 이동
-        MoveAway, // 현재 위치에서 멀어지기
-        TalkToNPC, // NPC와 대화
-        RespondToPlayer, // 플레이어에게 응답
-        AskQuestion, // 질문하기
-        UseObject, // 오브젝트 사용
-        PickUpItem, // 아이템 줍기
-        OpenDoor, // 문 열기
-        PressSwitch, // 스위치 누르기
-        InteractWithObject, // 오브젝트와 상호작용
-        InteractWithNPC, // NPC와 상호작용
-        ObserveEnvironment, // 환경 관찰
-        ExamineObject, // 오브젝트 자세히 살펴보기
-        ScanArea, // 영역 스캔
-        Wait, // 대기
-        WaitForEvent, // 이벤트 대기
+        MoveToArea, // Move to specified Area
+        MoveToEntity, // Move to specified Entity (Actor, Item, Block, etc.)
+        MoveAway, // Move away from current location
+        TalkToNPC, // Talk to NPC
+        RespondToPlayer, // Respond to player
+        AskQuestion, // Ask a question
+        UseObject, // Use an object
+        PickUpItem, // Pick up an item
+        OpenDoor, // Open a door
+        PressSwitch, // Press a switch
+        InteractWithObject, // Interact with an object
+        InteractWithNPC, // Interact with NPC
+        ObserveEnvironment, // Observe the environment
+        ExamineObject, // Examine an object in detail
+        ScanArea, // Scan an area
+        Wait, // Wait
+        WaitForEvent, // Wait for an event
+        PerformActivity, // Perform a specific activity (like morning stretches, cooking, etc.)
     }
 
     /// <summary>
-    /// AI의 사고 과정과 결정된 액션을 포함하는 응답 구조
+    /// AI agent's thought process and decided action
     /// </summary>
     public class ActionReasoning
     {
@@ -48,7 +49,7 @@ public class ActionAgent : GPT
     }
 
     /// <summary>
-    /// AI가 수행할 구체적인 액션 정보
+    /// Specific action information that the AI agent will perform
     /// </summary>
     public class AgentAction
     {
@@ -56,8 +57,12 @@ public class ActionAgent : GPT
         public ActionType ActionType { get; set; }
 
         [JsonProperty("parameters")]
-        public Dictionary<string, object> Parameters { get; set; } =
-            new Dictionary<string, object>();
+        public Dictionary<string, object> Parameters { get; set; }
+
+        public bool ShouldSerializeParameters()
+        {
+            return Parameters != null && Parameters.Count > 0;
+        }
     }
 
     protected override void ExecuteToolCall(ChatToolCall toolCall)
@@ -106,6 +111,13 @@ public class ActionAgent : GPT
                 break;
             }
 
+            case nameof(GetFullDaySchedule):
+            {
+                string toolResult = GetFullDaySchedule();
+                messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
+                break;
+            }
+
             default:
             {
                 Debug.LogWarning($"Unknown tool call: {toolCall.FunctionName}");
@@ -125,6 +137,7 @@ public class ActionAgent : GPT
         {
             var pathfindingService = Services.Get<IPathfindingService>();
             var allAreas = pathfindingService.GetAllAreaInfo();
+            var allAreasByFullPath = pathfindingService.GetAllAreaInfoByFullPath();
 
             var result = new System.Text.StringBuilder();
             result.AppendLine("World Area Information:");
@@ -133,6 +146,16 @@ public class ActionAgent : GPT
                 var areaInfo = kvp.Value;
                 result.AppendLine(
                     $"- {areaInfo.locationName}: Connected to {string.Join(", ", areaInfo.connectedAreas)}"
+                );
+            }
+
+            result.AppendLine("\nWorld Area Information (Full Path):");
+            foreach (var kvp in allAreasByFullPath)
+            {
+                var fullPath = kvp.Key;
+                var areaInfo = kvp.Value;
+                result.AppendLine(
+                    $"- {fullPath}: Connected to {string.Join(", ", areaInfo.connectedAreasFullPath)}"
                 );
             }
 
@@ -184,7 +207,9 @@ public class ActionAgent : GPT
     private string GetCurrentLocationInfo()
     {
         Debug.Log("GetCurrentLocationInfo called");
-        return $"Current location: {actor.curLocation?.locationName ?? "Unknown"}";
+        var locationName = actor.curLocation?.locationName ?? "Unknown";
+        var fullPath = actor.curLocation?.LocationToString() ?? "Unknown";
+        return $"Current location: {locationName} (Full path: {fullPath})";
     }
 
     /// <summary>
@@ -208,6 +233,68 @@ public class ActionAgent : GPT
         catch (System.Exception e)
         {
             return $"Error getting current activity: {e.Message}";
+        }
+    }
+
+    /// <summary>
+    /// 전체 하루 스케줄을 반환
+    /// </summary>
+    private string GetFullDaySchedule()
+    {
+        Debug.Log("GetFullDaySchedule called");
+        try
+        {
+            var hierarchicalPlan = actor.brain.GetCurrentDayPlan();
+            if (hierarchicalPlan != null)
+            {
+                var result = new System.Text.StringBuilder();
+                result.AppendLine($"Full Day Schedule for {actor.Name}:");
+                result.AppendLine($"Summary: {hierarchicalPlan.Summary}");
+                result.AppendLine($"Mood: {hierarchicalPlan.Mood}");
+                result.AppendLine($"Priority Goals: {string.Join(", ", hierarchicalPlan.PriorityGoals)}");
+                result.AppendLine();
+                
+                // High Level Tasks
+                result.AppendLine("High Level Tasks:");
+                foreach (var task in hierarchicalPlan.HighLevelTasks)
+                {
+                    result.AppendLine($"- {task.StartTime}-{task.EndTime}: {task.TaskName} at {task.Location} (Priority: {task.Priority})");
+                    result.AppendLine($"  Description: {task.Description}");
+                    if (task.SubTasks.Count > 0)
+                    {
+                        result.AppendLine($"  Sub-tasks: {string.Join(", ", task.SubTasks)}");
+                    }
+                }
+                result.AppendLine();
+                
+                // Detailed Activities
+                result.AppendLine("Detailed Activities:");
+                foreach (var activity in hierarchicalPlan.DetailedActivities)
+                {
+                    result.AppendLine($"- {activity.StartTime}-{activity.EndTime}: {activity.ActivityName} at {activity.Location}");
+                    result.AppendLine($"  Description: {activity.Description}");
+                }
+                result.AppendLine();
+                
+                // Specific Actions
+                result.AppendLine("Specific Actions:");
+                foreach (var action in hierarchicalPlan.SpecificActions)
+                {
+                    result.AppendLine($"- {action.StartTime} ({action.DurationMinutes}min): {action.ActionName}");
+                    result.AppendLine($"  Description: {action.Description}");
+                    result.AppendLine($"  Location: {action.Location}");
+                }
+                
+                return result.ToString();
+            }
+            else
+            {
+                return "No hierarchical day plan available";
+            }
+        }
+        catch (System.Exception e)
+        {
+            return $"Error getting full day schedule: {e.Message}";
         }
     }
 
@@ -246,10 +333,18 @@ public class ActionAgent : GPT
         functionDescription: "Get the currently scheduled activity from today's plan"
     );
 
+    private readonly ChatTool getFullDayScheduleTool = ChatTool.CreateFunctionTool(
+        functionName: nameof(GetFullDaySchedule),
+        functionDescription: "Get the complete daily schedule for today"
+    );
+
     public ActionAgent(Actor actor)
         : base()
     {
         this.actor = actor;
+        
+        // Actor 이름 설정 (로깅용)
+        SetActorName(actor.Name);
 
         // ActionAgent 프롬프트 로드 및 초기화
         string systemPrompt = PromptLoader.LoadActionAgentPrompt();
@@ -258,21 +353,23 @@ public class ActionAgent : GPT
 
         options = new()
         {
-            Tools = { getWorldAreaInfoTool, getPathToLocationTool, getCurrentLocationInfoTool, getCurrentActivityTool },
+            Tools = { getWorldAreaInfoTool, getPathToLocationTool, getCurrentLocationInfoTool, getCurrentActivityTool, getFullDayScheduleTool },
             ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                 jsonSchemaFormatName: "action_reasoning",
                 jsonSchema: BinaryData.FromBytes(
                     Encoding.UTF8.GetBytes(
                         @"{
                             ""type"": ""object"",
+                            ""additionalProperties"": false,
                             ""properties"": {
                                 ""thoughts"": {
                                     ""type"": ""array"",
                                     ""items"": { ""type"": ""string"" },
-                                    ""description"": ""AI가 결정을 내리기까지의 사고 과정들""
+                                    ""description"": ""Thought processes leading to the AI's decision""
                                 },
                                 ""action"": {
                                     ""type"": ""object"",
+                                    ""additionalProperties"": false,
                                     ""properties"": {
                                         ""action_type"": {
                                             ""type"": ""string"",
@@ -282,22 +379,21 @@ public class ActionAgent : GPT
                                                 ""UseObject"", ""PickUpItem"", ""OpenDoor"", ""PressSwitch"",
                                                 ""InteractWithObject"", ""InteractWithNPC"",
                                                 ""ObserveEnvironment"", ""ExamineObject"", ""ScanArea"",
-                                                ""Wait"", ""WaitForEvent""
+                                                ""Wait"", ""WaitForEvent"", ""PerformActivity""
                                             ],
-                                            ""description"": ""수행할 액션의 타입 (이것이 곧 실행할 함수명)""
+                                            ""description"": ""Type of action to perform""
                                         },
                                         ""parameters"": {
-                                            ""type"": ""object"",
-                                            ""description"": ""액션 실행에 필요한 매개변수들"",
-                                            ""additionalProperties"": true
+                                            ""type"": [""object"", ""null""],
+                                            ""additionalProperties"": false,
+                                            ""description"": ""Parameters needed to execute the action (null if not needed)""
                                         }
                                     },
                                     ""required"": [""action_type"", ""parameters""],
                                     ""additionalProperties"": false
                                 }
                             },
-                            ""required"": [""thoughts"", ""action""],
-                            ""additionalProperties"": false
+                            ""required"": [""thoughts"", ""action""]
                         }"
                     )
                 ),
@@ -307,10 +403,10 @@ public class ActionAgent : GPT
     }
 
     /// <summary>
-    /// AI 에이전트에게 상황을 제시하고 적절한 액션을 요청
+    /// Present a situation to the AI agent and request an appropriate action
     /// </summary>
-    /// <param name="situation">현재 상황 설명</param>
-    /// <returns>AI의 사고 과정과 결정된 액션</returns>
+    /// <param name="situation">Current situation description</param>
+    /// <returns>AI's thought process and decided action</returns>
     public async UniTask<ActionReasoning> ProcessSituationAsync(string situation)
     {
         messages.Add(new UserChatMessage(situation));
@@ -326,9 +422,16 @@ public class ActionAgent : GPT
 
         Debug.Log($"Action Type: {response.Action.ActionType}");
         Debug.Log("Parameters:");
-        foreach (var param in response.Action.Parameters)
+        if (response.Action.Parameters != null && response.Action.Parameters.Count > 0)
         {
-            Debug.Log($"  {param.Key}: {param.Value}");
+            foreach (var param in response.Action.Parameters)
+            {
+                Debug.Log($"  {param.Key}: {param.Value}");
+            }
+        }
+        else
+        {
+            Debug.Log("  (no parameters needed)");
         }
         Debug.Log("========================");
 

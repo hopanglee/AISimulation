@@ -73,6 +73,25 @@ public abstract class Actor : Entity, ILocationAware
     public int SleepinessThreshold => sleepinessThreshold;
     #endregion
 
+    #region Activity System
+    [Header("Activity System")]
+    [SerializeField]
+    private string currentActivity = "Idle"; // 현재 수행 중인 활동
+    
+    [SerializeField]
+    private string activityDescription = ""; // 활동에 대한 상세 설명
+    
+    [SerializeField]
+    private float activityStartTime = 0f; // 활동 시작 시간
+    
+    [SerializeField]
+    private float activityDuration = 0f; // 활동 지속 시간
+
+    public string CurrentActivity => currentActivity;
+    public string ActivityDescription => activityDescription;
+    public bool IsPerformingActivity => currentActivity != "Idle";
+    #endregion
+
 
 
     [SerializeField]
@@ -383,7 +402,7 @@ public abstract class Actor : Entity, ILocationAware
     /// <summary>
     /// 현재 시간에 맞는 활동 가져오기 (Brain을 통해)
     /// </summary>
-    public DayPlanAgent.DailyActivity GetCurrentActivity()
+    public DetailedPlannerAgent.DetailedActivity GetCurrentActivity()
     {
         return brain?.GetCurrentActivity();
     }
@@ -405,6 +424,57 @@ public abstract class Actor : Entity, ILocationAware
             curLocation = newLocation;
             Debug.Log($"[LocationTracker] 현재 방 변경됨: {newLocation.locationName}");
         }
+    }
+
+    /// <summary>
+    /// 활동 시작
+    /// </summary>
+    public void StartActivity(string activityName, string description = "", float duration = 0f)
+    {
+        currentActivity = activityName;
+        activityDescription = description;
+        activityStartTime = Time.time;
+        activityDuration = duration;
+        
+        Debug.Log($"[{Name}] Started activity: {activityName} - {description}");
+    }
+
+    /// <summary>
+    /// 활동 종료
+    /// </summary>
+    public void StopActivity()
+    {
+        if (IsPerformingActivity)
+        {
+            Debug.Log($"[{Name}] Stopped activity: {currentActivity}");
+            currentActivity = "Idle";
+            activityDescription = "";
+            activityStartTime = 0f;
+            activityDuration = 0f;
+        }
+    }
+
+    /// <summary>
+    /// 현재 활동이 완료되었는지 확인
+    /// </summary>
+    public bool IsActivityCompleted()
+    {
+        if (!IsPerformingActivity || activityDuration <= 0f)
+            return false;
+            
+        return Time.time - activityStartTime >= activityDuration;
+    }
+
+    /// <summary>
+    /// 활동 진행률 반환 (0.0 ~ 1.0)
+    /// </summary>
+    public float GetActivityProgress()
+    {
+        if (!IsPerformingActivity || activityDuration <= 0f)
+            return 0f;
+            
+        float elapsed = Time.time - activityStartTime;
+        return Mathf.Clamp01(elapsed / activityDuration);
     }
 
     #region Odin Inspector Buttons

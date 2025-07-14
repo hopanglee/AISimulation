@@ -1,0 +1,352 @@
+﻿{
+  "summary": "A day focused on nourishment, relaxation, social connection, and creative engagement.",
+  "mood": "Eager for engagement and relaxation.",
+  "priority_goals": [
+    "Satisfy hunger and thirst needs",
+    "Rest and recharge stamina",
+    "Engage in a creative activity",
+    "Socialize with friends or acquaintances"
+  ],
+  "high_level_tasks": [
+    {
+      "task_name": "Breakfast and Hydration",
+      "description": "Start the day with a nourishing breakfast and adequate hydration.",
+      "start_time": "06:30",
+      "end_time": "07:30",
+      "duration_minutes": 60,
+      "priority": 5,
+      "location": "Kitchen",
+      "sub_tasks": [
+        "MoveToArea: Kitchen",
+        "UseObject: Refrigerator",
+        "PerformActivity: Prepare breakfast",
+        "PerformActivity: Eat breakfast",
+        "PerformActivity: Drink water"
+      ]
+    },
+    {
+      "task_name": "Morning Rest and Contemplation",
+      "description": "Spend the morning resting and contemplating the day's activities.",
+      "start_time": "08:00",
+      "end_time": "09:00",
+      "duration_minutes": 60,
+      "priority": 4,
+      "location": "Living Room",
+      "sub_tasks": [
+        "MoveToArea: Living Room",
+        "InteractWithObject: Sofa",
+        "ObserveEnvironment: Through window"
+      ]
+    },
+    {
+      "task_name": "Creative Writing Session",
+      "description": "Engage in a creative writing session to stimulate imagination and relaxation.",
+      "start_time": "10:00",
+      "end_time": "12:00",
+      "duration_minutes": 120,
+      "priority": 3,
+      "location": "Living Room",
+      "sub_tasks": [
+        "UseObject: Notebook",
+        "UseObject: Pen",
+        "PerformActivity: Writing session"
+      ]
+    },
+    {
+      "task_name": "Lunch and Social Catch-Up",
+      "description": "Prepare lunch and catch up with friends or family via phone or video call.",
+      "start_time": "12:30",
+      "end_time": "14:00",
+      "duration_minutes": 90,
+      "priority": 5,
+      "location": "Kitchen",
+      "sub_tasks": [
+        "PerformActivity: Prepare lunch",
+        "UseObject: Phone",
+        "TalkToNPC: Friend/Family member"
+      ]
+    },
+    {
+      "task_name": "Afternoon Nap and Relaxation",
+      "description": "Take a nap and relax to rejuvenate for the evening.",
+      "start_time": "14:30",
+      "end_time": "15:30",
+      "duration_minutes": 60,
+      "priority": 3,
+      "location": "Living Room",
+      "sub_tasks": [
+        "InteractWithObject: Couch",
+        "Wait: Lie down and rest"
+      ]
+    }
+  ],
+  "detailed_activities": [
+    {
+      "activity_name": "Walk to Kitchen",
+      "description": "Move from the living room to the kitchen to start preparing breakfast.",
+      "start_time": "06:30",
+      "end_time": "06:35",
+      "duration_minutes": 5,
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Breakfast and Hydration",
+      "parent_high_level_task": "Breakfast and Hydration: Start the day with a nourishing breakfast and adequate hydration.",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Prepare Breakfast",
+      "description": "Use the refrigerator to gather ingredients and prepare a nourishing breakfast.",
+      "start_time": "06:35",
+      "end_time": "07:00",
+      "duration_minutes": 25,
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Breakfast and Hydration",
+      "parent_high_level_task": "Breakfast and Hydration: Start the day with a nourishing breakfast and adequate hydration.",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Eat Breakfast and Stay Hydrated",
+      "description": "Eat the prepared breakfast and drink a glass of water.",
+      "start_time": "07:00",
+      "end_time": "07:30",
+      "duration_minutes": 30,
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Breakfast and Hydration",
+      "parent_high_level_task": "Breakfast and Hydration: Start the day with a nourishing breakfast and adequate hydration.",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Sit on Sofa",
+      "description": "Move to the sofa in the living room to sit and start resting.",
+      "start_time": "08:00",
+      "end_time": "08:05",
+      "duration_minutes": 5,
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Morning Rest and Contemplation",
+      "parent_high_level_task": "Morning Rest and Contemplation: Spend the morning resting and contemplating the day's activities.",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Contemplation through Window",
+      "description": "Relax on the sofa and look out the window to contemplate the day ahead.",
+      "start_time": "08:05",
+      "end_time": "08:30",
+      "duration_minutes": 25,
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Morning Rest and Contemplation",
+      "parent_high_level_task": "Morning Rest and Contemplation: Spend the morning resting and contemplating the day's activities.",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Creative Writing Preparation",
+      "description": "Gather notebook and pen for writing.",
+      "start_time": "10:00",
+      "end_time": "10:05",
+      "duration_minutes": 5,
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Creative Writing Session",
+      "parent_high_level_task": "Creative Writing Session: Engage in a creative writing session to stimulate imagination and relaxation.",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Creative Writing Session",
+      "description": "Engage in a creative writing session using a notebook and pen.",
+      "start_time": "10:05",
+      "end_time": "11:55",
+      "duration_minutes": 110,
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Creative Writing Session",
+      "parent_high_level_task": "Creative Writing Session: Engage in a creative writing session to stimulate imagination and relaxation.",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Prepare Lunch",
+      "description": "Prepare a simple lunch to satisfy hunger.",
+      "start_time": "12:30",
+      "end_time": "13:00",
+      "duration_minutes": 30,
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Lunch and Social Catch-Up",
+      "parent_high_level_task": "Lunch and Social Catch-Up: Prepare lunch and catch up with friends or family via phone or video call.",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Social Catch-Up Call",
+      "description": "Use phone to call a friend or family member and catch up while having lunch.",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "duration_minutes": 60,
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Lunch and Social Catch-Up",
+      "parent_high_level_task": "Lunch and Social Catch-Up: Prepare lunch and catch up with friends or family via phone or video call.",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Prepare for Nap",
+      "description": "Settle down on the couch for a nap to recharge.",
+      "start_time": "14:30",
+      "end_time": "14:35",
+      "duration_minutes": 5,
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Afternoon Nap and Relaxation",
+      "parent_high_level_task": "Afternoon Nap and Relaxation: Take a nap and relax to rejuvenate for the evening.",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Afternoon Nap",
+      "description": "Take a nap on the couch to relax and rejuvenate.",
+      "start_time": "14:35",
+      "end_time": "15:30",
+      "duration_minutes": 55,
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Afternoon Nap and Relaxation",
+      "parent_high_level_task": "Afternoon Nap and Relaxation: Take a nap and relax to rejuvenate for the evening.",
+      "status": "pending"
+    }
+  ],
+  "specific_actions": [
+    {
+      "action_name": "MoveToArea",
+      "description": "Walk from the living room to the kitchen to start preparing breakfast.",
+      "start_time": "06:30",
+      "duration_minutes": 5,
+      "parameters": {},
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Walk to Kitchen",
+      "parent_high_level_task": "Breakfast and Hydration",
+      "status": "pending"
+    },
+    {
+      "action_name": "UseObject",
+      "description": "Open the refrigerator to gather ingredients for breakfast.",
+      "start_time": "06:35",
+      "duration_minutes": 2,
+      "parameters": {},
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Prepare Breakfast",
+      "parent_high_level_task": "Breakfast and Hydration",
+      "status": "pending"
+    },
+    {
+      "action_name": "PerformActivity",
+      "description": "Prepare a nourishing breakfast using gathered ingredients.",
+      "start_time": "06:37",
+      "duration_minutes": 23,
+      "parameters": {},
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Prepare Breakfast",
+      "parent_high_level_task": "Breakfast and Hydration",
+      "status": "pending"
+    },
+    {
+      "action_name": "PerformActivity",
+      "description": "Eat the breakfast and drink a glass of water to stay hydrated.",
+      "start_time": "07:00",
+      "duration_minutes": 30,
+      "parameters": {},
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Eat Breakfast and Stay Hydrated",
+      "parent_high_level_task": "Breakfast and Hydration",
+      "status": "pending"
+    },
+    {
+      "action_name": "MoveToArea",
+      "description": "Move to the sofa in the living room to start resting.",
+      "start_time": "08:00",
+      "duration_minutes": 5,
+      "parameters": {},
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Sit on Sofa",
+      "parent_high_level_task": "Morning Rest and Contemplation",
+      "status": "pending"
+    },
+    {
+      "action_name": "ObserveEnvironment",
+      "description": "Look out the window to contemplate the day ahead while relaxing on the sofa.",
+      "start_time": "08:05",
+      "duration_minutes": 25,
+      "parameters": {},
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Contemplation through Window",
+      "parent_high_level_task": "Morning Rest and Contemplation",
+      "status": "pending"
+    },
+    {
+      "action_name": "PickUpItem",
+      "description": "Gather a notebook and pen from the nearby desk for writing.",
+      "start_time": "10:00",
+      "duration_minutes": 5,
+      "parameters": {},
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Creative Writing Preparation",
+      "parent_high_level_task": "Creative Writing Session",
+      "status": "pending"
+    },
+    {
+      "action_name": "PerformActivity",
+      "description": "Start the creative writing session using the gathered notebook and pen.",
+      "start_time": "10:05",
+      "duration_minutes": 110,
+      "parameters": {},
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Creative Writing Session",
+      "parent_high_level_task": "Creative Writing Session",
+      "status": "pending"
+    },
+    {
+      "action_name": "UseObject",
+      "description": "Open the refrigerator to gather ingredients for a simple lunch.",
+      "start_time": "12:30",
+      "duration_minutes": 5,
+      "parameters": {},
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Prepare Lunch",
+      "parent_high_level_task": "Lunch and Social Catch-Up",
+      "status": "pending"
+    },
+    {
+      "action_name": "PerformActivity",
+      "description": "Prepare a simple lunch using the gathered ingredients.",
+      "start_time": "12:35",
+      "duration_minutes": 25,
+      "parameters": {},
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Prepare Lunch",
+      "parent_high_level_task": "Lunch and Social Catch-Up",
+      "status": "pending"
+    },
+    {
+      "action_name": "UseObject",
+      "description": "Use the phone to call a friend or family member and catch up while having lunch.",
+      "start_time": "13:00",
+      "duration_minutes": 60,
+      "parameters": {},
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Social Catch-Up Call",
+      "parent_high_level_task": "Lunch and Social Catch-Up",
+      "status": "pending"
+    },
+    {
+      "action_name": "MoveToArea",
+      "description": "Settle down on the couch for a nap to recharge.",
+      "start_time": "14:30",
+      "duration_minutes": 5,
+      "parameters": {},
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Prepare for Nap",
+      "parent_high_level_task": "Afternoon Nap and Relaxation",
+      "status": "pending"
+    },
+    {
+      "action_name": "PerformActivity",
+      "description": "Take a nap on the couch to relax and rejuvenate.",
+      "start_time": "14:35",
+      "duration_minutes": 55,
+      "parameters": {},
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Afternoon Nap",
+      "parent_high_level_task": "Afternoon Nap and Relaxation",
+      "status": "pending"
+    }
+  ],
+  "status": "pending"
+}

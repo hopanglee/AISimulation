@@ -89,23 +89,23 @@ public class TestAgent : GPT
                         @"
             {
                 ""type"": ""object"",
+                ""additionalProperties"": false,
                 ""properties"": {
                     ""steps"": {
                         ""type"": ""array"",
                         ""items"": {
                             ""type"": ""object"",
+                            ""additionalProperties"": false,
                             ""properties"": {
                                 ""explanation"": { ""type"": ""string"" },
                                 ""output"": { ""type"": ""string"" }
                             },
-                            ""required"": [""explanation"", ""output""],
-                            ""additionalProperties"": false
+                            ""required"": [""explanation"", ""output""]
                         }
                     },
                     ""final_answer"": { ""type"": ""string"" }
                 },
-                ""required"": [""steps"", ""final_answer""],
-                ""additionalProperties"": false
+                ""required"": [""steps"", ""final_answer""]
             }
         "
                     )
