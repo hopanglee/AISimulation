@@ -1,0 +1,134 @@
+﻿=== GPT Conversation Log ===
+Actor: Hino Maori
+Agent Type: GPT
+Game Time: 2025-07-14 23:23:59
+Real Time: 2025-07-14 23:23:59
+=====================================
+
+--- System ---
+You are an expert in creating high-level daily plans for characters in an AI simulation, following the Stanford Generative Agent approach.
+
+## Role
+- Create strategic high-level plans based on the character's personality, current state, and memories
+- Focus on priority goals and major time blocks (30 minutes to 3 hours)
+- Consider the character's basic needs (meals, rest, sleep, etc.) and long-term objectives
+
+## Planning Principles
+1. **Strategic Thinking**: Focus on big picture goals and priorities
+2. **Time Management**: Create major time blocks for the day
+3. **Priority Setting**: Identify 3-5 main goals for the day
+4. **Balance**: Balance work and rest, personal time and social activities
+5. **Condition Consideration**: Reflect current state (fatigue, stress, hunger, etc.)
+6. **Location Planning**: Consider current location and accessible places
+
+## High-Level Planning Focus
+### Priority Goals (3-5개)
+- **Examples**: "Complete work project", "Exercise for health", "Socialize with friends"
+- **Focus**: 중요한 목표와 우선순위
+
+### High-Level Tasks (3-5개)
+- **Examples**: "아침 준비", "일하기", "저녁 식사", "운동하기"
+- **Duration**: 30분 ~ 3시간
+- **Focus**: 큰 목표와 시간 블록
+
+## Available Action Types
+- **MoveToArea**: Move to a specific location (e.g., "home", "cafe", "park")
+- **MoveToEntity**: Move to a specific entity (person, object)
+- **TalkToNPC**: Talk to NPC
+- **UseObject**: Use an object (e.g., "phone", "computer", "desk")
+- **PickUpItem**: Pick up an item
+- **InteractWithObject**: Interact with an object
+- **ObserveEnvironment**: Observe the environment
+- **Wait**: Wait
+- **PerformActivity**: Perform a specific activity (like morning stretches, cooking, etc.)
+
+## Location Information Usage
+- **The location field must use the full path format**
+- Examples: "Kitchen in Apartment", "Living Room in Apartment", "Bedroom in Apartment"
+- Do not use just "Kitchen" or "Living Room"
+- Use the exact full path from the actual location list provided by the system
+
+## Planning Process
+1. **Analyze Context**: Consider character's current state, memories, and available locations
+2. **Set Priority Goals**: Identify 3-5 main goals for the day
+3. **Create High-Level Tasks**: Break down the day into 3-5 major time blocks
+4. **Define Sub-Tasks**: For each high-level task, suggest 2-3 sub-tasks
+
+## Important Notes
+- Use only the actual action types listed above
+- Use only the full path of actual locations provided by the system
+- Refer to the actual location and action information provided by the system
+- **Must create tasks divided by time periods for the entire day (6 AM ~ 10 PM)**
+- **Focus on strategic planning, not detailed execution**
+- **Each task should be broad enough to contain multiple activities**
+
+## Response Format
+Respond in JSON format with high-level structure:
+- summary: Overall summary of the high-level plan
+- mood: Today's mood or condition
+- priority_goals: List of main goals for the day
+- high_level_tasks: List of major time blocks and tasks 
+
+--- User ---
+Create a high-level plan for tomorrow (2024-01-01 06:00) based on the following context:
+Current state: Hunger(0), Thirst(0), Stamina(0), Stress(0), Sleepiness(0)
+Current location: Living Room
+The first activity MUST start exactly at the current time: 06:00.
+Do not leave any gap before the first activity. If the agent is awake, the first activity should begin at the current time.
+Example:
+- 06:00: Wake up and stretch
+- 06:00: Go to Kitchen and drink water
+
+
+--- Assistant ---
+[Empty content]
+
+[Tool Calls:]
+  - Function: GetWorldAreaInfo
+    Arguments: {}
+  - Function: GetUserMemory
+    Arguments: {}
+
+
+--- Tool ---
+Tool Result: Tokyo To
+  Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To
+    Bathroom: Laundry Room
+    Entryway: Toilet, Living Room, Kitchen, Laundry Room, Setagaya Ku - 5-chome-13
+  Kamiya Tooru's Apartment in 5-chome-3 , Minami Karasuyama , Setagaya Ku , Tokyo To
+    Bathroom: Laundry Room
+    Entryway: Toilet, Living Room, Kitchen, Laundry Room, Setagaya Ku - 5-chome-3
+  Setagaya Ku
+    5-chome-1: 5-chome-2, 5-chome-8, 5-chome-14, Sinjuku ku - 1-chome-8
+    5-chome-10: 5-chome-9, 5-chome-11
+    5-chome-11: 5-chome-8, 5-chome-12
+    5-chome-12: 5-chome-13
+    5-chome-13: 5-chome-14
+    5-chome-14: 5-chome-8
+    5-chome-2: 5-chome-3
+    5-chome-3: 5-chome-4
+    5-chome-4: Nakamise-dori, 5-chome-8
+    5-chome-8: Nakamise-dori, 5-chome-9
+  Sinjuku ku
+    1-chome-1: 1-chome-8, 1-chome-9, 1-chome-2, 1-chome-6, 1-chome-7
+    1-chome-2: 1-chome-3, 1-chome-5, 1-chome-6, 1-chome-9
+    1-chome-3: 1-chome-4
+    1-chome-4: 1-chome-5
+    1-chome-5: 1-chome-6
+    1-chome-6: 1-chome-7
+    1-chome-8: 1-chome-9
+
+
+--- Tool ---
+Tool Result: Character: Hino Maori
+Last Updated: 2025-06-28 오전 12:01:21
+
+
+
+--- Assistant ---
+{"summary":"A day focused on wellness, social interactions, and personal hobbies.","mood":"Excited and energized after a restful night.","priority_goals":["Maintain physical health with exercise and proper meals","Engage in meaningful social interaction","Spend time on a personal hobby or interest"],"high_level_tasks":[{"task_name":"Morning Routine and Breakfast","description":"Start the day with a physical warm-up and a nutritious breakfast.","start_time":"06:00","end_time":"08:00","duration_minutes":120,"priority":1,"location":"Living Room in Apartment","sub_tasks":["MoveToArea: Laundry Room in Apartment","UseObject: Blender in Kitchen for making a smoothie","PerformActivity: Morning stretches in Living Room"]},{"task_name":"Work on Personal Project","description":"Dedicate time to personal hobbies or ongoing projects.","start_time":"08:30","end_time":"11:00","duration_minutes":150,"priority":2,"location":"Living Room in Apartment","sub_tasks":["UseObject: Computer in Living Room","PerformActivity: Coding a new feature for a personal app","ObserveEnvironment: Check updates and emails related to project"]},{"task_name":"Midday Exercise and Lunch","description":"Stay active and refuel with a healthy lunch.","start_time":"11:30","end_time":"13:30","duration_minutes":120,"priority":1,"location":"Living Room in Apartment","sub_tasks":["PerformActivity: Yoga session in Living Room","MoveToArea: Kitchen in Apartment","UseObject: Refrigerator for preparing a salad"]},{"task_name":"Social Interaction","description":"Connect with friends or family to socialize and relax.","start_time":"14:00","end_time":"16:00","duration_minutes":120,"priority":3,"location":"Living Room in Apartment","sub_tasks":["MoveToArea: Setagaya Ku - 5-chome-13 to meet a friend","TalkToNPC: Engage in a conversation with a neighbor","UseObject: Phone in Living Room for a video call"]},{"task_name":"Evening Relaxation and Dinner","description":"Wind down with some quiet time and a delicious dinner.","start_time":"18:00","end_time":"20:00","duration_minutes":120,"priority":2,"location":"Living Room in Apartment","sub_tasks":["PerformActivity: Reading a book in Living Room","UseObject: Kitchen tools for cooking dinner","ObserveEnvironment: Enjoy the night view from Apartment"]}]}
+
+--- Final Response ---
+{"summary":"A day focused on wellness, social interactions, and personal hobbies.","mood":"Excited and energized after a restful night.","priority_goals":["Maintain physical health with exercise and proper meals","Engage in meaningful social interaction","Spend time on a personal hobby or interest"],"high_level_tasks":[{"task_name":"Morning Routine and Breakfast","description":"Start the day with a physical warm-up and a nutritious breakfast.","start_time":"06:00","end_time":"08:00","duration_minutes":120,"priority":1,"location":"Living Room in Apartment","sub_tasks":["MoveToArea: Laundry Room in Apartment","UseObject: Blender in Kitchen for making a smoothie","PerformActivity: Morning stretches in Living Room"]},{"task_name":"Work on Personal Project","description":"Dedicate time to personal hobbies or ongoing projects.","start_time":"08:30","end_time":"11:00","duration_minutes":150,"priority":2,"location":"Living Room in Apartment","sub_tasks":["UseObject: Computer in Living Room","PerformActivity: Coding a new feature for a personal app","ObserveEnvironment: Check updates and emails related to project"]},{"task_name":"Midday Exercise and Lunch","description":"Stay active and refuel with a healthy lunch.","start_time":"11:30","end_time":"13:30","duration_minutes":120,"priority":1,"location":"Living Room in Apartment","sub_tasks":["PerformActivity: Yoga session in Living Room","MoveToArea: Kitchen in Apartment","UseObject: Refrigerator for preparing a salad"]},{"task_name":"Social Interaction","description":"Connect with friends or family to socialize and relax.","start_time":"14:00","end_time":"16:00","duration_minutes":120,"priority":3,"location":"Living Room in Apartment","sub_tasks":["MoveToArea: Setagaya Ku - 5-chome-13 to meet a friend","TalkToNPC: Engage in a conversation with a neighbor","UseObject: Phone in Living Room for a video call"]},{"task_name":"Evening Relaxation and Dinner","description":"Wind down with some quiet time and a delicious dinner.","start_time":"18:00","end_time":"20:00","duration_minutes":120,"priority":2,"location":"Living Room in Apartment","sub_tasks":["PerformActivity: Reading a book in Living Room","UseObject: Kitchen tools for cooking dinner","ObserveEnvironment: Enjoy the night view from Apartment"]}]}
+
+=== End of Conversation ===

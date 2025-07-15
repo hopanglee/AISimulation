@@ -1,0 +1,86 @@
+using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
+using OpenAI.Chat;
+using Newtonsoft.Json;
+using System;
+
+namespace Agent
+{
+    public class UseObjectParameterAgent : ParameterAgentBase
+    {
+        public class UseObjectParameter
+        {
+            public string TargetObject { get; set; }
+        }
+
+        private readonly string systemPrompt;
+        private readonly ChatCompletionOptions options;
+        private readonly List<string> objectList;
+        private readonly string personality;
+        private readonly string memorySummary;
+        private readonly GPT gpt;
+
+        public UseObjectParameterAgent(List<string> objectList, string personality, string memorySummary, GPT gpt)
+        {
+            this.objectList = objectList;
+            this.personality = personality;
+            this.memorySummary = memorySummary;
+            this.gpt = gpt;
+            systemPrompt = PromptLoader.LoadPrompt("UseObjectParameterAgentPrompt.txt", "You are a UseObject parameter generator.");
+            options = new ChatCompletionOptions
+            {
+                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
+                    jsonSchemaFormatName: "use_object_parameter",
+                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
+                        $@"{{
+                            ""type"": ""object"",
+                            ""additionalProperties"": false,
+                            ""properties"": {{
+                                ""TargetObject"": {{
+                                    ""type"": ""string"",
+                                    ""enum"": {JsonConvert.SerializeObject(objectList)},
+                                    ""description"": ""사용할 오브젝트 (목록 중 하나)""
+                                }}
+                            }},
+                            ""required"": [""TargetObject""]
+                        }}"
+                    )),
+                    jsonSchemaIsStrict: true
+                )
+            };
+        }
+
+        public async UniTask<UseObjectParameter> GenerateParametersAsync(CommonContext context)
+        {
+            var messages = new List<ChatMessage>
+            {
+                new SystemChatMessage(systemPrompt),
+                new UserChatMessage(BuildUserMessage(context))
+            };
+            var response = await gpt.SendGPTAsync<UseObjectParameter>(messages, options);
+            return response;
+        }
+
+        public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
+        {
+            var param = await GenerateParametersAsync(new CommonContext
+            {
+                Reasoning = request.Reasoning,
+                Intention = request.Intention
+            });
+            return new ActParameterResult
+            {
+                ActType = request.ActType,
+                Parameters = new Dictionary<string, object>
+                {
+                    { "TargetObject", param.TargetObject }
+                }
+            };
+        }
+
+        private string BuildUserMessage(CommonContext context)
+        {
+            return $"Personality: {personality}\nMemory: {memorySummary}\nReasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableObjects: {string.Join(", ", objectList)}";
+        }
+    }
+} 
