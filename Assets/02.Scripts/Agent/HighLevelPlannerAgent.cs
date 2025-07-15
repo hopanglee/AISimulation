@@ -154,7 +154,12 @@ public class HighLevelPlannerAgent : GPT
                     messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
                     break;
                 }
-
+            case "GetUserMemory":
+                {
+                    string toolResult = GetUserMemory();
+                    messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
+                    break;
+                }
             default:
                 {
                     Debug.LogWarning($"Unknown tool call: {toolCall.FunctionName}");

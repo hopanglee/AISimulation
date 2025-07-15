@@ -206,12 +206,14 @@ public class GPT
 
                     try
                     {
+                        Debug.Log($"[GPT][PARSE] Raw response before parse: {responseText}");
                         var result = JsonConvert.DeserializeObject<T>(responseText);
                         await SaveConversationLogAsync(messages, responseText);
                         return result;
                     }
                     catch (Exception ex)
                     {
+                        Debug.LogError($"[GPT][PARSE ERROR] Raw response: {responseText}");
                         Debug.LogError($"JSON Deserialization Error: {ex.Message}");
                         await SaveConversationLogAsync(messages, $"ERROR: {ex.Message}");
                         throw new InvalidOperationException(

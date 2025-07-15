@@ -22,19 +22,15 @@ public class ActionAgent : GPT
         MoveAway, // Move away from current location
         TalkToNPC, // Talk to NPC
         RespondToPlayer, // Respond to player
-        AskQuestion, // Ask a question
         UseObject, // Use an object
         PickUpItem, // Pick up an item
-        OpenDoor, // Open a door
-        PressSwitch, // Press a switch
         InteractWithObject, // Interact with an object
         InteractWithNPC, // Interact with NPC
         ObserveEnvironment, // Observe the environment
-        ExamineObject, // Examine an object in detail
         ScanArea, // Scan an area
         Wait, // Wait
-        WaitForEvent, // Wait for an event
         PerformActivity, // Perform a specific activity (like morning stretches, cooking, etc.)
+        EnterBuilding, // Enter a building (추가)
     }
 
     /// <summary>
@@ -346,8 +342,8 @@ public class ActionAgent : GPT
                                             ""type"": ""string"",
                                             ""enum"": [
                                                 ""MoveToArea"", ""MoveToEntity"", ""MoveAway"",
-                                                ""TalkToNPC"", ""RespondToPlayer"", ""AskQuestion"",
-                                                ""UseObject"", ""PickUpItem"", ""OpenDoor"", ""PressSwitch"",
+                                                ""TalkToNPC"", ""RespondToPlayer"", ""UseObject"",
+                                                ""PickUpItem"", ""OpenDoor"", ""PressSwitch"",
                                                 ""InteractWithObject"", ""InteractWithNPC"",
                                                 ""ObserveEnvironment"", ""ExamineObject"", ""ScanArea"",
                                                 ""Wait"", ""WaitForEvent"", ""PerformActivity""

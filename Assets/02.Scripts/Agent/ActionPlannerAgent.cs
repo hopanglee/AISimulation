@@ -112,14 +112,15 @@ public class ActionPlannerAgent : GPT
                                             ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 5, ""maximum"": 120 }},
                                             ""parameters"": {{
                                                 ""type"": ""object"",
-                                                ""description"": ""Parameters for the action (e.g., target location, object name)""
+                                                ""description"": ""Parameters for the action (e.g., target location, object name)"",
+                                                ""additionalProperties"": false
                                             }},
                                             ""location"": {{ ""type"": ""string"" }},
                                             ""parent_activity"": {{ ""type"": ""string"" }},
                                             ""parent_high_level_task"": {{ ""type"": ""string"" }},
                                             ""status"": {{ ""type"": ""string"", ""enum"": [""pending"", ""in_progress"", ""completed""] }}
                                         }},
-                                        ""required"": [""action_name"", ""description"", ""start_time"", ""duration_minutes"", ""parameters"", ""location"", ""parent_activity"", ""parent_high_level_task"", ""status""]
+                                        ""required"": [""action_name"", ""description"", ""start_time"", ""duration_minutes"", ""location"", ""parent_activity"", ""parent_high_level_task"", ""status""]
                                     }},
                                     ""description"": ""List of specific actions for tomorrow""
                                 }}
@@ -144,18 +145,23 @@ public class ActionPlannerAgent : GPT
         switch (toolCall.FunctionName)
         {
             case "GetWorldAreaInfo":
-            {
-                string toolResult = GetWorldAreaInfo();
-                messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
-                break;
-            }
-
+                {
+                    string toolResult = GetWorldAreaInfo();
+                    messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
+                    break;
+                }
+            case "GetUserMemory":
+                {
+                    string toolResult = GetUserMemory();
+                    messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
+                    break;
+                }
             default:
-            {
-                Debug.LogWarning($"Unknown tool call: {toolCall.FunctionName}");
-                messages.Add(new ToolChatMessage(toolCall.Id, "Tool not implemented"));
-                break;
-            }
+                {
+                    Debug.LogWarning($"Unknown tool call: {toolCall.FunctionName}");
+                    messages.Add(new ToolChatMessage(toolCall.Id, "Tool not implemented"));
+                    break;
+                }
         }
     }
 
