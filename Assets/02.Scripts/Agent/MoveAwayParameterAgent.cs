@@ -8,6 +8,7 @@ namespace Agent
 {
     public class MoveAwayParameterAgent : ParameterAgentBase
     {
+        // actorName 필드 사용 가능 (ParameterAgentBase에서 상속)
         public class MoveAwayParameter
         {
             public string Direction { get; set; } // 방향이 필요 없으면 null/생략

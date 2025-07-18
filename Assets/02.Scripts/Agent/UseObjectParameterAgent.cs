@@ -36,13 +36,13 @@ namespace Agent
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""TargetObject"": {{
+                                ""object_name"": {{
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(objectList)},
-                                    ""description"": ""사용할 오브젝트 (목록 중 하나)""
+                                    ""description"": ""One of the available objects to use""
                                 }}
                             }},
-                            ""required"": [""TargetObject""]
+                            ""required"": [""object_name""]
                         }}"
                     )),
                     jsonSchemaIsStrict: true
@@ -73,14 +73,14 @@ namespace Agent
                 ActType = request.ActType,
                 Parameters = new Dictionary<string, object>
                 {
-                    { "TargetObject", param.TargetObject }
+                    { "object_name", param.TargetObject }
                 }
             };
         }
 
         private string BuildUserMessage(CommonContext context)
         {
-            return $"Personality: {personality}\nMemory: {memorySummary}\nReasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableObjects: {string.Join(", ", objectList)}";
+            return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableObjects: {string.Join(", ", objectList)}";
         }
     }
 } 

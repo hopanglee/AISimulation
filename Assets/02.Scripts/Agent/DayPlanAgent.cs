@@ -13,24 +13,6 @@ public class DayPlanAgent : GPT
     private Actor actor;
 
     /// <summary>
-    /// 하루 계획 구조
-    /// </summary>
-    public class DayPlan
-    {
-        [JsonProperty("summary")]
-        public string Summary { get; set; } = "";
-
-        [JsonProperty("activities")]
-        public List<DailyActivity> Activities { get; set; } = new List<DailyActivity>();
-
-        [JsonProperty("mood")]
-        public string Mood { get; set; } = "";
-
-        [JsonProperty("priority_goals")]
-        public List<string> PriorityGoals { get; set; } = new List<string>();
-    }
-
-    /// <summary>
     /// 계층적 계획 구조 (Stanford Generative Agent 스타일)
     /// </summary>
     public class HierarchicalDayPlan
@@ -133,27 +115,6 @@ public class DayPlanAgent : GPT
 
         [JsonProperty("location")]
         public string Location { get; set; } = "";
-    }
-
-    /// <summary>
-    /// 일일 활동 구조
-    /// </summary>
-    public class DailyActivity
-    {
-        [JsonProperty("start_time")]
-        public string StartTime { get; set; } = ""; // "HH:MM" 형식
-
-        [JsonProperty("end_time")]
-        public string EndTime { get; set; } = ""; // "HH:MM" 형식
-
-        [JsonProperty("description")]
-        public string Description { get; set; } = "";
-
-        [JsonProperty("location")]
-        public string Location { get; set; } = "";
-
-        [JsonProperty("priority")]
-        public int Priority { get; set; } = 1; // 1-5, 높을수록 중요
     }
 
 
@@ -285,41 +246,6 @@ public class DayPlanAgent : GPT
     }
 
     /// <summary>
-    /// 기본 하루 계획 생성 (전날 밤)
-    /// </summary>
-    public async UniTask<DayPlan> CreateBasicDayPlanAsync()
-    {
-        var timeService = Services.Get<ITimeService>();
-        var currentTime = timeService.CurrentTime;
-        var tomorrow = GetNextDay(currentTime);
-
-        string prompt = GenerateBasicPlanPrompt(tomorrow);
-        messages.Add(new UserChatMessage(prompt));
-
-        Debug.Log($"[DayPlanAgent] {actor.Name}의 하루 계획 생성 시작...");
-        Debug.Log($"[DayPlanAgent] 프롬프트: {prompt}");
-
-        var response = await SendGPTAsync<DayPlan>(messages, options);
-
-        Debug.Log($"[DayPlanAgent] {actor.Name}의 기본 하루 계획 생성 완료: {response.Summary}");
-        Debug.Log($"[DayPlanAgent] 생성된 활동 수: {response.Activities?.Count ?? 0}");
-        
-        if (response.Activities != null && response.Activities.Count > 0)
-        {
-            foreach (var activity in response.Activities)
-            {
-                Debug.Log($"[DayPlanAgent] 활동: {activity.StartTime}-{activity.EndTime} at {activity.Location}");
-            }
-        }
-        else
-        {
-            Debug.LogWarning($"[DayPlanAgent] {actor.Name}의 활동이 생성되지 않았습니다!");
-        }
-
-        return response;
-    }
-
-    /// <summary>
     /// 계층적 하루 계획 생성 (Stanford Generative Agent 스타일)
     /// </summary>
     public async UniTask<HierarchicalDayPlan> CreateHierarchicalDayPlanAsync()
@@ -392,70 +318,6 @@ public class DayPlanAgent : GPT
 
 
     /// <summary>
-    /// 기본 계획 프롬프트 생성
-    /// </summary>
-    private string GenerateBasicPlanPrompt(GameTime tomorrow)
-    {
-        var sb = new StringBuilder();
-
-        sb.AppendLine($"Create a daily plan for tomorrow ({tomorrow}).");
-        sb.AppendLine(
-            $"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({actor.Sleepiness})"
-        );
-        sb.AppendLine($"Current location: {actor.curLocation.LocationToString()}");
-
-        // 실제 존재하는 Area 정보 제공 (계층 구조 포함)
-        var areas = UnityEngine.Object.FindObjectsByType<Area>(FindObjectsSortMode.None);
-        
-        sb.AppendLine("\n=== Available Locations (Full Path) ===");
-        foreach (var area in areas)
-        {
-            if (string.IsNullOrEmpty(area.locationName))
-                continue;
-                
-            var fullLocationPath = area.LocationToString();
-            var connectedAreas = area.connectedAreas.Select(a => a.LocationToString()).ToList();
-            sb.AppendLine($"- {fullLocationPath}: Connected to {string.Join(", ", connectedAreas)}");
-        }
-
-        // PathfindingService의 전체 경로 정보도 제공
-        var pathfindingService = Services.Get<IPathfindingService>();
-        var allAreasByFullPath = pathfindingService.GetAllAreaInfoByFullPath();
-        
-        sb.AppendLine("\n=== Pathfinding Information ===");
-        foreach (var kvp in allAreasByFullPath)
-        {
-            var fullPath = kvp.Key;
-            var areaInfo = kvp.Value;
-            sb.AppendLine($"- {fullPath} (locationName: {areaInfo.locationName}): Connected to {string.Join(", ", areaInfo.connectedAreasFullPath)}");
-        }
-
-        // 실제 사용 가능한 액션 타입 정보 제공
-        sb.AppendLine("\n=== Available Action Types ===");
-        sb.AppendLine("- MoveToArea: Move to a specific location");
-        sb.AppendLine("- MoveToEntity: Move to a specific entity (person, object)");
-        sb.AppendLine("- TalkToNPC: Talk to NPC");
-        sb.AppendLine("- UseObject: Use an object");
-        sb.AppendLine("- PickUpItem: Pick up an item");
-        sb.AppendLine("- InteractWithObject: Interact with an object");
-        sb.AppendLine("- ObserveEnvironment: Observe the environment");
-        sb.AppendLine("- Wait: Wait");
-
-        // 캐릭터의 메모리 정보 추가
-        var memoryManager = new CharacterMemoryManager(actor.Name);
-        var memorySummary = memoryManager.GetMemorySummary();
-        sb.AppendLine("\n=== Memory Information ===");
-        sb.AppendLine(memorySummary);
-
-        sb.AppendLine("\nCreate a realistic and natural daily plan for tomorrow.");
-        sb.AppendLine("Use wake-up time at 6 AM and bedtime at 10 PM as standards.");
-        sb.AppendLine("Use only the actual locations and action types listed above.");
-        sb.AppendLine("For locations, use the exact full path format (e.g., 'Kitchen in Apartment') as shown in the available locations list.");
-
-        return sb.ToString();
-    }
-
-    /// <summary>
     /// 고수준 작업 생성 프롬프트 생성
     /// </summary>
     private string GenerateHighLevelPlanPrompt(GameTime tomorrow)
@@ -475,6 +337,8 @@ public class DayPlanAgent : GPT
         sb.AppendLine("Prioritize goals based on current state and long-term objectives.");
         sb.AppendLine("Tasks should be specific, achievable, and relevant to the day's plan.");
         sb.AppendLine("Each task should have a start and end time, duration, priority, and location.");
+        sb.AppendLine("The last high-level task's end_time MUST be exactly 22:00 (bedtime). Fill the plan so that there is no gap until 22:00.");
+        sb.AppendLine("Example: ... 21:00-22:00: Prepare for bed and sleep at Bedroom in Apartment");
         sb.AppendLine("Use only the actual locations and action types listed above.");
         sb.AppendLine("For locations, use the exact full path format (e.g., 'Kitchen in Apartment') as shown in the available locations list.");
 

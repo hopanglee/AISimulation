@@ -15,9 +15,9 @@ You are an expert in creating detailed activity plans for characters in an AI si
 
 ## Detailed Activity Planning Focus
 ### Detailed Activities (1-3 per high-level task)
-- **Examples**: "양치하기", "옷 입기", "커피 마시기", "이메일 확인하기"
-- **Duration**: 5분 ~ 30분
-- **Focus**: 구체적 행동과 장소
+- **Examples**: "Brush teeth", "Get dressed", "Drink coffee", "Check emails"
+- **Duration**: 5-30 minutes
+- **Focus**: Specific actions and locations
 
 ## Available Action Types
 - **MoveToArea**: Move to a specific location (e.g., "home", "cafe", "park")

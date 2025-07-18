@@ -10,7 +10,7 @@ namespace Agent
     {
         public class InteractWithObjectParameter
         {
-            public string TargetObject { get; set; }
+            public string object_name { get; set; }
         }
 
         private readonly string systemPrompt;
@@ -22,7 +22,7 @@ namespace Agent
         {
             this.objectList = objectList;
             this.gpt = gpt;
-            systemPrompt = "You are an InteractWithObject parameter generator.";
+            systemPrompt = PromptLoader.LoadPrompt("InteractWithObjectParameterAgentPrompt.txt", "You are an InteractWithObject parameter generator.");
             options = new ChatCompletionOptions
             {
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
@@ -32,13 +32,13 @@ namespace Agent
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""TargetObject"": {{
+                                ""object_name"": {{
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(objectList)},
-                                    ""description"": ""상호작용할 오브젝트 (목록 중 하나)""
+                                    ""description"": ""One of the available objects to interact with""
                                 }}
                             }},
-                            ""required"": [""TargetObject""]
+                            ""required"": [""object_name""]
                         }}"
                     )),
                     jsonSchemaIsStrict: true
@@ -69,7 +69,7 @@ namespace Agent
                 ActType = request.ActType,
                 Parameters = new Dictionary<string, object>
                 {
-                    { "TargetObject", param.TargetObject }
+                    { "object_name", param.object_name }
                 }
             };
         }

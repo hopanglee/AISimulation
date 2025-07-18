@@ -33,14 +33,13 @@ namespace Agent
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""Content"": {{ ""type"": ""string"" }},
-                                ""TargetNPC"": {{
+                                ""npc_name"": {{
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(npcList)},
-                                    ""description"": ""대화 가능한 NPC 중 하나""
+                                    ""description"": ""One of the available NPCs to talk to""
                                 }}
                             }},
-                            ""required"": [""Content"", ""TargetNPC""]
+                            ""required"": [""npc_name""]
                         }}"
                     )),
                     jsonSchemaIsStrict: true
@@ -72,7 +71,7 @@ namespace Agent
                 Parameters = new Dictionary<string, object>
                 {
                     { "Content", param.Content },
-                    { "TargetNPC", param.TargetNPC }
+                    { "npc_name", param.TargetNPC }
                 }
             };
         }

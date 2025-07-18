@@ -43,11 +43,7 @@ public class SimulationController : MonoBehaviour
 
     [Header("Camera Focus Settings")]
     [SerializeField]
-    private float focusSpeed = 5f;
-    [SerializeField]
     private float focusDistance = 3f;
-    [SerializeField]
-    private float focusHeight = 2f;
 
     private IGameService gameService;
     private ITimeService timeService;

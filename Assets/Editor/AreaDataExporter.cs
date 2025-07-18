@@ -40,7 +40,7 @@ public class AreaDataExporter : EditorWindow
     private void ExportConnectedAreas()
     {
         // 씬에서 모든 Area 컴포넌트 찾기
-        var areas = FindObjectsOfType<Area>();
+        var areas = Object.FindObjectsByType<Area>(FindObjectsSortMode.None);
         Debug.Log($"Found {areas.Length} Area components in the scene");
 
         var areaDataMap = new Dictionary<string, AreaInfo>();

@@ -22,7 +22,7 @@ namespace Agent
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                     jsonSchemaFormatName: "wait_parameter",
                     jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        "{ \"type\": \"object\", \"properties\": { }, \"required\": [ ] }"
+                        "{ \"type\": \"object\", \"properties\": { }, \"required\": [ ], \"additionalProperties\": true }"
                     )),
                     jsonSchemaIsStrict: true
                 )

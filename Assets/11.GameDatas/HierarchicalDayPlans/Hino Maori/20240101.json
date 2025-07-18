@@ -1,0 +1,418 @@
+﻿{
+  "summary": "Hino Maori's day is strategically planned to focus on revitalizing energy in the morning, completing a work project, maintaining health, and concluding with relaxation in the evening.",
+  "mood": "Energized and focused",
+  "priority_goals": [
+    "Replenish energy and hydration",
+    "Complete a work project",
+    "Engage in a physical exercise for health",
+    "Socialize with friends or family",
+    "Prepare a healthy dinner"
+  ],
+  "high_level_tasks": [
+    {
+      "task_name": "Morning Refreshment",
+      "description": "Start the day with a refreshing routine and breakfast to gain energy.",
+      "start_time": "06:00",
+      "end_time": "06:30",
+      "duration_minutes": 30,
+      "priority": 1,
+      "location": "Kitchen in Hino Maori's Apartment",
+      "sub_tasks": [
+        "MoveToArea: Kitchen in Hino Maori's Apartment",
+        "UseObject: Drink water",
+        "PerformActivity: Prepare and eat breakfast"
+      ]
+    },
+    {
+      "task_name": "Morning Work Session",
+      "description": "Focus on completing the planned work project in a dedicated time block.",
+      "start_time": "07:00",
+      "end_time": "10:00",
+      "duration_minutes": 180,
+      "priority": 2,
+      "location": "Living Room in Hino Maori's Apartment",
+      "sub_tasks": [
+        "MoveToArea: Living Room in Hino Maori's Apartment",
+        "UseObject: Home office desk and computer",
+        "PerformActivity: Work on the project"
+      ]
+    },
+    {
+      "task_name": "Midday Exercise",
+      "description": "Allocate time for physical health by engaging in a workout routine.",
+      "start_time": "10:30",
+      "end_time": "11:30",
+      "duration_minutes": 60,
+      "priority": 3,
+      "location": "5-chome-13 in Setagaya Ku",
+      "sub_tasks": [
+        "MoveToArea: 5-chome-13 in Setagaya Ku",
+        "PerformActivity: Outdoor run or workout",
+        "ObserveEnvironment: Enjoy the surroundings"
+      ]
+    },
+    {
+      "task_name": "Lunch and Socialize",
+      "description": "Have a nutritious lunch and engage in a social activity.",
+      "start_time": "12:00",
+      "end_time": "14:00",
+      "duration_minutes": 120,
+      "priority": 4,
+      "location": "Living Room in Hino Maori's Apartment",
+      "sub_tasks": [
+        "MoveToArea: Kitchen in Hino Maori's Apartment",
+        "PerformActivity: Prepare and eat lunch",
+        "TalkToNPC: Connect with a friend or family member"
+      ]
+    },
+    {
+      "task_name": "Evening Relaxation",
+      "description": "End the day with leisure activities and a balanced dinner.",
+      "start_time": "18:00",
+      "end_time": "20:00",
+      "duration_minutes": 120,
+      "priority": 5,
+      "location": "Living Room in Hino Maori's Apartment",
+      "sub_tasks": [
+        "ObserveEnvironment: Relaxation in Living Room",
+        "PerformActivity: Read a book or watch a show",
+        "PerformActivity: Prepare dinner"
+      ]
+    }
+  ],
+  "detailed_activities": [
+    {
+      "activity_name": "Move to Kitchen",
+      "description": "Transition from the Living Room to the Kitchen to start the day.",
+      "start_time": "06:00",
+      "end_time": "06:02",
+      "duration_minutes": 20,
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Morning Refreshment",
+      "parent_high_level_task": "Morning Refreshment",
+      "status": "completed"
+    },
+    {
+      "activity_name": "Drink Water",
+      "description": "Use the kitchen sink or a bottle to drink a glass of water to hydrate.",
+      "start_time": "06:02",
+      "end_time": "06:05",
+      "duration_minutes": 30,
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Morning Refreshment",
+      "parent_high_level_task": "Morning Refreshment",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Prepare Breakfast",
+      "description": "Prepare a healthy breakfast with ingredients from the kitchen.",
+      "start_time": "06:05",
+      "end_time": "06:20",
+      "duration_minutes": 15,
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Morning Refreshment",
+      "parent_high_level_task": "Morning Refreshment",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Eat Breakfast",
+      "description": "Sit down at the kitchen table to enjoy the prepared breakfast.",
+      "start_time": "06:20",
+      "end_time": "06:30",
+      "duration_minutes": 100,
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Morning Refreshment",
+      "parent_high_level_task": "Morning Refreshment",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Move to Living Room",
+      "description": "Move from the Kitchen to the Living Room to start working.",
+      "start_time": "06:30",
+      "end_time": "07:00",
+      "duration_minutes": 30,
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Morning Work Session",
+      "parent_high_level_task": "Morning Work Session",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Work on Project",
+      "description": "Use the home office desk and computer to focus on completing the work project.",
+      "start_time": "07:00",
+      "end_time": "10:00",
+      "duration_minutes": 180,
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Morning Work Session",
+      "parent_high_level_task": "Morning Work Session",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Transition to Outdoor Exercise",
+      "description": "Prepare and move to an outdoor area for exercise.",
+      "start_time": "10:00",
+      "end_time": "10:30",
+      "duration_minutes": 30,
+      "location": "5-chome-13 in Setagaya Ku",
+      "parent_task": "Midday Exercise",
+      "parent_high_level_task": "Midday Exercise",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Outdoor Workout",
+      "description": "Engage in a workout routine, like running or strength training.",
+      "start_time": "10:30",
+      "end_time": "11:30",
+      "duration_minutes": 60,
+      "location": "5-chome-13 in Setagaya Ku",
+      "parent_task": "Midday Exercise",
+      "parent_high_level_task": "Midday Exercise",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Return Home and Rest",
+      "description": "Return to the apartment for rest and transition to lunchtime.",
+      "start_time": "11:30",
+      "end_time": "12:00",
+      "duration_minutes": 30,
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Lunch and Socialize",
+      "parent_high_level_task": "Lunch and Socialize",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Prepare Lunch",
+      "description": "Prepare a nutritious lunch in the kitchen.",
+      "start_time": "12:00",
+      "end_time": "12:30",
+      "duration_minutes": 30,
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Lunch and Socialize",
+      "parent_high_level_task": "Lunch and Socialize",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Eat Lunch",
+      "description": "Enjoy the lunch at the kitchen table or dining area.",
+      "start_time": "12:30",
+      "end_time": "13:00",
+      "duration_minutes": 30,
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Lunch and Socialize",
+      "parent_high_level_task": "Lunch and Socialize",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Socialize",
+      "description": "Connect with a friend or family member via call or visit.",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "duration_minutes": 60,
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Lunch and Socialize",
+      "parent_high_level_task": "Lunch and Socialize",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Evening Relaxation",
+      "description": "Engage in leisure activities like reading or watching a show.",
+      "start_time": "18:00",
+      "end_time": "19:00",
+      "duration_minutes": 60,
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Evening Relaxation",
+      "parent_high_level_task": "Evening Relaxation",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Prepare Dinner",
+      "description": "Prepare a balanced dinner in the kitchen.",
+      "start_time": "19:00",
+      "end_time": "19:30",
+      "duration_minutes": 30,
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Evening Relaxation",
+      "parent_high_level_task": "Evening Relaxation",
+      "status": "pending"
+    },
+    {
+      "activity_name": "Eat Dinner",
+      "description": "Enjoy dinner leisurely in the living room or kitchen.",
+      "start_time": "19:30",
+      "end_time": "20:00",
+      "duration_minutes": 30,
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_task": "Evening Relaxation",
+      "parent_high_level_task": "Evening Relaxation",
+      "status": "pending"
+    }
+  ],
+  "specific_actions": [
+    {
+      "action_name": "MoveToArea",
+      "description": "Transition from the Living Room to the Kitchen to start the day.",
+      "start_time": "06:00",
+      "duration_minutes": 20,
+      "parameters": {},
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Move to Kitchen",
+      "parent_high_level_task": "Morning Refreshment",
+      "status": "pending"
+    },
+    {
+      "action_name": "UseObject",
+      "description": "Drink a glass of water from the kitchen sink or a bottle to hydrate.",
+      "start_time": "06:02",
+      "duration_minutes": 30,
+      "parameters": {},
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Drink Water",
+      "parent_high_level_task": "Morning Refreshment",
+      "status": "pending"
+    },
+    {
+      "action_name": "PerformActivity",
+      "description": "Prepare a healthy breakfast using available ingredients from the kitchen.",
+      "start_time": "06:05",
+      "duration_minutes": 20,
+      "parameters": {},
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Prepare Breakfast",
+      "parent_high_level_task": "Morning Refreshment",
+      "status": "pending"
+    },
+    {
+      "action_name": "PerformActivity",
+      "description": "Sit down at the kitchen table to enjoy the prepared breakfast.",
+      "start_time": "06:20",
+      "duration_minutes": 30,
+      "parameters": {},
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Eat Breakfast",
+      "parent_high_level_task": "Morning Refreshment",
+      "status": "pending"
+    },
+    {
+      "action_name": "MoveToArea",
+      "description": "Move from the Kitchen to the Living Room to start working.",
+      "start_time": "06:30",
+      "duration_minutes": 30,
+      "parameters": {},
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Move to Living Room",
+      "parent_high_level_task": "Morning Work Session",
+      "status": "pending"
+    },
+    {
+      "action_name": "UseObject",
+      "description": "Use the home office desk and computer to focus on completing the work project.",
+      "start_time": "07:00",
+      "duration_minutes": 30,
+      "parameters": {},
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Work on Project",
+      "parent_high_level_task": "Morning Work Session",
+      "status": "pending"
+    },
+    {
+      "action_name": "MoveToArea",
+      "description": "Prepare and move to an outdoor area for exercise.",
+      "start_time": "10:00",
+      "duration_minutes": 30,
+      "parameters": {},
+      "location": "5-chome-13 in Setagaya Ku",
+      "parent_activity": "Transition to Outdoor Exercise",
+      "parent_high_level_task": "Midday Exercise",
+      "status": "pending"
+    },
+    {
+      "action_name": "PerformActivity",
+      "description": "Engage in a workout routine such as running or strength training.",
+      "start_time": "18:00",
+      "duration_minutes": 60,
+      "parameters": {},
+      "location": "5-chome-13 in Setagaya Ku",
+      "parent_activity": "Outdoor Workout",
+      "parent_high_level_task": "Midday Exercise",
+      "status": "pending"
+    },
+    {
+      "action_name": "MoveToArea",
+      "description": "Return to the apartment for rest and transition to lunchtime.",
+      "start_time": "11:30",
+      "duration_minutes": 30,
+      "parameters": {},
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Return Home and Rest",
+      "parent_high_level_task": "Lunch and Socialize",
+      "status": "pending"
+    },
+    {
+      "action_name": "PerformActivity",
+      "description": "Prepare a nutritious lunch in the kitchen.",
+      "start_time": "12:00",
+      "duration_minutes": 30,
+      "parameters": {},
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Prepare Lunch",
+      "parent_high_level_task": "Lunch and Socialize",
+      "status": "pending"
+    },
+    {
+      "action_name": "PerformActivity",
+      "description": "Enjoy the lunch at the kitchen table or dining area.",
+      "start_time": "12:30",
+      "duration_minutes": 30,
+      "parameters": {},
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Eat Lunch",
+      "parent_high_level_task": "Lunch and Socialize",
+      "status": "pending"
+    },
+    {
+      "action_name": "TalkToNPC",
+      "description": "Connect with a friend or family member via call or visit.",
+      "start_time": "13:00",
+      "duration_minutes": 60,
+      "parameters": {},
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Socialize",
+      "parent_high_level_task": "Lunch and Socialize",
+      "status": "pending"
+    },
+    {
+      "action_name": "PerformActivity",
+      "description": "Engage in leisure activities like reading or watching a show for relaxation.",
+      "start_time": "18:00",
+      "duration_minutes": 60,
+      "parameters": {},
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Evening Relaxation",
+      "parent_high_level_task": "Evening Relaxation",
+      "status": "pending"
+    },
+    {
+      "action_name": "PerformActivity",
+      "description": "Prepare a balanced dinner in the kitchen.",
+      "start_time": "19:00",
+      "duration_minutes": 30,
+      "parameters": {},
+      "location": "Kitchen in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Prepare Dinner",
+      "parent_high_level_task": "Evening Relaxation",
+      "status": "pending"
+    },
+    {
+      "action_name": "PerformActivity",
+      "description": "Enjoy dinner leisurely in the living room or kitchen.",
+      "start_time": "19:30",
+      "duration_minutes": 30,
+      "parameters": {},
+      "location": "Living Room in Hino Maori's Apartment in 5-chome-13 , Minami Karasuyama , Setagaya Ku , Tokyo To",
+      "parent_activity": "Eat Dinner",
+      "parent_high_level_task": "Evening Relaxation",
+      "status": "pending"
+    }
+  ],
+  "status": "pending"
+}

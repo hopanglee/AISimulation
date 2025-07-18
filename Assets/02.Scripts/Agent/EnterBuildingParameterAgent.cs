@@ -35,7 +35,7 @@ namespace Agent
                                 ""TargetBuilding"": {{
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(buildingList)},
-                                    ""description"": ""입장할 건물 (목록 중 하나)""
+                                    ""description"": ""One of the available buildings to enter""
                                 }}
                             }},
                             ""required"": [""TargetBuilding""]

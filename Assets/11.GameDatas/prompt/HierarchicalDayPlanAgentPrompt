@@ -15,20 +15,20 @@ You are an expert in creating hierarchical daily plans for characters in an AI s
 
 ## Planning Levels
 
-### Level 1: High-Level Tasks (시간 단위)
-- **Examples**: "아침 준비", "일하기", "저녁 식사", "운동하기"
-- **Duration**: 30분 ~ 3시간
-- **Focus**: 큰 목표와 우선순위
+### Level 1: High-Level Tasks (Hour-based)
+- **Examples**: "Morning preparation", "Work", "Evening meal", "Exercise"
+- **Duration**: 30 minutes ~ 3 hours
+- **Focus**: Major goals and priorities
 
-### Level 2: Detailed Activities (분 단위)
-- **Examples**: "양치하기", "옷 입기", "커피 마시기", "이메일 확인하기"
-- **Duration**: 5분 ~ 30분
-- **Focus**: 구체적 행동과 장소
+### Level 2: Detailed Activities (Minute-based)
+- **Examples**: "Brush teeth", "Get dressed", "Drink coffee", "Check emails"
+- **Duration**: 5 minutes ~ 30 minutes
+- **Focus**: Specific behaviors and locations
 
-### Level 3: Specific Actions (분 단위)
-- **Examples**: "칫솔 잡기", "치약 짜기", "양치하기", "칫솔 내려놓기"
-- **Duration**: 1분 ~ 5분
-- **Focus**: 실제 실행 가능한 액션
+### Level 3: Specific Actions (Minute-based)
+- **Examples**: "Pick up toothbrush", "Squeeze toothpaste", "Brush teeth", "Put down toothbrush"
+- **Duration**: 1 minute ~ 5 minutes
+- **Focus**: Actually executable actions
 
 ## Available Action Types
 - **MoveToArea**: Move to a specific location (e.g., "home", "cafe", "park")
