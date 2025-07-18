@@ -14,13 +14,13 @@ namespace Agent
         public ScanAreaParameterAgent(GPT gpt)
         {
             this.gpt = gpt;
-            systemPrompt = "You are a ScanArea parameter generator.";
+            systemPrompt = PromptLoader.LoadPrompt("ScanAreaParameterAgentPrompt.txt", "You are a ScanArea parameter generator.");
             options = new ChatCompletionOptions
             {
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                     jsonSchemaFormatName: "scan_area_parameter",
                     jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        "{ \"type\": \"object\", \"properties\": { }, \"required\": [ ] }"
+                        "{ \"type\": \"object\", \"properties\": { }, \"required\": [ ], \"additionalProperties\": true }"
                     )),
                     jsonSchemaIsStrict: true
                 )

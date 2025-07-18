@@ -8,7 +8,18 @@ using UnityEngine;
 namespace Agent
 {
     /// <summary>
-    /// Act(행동 타입)만 선택하는 Agent. 선택 이유와 의도도 함께 반환.
+    /// ActSelectorAgent selects an action type (ActType) with reasoning and intention.
+    /// The result (ActSelectionResult) is used to create an ActParameterRequest,
+    /// which is then passed to the appropriate ParameterAgent to generate ActParameterResult.
+    ///
+    /// Example usage:
+    /// var selection = await actSelectorAgent.SelectActAsync(situation);
+    /// var paramRequest = new ActParameterRequest {
+    ///     Reasoning = selection.Reasoning,
+    ///     Intention = selection.Intention,
+    ///     ActType = selection.ActType
+    /// };
+    /// var paramResult = await parameterAgent.GenerateParametersAsync(paramRequest);
     /// </summary>
     public class ActSelectorAgent : GPT
     {
@@ -17,6 +28,7 @@ namespace Agent
         public ActSelectorAgent(Actor actor) : base()
         {
             this.actor = actor;
+            SetActorName(actor.Name);
         }
 
         public class ActSelectionResult
@@ -46,7 +58,7 @@ namespace Agent
         }
 
         // GPT 옵션 및 스키마 정의 (추후 필요시 확장)
-        private readonly ChatCompletionOptions options = new()
+        private new readonly ChatCompletionOptions options = new()
         {
             ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                 jsonSchemaFormatName: "act_selection_result",

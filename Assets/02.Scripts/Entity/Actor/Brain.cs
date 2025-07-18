@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Agent;
 using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using System.Linq; // Added for .ToList()
 
 /// <summary>
 /// Abstract class representing the cognitive system of an actor.
@@ -20,11 +22,17 @@ public class Brain
     private HierarchicalPlanner.HierarchicalPlan currentHierarchicalDayPlan; // 계층적 계획 저장
     private bool forceNewDayPlan = false; // Flag to ignore existing plan and generate new one
 
+    // --- New fields for refactored agent structure ---
+    private ActSelectorAgent actSelectorAgent;
+    private Dictionary<ActionAgent.ActionType, ParameterAgentBase> parameterAgents;
+
     public Brain(Actor actor)
     {
         this.actor = actor;
 
-        actionAgent = new ActionAgent(actor);
+        // Remove: actionAgent = new ActionAgent(actor);
+        actSelectorAgent = new ActSelectorAgent(actor);
+        parameterAgents = ParameterAgentFactory.CreateAllParameterAgents(actor);
 
         // ActionExecutor initialization and handler registration
         actionExecutor = new ActionExecutor();
@@ -295,7 +303,10 @@ public class Brain
         }
     }
 
-    public async UniTask<ActionAgent.ActionReasoning> Think()
+    /// <summary>
+    /// Think: Select an action type and generate its parameters using the new agent structure
+    /// </summary>
+    public async UniTask<(ActSelectorAgent.ActSelectionResult, ActParameterResult)> Think()
     {
         // 1. Collect environment information through sensors
         actor.sensor.UpdateAllSensors();
@@ -312,10 +323,9 @@ public class Brain
             movablePositions
         );
 
-        // 4. GPT 요청 전에 시간 정지 (이미 정지된 상태가 아닐 때만)
+        // 4. Pause time if needed
         var timeService = Services.Get<ITimeService>();
         bool wasTimeFlowing = timeService.IsTimeFlowing;
-        
         if (wasTimeFlowing)
         {
             timeService.StopTimeFlow();
@@ -324,16 +334,97 @@ public class Brain
 
         try
         {
-            // 5. Decide on an appropriate action through ActionAgent
-            var reasoning = await actionAgent.ProcessSituationAsync(situation);
+            // 5. Select action type, reasoning, intention
+            var selection = await actSelectorAgent.SelectActAsync(situation);
+            Debug.Log($"[{actor.Name}] Think completed - ActType: {selection.ActType}");
 
-            Debug.Log($"[{actor.Name}] Think completed - Action: {reasoning.Action.ActionType}");
+            // 6. Generate parameters for the selected action (dynamically create ParameterAgent)
+            var paramRequest = new ActParameterRequest
+            {
+                Reasoning = selection.Reasoning,
+                Intention = selection.Intention,
+                ActType = selection.ActType
+            };
 
-            return reasoning;
+            ActParameterResult paramResult = null;
+            var gpt = new GPT();
+            switch (selection.ActType)
+            {
+                case ActionAgent.ActionType.MoveToArea:
+                    var movableAreas = movablePositions.Keys.ToList();
+                    var moveToAreaAgent = new MoveToAreaParameterAgent(movableAreas, gpt);
+                    moveToAreaAgent.SetActorName(actor.Name);
+                    paramResult = await moveToAreaAgent.GenerateParametersAsync(paramRequest);
+                    break;
+                case ActionAgent.ActionType.MoveToEntity:
+                    var entityList = lookableEntities.Keys.ToList();
+                    var moveToEntityAgent = new MoveToEntityParameterAgent(entityList, gpt);
+                    moveToEntityAgent.SetActorName(actor.Name);
+                    paramResult = await moveToEntityAgent.GenerateParametersAsync(paramRequest);
+                    break;
+                case ActionAgent.ActionType.InteractWithObject:
+                    var interactableObjects = interactableEntities.props.Keys.ToList();
+                    var interactWithObjectAgent = new InteractWithObjectParameterAgent(interactableObjects, gpt);
+                    interactWithObjectAgent.SetActorName(actor.Name);
+                    paramResult = await interactWithObjectAgent.GenerateParametersAsync(paramRequest);
+                    break;
+                case ActionAgent.ActionType.UseObject:
+                    var usableObjects = interactableEntities.props.Keys.ToList();
+                    var useObjectAgent = new UseObjectParameterAgent(usableObjects, "", "", gpt);
+                    useObjectAgent.SetActorName(actor.Name);
+                    paramResult = await useObjectAgent.GenerateParametersAsync(paramRequest);
+                    break;
+                case ActionAgent.ActionType.PickUpItem:
+                    var pickableItems = interactableEntities.items.Keys.ToList();
+                    var pickUpItemAgent = new PickUpItemParameterAgent(pickableItems, "", "", gpt);
+                    pickUpItemAgent.SetActorName(actor.Name);
+                    paramResult = await pickUpItemAgent.GenerateParametersAsync(paramRequest);
+                    break;
+                case ActionAgent.ActionType.TalkToNPC:
+                    var talkableNPCs = interactableEntities.actors.Keys.ToList();
+                    var talkAgent = new TalkParameterAgent(talkableNPCs, gpt);
+                    talkAgent.SetActorName(actor.Name);
+                    paramResult = await talkAgent.GenerateParametersAsync(paramRequest);
+                    break;
+                case ActionAgent.ActionType.InteractWithNPC:
+                    var interactableNPCs = interactableEntities.actors.Keys.ToList();
+                    var interactWithNPCAgent = new InteractWithNPCParameterAgent(interactableNPCs, gpt);
+                    interactWithNPCAgent.SetActorName(actor.Name);
+                    paramResult = await interactWithNPCAgent.GenerateParametersAsync(paramRequest);
+                    break;
+                case ActionAgent.ActionType.Wait:
+                    var waitAgent = new WaitParameterAgent(gpt);
+                    waitAgent.SetActorName(actor.Name);
+                    paramResult = await waitAgent.GenerateParametersAsync(paramRequest);
+                    break;
+                case ActionAgent.ActionType.ScanArea:
+                    var scanAgent = new ScanAreaParameterAgent(gpt);
+                    scanAgent.SetActorName(actor.Name);
+                    paramResult = await scanAgent.GenerateParametersAsync(paramRequest);
+                    break;
+                case ActionAgent.ActionType.MoveAway:
+                    var moveAwayAgent = new MoveAwayParameterAgent(null, gpt);
+                    moveAwayAgent.SetActorName(actor.Name);
+                    paramResult = await moveAwayAgent.GenerateParametersAsync(paramRequest);
+                    break;
+                case ActionAgent.ActionType.PerformActivity:
+                    var performActivityAgent = new PerformActivityParameterAgent(new List<string>(), gpt);
+                    performActivityAgent.SetActorName(actor.Name);
+                    paramResult = await performActivityAgent.GenerateParametersAsync(paramRequest);
+                    break;
+                case ActionAgent.ActionType.EnterBuilding:
+                    var enterBuildingAgent = new EnterBuildingParameterAgent(new List<string>(), gpt);
+                    enterBuildingAgent.SetActorName(actor.Name);
+                    paramResult = await enterBuildingAgent.GenerateParametersAsync(paramRequest);
+                    break;
+                default:
+                    Debug.LogWarning($"[{actor.Name}] No ParameterAgent implemented for ActType: {selection.ActType}");
+                    break;
+            }
+            return (selection, paramResult);
         }
         finally
         {
-            // 6. GPT 응답 후 시간 재개 (원래 흐르고 있었던 상태였다면)
             if (wasTimeFlowing)
             {
                 timeService.StartTimeFlow();
@@ -343,32 +434,45 @@ public class Brain
     }
 
     /// <summary>
-    /// Execute the action based on reasoning from Think
+    /// Act: Execute the action using the parameters generated by the new agent structure
     /// </summary>
-    public async UniTask Act(ActionAgent.ActionReasoning reasoning)
+    public async UniTask Act(ActParameterResult paramResult)
     {
-        if (reasoning == null)
+        if (paramResult == null)
         {
-            Debug.LogWarning($"[{actor.Name}] Cannot act - no reasoning provided");
+            Debug.LogWarning($"[{actor.Name}] Cannot act - no parameter result provided. Pausing simulation.");
+            Services.Get<IGameService>()?.PauseSimulation();
             return;
         }
-
-        var parametersText = reasoning.Action.Parameters != null && reasoning.Action.Parameters.Count > 0 
-            ? string.Join(", ", reasoning.Action.Parameters.Values) 
+        if (paramResult.ActType == ActionAgent.ActionType.Unknown)
+        {
+            Debug.LogWarning($"[{actor.Name}] No ActType provided. Pausing simulation.");
+            Services.Get<IGameService>()?.PauseSimulation();
+            return;
+        }
+        var parametersText = paramResult.Parameters != null && paramResult.Parameters.Count > 0
+            ? string.Join(", ", paramResult.Parameters.Values)
             : "no parameters";
-        Debug.Log($"[{actor.Name}] Executing action: {reasoning.Action.ActionType} -> {parametersText}");
-        
-        // Execute the decided action (through ActionExecutor)
-        await ExecuteAction(reasoning);
+        Debug.Log($"[{actor.Name}] Executing action: {paramResult.ActType} -> {parametersText}");
+        // For now, reuse ActionExecutor as before
+        await ExecuteAction(new ActionAgent.ActionReasoning
+        {
+            Thoughts = new List<string> { "(Refactored) Action selected and parameters generated by new agent structure." },
+            Action = new ActionAgent.AgentAction
+            {
+                ActionType = paramResult.ActType,
+                Parameters = paramResult.Parameters
+            }
+        });
     }
 
     /// <summary>
-    /// Think and Act in sequence (for backward compatibility)
+    /// Think and Act in sequence (refactored)
     /// </summary>
     public async UniTask ThinkAndAct()
     {
-        var reasoning = await Think();
-        await Act(reasoning);
+        var (selection, paramResult) = await Think();
+        await Act(paramResult);
     }
 
     /// <summary>
@@ -452,65 +556,29 @@ public class Brain
     }
 
     /// <summary>
-    /// Save the daily plan to a JSON file
-    /// </summary>
-    private async UniTask SaveDayPlanToJsonAsync(DayPlanAgent.DayPlan dayPlan, GameTime date)
-    {
-        try
-        {
-            // Generate directory path for saving
-            string directoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "DayPlans");
-            
-            // Create directory if it doesn't exist
-            if (!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
-
-            // Generate file name (characterName_date.json)
-            string fileName = $"{actor.Name}_{date.year:D4}{date.month:D2}{date.day:D2}.json";
-            string filePath = Path.Combine(directoryPath, fileName);
-
-            // Set JSON serialization options (include indentation for readability)
-            var jsonSettings = new Newtonsoft.Json.JsonSerializerSettings
-            {
-                Formatting = Newtonsoft.Json.Formatting.Indented,
-                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore
-            };
-
-            // Serialize DayPlan to JSON
-            string jsonContent = Newtonsoft.Json.JsonConvert.SerializeObject(dayPlan, jsonSettings);
-
-            // Save to file
-            await System.IO.File.WriteAllTextAsync(filePath, jsonContent, System.Text.Encoding.UTF8);
-
-            Debug.Log($"[Brain] {actor.Name}'s daily plan saved: {filePath}");
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"[Brain] Error saving daily plan: {ex.Message}");
-        }
-    }
-
-    /// <summary>
     /// Save the hierarchical day plan to a JSON file
     /// </summary>
     private async UniTask SaveHierarchicalDayPlanToJsonAsync(HierarchicalPlanner.HierarchicalPlan hierarchicalDayPlan, GameTime date)
     {
         try
         {
-            // Generate directory path for saving
-            string directoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "HierarchicalDayPlans");
+            // 캐릭터별 디렉토리 생성
+            string baseDirectoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "HierarchicalDayPlans");
+            string characterDirectoryPath = Path.Combine(baseDirectoryPath, actor.Name);
             
-            // Create directory if it doesn't exist
-            if (!Directory.Exists(directoryPath))
+            // 기본 디렉토리와 캐릭터별 디렉토리 모두 생성
+            if (!Directory.Exists(baseDirectoryPath))
             {
-                Directory.CreateDirectory(directoryPath);
+                Directory.CreateDirectory(baseDirectoryPath);
+            }
+            if (!Directory.Exists(characterDirectoryPath))
+            {
+                Directory.CreateDirectory(characterDirectoryPath);
             }
 
-            // Generate file name (characterName_date.json)
-            string fileName = $"{actor.Name}_{date.year:D4}{date.month:D2}{date.day:D2}.json";
-            string filePath = Path.Combine(directoryPath, fileName);
+            // Generate file name (date.json)
+            string fileName = $"{date.year:D4}{date.month:D2}{date.day:D2}.json";
+            string filePath = Path.Combine(characterDirectoryPath, fileName);
 
             // Set JSON serialization options (include indentation for readability)
             var jsonSettings = new Newtonsoft.Json.JsonSerializerSettings
@@ -534,41 +602,6 @@ public class Brain
     }
 
     /// <summary>
-    /// Load the daily plan from a JSON file
-    /// </summary>
-    public async UniTask<DayPlanAgent.DayPlan> LoadDayPlanFromJsonAsync(GameTime date)
-    {
-        try
-        {
-            // Generate file path
-            string directoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "DayPlans");
-            string fileName = $"{actor.Name}_{date.year:D4}{date.month:D2}{date.day:D2}.json";
-            string filePath = Path.Combine(directoryPath, fileName);
-
-            // Check if file exists
-            if (!File.Exists(filePath))
-            {
-                Debug.LogWarning($"[Brain] {actor.Name}'s plan file for {date.year:D4}-{date.month:D2}-{date.day:D2} does not exist: {filePath}");
-                return null;
-            }
-
-            // Read from file
-            string jsonContent = await File.ReadAllTextAsync(filePath, System.Text.Encoding.UTF8);
-
-            // Deserialize JSON to DayPlan object
-            var dayPlan = Newtonsoft.Json.JsonConvert.DeserializeObject<DayPlanAgent.DayPlan>(jsonContent);
-
-            Debug.Log($"[Brain] {actor.Name}'s daily plan loaded: {filePath}");
-            return dayPlan;
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"[Brain] Error loading daily plan: {ex.Message}");
-            return null;
-        }
-    }
-
-    /// <summary>
     /// Load the hierarchical day plan from a JSON file
     /// </summary>
     public async UniTask<HierarchicalPlanner.HierarchicalPlan> LoadHierarchicalDayPlanFromJsonAsync(GameTime date)
@@ -576,9 +609,10 @@ public class Brain
         try
         {
             // Generate file path
-            string directoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "HierarchicalDayPlans");
-            string fileName = $"{actor.Name}_{date.year:D4}{date.month:D2}{date.day:D2}.json";
-            string filePath = Path.Combine(directoryPath, fileName);
+            string baseDirectoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "HierarchicalDayPlans");
+            string characterDirectoryPath = Path.Combine(baseDirectoryPath, actor.Name);
+            string fileName = $"{date.year:D4}{date.month:D2}{date.day:D2}.json";
+            string filePath = Path.Combine(characterDirectoryPath, fileName);
 
             // Check if file exists
             if (!File.Exists(filePath))
@@ -610,9 +644,10 @@ public class Brain
     {
         try
         {
-            string directoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "DayPlans");
-            string fileName = $"{actor.Name}_{date.year:D4}{date.month:D2}{date.day:D2}.json";
-            string filePath = Path.Combine(directoryPath, fileName);
+            string baseDirectoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "HierarchicalDayPlans");
+            string characterDirectoryPath = Path.Combine(baseDirectoryPath, actor.Name);
+            string fileName = $"{date.year:D4}{date.month:D2}{date.day:D2}.json";
+            string filePath = Path.Combine(characterDirectoryPath, fileName);
 
             return File.Exists(filePath);
         }
@@ -630,15 +665,16 @@ public class Brain
     {
         try
         {
-            string directoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "DayPlans");
+            string baseDirectoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "HierarchicalDayPlans");
+            string characterDirectoryPath = Path.Combine(baseDirectoryPath, actor.Name);
             
-            if (!Directory.Exists(directoryPath))
+            if (!Directory.Exists(characterDirectoryPath))
             {
                 Debug.Log($"[Brain] {actor.Name}: No saved plan files. (Directory not found)");
                 return;
             }
 
-            string[] files = Directory.GetFiles(directoryPath, $"{actor.Name}_*.json");
+            string[] files = Directory.GetFiles(characterDirectoryPath, "*.json");
             
             if (files.Length == 0)
             {
@@ -910,7 +946,8 @@ public class Brain
         }
         else
         {
-            Debug.LogError($"[{actor.Name}] Action failed: {result.Message}");
+            Debug.LogError($"[{actor.Name}] Action failed: {result.Message}. Pausing simulation.");
+            Services.Get<IGameService>()?.PauseSimulation();
         }
     }
 
@@ -976,9 +1013,8 @@ public class Brain
     /// </summary>
     public void SetLoggingEnabled(bool enabled)
     {
-        actionAgent.SetLoggingEnabled(enabled);
-        memoryAgent.SetLoggingEnabled(enabled);
-        // DayPlanAgent는 private이므로 여기서 직접 설정
+        // actionAgent.SetLoggingEnabled(enabled); // This line is no longer needed as ActSelectorAgent and ParameterAgents are new
+        // memoryAgent.SetLoggingEnabled(enabled); // DayPlanAgent는 private이므로 여기서 직접 설정
         // dayPlanAgent.SetLoggingEnabled(enabled); // DayPlanAgent가 public이면 이렇게 할 수 있음
     }
 

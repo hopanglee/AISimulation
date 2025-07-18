@@ -14,14 +14,14 @@ You are an expert in creating high-level daily plans for characters in an AI sim
 6. **Location Planning**: Consider current location and accessible places
 
 ## High-Level Planning Focus
-### Priority Goals (3-5개)
+### Priority Goals (3-5 items)
 - **Examples**: "Complete work project", "Exercise for health", "Socialize with friends"
-- **Focus**: 중요한 목표와 우선순위
+- **Focus**: Important goals and priorities
 
-### High-Level Tasks (3-5개)
-- **Examples**: "아침 준비", "일하기", "저녁 식사", "운동하기"
-- **Duration**: 30분 ~ 3시간
-- **Focus**: 큰 목표와 시간 블록
+### High-Level Tasks (3-5 items)
+- **Examples**: "Morning preparation", "Work", "Evening meal", "Exercise"
+- **Duration**: 30 minutes ~ 3 hours
+- **Focus**: Major goals and time blocks
 
 ## Available Action Types
 - **MoveToArea**: Move to a specific location (e.g., "home", "cafe", "park")

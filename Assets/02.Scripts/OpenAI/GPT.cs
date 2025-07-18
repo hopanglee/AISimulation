@@ -13,6 +13,12 @@ public class GPT
     public List<ChatMessage> messages = new();
     protected string actorName = "Unknown"; // Actor 이름을 저장할 변수
     protected bool enableLogging = true; // 로깅 활성화 여부
+    protected static string sessionDirectoryName = null;
+
+    public static void SetSessionDirectoryName(string sessionName)
+    {
+        sessionDirectoryName = sessionName;
+    }
 
     public class Auth
     {
@@ -63,16 +69,22 @@ public class GPT
 
         try
         {
+            // 세션별/캐릭터별 디렉토리 생성
+            string baseDirectoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "ConversationLogs");
+            string sessionPath = sessionDirectoryName != null ? Path.Combine(baseDirectoryPath, sessionDirectoryName) : baseDirectoryPath;
+            string characterDirectoryPath = Path.Combine(sessionPath, actorName);
+            
             // 디렉토리 생성
-            string directoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "ConversationLogs");
-            if (!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
+            if (!Directory.Exists(baseDirectoryPath))
+                Directory.CreateDirectory(baseDirectoryPath);
+            if (!Directory.Exists(sessionPath))
+                Directory.CreateDirectory(sessionPath);
+            if (!Directory.Exists(characterDirectoryPath))
+                Directory.CreateDirectory(characterDirectoryPath);
 
-            // 파일명 생성 (실제 시스템 시간 기반)
-            string fileName = $"ConversationLog_{System.DateTime.Now:yyyy-MM-dd_HH-mm-ss}_{actorName}_{agentType}.txt";
-            string filePath = Path.Combine(directoryPath, fileName);
+            // 파일명: 세션+캐릭터+에이전트 조합 (세션이 바뀌면 새 파일)
+            string fileName = $"ConversationLog_{sessionDirectoryName ?? "Session"}_{actorName}_{agentType}.txt";
+            string filePath = Path.Combine(characterDirectoryPath, fileName);
 
             // 로그 내용 생성
             var logContent = new System.Text.StringBuilder();
@@ -93,7 +105,6 @@ public class GPT
                 if (message is SystemChatMessage systemMsg)
                 {
                     role = "System";
-                    // ChatMessageContent의 실제 텍스트 내용 추출
                     content = ExtractMessageContent(systemMsg.Content);
                 }
                 else if (message is UserChatMessage userMsg)
@@ -105,8 +116,6 @@ public class GPT
                 {
                     role = "Assistant";
                     content = ExtractMessageContent(assistantMsg.Content);
-                    
-                    // 툴 호출이 있는 경우 추가 정보 기록
                     if (assistantMsg.ToolCalls != null && assistantMsg.ToolCalls.Count > 0)
                     {
                         content += "\n\n[Tool Calls:]\n";
@@ -138,9 +147,13 @@ public class GPT
 
             logContent.AppendLine("=== End of Conversation ===");
 
-            // 파일로 저장
-            await File.WriteAllTextAsync(filePath, logContent.ToString(), System.Text.Encoding.UTF8);
-            Debug.Log($"[GPT] Conversation log saved: {filePath}");
+            // 파일에 append 모드로 저장
+            using (var stream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
+            using (var writer = new StreamWriter(stream, System.Text.Encoding.UTF8))
+            {
+                writer.WriteLine(logContent.ToString());
+            }
+            Debug.Log($"[GPT] Conversation log saved (appended): {filePath}");
         }
         catch (Exception ex)
         {

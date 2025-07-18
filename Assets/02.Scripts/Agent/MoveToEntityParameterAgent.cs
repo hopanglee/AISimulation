@@ -8,9 +8,10 @@ namespace Agent
 {
     public class MoveToEntityParameterAgent : ParameterAgentBase
     {
+        // actorName 필드 사용 가능 (ParameterAgentBase에서 상속)
         public class MoveToEntityParameter
         {
-            public string TargetEntity { get; set; }
+            public string entity_name { get; set; }
         }
 
         private readonly string systemPrompt;
@@ -32,13 +33,13 @@ namespace Agent
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""TargetEntity"": {{
+                                ""entity_name"": {{
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(entityList)},
-                                    ""description"": ""이동 가능한 엔티티 중 하나""
+                                    ""description"": ""One of the available entities to move to""
                                 }}
                             }},
-                            ""required"": [""TargetEntity""]
+                            ""required"": [""entity_name""]
                         }}"
                     )),
                     jsonSchemaIsStrict: true
@@ -69,14 +70,14 @@ namespace Agent
                 ActType = request.ActType,
                 Parameters = new Dictionary<string, object>
                 {
-                    { "TargetEntity", param.TargetEntity }
+                    { "entity_name", param.entity_name }
                 }
             };
         }
 
         private string BuildUserMessage(CommonContext context)
         {
-            return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nMovableEntities: {string.Join(", ", entityList)}";
+            return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableEntities: {string.Join(", ", entityList)}";
         }
     }
 } 

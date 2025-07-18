@@ -35,7 +35,7 @@ namespace Agent
                                 ""ActivityName"": {{
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(activityList)},
-                                    ""description"": ""수행할 활동명 (목록 중 하나)""
+                                    ""description"": ""One of the available activities to perform""
                                 }}
                             }},
                             ""required"": [""ActivityName""]
@@ -69,7 +69,7 @@ namespace Agent
                 ActType = request.ActType,
                 Parameters = new Dictionary<string, object>
                 {
-                    { "ActivityName", param.ActivityName }
+                    { "activity_name", param.ActivityName }
                 }
             };
         }

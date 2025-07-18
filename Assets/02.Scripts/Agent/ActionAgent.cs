@@ -17,6 +17,7 @@ public class ActionAgent : GPT
     /// </summary>
     public enum ActionType
     {
+        Unknown = 0, // Default/invalid value
         MoveToArea, // Move to specified Area
         MoveToEntity, // Move to specified Entity (Actor, Item, Block, etc.)
         MoveAway, // Move away from current location

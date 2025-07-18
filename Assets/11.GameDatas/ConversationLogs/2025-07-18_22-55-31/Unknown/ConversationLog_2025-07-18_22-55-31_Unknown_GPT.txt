@@ -1,0 +1,88 @@
+﻿=== GPT Conversation Log ===
+Actor: Unknown
+Agent Type: GPT
+Game Time: 2025-07-18 22:55:36
+Real Time: 2025-07-18 22:55:36
+=====================================
+
+--- System ---
+# MoveToAreaParameterAgent System Prompt
+
+You are an AI agent in a Unity simulation environment responsible for generating the parameter (TargetLocation) for the MoveToArea action.
+
+## Role
+- Accurately infer and return the target location (TargetLocation) the user wants to move to, based on their Reasoning (why they chose it) and Intention (their purpose).
+- Only return the name of an Area that actually exists in the simulation.
+
+## Output Format (JSON)
+{
+  "TargetLocation": "<name_of_location_to_move_to>"
+}
+
+## Example
+Reasoning: The current task at this location is finished, so I decided to move to another place.
+Intention: I plan to go to the library to read a book.
+→ TargetLocation: "Library"
+
+## Rules
+- Only return one TargetLocation per request.
+- Do not return locations that do not exist.
+- Make full use of Reasoning and Intention to determine the answer. 
+
+--- User ---
+Reasoning: In the morning, it's common practice to start the day with breakfast, which would address any imminent hunger that may arise shortly. Moving to the Dining Table allows for preparation or consumption of a meal.
+Intention: To prepare breakfast and potentially address future hunger during the early part of the day.
+AvailableAreas: Yellow Clock, Bedside Table, Bed, Dining Table, Entryway
+
+--- Assistant ---
+{"area_name":"Dining Table"}
+
+--- Final Response ---
+{"area_name":"Dining Table"}
+
+=== End of Conversation ===
+
+=== GPT Conversation Log ===
+Actor: Unknown
+Agent Type: GPT
+Game Time: 2025-07-18 22:55:37
+Real Time: 2025-07-18 22:55:37
+=====================================
+
+--- System ---
+# MoveToEntityParameterAgent System Prompt
+
+You are an AI agent in a Unity simulation environment responsible for generating the parameter (entity_name) for the MoveToEntity action.
+
+## Role
+- Accurately infer and return the target entity (entity_name) the user wants to move to, based on their Reasoning (why they chose it), Intention (their purpose), and the list of available entities (AvailableEntities).
+- Only return the name of an entity that actually exists in the simulation and is included in AvailableEntities.
+
+## Output Format (JSON)
+{
+  "entity_name": "<name_of_entity_to_move_to>"
+}
+
+## Example
+Reasoning: I want to talk to a specific NPC, so I decided to move to them.
+Intention: Go to NPC_Name and have a conversation.
+AvailableEntities: NPC_Name, Object_A, Object_B
+→ entity_name: "NPC_Name"
+
+## Rules
+- entity_name must be one of the AvailableEntities.
+- Make full use of Reasoning, Intention, and AvailableEntities to determine the answer. 
+
+--- User ---
+Reasoning: It's 6:00 AM, and my character has no hunger or thirst, indicating readiness to start the day, potentially with morning routines. Moving close to an entity like the Yellow Clock might help confirm the current time or manage time for morning tasks.
+Intention: Determine the accuracy of the current time and potentially plan morning activities or tasks based on the clock.
+AvailableEntities: Yellow Clock, Bed, Dining Table, Plate, Choco Donut, Blue Donut, Salt Donut, Kamiya Tooru's Blue Cup, Bedside Table, Kamiya Tooru's Note, Silver iPhone
+
+--- Assistant ---
+{"entity_name":"Yellow Clock"}
+
+--- Final Response ---
+{"entity_name":"Yellow Clock"}
+
+=== End of Conversation ===
+

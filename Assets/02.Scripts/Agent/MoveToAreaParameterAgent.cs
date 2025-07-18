@@ -10,7 +10,7 @@ namespace Agent
     {
         public class MoveToAreaParameter
         {
-            public string TargetLocation { get; set; }
+            public string area_name { get; set; }
         }
 
         private readonly string systemPrompt;
@@ -33,13 +33,13 @@ namespace Agent
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""TargetLocation"": {{
+                                ""area_name"": {{
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(movableAreas)},
-                                    ""description"": ""이동 가능한 위치 중 하나""
+                                    ""description"": ""One of the available locations to move to""
                                 }}
                             }},
-                            ""required"": [""TargetLocation""]
+                            ""required"": [""area_name""]
                         }}"
                     )),
                     jsonSchemaIsStrict: true
@@ -70,14 +70,14 @@ namespace Agent
                 ActType = request.ActType,
                 Parameters = new Dictionary<string, object>
                 {
-                    { "TargetLocation", param.TargetLocation }
+                    { "area_name", param.area_name }
                 }
             };
         }
 
         private string BuildUserMessage(CommonContext context)
         {
-            return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nMovableAreas: {string.Join(", ", movableAreas)}";
+            return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableAreas: {string.Join(", ", movableAreas)}";
         }
     }
 } 
