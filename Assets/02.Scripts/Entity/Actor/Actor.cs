@@ -200,14 +200,20 @@ public abstract class Actor : Entity, ILocationAware
 
     public void Interact(string blockKey)
     {
+        // SimpleKey로 직접 검색
         if (interactable.props.ContainsKey(blockKey))
         {
             interactable.props[blockKey].Interact(this);
+            return;
         }
+        
         else if (interactable.buildings.ContainsKey(blockKey))
         {
             interactable.buildings[blockKey].Interact(this);
+            return;
         }
+        
+        Debug.LogWarning($"[{Name}] Cannot interact with '{blockKey}'. Available props: {string.Join(", ", interactable.props.Keys)}, Available buildings: {string.Join(", ", interactable.buildings.Keys)}");
     }
 
     public void Give(string actorKey)
