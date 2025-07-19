@@ -10,7 +10,8 @@ namespace Agent
     {
         public class PickUpItemParameter
         {
-            public string TargetItem { get; set; }
+            [JsonProperty("item_name")]
+            public string ItemName { get; set; }
         }
 
         private readonly string systemPrompt;
@@ -66,21 +67,31 @@ namespace Agent
             var param = await GenerateParametersAsync(new CommonContext
             {
                 Reasoning = request.Reasoning,
-                Intention = request.Intention
+                Intention = request.Intention,
+                PreviousFeedback = request.PreviousFeedback
             });
             return new ActParameterResult
             {
                 ActType = request.ActType,
                 Parameters = new Dictionary<string, object>
                 {
-                    { "item_name", param.TargetItem }
+                    { "item_name", param.ItemName }
                 }
             };
         }
 
         private string BuildUserMessage(CommonContext context)
         {
-            return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableItems: {string.Join(", ", itemList)}";
+            var message = $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableItems: {string.Join(", ", itemList)}";
+            
+            // 피드백이 있으면 추가
+            if (!string.IsNullOrEmpty(context.PreviousFeedback))
+            {
+                message += $"\n\nPrevious Action Feedback: {context.PreviousFeedback}";
+                message += "\n\nPlease consider this feedback when making your selection. Choose a different item if the previous one was not pickable.";
+            }
+            
+            return message;
         }
     }
 } 

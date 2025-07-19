@@ -263,10 +263,6 @@ public class GameService : MonoBehaviour, IGameService
         {
             Debug.Log("[GameService] Starting day planning for all actors...");
 
-            // DayPlan 실행 중에는 게임 시간 정지
-            timeService.StopTimeFlow();
-            Debug.Log("[GameService] Time paused for DayPlan execution");
-
             // 모든 Actor 기상 처리
             foreach (var actor in allActors)
             {
@@ -296,9 +292,6 @@ public class GameService : MonoBehaviour, IGameService
 
             await UniTask.WhenAll(planningTasks);
 
-            // DayPlan 완료 후 게임 시간 재개
-            timeService.StartTimeFlow();
-            Debug.Log("[GameService] Time resumed after DayPlan execution");
             Debug.Log("[GameService] Day planning completed for all actors");
 
             // 오늘 DayPlan 실행 완료 표시

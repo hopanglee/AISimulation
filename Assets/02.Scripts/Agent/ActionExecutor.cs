@@ -101,4 +101,6 @@ public class ActionExecutionResult
     public bool Success { get; set; }
     public string Message { get; set; }
     public object Data { get; set; }
+    public string Feedback { get; set; } // GPT 에이전트에게 줄 피드백
+    public bool ShouldRetry { get; set; } // 재시도가 필요한지 여부
 }

@@ -10,7 +10,8 @@ namespace Agent
     {
         public class UseObjectParameter
         {
-            public string TargetObject { get; set; }
+            [JsonProperty("object_name")]
+            public string ObjectName { get; set; }
         }
 
         private readonly string systemPrompt;
@@ -66,21 +67,31 @@ namespace Agent
             var param = await GenerateParametersAsync(new CommonContext
             {
                 Reasoning = request.Reasoning,
-                Intention = request.Intention
+                Intention = request.Intention,
+                PreviousFeedback = request.PreviousFeedback
             });
             return new ActParameterResult
             {
                 ActType = request.ActType,
                 Parameters = new Dictionary<string, object>
                 {
-                    { "object_name", param.TargetObject }
+                    { "object_name", param.ObjectName }
                 }
             };
         }
 
         private string BuildUserMessage(CommonContext context)
         {
-            return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableObjects: {string.Join(", ", objectList)}";
+            var message = $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableObjects: {string.Join(", ", objectList)}";
+            
+            // 피드백이 있으면 추가
+            if (!string.IsNullOrEmpty(context.PreviousFeedback))
+            {
+                message += $"\n\nPrevious Action Feedback: {context.PreviousFeedback}";
+                message += "\n\nPlease consider this feedback when making your selection. Choose a different object if the previous one was not usable.";
+            }
+            
+            return message;
         }
     }
 } 

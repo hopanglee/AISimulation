@@ -10,8 +10,11 @@ namespace Agent
     {
         public class TalkParameter
         {
-            public string Content { get; set; }
-            public string TargetNPC { get; set; }
+            [JsonProperty("npc_name")]
+            public string NpcName { get; set; }
+            
+            [JsonProperty("message")]
+            public string Message { get; set; }
         }
 
         private readonly string systemPrompt;
@@ -37,9 +40,13 @@ namespace Agent
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(npcList)},
                                     ""description"": ""One of the available NPCs to talk to""
+                                }},
+                                ""message"": {{
+                                    ""type"": ""string"",
+                                    ""description"": ""The message to say to the NPC""
                                 }}
                             }},
-                            ""required"": [""npc_name""]
+                            ""required"": [""npc_name"", ""message""]
                         }}"
                     )),
                     jsonSchemaIsStrict: true
@@ -63,22 +70,32 @@ namespace Agent
             var param = await GenerateParametersAsync(new CommonContext
             {
                 Reasoning = request.Reasoning,
-                Intention = request.Intention
+                Intention = request.Intention,
+                PreviousFeedback = request.PreviousFeedback
             });
             return new ActParameterResult
             {
                 ActType = request.ActType,
                 Parameters = new Dictionary<string, object>
                 {
-                    { "Content", param.Content },
-                    { "npc_name", param.TargetNPC }
+                    { "npc_name", param.NpcName },
+                    { "message", param.Message }
                 }
             };
         }
 
         private string BuildUserMessage(CommonContext context)
         {
-            return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableNPCs: {string.Join(", ", npcList)}";
+            var message = $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableNPCs: {string.Join(", ", npcList)}";
+            
+            // 피드백이 있으면 추가
+            if (!string.IsNullOrEmpty(context.PreviousFeedback))
+            {
+                message += $"\n\nPrevious Action Feedback: {context.PreviousFeedback}";
+                message += "\n\nPlease consider this feedback when making your selection. Choose a different NPC if the previous one was not available for conversation.";
+            }
+            
+            return message;
         }
     }
 } 

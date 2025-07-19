@@ -49,6 +49,7 @@ public class GPT
     public void SetActorName(string name)
     {
         actorName = name;
+        Debug.Log($"[GPT] Actor name set to: {actorName}");
     }
 
     /// <summary>
@@ -73,6 +74,12 @@ public class GPT
             string baseDirectoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "ConversationLogs");
             string sessionPath = sessionDirectoryName != null ? Path.Combine(baseDirectoryPath, sessionDirectoryName) : baseDirectoryPath;
             string characterDirectoryPath = Path.Combine(sessionPath, actorName);
+            
+            // actorName이 Unknown인 경우 경고 로그
+            if (actorName == "Unknown")
+            {
+                Debug.LogWarning($"[GPT] Warning: actorName is still 'Unknown' when saving conversation log. AgentType: {agentType}");
+            }
             
             // 디렉토리 생성
             if (!Directory.Exists(baseDirectoryPath))
