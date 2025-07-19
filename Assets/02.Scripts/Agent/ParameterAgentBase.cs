@@ -14,6 +14,7 @@ namespace Agent
         {
             public string Reasoning { get; set; }
             public string Intention { get; set; }
+            public string PreviousFeedback { get; set; } = "";
         }
 
         /// <summary>
@@ -31,6 +32,7 @@ namespace Agent
         public string Reasoning { get; set; }
         public string Intention { get; set; }
         public ActionAgent.ActionType ActType { get; set; }
+        public string PreviousFeedback { get; set; } = ""; // 이전 액션의 피드백
     }
 
     public class ActParameterResult

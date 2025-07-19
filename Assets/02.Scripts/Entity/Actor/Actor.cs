@@ -244,13 +244,20 @@ public abstract class Actor : Entity, ILocationAware
 
     public void Move(string locationKey)
     {
-        var targetPos = toMovable[locationKey];
-
-        moveController.SetTarget(targetPos);
-        moveController.OnReached += () =>
+        if (toMovable.ContainsKey(locationKey))
         {
-            ;
-        };
+            var targetPos = toMovable[locationKey];
+            moveController.SetTarget(targetPos);
+            moveController.OnReached += () =>
+            {
+                ;
+            };
+            Debug.Log($"[{Name}] Moving to {locationKey} at position {targetPos}");
+        }
+        else
+        {
+            Debug.LogWarning($"[{Name}] Cannot move to '{locationKey}'. Available locations: {string.Join(", ", toMovable.Keys)}");
+        }
     }
 
     /// <summary>

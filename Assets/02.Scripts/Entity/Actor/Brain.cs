@@ -25,10 +25,19 @@ public class Brain
     // --- New fields for refactored agent structure ---
     private ActSelectorAgent actSelectorAgent;
     private Dictionary<ActionAgent.ActionType, ParameterAgentBase> parameterAgents;
+    private GPT gpt; // GPT 인스턴스 재사용
+    
+    // 피드백 및 재시도 관련 필드
+    private string lastActionFeedback = "";
+    private bool shouldRetryAction = false;
 
     public Brain(Actor actor)
     {
         this.actor = actor;
+
+        // GPT 인스턴스 초기화
+        gpt = new GPT();
+        gpt.SetActorName(actor.Name);
 
         // Remove: actionAgent = new ActionAgent(actor);
         actSelectorAgent = new ActSelectorAgent(actor);
@@ -173,9 +182,13 @@ public class Brain
             }
             else
             {
-                Debug.LogWarning(
-                    $"[{actor.Name}] Movable position for entity {entityName} not found in current area"
-                );
+                var availablePositions = string.Join(", ", movablePositions.Keys);
+                var feedback = $"Cannot move to '{entityName}' because it's not a movable entity. Available movable entities: {availablePositions}";
+                Debug.LogWarning($"[{actor.Name}] {feedback}");
+                
+                // 피드백을 저장하여 재시도에 사용
+                lastActionFeedback = feedback;
+                shouldRetryAction = true;
             }
         }
         else if (parameters.TryGetValue("position", out var posObj) && posObj is Vector3 position)
@@ -185,9 +198,10 @@ public class Brain
         }
         else
         {
-            Debug.LogWarning(
-                $"[{actor.Name}] MoveToEntity requires 'entity_name' or 'position' parameter"
-            );
+            var feedback = "MoveToEntity requires 'entity_name' or 'position' parameter";
+            Debug.LogWarning($"[{actor.Name}] {feedback}");
+            lastActionFeedback = feedback;
+            shouldRetryAction = true;
         }
     }
 
@@ -202,7 +216,35 @@ public class Brain
         Debug.Log($"[{actor.Name}] InteractWithObject: {parametersText}");
         if (parameters.TryGetValue("object_name", out var objName))
         {
-            actor.Interact(objName.ToString());
+            var objectName = objName.ToString();
+            var interactableEntities = actor.sensor.GetInteractableEntities();
+            
+            // 상호작용 가능한 오브젝트인지 확인
+            if (interactableEntities.props.ContainsKey(objectName) || 
+                interactableEntities.buildings.ContainsKey(objectName))
+            {
+                actor.Interact(objectName);
+                Debug.Log($"[{actor.Name}] Interacting with: {objectName}");
+            }
+            else
+            {
+                var availableObjects = new List<string>();
+                availableObjects.AddRange(interactableEntities.props.Keys);
+                availableObjects.AddRange(interactableEntities.buildings.Keys);
+                
+                var feedback = $"Cannot interact with '{objectName}' because it's not an interactable object. Available interactable objects: {string.Join(", ", availableObjects)}";
+                Debug.LogWarning($"[{actor.Name}] {feedback}");
+                
+                lastActionFeedback = feedback;
+                shouldRetryAction = true;
+            }
+        }
+        else
+        {
+            var feedback = "InteractWithObject requires 'object_name' parameter";
+            Debug.LogWarning($"[{actor.Name}] {feedback}");
+            lastActionFeedback = feedback;
+            shouldRetryAction = true;
         }
     }
 
@@ -215,7 +257,39 @@ public class Brain
             ? string.Join(", ", parameters.Values) 
             : "no parameters";
         Debug.Log($"[{actor.Name}] UseObject: {parametersText}");
-        actor.Use(parameters);
+        
+        if (parameters.TryGetValue("object_name", out var objName))
+        {
+            var objectName = objName.ToString();
+            var interactableEntities = actor.sensor.GetInteractableEntities();
+            
+            // 사용 가능한 오브젝트인지 확인
+            if (interactableEntities.props.ContainsKey(objectName) || 
+                interactableEntities.buildings.ContainsKey(objectName))
+            {
+                actor.Use(parameters);
+                Debug.Log($"[{actor.Name}] Using object: {objectName}");
+            }
+            else
+            {
+                var availableObjects = new List<string>();
+                availableObjects.AddRange(interactableEntities.props.Keys);
+                availableObjects.AddRange(interactableEntities.buildings.Keys);
+                
+                var feedback = $"Cannot use '{objectName}' because it's not a usable object. Available usable objects: {string.Join(", ", availableObjects)}";
+                Debug.LogWarning($"[{actor.Name}] {feedback}");
+                
+                lastActionFeedback = feedback;
+                shouldRetryAction = true;
+            }
+        }
+        else
+        {
+            var feedback = "UseObject requires 'object_name' parameter";
+            Debug.LogWarning($"[{actor.Name}] {feedback}");
+            lastActionFeedback = feedback;
+            shouldRetryAction = true;
+        }
     }
 
     /// <summary>
@@ -232,8 +306,31 @@ public class Brain
             && parameters.TryGetValue("message", out var message)
         )
         {
-            // NPC dialogue logic implementation
-            Debug.Log($"[{actor.Name}] Talking to {npcName}: {message}");
+            var npcNameStr = npcName.ToString();
+            var interactableEntities = actor.sensor.GetInteractableEntities();
+            
+            // NPC가 상호작용 가능한지 확인
+            if (interactableEntities.actors.ContainsKey(npcNameStr))
+            {
+                // NPC dialogue logic implementation
+                Debug.Log($"[{actor.Name}] Talking to {npcNameStr}: {message}");
+            }
+            else
+            {
+                var availableNPCs = string.Join(", ", interactableEntities.actors.Keys);
+                var feedback = $"Cannot talk to '{npcNameStr}' because they are not available for conversation. Available NPCs: {availableNPCs}";
+                Debug.LogWarning($"[{actor.Name}] {feedback}");
+                
+                lastActionFeedback = feedback;
+                shouldRetryAction = true;
+            }
+        }
+        else
+        {
+            var feedback = "TalkToNPC requires both 'npc_name' and 'message' parameters";
+            Debug.LogWarning($"[{actor.Name}] {feedback}");
+            lastActionFeedback = feedback;
+            shouldRetryAction = true;
         }
     }
 
@@ -248,8 +345,31 @@ public class Brain
         Debug.Log($"[{actor.Name}] PickUpItem: {parametersText}");
         if (parameters.TryGetValue("item_name", out var itemName))
         {
-            // Item pickup logic implementation
-            Debug.Log($"[{actor.Name}] Picking up item: {itemName}");
+            var itemNameStr = itemName.ToString();
+            var interactableEntities = actor.sensor.GetInteractableEntities();
+            
+            // 아이템이 상호작용 가능한지 확인
+            if (interactableEntities.items.ContainsKey(itemNameStr))
+            {
+                // Item pickup logic implementation
+                Debug.Log($"[{actor.Name}] Picking up item: {itemNameStr}");
+            }
+            else
+            {
+                var availableItems = string.Join(", ", interactableEntities.items.Keys);
+                var feedback = $"Cannot pick up '{itemNameStr}' because it's not a pickable item. Available pickable items: {availableItems}";
+                Debug.LogWarning($"[{actor.Name}] {feedback}");
+                
+                lastActionFeedback = feedback;
+                shouldRetryAction = true;
+            }
+        }
+        else
+        {
+            var feedback = "PickUpItem requires 'item_name' parameter";
+            Debug.LogWarning($"[{actor.Name}] {feedback}");
+            lastActionFeedback = feedback;
+            shouldRetryAction = true;
         }
     }
 
@@ -310,27 +430,48 @@ public class Brain
     {
         // 1. Collect environment information through sensors
         actor.sensor.UpdateAllSensors();
+        // Actor의 toMovable 필드도 업데이트 (Sensor를 통해 직접 업데이트)
+        var updatedMovablePositions = actor.sensor.GetMovablePositions();
+        // Actor의 toMovable 필드를 업데이트하기 위해 reflection 사용
+        var toMovableField = typeof(Actor).GetField("toMovable", 
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        toMovableField?.SetValue(actor, updatedMovablePositions);
 
         // 2. Analyze the collected information to determine the situation
         var lookableEntities = actor.sensor.GetLookableEntities();
         var interactableEntities = actor.sensor.GetInteractableEntities();
         var movablePositions = actor.sensor.GetMovablePositions();
 
-        // 3. Generate a situation description
+        // 3. Generate a situation description (피드백이 있으면 포함)
         string situation = GenerateSituationDescription(
             lookableEntities,
             interactableEntities,
             movablePositions
         );
-
-        // 4. Pause time if needed
-        var timeService = Services.Get<ITimeService>();
-        bool wasTimeFlowing = timeService.IsTimeFlowing;
-        if (wasTimeFlowing)
+        
+        // 현재 계획 정보 추가
+        if (currentHierarchicalDayPlan != null)
         {
-            timeService.StopTimeFlow();
-            Debug.Log($"[{actor.Name}] Time paused for Think execution");
+            var currentActivity = GetCurrentActivity();
+            if (currentActivity != null)
+            {
+                situation += $"\n\n=== Current Plan ===";
+                situation += $"\nCurrent Activity: {currentActivity.ActivityName}";
+                situation += $"\nTime: {currentActivity.StartTime} - {currentActivity.EndTime}";
+                situation += $"\nDescription: {currentActivity.Description}";
+            }
         }
+        
+        // 피드백이 있으면 상황 설명에 추가
+        if (!string.IsNullOrEmpty(lastActionFeedback))
+        {
+            situation += $"\n\nPrevious Action Feedback: {lastActionFeedback}";
+            Debug.Log($"[{actor.Name}] Including feedback in situation: {lastActionFeedback}");
+        }
+
+        // 4. API 호출 시작 (시간 자동 정지)
+        var timeService = Services.Get<ITimeService>();
+        timeService.StartAPICall();
 
         try
         {
@@ -343,11 +484,12 @@ public class Brain
             {
                 Reasoning = selection.Reasoning,
                 Intention = selection.Intention,
-                ActType = selection.ActType
+                ActType = selection.ActType,
+                PreviousFeedback = lastActionFeedback
             };
 
             ActParameterResult paramResult = null;
-            var gpt = new GPT();
+            // 재사용 가능한 GPT 인스턴스 사용 (이미 actorName이 설정됨)
             switch (selection.ActType)
             {
                 case ActionAgent.ActionType.MoveToArea:
@@ -357,8 +499,8 @@ public class Brain
                     paramResult = await moveToAreaAgent.GenerateParametersAsync(paramRequest);
                     break;
                 case ActionAgent.ActionType.MoveToEntity:
-                    var entityList = lookableEntities.Keys.ToList();
-                    var moveToEntityAgent = new MoveToEntityParameterAgent(entityList, gpt);
+                    var movableEntityList = movablePositions.Keys.ToList();
+                    var moveToEntityAgent = new MoveToEntityParameterAgent(movableEntityList, gpt);
                     moveToEntityAgent.SetActorName(actor.Name);
                     paramResult = await moveToEntityAgent.GenerateParametersAsync(paramRequest);
                     break;
@@ -425,11 +567,8 @@ public class Brain
         }
         finally
         {
-            if (wasTimeFlowing)
-            {
-                timeService.StartTimeFlow();
-                Debug.Log($"[{actor.Name}] Time resumed after Think execution");
-            }
+            // API 호출 종료 (모든 Actor가 완료되면 시간 자동 재개)
+            timeService.EndAPICall();
         }
     }
 
@@ -471,8 +610,36 @@ public class Brain
     /// </summary>
     public async UniTask ThinkAndAct()
     {
-        var (selection, paramResult) = await Think();
-        await Act(paramResult);
+        // 재시도 횟수 제한
+        int maxRetries = 3;
+        int retryCount = 0;
+        
+        while (retryCount < maxRetries)
+        {
+            // 피드백 초기화
+            lastActionFeedback = "";
+            shouldRetryAction = false;
+            
+            var (selection, paramResult) = await Think();
+            await Act(paramResult);
+            
+            // 재시도가 필요하지 않으면 종료
+            if (!shouldRetryAction)
+            {
+                break;
+            }
+            
+            retryCount++;
+            Debug.Log($"[{actor.Name}] Action failed, retrying... (Attempt {retryCount}/{maxRetries})");
+            
+            // 잠시 대기 후 재시도
+            await System.Threading.Tasks.Task.Delay(1000); // 1초 대기
+        }
+        
+        if (retryCount >= maxRetries)
+        {
+            Debug.LogWarning($"[{actor.Name}] Max retries reached. Giving up on action.");
+        }
     }
 
     /// <summary>
@@ -509,14 +676,8 @@ public class Brain
         // Collect current situation information
         actor.sensor.UpdateAllSensors();
         
-        // GPT 요청 전에 시간 정지 (이미 정지된 상태가 아닐 때만)
-        bool wasTimeFlowing = timeService.IsTimeFlowing;
-        
-        if (wasTimeFlowing)
-        {
-            timeService.StopTimeFlow();
-            Debug.Log($"[{actor.Name}] Time paused for HierarchicalPlan generation");
-        }
+        // API 호출 시작 (시간 자동 정지)
+        timeService.StartAPICall();
         
         try
         {
@@ -530,12 +691,8 @@ public class Brain
         }
         finally
         {
-            // GPT 응답 후 시간 재개 (원래 흐르고 있었던 상태였다면)
-            if (wasTimeFlowing)
-            {
-                timeService.StartTimeFlow();
-                Debug.Log($"[{actor.Name}] Time resumed after HierarchicalPlan generation");
-            }
+            // API 호출 종료 (모든 Actor가 완료되면 시간 자동 재개)
+            timeService.EndAPICall();
         }
     }
 
@@ -862,6 +1019,16 @@ public class Brain
         var memorySummary = memoryManager.GetMemorySummary();
         sb.AppendLine("\n=== Your Memories ===");
         sb.AppendLine(memorySummary);
+
+        // Add lookable entities information
+        if (lookable.Count > 0)
+        {
+            sb.AppendLine("Lookable entities nearby:");
+            foreach (var kvp in lookable)
+            {
+                sb.AppendLine($"- {kvp.Key}");
+            }
+        }
 
         if (interactable.actors.Count > 0)
         {
