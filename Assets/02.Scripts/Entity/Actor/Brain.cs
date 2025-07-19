@@ -219,7 +219,7 @@ public class Brain
             var objectName = objName.ToString();
             var interactableEntities = actor.sensor.GetInteractableEntities();
             
-            // 상호작용 가능한 오브젝트인지 확인
+            // 상호작용 가능한 오브젝트인지 확인 (SimpleKey로 검색)
             if (interactableEntities.props.ContainsKey(objectName) || 
                 interactableEntities.buildings.ContainsKey(objectName))
             {
@@ -263,7 +263,7 @@ public class Brain
             var objectName = objName.ToString();
             var interactableEntities = actor.sensor.GetInteractableEntities();
             
-            // 사용 가능한 오브젝트인지 확인
+            // 사용 가능한 오브젝트인지 확인 (SimpleKey로 검색)
             if (interactableEntities.props.ContainsKey(objectName) || 
                 interactableEntities.buildings.ContainsKey(objectName))
             {
@@ -348,7 +348,7 @@ public class Brain
             var itemNameStr = itemName.ToString();
             var interactableEntities = actor.sensor.GetInteractableEntities();
             
-            // 아이템이 상호작용 가능한지 확인
+            // 아이템이 상호작용 가능한지 확인 (SimpleKey로 검색)
             if (interactableEntities.items.ContainsKey(itemNameStr))
             {
                 // Item pickup logic implementation

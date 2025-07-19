@@ -77,7 +77,8 @@ public class Sensor
             var distance = MathExtension.SquaredDistance2D(curPos, prop.toMovePos.position);
             if (distance <= interactionRange * interactionRange)
             {
-                interactable.props.Add(prop.Name, prop);
+                // 간단한 키 사용
+                interactable.props.Add(prop.GetSimpleKey(), prop);
                 if (prop.IsHideChild)
                     continue;
 
@@ -93,7 +94,8 @@ public class Sensor
             var distance = MathExtension.SquaredDistance2D(curPos, building.transform.position);
             if (distance <= interactionRange * interactionRange)
             {
-                interactable.buildings.Add(building.Name, building);
+                // 간단한 키 사용
+                interactable.buildings.Add(building.GetSimpleKey(), building);
             }
         }
 
@@ -104,7 +106,8 @@ public class Sensor
             var distance = MathExtension.SquaredDistance2D(curPos, item.transform.position);
             if (distance <= interactionRange * interactionRange)
             {
-                interactable.items.Add(item.LocationToString(), item);
+                // 간단한 키 사용
+                interactable.items.Add(item.GetSimpleKey(), item);
                 if (item.IsHideChild)
                     continue;
 
@@ -132,7 +135,7 @@ public class Sensor
             // var distance = MathExtension.SquaredDistance2D(curPos, prop.toMovePos.position);
             // if (distance <= interactionRange * interactionRange)
             // {
-            toMovable.Add(prop.Name, prop.toMovePos.position);
+            toMovable.Add(prop.GetSimpleKey(), prop.toMovePos.position);
             //}
         }
 
@@ -143,7 +146,7 @@ public class Sensor
             // var distance = MathExtension.SquaredDistance2D(curPos, building.transform.position);
             // if (distance <= interactionRange * interactionRange)
             // {
-            toMovable.Add(building.Name, building.transform.position);
+            toMovable.Add(building.GetSimpleKey(), building.transform.position);
             //}
         }
 
@@ -192,15 +195,15 @@ public class Sensor
             }
             else if (entity is Prop prop)
             {
-                lookable.Add(prop.Name, prop);
+                lookable.Add(prop.GetSimpleKey(), prop);
             }
             else if (entity is Building building)
             {
-                lookable.Add(building.Name, building);
+                lookable.Add(building.GetSimpleKey(), building);
             }
             else if (entity is Item item)
             {
-                lookable.Add(item.Name, item);
+                lookable.Add(item.GetSimpleKey(), item);
             }
 
             if (entity.IsHideChild)
@@ -223,15 +226,15 @@ public class Sensor
             }
             else if (entity is Prop prop)
             {
-                interactable.props.Add(prop.Name, prop);
+                interactable.props.Add(prop.GetSimpleKey(), prop);
             }
             else if (entity is Building building)
             {
-                interactable.buildings.Add(building.Name, building);
+                interactable.buildings.Add(building.GetSimpleKey(), building);
             }
             else if (entity is Item item)
             {
-                interactable.items.Add(item.LocationToString(), item);
+                interactable.items.Add(item.GetSimpleKey(), item);
             }
 
             if (entity.IsHideChild)
@@ -266,11 +269,11 @@ public class Sensor
         if (entity is Actor actor)
             return interactable.actors.ContainsKey(actor.Name);
         else if (entity is Prop prop)
-            return interactable.props.ContainsKey(prop.Name);
+            return interactable.props.ContainsKey(prop.GetSimpleKey());
         else if (entity is Building building)
-            return interactable.buildings.ContainsKey(building.Name);
+            return interactable.buildings.ContainsKey(building.GetSimpleKey());
         else if (entity is Item item)
-            return interactable.items.ContainsKey(item.LocationToString());
+            return interactable.items.ContainsKey(item.GetSimpleKey());
 
         return false;
     }

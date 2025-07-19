@@ -129,6 +129,18 @@ public abstract class Entity : MonoBehaviour, ILocation
         }
         return locationName + " " + curLocation.preposition + " " + curLocation.LocationToString();
     }
+    
+    /// <summary>
+    /// 간단하고 일관된 키 생성 (모든 Entity에 동일한 규칙 적용)
+    /// 예: "Choco Donut in Living Room", "iPhone in Kitchen"
+    /// </summary>
+    public virtual string GetSimpleKey()
+    {
+        if (curLocation == null) return Name;
+        
+        // 현재 위치의 이름만 사용 (계층 구조 무시)
+        return $"{Name} in {curLocation.locationName}";
+    }
 
     protected virtual void Awake()
     {
