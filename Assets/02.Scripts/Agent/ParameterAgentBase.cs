@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
+using Agent;
 
 namespace Agent
 {
@@ -31,13 +32,13 @@ namespace Agent
     {
         public string Reasoning { get; set; }
         public string Intention { get; set; }
-        public ActionAgent.ActionType ActType { get; set; }
+        public ActionType ActType { get; set; } // enum으로 복구
         public string PreviousFeedback { get; set; } = ""; // 이전 액션의 피드백
     }
 
     public class ActParameterResult
     {
-        public ActionAgent.ActionType ActType { get; set; }
+        public ActionType ActType { get; set; } // enum으로 복구
         public Dictionary<string, object> Parameters { get; set; }
     }
 
@@ -46,7 +47,7 @@ namespace Agent
     /// </summary>
     public static class ParameterAgentFactory
     {
-        public static Dictionary<ActionAgent.ActionType, ParameterAgentBase> CreateAllParameterAgents(Actor actor)
+        public static Dictionary<ActionType, ParameterAgentBase> CreateAllParameterAgents(Actor actor)
         {
             var gpt = new GPT();
             ParameterAgentBase SetName(ParameterAgentBase agent)
@@ -54,22 +55,18 @@ namespace Agent
                 agent.SetActorName(actor.Name);
                 return agent;
             }
-            return new Dictionary<ActionAgent.ActionType, ParameterAgentBase>
+            return new Dictionary<ActionType, ParameterAgentBase>
             {
-                { ActionAgent.ActionType.MoveToArea, SetName(new MoveToAreaParameterAgent(new List<string>(), gpt)) },
-                { ActionAgent.ActionType.MoveToEntity, SetName(new MoveToEntityParameterAgent(new List<string>(), gpt)) },
-                { ActionAgent.ActionType.MoveAway, SetName(new MoveAwayParameterAgent(new List<string>(), gpt)) },
-                { ActionAgent.ActionType.TalkToNPC, SetName(new TalkParameterAgent(new List<string>(), gpt)) },
-                { ActionAgent.ActionType.RespondToPlayer, SetName(new RespondToPlayerParameterAgent("", "", "", gpt)) },
-                { ActionAgent.ActionType.UseObject, SetName(new UseObjectParameterAgent(new List<string>(), "", "", gpt)) },
-                { ActionAgent.ActionType.PickUpItem, SetName(new PickUpItemParameterAgent(new List<string>(), "", "", gpt)) },
-                { ActionAgent.ActionType.InteractWithObject, SetName(new InteractWithObjectParameterAgent(new List<string>(), gpt)) },
-                { ActionAgent.ActionType.InteractWithNPC, SetName(new InteractWithNPCParameterAgent(new List<string>(), gpt)) },
-                { ActionAgent.ActionType.ObserveEnvironment, SetName(new ObserveEnvironmentParameterAgent(gpt)) },
-                { ActionAgent.ActionType.ScanArea, SetName(new ScanAreaParameterAgent(gpt)) },
-                { ActionAgent.ActionType.Wait, SetName(new WaitParameterAgent(gpt)) },
-                { ActionAgent.ActionType.PerformActivity, SetName(new PerformActivityParameterAgent(new List<string>(), gpt)) },
-                { ActionAgent.ActionType.EnterBuilding, SetName(new EnterBuildingParameterAgent(new List<string>(), gpt)) },
+                { ActionType.MoveToArea, SetName(new MoveToAreaParameterAgent(new List<string>(), gpt)) },
+                { ActionType.MoveToEntity, SetName(new MoveToEntityParameterAgent(new List<string>(), gpt)) },
+                { ActionType.SpeakToCharacter, SetName(new TalkParameterAgent(new List<string>(), gpt)) },
+                { ActionType.UseObject, SetName(new UseObjectParameterAgent(new List<string>(), "", "", gpt)) },
+                { ActionType.PickUpItem, SetName(new PickUpItemParameterAgent(new List<string>(), "", "", gpt)) },
+                { ActionType.InteractWithObject, SetName(new InteractWithObjectParameterAgent(new List<string>(), gpt)) },
+                { ActionType.InteractWithNPC, SetName(new InteractWithNPCParameterAgent(new List<string>(), gpt)) },
+                { ActionType.Wait, SetName(new WaitParameterAgent(gpt)) },
+                { ActionType.PerformActivity, SetName(new PerformActivityParameterAgent(new List<string>(), gpt)) },
+                { ActionType.EnterBuilding, SetName(new EnterBuildingParameterAgent(new List<string>(), gpt)) },
             };
         }
     }

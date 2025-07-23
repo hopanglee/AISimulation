@@ -47,7 +47,8 @@ MonoBehaviour:
   _curLocation: {fileID: 2859441548675609630}
   _preposition: 
   _isHideChild: 0
-  Name: 
+  _name: 
+  _currentStatusDescription: 
 --- !u!1 &3524782942030797403
 GameObject:
   m_ObjectHideFlags: 0
@@ -95,7 +96,39 @@ MonoBehaviour:
   _curLocation: {fileID: 2859441548675609630}
   _preposition: 
   _isHideChild: 0
-  Name: 
+  _name: 
+  _currentStatusDescription: 
+--- !u!1 &3972129842289191627
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4190855432667518520}
+  m_Layer: 12
+  m_Name: Head Position
+  m_TagString: Untagged
+  m_Icon: {fileID: 7866945982896999795, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4190855432667518520
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3972129842289191627}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.9, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 529616869720991405}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4322229232570237734
 GameObject:
   m_ObjectHideFlags: 0
@@ -143,7 +176,8 @@ MonoBehaviour:
   _curLocation: {fileID: 2859441548675609630}
   _preposition: 
   _isHideChild: 0
-  Name: 
+  _name: 
+  _currentStatusDescription: 
 --- !u!1001 &529616869720603757
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -218,6 +252,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 400064, guid: e367da6665e14a446be68ddcb33bbd9f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3821959460996476939}
+    - targetCorrespondingSourceObject: {fileID: 400064, guid: e367da6665e14a446be68ddcb33bbd9f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4190855432667518520}
     - targetCorrespondingSourceObject: {fileID: 400128, guid: e367da6665e14a446be68ddcb33bbd9f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5241862002153628986}
@@ -415,7 +452,8 @@ MonoBehaviour:
   _curLocation: {fileID: 0}
   _preposition: 
   _isHideChild: 1
-  Name: 
+  _name: 
+  _currentStatusDescription: 
   Money: 0
   iPhone: {fileID: 0}
   Hunger: 0
@@ -424,10 +462,33 @@ MonoBehaviour:
   MentalPleasure: 0
   Stress: 0
   Sleepiness: 0
+  wakeUpHour: 6
+  sleepHour: 22
+  sleepinessThreshold: 80
+  isSleeping: 0
+  sleepStartTime:
+    year: 0
+    month: 0
+    day: 0
+    hour: 0
+    minute: 0
+  wakeUpTime:
+    year: 0
+    month: 0
+    day: 0
+    hour: 0
+    minute: 0
+  currentActivity: Idle
+  activityDescription: 
+  activityStartTime: 0
+  activityDuration: 0
   _handItem: {fileID: 0}
   Hand: {fileID: 3188549841946335990}
-  InvenItems: []
+  _inventoryItems: []
   Inven: {fileID: 5897178151852487282}
+  headTransform: {fileID: 4190855432667518520}
+  speechBgColor: {r: 1, g: 1, b: 1, a: 1}
+  speechTextColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!114 &4887048522806061288
 MonoBehaviour:
   m_ObjectHideFlags: 0
