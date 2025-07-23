@@ -7,32 +7,11 @@ using Newtonsoft.Json;
 using OpenAI.Chat;
 using UnityEngine;
 using System.Linq; // Added for .Select()
+using Agent;
 
 public class ActionAgent : GPT
 {
     private Actor actor;
-
-    /// <summary>
-    /// Action types that the AI agent can perform (these will serve as function names)
-    /// </summary>
-    public enum ActionType
-    {
-        Unknown = 0, // Default/invalid value
-        MoveToArea, // Move to specified Area
-        MoveToEntity, // Move to specified Entity (Actor, Item, Block, etc.)
-        MoveAway, // Move away from current location
-        TalkToNPC, // Talk to NPC
-        RespondToPlayer, // Respond to player
-        UseObject, // Use an object
-        PickUpItem, // Pick up an item
-        InteractWithObject, // Interact with an object
-        InteractWithNPC, // Interact with NPC
-        ObserveEnvironment, // Observe the environment
-        ScanArea, // Scan an area
-        Wait, // Wait
-        PerformActivity, // Perform a specific activity (like morning stretches, cooking, etc.)
-        EnterBuilding, // Enter a building (추가)
-    }
 
     /// <summary>
     /// AI agent's thought process and decided action
@@ -342,12 +321,12 @@ public class ActionAgent : GPT
                                         ""action_type"": {
                                             ""type"": ""string"",
                                             ""enum"": [
-                                                ""MoveToArea"", ""MoveToEntity"", ""MoveAway"",
-                                                ""TalkToNPC"", ""RespondToPlayer"", ""UseObject"",
-                                                ""PickUpItem"", ""OpenDoor"", ""PressSwitch"",
-                                                ""InteractWithObject"", ""InteractWithNPC"",
-                                                ""ObserveEnvironment"", ""ExamineObject"", ""ScanArea"",
-                                                ""Wait"", ""WaitForEvent"", ""PerformActivity""
+                                                ""MoveToArea"", ""MoveToEntity"",
+                                                ""TalkToNPC"", ""UseObject"",
+                                                ""PickUpItem"",
+                                                ""InteractWithObject"",
+                                                ""InteractWithBuilding"",
+                                                ""Wait"", ""PerformActivity""
                                             ],
                                             ""description"": ""Type of action to perform""
                                         },

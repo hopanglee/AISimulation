@@ -94,6 +94,9 @@ public abstract class Actor : Entity, ILocationAware
 
 
 
+    /// <summary>
+    /// Actor가 현재 손에 들고 있는 아이템
+    /// </summary>
     [SerializeField]
     private Item _handItem;
     public Item HandItem
@@ -103,10 +106,22 @@ public abstract class Actor : Entity, ILocationAware
     }
     public Hand Hand;
 
+    /// <summary>
+    /// Actor의 인벤토리 아이템들 (최대 2개까지 보관 가능)
+    /// </summary>
     [SerializeField]
-    private Item[] InvenItems;
+    private Item[] _inventoryItems;
+    public Item[] InventoryItems
+    {
+        get => _inventoryItems;
+        set { _inventoryItems = value; }
+    }
     public Inven Inven;
-    private List<string> happend = new();
+    
+    /// <summary>
+    /// Actor에게 발생한 이벤트들의 기록
+    /// </summary>
+    private List<string> _eventHistory = new();
     #endregion
 
     protected override void Awake()
@@ -149,7 +164,7 @@ public abstract class Actor : Entity, ILocationAware
             return true;
         }
 
-        if (InvenItems[0] == null)
+        if (_inventoryItems[0] == null)
         {
             InvenItemSet(0, HandItem);
             HandItem = item;
@@ -158,7 +173,7 @@ public abstract class Actor : Entity, ILocationAware
             return true;
         }
 
-        if (InvenItems[1] == null)
+        if (_inventoryItems[1] == null)
         {
             InvenItemSet(1, HandItem);
             HandItem = item;
@@ -172,7 +187,7 @@ public abstract class Actor : Entity, ILocationAware
 
     private void InvenItemSet(int index, Item item)
     {
-        InvenItems[index] = item;
+        _inventoryItems[index] = item;
         // Disable Mesh and Collider
 
         item.curLocation = Inven;
@@ -420,6 +435,15 @@ public abstract class Actor : Entity, ILocationAware
         return brain?.GetCurrentActivity();
     }
 
+    public override string GetStatusDescription()
+    {
+        if (!string.IsNullOrEmpty(CurrentActivity) && CurrentActivity != "Idle")
+        {
+            return $"현재: {CurrentActivity}";
+        }
+        return base.GetStatusDescription();
+    }
+
     public virtual void Death()
     {
         ;
@@ -427,7 +451,7 @@ public abstract class Actor : Entity, ILocationAware
 
     public void Hear(Actor from, string text)
     {
-        happend.Add($"");
+        _eventHistory.Add($"");
     }
 
     public void SetCurrentRoom(ILocation newLocation)
@@ -510,4 +534,23 @@ public abstract class Actor : Entity, ILocationAware
         UpdateMovablePos();
     }
     #endregion
+
+    public Transform headTransform; // 머리 위 위치(빈 오브젝트 등)
+
+    [Header("Speech Bubble Style")]
+    public Color speechBgColor = Color.black;
+    public Color speechTextColor = Color.white;
+
+    public void ShowSpeech(string message, float duration = 2.5f)
+    {
+        // If headTransform is null, use this.transform as fallback
+        var target = headTransform != null ? headTransform : this.transform;
+        SpeechBubbleManager.Instance.ShowSpeech(target, message, duration, speechBgColor, speechTextColor);
+    }
+
+    [Button("Test SpeakToCharacter")]
+    private void TestSpeakToCharacter()
+    {
+        ShowSpeech("(테스트) 안녕하세요! 이것은 SpeakToCharacter 테스트입니다.");
+    }
 }

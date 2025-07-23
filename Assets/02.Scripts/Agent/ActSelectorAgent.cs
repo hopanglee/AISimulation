@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using OpenAI.Chat;
@@ -34,7 +35,7 @@ namespace Agent
         public class ActSelectionResult
         {
             [JsonProperty("act_type")]
-            public ActionAgent.ActionType ActType { get; set; }
+            public ActionType ActType { get; set; }
 
             [JsonProperty("reasoning")]
             public string Reasoning { get; set; } // 왜 이 Act를 골랐는지
@@ -64,28 +65,26 @@ namespace Agent
                 jsonSchemaFormatName: "act_selection_result",
                 jsonSchema: BinaryData.FromBytes(
                     System.Text.Encoding.UTF8.GetBytes(
-                        @"{
+                        $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
-                            ""properties"": {
-                                ""act_type"": {
+                            ""properties"": {{
+                                ""act_type"": {{
                                     ""type"": ""string"",
-                                    ""enum"": [
-                                        ""MoveToArea"", ""MoveToEntity"", ""MoveAway"", ""TalkToNPC"", ""RespondToPlayer"", ""UseObject"", ""PickUpItem"", ""InteractWithObject"", ""InteractWithNPC"", ""ObserveEnvironment"", ""ScanArea"", ""Wait"", ""PerformActivity"", ""EnterBuilding""
-                                    ],
+                                    ""enum"": [ {string.Join(", ", Enum.GetNames(typeof(ActionType)).Select(n => $"\"{n}\""))} ],
                                     ""description"": ""Type of action to perform""
-                                },
-                                ""reasoning"": {
+                                }},
+                                ""reasoning"": {{
                                     ""type"": ""string"",
                                     ""description"": ""Reason for selecting this action""
-                                },
-                                ""intention"": {
+                                }},
+                                ""intention"": {{
                                     ""type"": ""string"",
                                     ""description"": ""What the agent intends to achieve with this action""
-                                }
-                            },
+                                }}
+                            }},
                             ""required"": [""act_type"", ""reasoning"", ""intention""]
-                        }"
+                        }}"
                     )
                 ),
                 jsonSchemaIsStrict: true

@@ -7,10 +7,7 @@ using UnityEngine;
 /// </summary>
 public class ActionExecutor
 {
-    private readonly Dictionary<
-        ActionAgent.ActionType,
-        Action<Dictionary<string, object>>
-    > actionHandlers = new();
+    private readonly Dictionary<ActionType, Action<Dictionary<string, object>>> actionHandlers = new();
     private readonly bool enableLogging;
     private readonly float actionDelay;
 
@@ -24,7 +21,7 @@ public class ActionExecutor
     /// 외부에서 액션 핸들러를 등록할 수 있도록 함
     /// </summary>
     public void RegisterHandler(
-        ActionAgent.ActionType actionType,
+        ActionType actionType,
         Action<Dictionary<string, object>> handler
     )
     {
@@ -34,7 +31,7 @@ public class ActionExecutor
     /// <summary>
     /// 외부에서 액션 핸들러를 제거할 수 있도록 함
     /// </summary>
-    public void UnregisterHandler(ActionAgent.ActionType actionType)
+    public void UnregisterHandler(ActionType actionType)
     {
         actionHandlers.Remove(actionType);
     }
@@ -51,7 +48,7 @@ public class ActionExecutor
     /// ActionReasoning을 받아서 실제 액션을 실행
     /// </summary>
     public async System.Threading.Tasks.Task<ActionExecutionResult> ExecuteActionAsync(
-        ActionAgent.ActionReasoning reasoning
+        ActionReasoning reasoning
     )
     {
         if (reasoning?.Action == null)

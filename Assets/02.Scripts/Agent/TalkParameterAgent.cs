@@ -10,8 +10,8 @@ namespace Agent
     {
         public class TalkParameter
         {
-            [JsonProperty("npc_name")]
-            public string NpcName { get; set; }
+            [JsonProperty("character_name")]
+            public string CharacterName { get; set; }
             
             [JsonProperty("message")]
             public string Message { get; set; }
@@ -19,34 +19,34 @@ namespace Agent
 
         private readonly string systemPrompt;
         private readonly ChatCompletionOptions options;
-        private readonly List<string> npcList;
+        private readonly List<string> characterList;
         private readonly GPT gpt;
 
         public TalkParameterAgent(List<string> npcList, GPT gpt)
         {
-            this.npcList = npcList;
+            this.characterList = npcList;
             this.gpt = gpt;
             systemPrompt = PromptLoader.LoadPrompt("TalkParameterAgentPrompt.txt", "You are a Talk parameter generator.");
             options = new ChatCompletionOptions
             {
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "talk_parameter",
+                    jsonSchemaFormatName: "speak_to_character_parameter",
                     jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
                         $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""npc_name"": {{
+                                ""character_name"": {{
                                     ""type"": ""string"",
-                                    ""enum"": {JsonConvert.SerializeObject(npcList)},
-                                    ""description"": ""One of the available NPCs to talk to""
+                                    ""enum"": {JsonConvert.SerializeObject(characterList)},
+                                    ""description"": ""One of the available characters to speak to""
                                 }},
                                 ""message"": {{
                                     ""type"": ""string"",
-                                    ""description"": ""The message to say to the NPC""
+                                    ""description"": ""The message to say to the character""
                                 }}
                             }},
-                            ""required"": [""npc_name"", ""message""]
+                            ""required"": [""character_name"", ""message""]
                         }}"
                     )),
                     jsonSchemaIsStrict: true
@@ -78,7 +78,7 @@ namespace Agent
                 ActType = request.ActType,
                 Parameters = new Dictionary<string, object>
                 {
-                    { "npc_name", param.NpcName },
+                    { "character_name", param.CharacterName },
                     { "message", param.Message }
                 }
             };
@@ -86,13 +86,13 @@ namespace Agent
 
         private string BuildUserMessage(CommonContext context)
         {
-            var message = $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableNPCs: {string.Join(", ", npcList)}";
+            var message = $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableCharacters: {string.Join(", ", characterList)}";
             
             // 피드백이 있으면 추가
             if (!string.IsNullOrEmpty(context.PreviousFeedback))
             {
                 message += $"\n\nPrevious Action Feedback: {context.PreviousFeedback}";
-                message += "\n\nPlease consider this feedback when making your selection. Choose a different NPC if the previous one was not available for conversation.";
+                message += "\n\nPlease consider this feedback when making your selection. Choose a different character if the previous one was not available for conversation.";
             }
             
             return message;

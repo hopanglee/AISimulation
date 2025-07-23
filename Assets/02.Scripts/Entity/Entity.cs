@@ -112,6 +112,13 @@ public abstract class Entity : MonoBehaviour, ILocation
         set { _name = value; }
     }
 
+    [SerializeField, TextArea]
+    private string _currentStatusDescription;
+    public virtual string GetStatusDescription()
+    {
+        return _currentStatusDescription;
+    }
+
     public virtual void Init()
     {
         locationName = Name;
@@ -138,8 +145,26 @@ public abstract class Entity : MonoBehaviour, ILocation
     {
         if (curLocation == null) return Name;
         
-        // 현재 위치의 이름만 사용 (계층 구조 무시)
-        return $"{Name} in {curLocation.locationName}";
+        // 더 상세한 위치 정보를 포함할지 여부 (언제든지 바꿀 수 있도록 if문 사용)
+        if (false) // true: 상세한 위치 정보 포함, false: 간단한 위치 정보만
+        {
+            // 한 단계까지만 더 나오는 상세한 위치 정보 사용
+            // 예: "Plate in Dining Table in Living Room"
+            if (curLocation.curLocation != null)
+            {
+                return $"{Name} in {curLocation.locationName} in {curLocation.curLocation.locationName}";
+            }
+            else
+            {
+                return $"{Name} in {curLocation.locationName}";
+            }
+        }
+        else
+        {
+            // 현재 위치의 이름만 사용 (계층 구조 무시)
+            // 예: "Plate in Living Room"
+            return $"{Name} in {curLocation.locationName}";
+        }
     }
 
     protected virtual void Awake()

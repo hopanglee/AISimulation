@@ -14,7 +14,6 @@ using System.Linq; // Added for .ToList()
 public class Brain
 {
     public Actor actor;
-    public ActionAgent actionAgent;
     public MemoryAgent memoryAgent;
     private ActionExecutor actionExecutor;
     private CharacterMemoryManager memoryManager;
@@ -24,9 +23,9 @@ public class Brain
 
     // --- New fields for refactored agent structure ---
     private ActSelectorAgent actSelectorAgent;
-    private Dictionary<ActionAgent.ActionType, ParameterAgentBase> parameterAgents;
+    private Dictionary<ActionType, ParameterAgentBase> parameterAgents;
     private GPT gpt; // GPT 인스턴스 재사용
-    
+
     // 피드백 및 재시도 관련 필드
     private string lastActionFeedback = "";
     private bool shouldRetryAction = false;
@@ -51,7 +50,7 @@ public class Brain
 
         // CharacterMemoryManager initialization
         memoryManager = new CharacterMemoryManager(actor.Name);
-        
+
         // HierarchicalPlanner initialization
         hierarchicalPlanner = new HierarchicalPlanner(actor);
     }
@@ -60,55 +59,61 @@ public class Brain
     {
         // Area movement related handlers
         actionExecutor.RegisterHandler(
-            ActionAgent.ActionType.MoveToArea,
+            ActionType.MoveToArea,
             (parameters) => HandleMoveToArea(parameters)
         );
 
         // Entity movement related handlers
         actionExecutor.RegisterHandler(
-            ActionAgent.ActionType.MoveToEntity,
+            ActionType.MoveToEntity,
             (parameters) => HandleMoveToEntity(parameters)
         );
 
         // Interaction related handlers
         actionExecutor.RegisterHandler(
-            ActionAgent.ActionType.InteractWithObject,
+            ActionType.InteractWithObject,
             (parameters) => HandleInteractWithObject(parameters)
         );
 
         actionExecutor.RegisterHandler(
-            ActionAgent.ActionType.UseObject,
+            ActionType.UseObject,
             (parameters) => HandleUseObject(parameters)
         );
 
         // Dialogue related handlers
         actionExecutor.RegisterHandler(
-            ActionAgent.ActionType.TalkToNPC,
-            (parameters) => HandleTalkToNPC(parameters)
+            ActionType.SpeakToCharacter,
+            (parameters) => HandleSpeakToCharacter(parameters)
         );
 
         // Item related handlers
         actionExecutor.RegisterHandler(
-            ActionAgent.ActionType.PickUpItem,
+            ActionType.PickUpItem,
             (parameters) => HandlePickUpItem(parameters)
         );
 
         // Observation related handlers
-        actionExecutor.RegisterHandler(
-            ActionAgent.ActionType.ObserveEnvironment,
-            (parameters) => HandleObserveEnvironment(parameters)
-        );
+        // actionExecutor.RegisterHandler(
+        //     ActionType.ObserveEnvironment,
+        //     (parameters) => HandleObserveEnvironment(parameters)
+        // );
 
         // Wait related handlers
         actionExecutor.RegisterHandler(
-            ActionAgent.ActionType.Wait,
+            ActionType.Wait,
             (parameters) => HandleWait(parameters)
         );
 
         // Activity related handlers
         actionExecutor.RegisterHandler(
-            ActionAgent.ActionType.PerformActivity,
+            ActionType.PerformActivity,
             (parameters) => HandlePerformActivity(parameters)
+        );
+
+        // Building interaction handler
+        actionExecutor.RegisterHandler(
+            ActionType.EnterBuilding,
+            (parameters) => HandleEnterBuilding(parameters)
         );
     }
 
@@ -117,8 +122,8 @@ public class Brain
     /// </summary>
     private void HandleMoveToArea(Dictionary<string, object> parameters)
     {
-        var parametersText = parameters != null && parameters.Count > 0 
-            ? string.Join(", ", parameters.Values) 
+        var parametersText = parameters != null && parameters.Count > 0
+            ? string.Join(", ", parameters.Values)
             : "no parameters";
         Debug.Log($"[{actor.Name}] MoveToArea: {parametersText}");
 
@@ -164,8 +169,8 @@ public class Brain
     /// </summary>
     private void HandleMoveToEntity(Dictionary<string, object> parameters)
     {
-        var parametersText = parameters != null && parameters.Count > 0 
-            ? string.Join(", ", parameters.Values) 
+        var parametersText = parameters != null && parameters.Count > 0
+            ? string.Join(", ", parameters.Values)
             : "no parameters";
         Debug.Log($"[{actor.Name}] MoveToEntity: {parametersText}");
 
@@ -185,7 +190,7 @@ public class Brain
                 var availablePositions = string.Join(", ", movablePositions.Keys);
                 var feedback = $"Cannot move to '{entityName}' because it's not a movable entity. Available movable entities: {availablePositions}";
                 Debug.LogWarning($"[{actor.Name}] {feedback}");
-                
+
                 // 피드백을 저장하여 재시도에 사용
                 lastActionFeedback = feedback;
                 shouldRetryAction = true;
@@ -210,17 +215,17 @@ public class Brain
     /// </summary>
     private void HandleInteractWithObject(Dictionary<string, object> parameters)
     {
-        var parametersText = parameters != null && parameters.Count > 0 
-            ? string.Join(", ", parameters.Values) 
+        var parametersText = parameters != null && parameters.Count > 0
+            ? string.Join(", ", parameters.Values)
             : "no parameters";
         Debug.Log($"[{actor.Name}] InteractWithObject: {parametersText}");
         if (parameters.TryGetValue("object_name", out var objName))
         {
             var objectName = objName.ToString();
             var interactableEntities = actor.sensor.GetInteractableEntities();
-            
+
             // 상호작용 가능한 오브젝트인지 확인 (SimpleKey로 검색)
-            if (interactableEntities.props.ContainsKey(objectName) || 
+            if (interactableEntities.props.ContainsKey(objectName) ||
                 interactableEntities.buildings.ContainsKey(objectName))
             {
                 actor.Interact(objectName);
@@ -231,10 +236,10 @@ public class Brain
                 var availableObjects = new List<string>();
                 availableObjects.AddRange(interactableEntities.props.Keys);
                 availableObjects.AddRange(interactableEntities.buildings.Keys);
-                
+
                 var feedback = $"Cannot interact with '{objectName}' because it's not an interactable object. Available interactable objects: {string.Join(", ", availableObjects)}";
                 Debug.LogWarning($"[{actor.Name}] {feedback}");
-                
+
                 lastActionFeedback = feedback;
                 shouldRetryAction = true;
             }
@@ -253,18 +258,18 @@ public class Brain
     /// </summary>
     private void HandleUseObject(Dictionary<string, object> parameters)
     {
-        var parametersText = parameters != null && parameters.Count > 0 
-            ? string.Join(", ", parameters.Values) 
+        var parametersText = parameters != null && parameters.Count > 0
+            ? string.Join(", ", parameters.Values)
             : "no parameters";
         Debug.Log($"[{actor.Name}] UseObject: {parametersText}");
-        
+
         if (parameters.TryGetValue("object_name", out var objName))
         {
             var objectName = objName.ToString();
             var interactableEntities = actor.sensor.GetInteractableEntities();
-            
+
             // 사용 가능한 오브젝트인지 확인 (SimpleKey로 검색)
-            if (interactableEntities.props.ContainsKey(objectName) || 
+            if (interactableEntities.props.ContainsKey(objectName) ||
                 interactableEntities.buildings.ContainsKey(objectName))
             {
                 actor.Use(parameters);
@@ -275,10 +280,10 @@ public class Brain
                 var availableObjects = new List<string>();
                 availableObjects.AddRange(interactableEntities.props.Keys);
                 availableObjects.AddRange(interactableEntities.buildings.Keys);
-                
+
                 var feedback = $"Cannot use '{objectName}' because it's not a usable object. Available usable objects: {string.Join(", ", availableObjects)}";
                 Debug.LogWarning($"[{actor.Name}] {feedback}");
-                
+
                 lastActionFeedback = feedback;
                 shouldRetryAction = true;
             }
@@ -295,39 +300,44 @@ public class Brain
     /// <summary>
     /// Dialogue with NPC handler
     /// </summary>
-    private void HandleTalkToNPC(Dictionary<string, object> parameters)
+    private void HandleSpeakToCharacter(Dictionary<string, object> parameters)
     {
-        var parametersText = parameters != null && parameters.Count > 0 
-            ? string.Join(", ", parameters.Values) 
+        var parametersText = parameters != null && parameters.Count > 0
+            ? string.Join(", ", parameters.Values)
             : "no parameters";
-        Debug.Log($"[{actor.Name}] TalkToNPC: {parametersText}");
+        Debug.Log($"[{actor.Name}] SpeakToCharacter: {parametersText}");
         if (
-            parameters.TryGetValue("npc_name", out var npcName)
+            parameters.TryGetValue("character_name", out var characterName)
             && parameters.TryGetValue("message", out var message)
         )
         {
-            var npcNameStr = npcName.ToString();
+            var characterNameStr = characterName.ToString();
             var interactableEntities = actor.sensor.GetInteractableEntities();
-            
-            // NPC가 상호작용 가능한지 확인
-            if (interactableEntities.actors.ContainsKey(npcNameStr))
+
+            if (interactableEntities.actors == null)
+            {
+                // actors 딕셔너리가 null일 때만 말풍선 띄움
+                actor.ShowSpeech(message.ToString());
+                Debug.LogWarning($"[{actor.Name}] interactableEntities.actors is null. Showing speech bubble anyway.");
+            }
+            else if (interactableEntities.actors.ContainsKey(characterNameStr))
             {
                 // NPC dialogue logic implementation
-                Debug.Log($"[{actor.Name}] Talking to {npcNameStr}: {message}");
+                Debug.Log($"[{actor.Name}] Speaking to {characterNameStr}: {message}");
+                actor.ShowSpeech(message.ToString());
             }
             else
             {
-                var availableNPCs = string.Join(", ", interactableEntities.actors.Keys);
-                var feedback = $"Cannot talk to '{npcNameStr}' because they are not available for conversation. Available NPCs: {availableNPCs}";
+                var availableCharacters = string.Join(", ", interactableEntities.actors.Keys);
+                var feedback = $"Cannot speak to '{characterNameStr}' because they are not available for conversation. Available characters: {availableCharacters}";
                 Debug.LogWarning($"[{actor.Name}] {feedback}");
-                
                 lastActionFeedback = feedback;
                 shouldRetryAction = true;
             }
         }
         else
         {
-            var feedback = "TalkToNPC requires both 'npc_name' and 'message' parameters";
+            var feedback = "SpeakToCharacter requires both 'character_name' and 'message' parameters";
             Debug.LogWarning($"[{actor.Name}] {feedback}");
             lastActionFeedback = feedback;
             shouldRetryAction = true;
@@ -339,27 +349,78 @@ public class Brain
     /// </summary>
     private void HandlePickUpItem(Dictionary<string, object> parameters)
     {
-        var parametersText = parameters != null && parameters.Count > 0 
-            ? string.Join(", ", parameters.Values) 
+        var parametersText = parameters != null && parameters.Count > 0
+            ? string.Join(", ", parameters.Values)
             : "no parameters";
         Debug.Log($"[{actor.Name}] PickUpItem: {parametersText}");
+
         if (parameters.TryGetValue("item_name", out var itemName))
         {
             var itemNameStr = itemName.ToString();
             var interactableEntities = actor.sensor.GetInteractableEntities();
-            
+
             // 아이템이 상호작용 가능한지 확인 (SimpleKey로 검색)
             if (interactableEntities.items.ContainsKey(itemNameStr))
             {
-                // Item pickup logic implementation
-                Debug.Log($"[{actor.Name}] Picking up item: {itemNameStr}");
+                var targetItem = interactableEntities.items[itemNameStr];
+
+                // 현재 손과 인벤토리 상태 확인
+                bool canPickUp = false;
+                string pickupResult = "";
+
+                if (actor.HandItem == null)
+                {
+                    // 손이 비어있으면 바로 줍기
+                    canPickUp = true;
+                    pickupResult = "hand";
+                }
+                else if (actor.InventoryItems[0] == null)
+                {
+                    // 인벤토리 슬롯 1이 비어있으면 손에 있는 아이템을 인벤토리로 이동하고 새 아이템 줍기
+                    canPickUp = true;
+                    pickupResult = "inventory_slot_1";
+                }
+                else if (actor.InventoryItems[1] == null)
+                {
+                    // 인벤토리 슬롯 2가 비어있으면 손에 있는 아이템을 인벤토리로 이동하고 새 아이템 줍기
+                    canPickUp = true;
+                    pickupResult = "inventory_slot_2";
+                }
+                else
+                {
+                    // 모든 슬롯이 가득 찬 경우
+                    var feedback = $"Cannot pick up '{itemNameStr}' because both hand and inventory are full. Consider putting down an item first.";
+                    Debug.LogWarning($"[{actor.Name}] {feedback}");
+                    lastActionFeedback = feedback;
+                    shouldRetryAction = true;
+                    return;
+                }
+
+                if (canPickUp)
+                {
+                    // 아이템 줍기 시도
+                    if (actor.CanSaveItem(targetItem))
+                    {
+                        Debug.Log($"[{actor.Name}] Successfully picked up {itemNameStr} to {pickupResult}");
+
+                        // LocationService에서 아이템 제거 (이미 CanSaveItem에서 처리됨)
+                        // 추가적인 성공 피드백은 필요하지 않음
+                    }
+                    else
+                    {
+                        var feedback = $"Failed to pick up '{itemNameStr}' due to an unknown error.";
+                        Debug.LogWarning($"[{actor.Name}] {feedback}");
+                        lastActionFeedback = feedback;
+                        shouldRetryAction = true;
+                    }
+                }
             }
             else
             {
                 var availableItems = string.Join(", ", interactableEntities.items.Keys);
                 var feedback = $"Cannot pick up '{itemNameStr}' because it's not a pickable item. Available pickable items: {availableItems}";
                 Debug.LogWarning($"[{actor.Name}] {feedback}");
-                
+
                 lastActionFeedback = feedback;
                 shouldRetryAction = true;
             }
@@ -378,8 +439,8 @@ public class Brain
     /// </summary>
     private void HandleObserveEnvironment(Dictionary<string, object> parameters)
     {
-        var parametersText = parameters != null && parameters.Count > 0 
-            ? string.Join(", ", parameters.Values) 
+        var parametersText = parameters != null && parameters.Count > 0
+            ? string.Join(", ", parameters.Values)
             : "no parameters";
         Debug.Log($"[{actor.Name}] ObserveEnvironment: {parametersText}");
         actor.sensor.UpdateAllSensors();
@@ -390,8 +451,8 @@ public class Brain
     /// </summary>
     private void HandleWait(Dictionary<string, object> parameters)
     {
-        var parametersText = parameters != null && parameters.Count > 0 
-            ? string.Join(", ", parameters.Values) 
+        var parametersText = parameters != null && parameters.Count > 0
+            ? string.Join(", ", parameters.Values)
             : "no parameters";
         Debug.Log($"[{actor.Name}] Wait: {parametersText}");
         // Wait action - just log for now, could add actual waiting logic later
@@ -402,17 +463,17 @@ public class Brain
     /// </summary>
     private void HandlePerformActivity(Dictionary<string, object> parameters)
     {
-        var parametersText = parameters != null && parameters.Count > 0 
-            ? string.Join(", ", parameters.Values) 
+        var parametersText = parameters != null && parameters.Count > 0
+            ? string.Join(", ", parameters.Values)
             : "no parameters";
         Debug.Log($"[{actor.Name}] PerformActivity: {parametersText}");
-        
+
         if (parameters.TryGetValue("activity_name", out var activityNameObj))
         {
             string activityName = activityNameObj.ToString();
             string description = parameters.ContainsKey("description") ? parameters["description"].ToString() : "";
             float duration = parameters.ContainsKey("duration") ? float.Parse(parameters["duration"].ToString()) : 0f;
-            
+
             // Actor의 활동 시작
             actor.StartActivity(activityName, description, duration);
             Debug.Log($"[{actor.Name}] Started activity: {activityName} - {description} ({duration}s)");
@@ -420,6 +481,42 @@ public class Brain
         else
         {
             Debug.LogWarning($"[{actor.Name}] PerformActivity requires 'activity_name' parameter");
+        }
+    }
+
+    /// <summary>
+    /// Building interaction handler
+    /// </summary>
+    private void HandleEnterBuilding(Dictionary<string, object> parameters)
+    {
+        var parametersText = parameters != null && parameters.Count > 0
+            ? string.Join(", ", parameters.Values)
+            : "no parameters";
+        Debug.Log($"[{actor.Name}] EnterBuilding: {parametersText}");
+        if (parameters.TryGetValue("building_name", out var buildingNameObj))
+        {
+            var buildingName = buildingNameObj.ToString();
+            var interactableEntities = actor.sensor.GetInteractableEntities();
+            if (interactableEntities.buildings.ContainsKey(buildingName))
+            {
+                actor.Interact(buildingName);
+                Debug.Log($"[{actor.Name}] Entering building: {buildingName}");
+            }
+            else
+            {
+                var availableBuildings = string.Join(", ", interactableEntities.buildings.Keys);
+                var feedback = $"Cannot enter '{buildingName}' because it's not an enterable building. Available buildings: {availableBuildings}";
+                Debug.LogWarning($"[{actor.Name}] {feedback}");
+                lastActionFeedback = feedback;
+                shouldRetryAction = true;
+            }
+        }
+        else
+        {
+            var feedback = "EnterBuilding requires 'building_name' parameter";
+            Debug.LogWarning($"[{actor.Name}] {feedback}");
+            lastActionFeedback = feedback;
+            shouldRetryAction = true;
         }
     }
 
@@ -433,7 +530,7 @@ public class Brain
         // Actor의 toMovable 필드도 업데이트 (Sensor를 통해 직접 업데이트)
         var updatedMovablePositions = actor.sensor.GetMovablePositions();
         // Actor의 toMovable 필드를 업데이트하기 위해 reflection 사용
-        var toMovableField = typeof(Actor).GetField("toMovable", 
+        var toMovableField = typeof(Actor).GetField("toMovable",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         toMovableField?.SetValue(actor, updatedMovablePositions);
 
@@ -448,7 +545,7 @@ public class Brain
             interactableEntities,
             movablePositions
         );
-        
+
         // 현재 계획 정보 추가
         if (currentHierarchicalDayPlan != null)
         {
@@ -459,9 +556,20 @@ public class Brain
                 situation += $"\nCurrent Activity: {currentActivity.ActivityName}";
                 situation += $"\nTime: {currentActivity.StartTime} - {currentActivity.EndTime}";
                 situation += $"\nDescription: {currentActivity.Description}";
+
+                // 다음 단계 미리보기 추가
+                var nextActivities = GetNextActivities(3); // 다음 3개 활동 미리보기
+                if (nextActivities.Count > 0)
+                {
+                    situation += $"\n\n=== Next Steps Preview ===";
+                    foreach (var nextActivity in nextActivities)
+                    {
+                        situation += $"\n- {nextActivity.StartTime}: {nextActivity.ActivityName} ({nextActivity.Description})";
+                    }
+                }
             }
         }
-        
+
         // 피드백이 있으면 상황 설명에 추가
         if (!string.IsNullOrEmpty(lastActionFeedback))
         {
@@ -492,69 +600,59 @@ public class Brain
             // 재사용 가능한 GPT 인스턴스 사용 (이미 actorName이 설정됨)
             switch (selection.ActType)
             {
-                case ActionAgent.ActionType.MoveToArea:
+                case ActionType.MoveToArea:
                     var movableAreas = movablePositions.Keys.ToList();
                     var moveToAreaAgent = new MoveToAreaParameterAgent(movableAreas, gpt);
                     moveToAreaAgent.SetActorName(actor.Name);
                     paramResult = await moveToAreaAgent.GenerateParametersAsync(paramRequest);
                     break;
-                case ActionAgent.ActionType.MoveToEntity:
+                case ActionType.MoveToEntity:
                     var movableEntityList = movablePositions.Keys.ToList();
                     var moveToEntityAgent = new MoveToEntityParameterAgent(movableEntityList, gpt);
                     moveToEntityAgent.SetActorName(actor.Name);
                     paramResult = await moveToEntityAgent.GenerateParametersAsync(paramRequest);
                     break;
-                case ActionAgent.ActionType.InteractWithObject:
+                case ActionType.InteractWithObject:
                     var interactableObjects = interactableEntities.props.Keys.ToList();
                     var interactWithObjectAgent = new InteractWithObjectParameterAgent(interactableObjects, gpt);
                     interactWithObjectAgent.SetActorName(actor.Name);
                     paramResult = await interactWithObjectAgent.GenerateParametersAsync(paramRequest);
                     break;
-                case ActionAgent.ActionType.UseObject:
+                case ActionType.UseObject:
                     var usableObjects = interactableEntities.props.Keys.ToList();
                     var useObjectAgent = new UseObjectParameterAgent(usableObjects, "", "", gpt);
                     useObjectAgent.SetActorName(actor.Name);
                     paramResult = await useObjectAgent.GenerateParametersAsync(paramRequest);
                     break;
-                case ActionAgent.ActionType.PickUpItem:
+                case ActionType.PickUpItem:
                     var pickableItems = interactableEntities.items.Keys.ToList();
                     var pickUpItemAgent = new PickUpItemParameterAgent(pickableItems, "", "", gpt);
                     pickUpItemAgent.SetActorName(actor.Name);
                     paramResult = await pickUpItemAgent.GenerateParametersAsync(paramRequest);
                     break;
-                case ActionAgent.ActionType.TalkToNPC:
-                    var talkableNPCs = interactableEntities.actors.Keys.ToList();
-                    var talkAgent = new TalkParameterAgent(talkableNPCs, gpt);
+                case ActionType.SpeakToCharacter:
+                    var talkableCharacters = interactableEntities.actors.Keys.ToList();
+                    var talkAgent = new TalkParameterAgent(talkableCharacters, gpt);
                     talkAgent.SetActorName(actor.Name);
                     paramResult = await talkAgent.GenerateParametersAsync(paramRequest);
                     break;
-                case ActionAgent.ActionType.InteractWithNPC:
+                case ActionType.InteractWithNPC:
                     var interactableNPCs = interactableEntities.actors.Keys.ToList();
                     var interactWithNPCAgent = new InteractWithNPCParameterAgent(interactableNPCs, gpt);
                     interactWithNPCAgent.SetActorName(actor.Name);
                     paramResult = await interactWithNPCAgent.GenerateParametersAsync(paramRequest);
                     break;
-                case ActionAgent.ActionType.Wait:
+                case ActionType.Wait:
                     var waitAgent = new WaitParameterAgent(gpt);
                     waitAgent.SetActorName(actor.Name);
                     paramResult = await waitAgent.GenerateParametersAsync(paramRequest);
                     break;
-                case ActionAgent.ActionType.ScanArea:
-                    var scanAgent = new ScanAreaParameterAgent(gpt);
-                    scanAgent.SetActorName(actor.Name);
-                    paramResult = await scanAgent.GenerateParametersAsync(paramRequest);
-                    break;
-                case ActionAgent.ActionType.MoveAway:
-                    var moveAwayAgent = new MoveAwayParameterAgent(null, gpt);
-                    moveAwayAgent.SetActorName(actor.Name);
-                    paramResult = await moveAwayAgent.GenerateParametersAsync(paramRequest);
-                    break;
-                case ActionAgent.ActionType.PerformActivity:
+                case ActionType.PerformActivity:
                     var performActivityAgent = new PerformActivityParameterAgent(new List<string>(), gpt);
                     performActivityAgent.SetActorName(actor.Name);
                     paramResult = await performActivityAgent.GenerateParametersAsync(paramRequest);
                     break;
-                case ActionAgent.ActionType.EnterBuilding:
+                case ActionType.EnterBuilding:
                     var enterBuildingAgent = new EnterBuildingParameterAgent(new List<string>(), gpt);
                     enterBuildingAgent.SetActorName(actor.Name);
                     paramResult = await enterBuildingAgent.GenerateParametersAsync(paramRequest);
@@ -583,7 +681,7 @@ public class Brain
             Services.Get<IGameService>()?.PauseSimulation();
             return;
         }
-        if (paramResult.ActType == ActionAgent.ActionType.Unknown)
+        if (paramResult.ActType == ActionType.Unknown)
         {
             Debug.LogWarning($"[{actor.Name}] No ActType provided. Pausing simulation.");
             Services.Get<IGameService>()?.PauseSimulation();
@@ -594,10 +692,10 @@ public class Brain
             : "no parameters";
         Debug.Log($"[{actor.Name}] Executing action: {paramResult.ActType} -> {parametersText}");
         // For now, reuse ActionExecutor as before
-        await ExecuteAction(new ActionAgent.ActionReasoning
+        await ExecuteAction(new ActionReasoning
         {
             Thoughts = new List<string> { "(Refactored) Action selected and parameters generated by new agent structure." },
-            Action = new ActionAgent.AgentAction
+            Action = new AgentAction
             {
                 ActionType = paramResult.ActType,
                 Parameters = paramResult.Parameters
@@ -613,29 +711,29 @@ public class Brain
         // 재시도 횟수 제한
         int maxRetries = 3;
         int retryCount = 0;
-        
+
         while (retryCount < maxRetries)
         {
             // 피드백 초기화
             lastActionFeedback = "";
             shouldRetryAction = false;
-            
+
             var (selection, paramResult) = await Think();
             await Act(paramResult);
-            
+
             // 재시도가 필요하지 않으면 종료
             if (!shouldRetryAction)
             {
                 break;
             }
-            
+
             retryCount++;
             Debug.Log($"[{actor.Name}] Action failed, retrying... (Attempt {retryCount}/{maxRetries})");
-            
+
             // 잠시 대기 후 재시도
             await System.Threading.Tasks.Task.Delay(1000); // 1초 대기
         }
-        
+
         if (retryCount >= maxRetries)
         {
             Debug.LogWarning($"[{actor.Name}] Max retries reached. Giving up on action.");
@@ -672,21 +770,21 @@ public class Brain
 
         // 3. Generate a new plan
         Debug.Log($"[{actor.Name}] Generating a new hierarchical plan...");
-        
+
         // Collect current situation information
         actor.sensor.UpdateAllSensors();
-        
+
         // API 호출 시작 (시간 자동 정지)
         timeService.StartAPICall();
-        
+
         try
         {
             // Create a hierarchical day plan through HierarchicalPlanner (Stanford Generative Agent style)
             var hierarchicalDayPlan = await hierarchicalPlanner.CreateHierarchicalPlanAsync(currentTime);
-            
+
             // Store the hierarchical plan in memory
             StoreHierarchicalDayPlan(hierarchicalDayPlan);
-            
+
             Debug.Log($"[{actor.Name}] Today's hierarchical schedule planned successfully");
         }
         finally
@@ -705,7 +803,7 @@ public class Brain
     {
         currentHierarchicalDayPlan = hierarchicalDayPlan;
         Debug.Log($"[{actor.Name}] Hierarchical day plan stored: {hierarchicalDayPlan.Summary}");
-        
+
         // Save to JSON file for the current date
         var timeService = Services.Get<ITimeService>();
         var currentTime = timeService.CurrentTime;
@@ -722,7 +820,7 @@ public class Brain
             // 캐릭터별 디렉토리 생성
             string baseDirectoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "HierarchicalDayPlans");
             string characterDirectoryPath = Path.Combine(baseDirectoryPath, actor.Name);
-            
+
             // 기본 디렉토리와 캐릭터별 디렉토리 모두 생성
             if (!Directory.Exists(baseDirectoryPath))
             {
@@ -824,7 +922,7 @@ public class Brain
         {
             string baseDirectoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "HierarchicalDayPlans");
             string characterDirectoryPath = Path.Combine(baseDirectoryPath, actor.Name);
-            
+
             if (!Directory.Exists(characterDirectoryPath))
             {
                 Debug.Log($"[Brain] {actor.Name}: No saved plan files. (Directory not found)");
@@ -832,7 +930,7 @@ public class Brain
             }
 
             string[] files = Directory.GetFiles(characterDirectoryPath, "*.json");
-            
+
             if (files.Length == 0)
             {
                 Debug.Log($"[Brain] {actor.Name}: No saved plan files.");
@@ -881,6 +979,38 @@ public class Brain
         }
 
         return hierarchicalPlanner.GetCurrentDetailedActivity(currentHierarchicalDayPlan);
+    }
+
+    /// <summary>
+    /// Get the next N activities from the current time
+    /// </summary>
+    public List<DetailedPlannerAgent.DetailedActivity> GetNextActivities(int count = 3)
+    {
+        if (currentHierarchicalDayPlan == null)
+        {
+            return new List<DetailedPlannerAgent.DetailedActivity>();
+        }
+
+        var timeService = Services.Get<ITimeService>();
+        var currentTime = timeService.CurrentTime;
+        var currentTimeString = $"{currentTime.hour:D2}:{currentTime.minute:D2}";
+
+        var nextActivities = new List<DetailedPlannerAgent.DetailedActivity>();
+
+        foreach (var activity in currentHierarchicalDayPlan.DetailedActivities)
+        {
+            // 현재 시간보다 늦은 활동들만 필터링
+            if (string.Compare(activity.StartTime, currentTimeString) > 0)
+            {
+                nextActivities.Add(activity);
+                if (nextActivities.Count >= count)
+                {
+                    break;
+                }
+            }
+        }
+
+        return nextActivities;
     }
 
     /// <summary>
@@ -967,7 +1097,7 @@ public class Brain
         var currentDate = new System.DateTime(time.year, time.month, time.day);
         var daysDiff = (currentDate - startDate).Days;
         var dayOfWeek = (daysDiff % 7);
-        
+
         string[] days = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
         return days[dayOfWeek];
     }
@@ -1015,6 +1145,32 @@ public class Brain
             $"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({actor.Sleepiness})"
         );
 
+        // Add current item status
+        sb.AppendLine("\n=== Your Current Items ===");
+        if (actor.HandItem != null)
+        {
+            sb.AppendLine($"Hand: {actor.HandItem.Name}");
+        }
+        else
+        {
+            sb.AppendLine("Hand: Empty");
+        }
+
+        // Add inventory status
+        var inventoryItems = new List<string>();
+        for (int i = 0; i < actor.InventoryItems.Length; i++)
+        {
+            if (actor.InventoryItems[i] != null)
+            {
+                inventoryItems.Add($"Slot {i + 1}: {actor.InventoryItems[i].Name}");
+            }
+            else
+            {
+                inventoryItems.Add($"Slot {i + 1}: Empty");
+            }
+        }
+        sb.AppendLine($"Inventory: {string.Join(", ", inventoryItems)}");
+
         // Add character's memory information
         var memorySummary = memoryManager.GetMemorySummary();
         sb.AppendLine("\n=== Your Memories ===");
@@ -1026,7 +1182,12 @@ public class Brain
             sb.AppendLine("Lookable entities nearby:");
             foreach (var kvp in lookable)
             {
-                sb.AppendLine($"- {kvp.Key}");
+                var entity = kvp.Value;
+                var status = entity.GetStatusDescription();
+                if (!string.IsNullOrEmpty(status))
+                    sb.AppendLine($"- {kvp.Key} ({status})");
+                else
+                    sb.AppendLine($"- {kvp.Key}");
             }
         }
 
@@ -1103,7 +1264,7 @@ public class Brain
         return sb.ToString();
     }
 
-    private async UniTask ExecuteAction(ActionAgent.ActionReasoning reasoning)
+    private async UniTask ExecuteAction(ActionReasoning reasoning)
     {
         // Execute action
         var result = await actionExecutor.ExecuteActionAsync(reasoning);
