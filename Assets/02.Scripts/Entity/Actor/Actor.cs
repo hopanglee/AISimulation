@@ -51,6 +51,9 @@ public abstract class Actor : Entity, ILocationAware
     [Header("Sleep System")]
     [SerializeField, Range(0, 23)]
     private int wakeUpHour = 6; // 기상 시간
+    public int WakeUpHour => wakeUpHour;
+    public int wakeUpMinute = 0;
+    private bool hasAwokenToday = false;
 
     [SerializeField, Range(0, 23)]
     private int sleepHour = 22; // 취침 시간
@@ -68,7 +71,6 @@ public abstract class Actor : Entity, ILocationAware
     private GameTime wakeUpTime;
 
     public bool IsSleeping => isSleeping;
-    public int WakeUpHour => wakeUpHour;
     public int SleepHour => sleepHour;
     public int SleepinessThreshold => sleepinessThreshold;
     #endregion
@@ -77,13 +79,13 @@ public abstract class Actor : Entity, ILocationAware
     [Header("Activity System")]
     [SerializeField]
     private string currentActivity = "Idle"; // 현재 수행 중인 활동
-    
+
     [SerializeField]
     private string activityDescription = ""; // 활동에 대한 상세 설명
-    
+
     [SerializeField]
     private float activityStartTime = 0f; // 활동 시작 시간
-    
+
     [SerializeField]
     private float activityDuration = 0f; // 활동 지속 시간
 
@@ -117,12 +119,14 @@ public abstract class Actor : Entity, ILocationAware
         set { _inventoryItems = value; }
     }
     public Inven Inven;
-    
+
     /// <summary>
     /// Actor에게 발생한 이벤트들의 기록
     /// </summary>
     private List<string> _eventHistory = new();
     #endregion
+
+    private ITimeService timeService;
 
     protected override void Awake()
     {
@@ -130,6 +134,19 @@ public abstract class Actor : Entity, ILocationAware
         moveController = GetComponent<MoveController>();
         brain = new(this);
         sensor = new(this);
+    }
+
+    private void OnEnable()
+    {
+        timeService = Services.Get<ITimeService>();
+        if (timeService != null)
+            timeService.SubscribeToTimeEvent(OnSimulationTimeChanged);
+    }
+
+    private void OnDisable()
+    {
+        if (timeService != null)
+            timeService.UnsubscribeFromTimeEvent(OnSimulationTimeChanged);
     }
 
     #region Update Function
@@ -221,13 +238,13 @@ public abstract class Actor : Entity, ILocationAware
             interactable.props[blockKey].Interact(this);
             return;
         }
-        
+
         else if (interactable.buildings.ContainsKey(blockKey))
         {
             interactable.buildings[blockKey].Interact(this);
             return;
         }
-        
+
         Debug.LogWarning($"[{Name}] Cannot interact with '{blockKey}'. Available props: {string.Join(", ", interactable.props.Keys)}, Available buildings: {string.Join(", ", interactable.buildings.Keys)}");
     }
 
@@ -472,7 +489,7 @@ public abstract class Actor : Entity, ILocationAware
         activityDescription = description;
         activityStartTime = Time.time;
         activityDuration = duration;
-        
+
         Debug.Log($"[{Name}] Started activity: {activityName} - {description}");
     }
 
@@ -498,7 +515,7 @@ public abstract class Actor : Entity, ILocationAware
     {
         if (!IsPerformingActivity || activityDuration <= 0f)
             return false;
-            
+
         return Time.time - activityStartTime >= activityDuration;
     }
 
@@ -509,7 +526,7 @@ public abstract class Actor : Entity, ILocationAware
     {
         if (!IsPerformingActivity || activityDuration <= 0f)
             return 0f;
-            
+
         float elapsed = Time.time - activityStartTime;
         return Mathf.Clamp01(elapsed / activityDuration);
     }
@@ -552,5 +569,22 @@ public abstract class Actor : Entity, ILocationAware
     private void TestSpeakToCharacter()
     {
         ShowSpeech("(테스트) 안녕하세요! 이것은 SpeakToCharacter 테스트입니다.");
+    }
+
+
+
+    public void OnSimulationTimeChanged(GameTime currentTime)
+    {
+        if (!hasAwokenToday && currentTime.hour == wakeUpHour && currentTime.minute == wakeUpMinute)
+        {
+            hasAwokenToday = true;
+            Debug.Log($"[{Name}] 기상! DayPlan 및 Think 시작");
+            brain.StartDayPlanAndThink();
+        }
+        // 자정에 플래그 리셋
+        if (currentTime.hour == 0 && currentTime.minute == 0)
+        {
+            hasAwokenToday = false;
+        }
     }
 }

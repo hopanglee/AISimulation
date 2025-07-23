@@ -237,20 +237,10 @@ public class GameService : MonoBehaviour, IGameService
     /// </summary>
     private void OnTimeChanged(GameTime newTime)
     {
-        // 모든 Actor의 수면 상태 체크
-        foreach (var actor in allActors)
-        {
-            if (actor != null)
-            {
-                actor.CheckSleepStatus();
-                actor.CheckSleepNeed();
-            }
-        }
-
-        // 6시에 DayPlan 실행 체크
-        CheckAndExecuteDayPlan(newTime);
-
-        Debug.Log($"[GameService] Time changed to {newTime}");
+        // foreach (var actor in allActors)
+        // {
+        //     actor.OnSimulationTimeChanged(newTime);
+        // }
     }
 
     /// <summary>
