@@ -312,6 +312,7 @@ public abstract class Actor : Entity, ILocationAware
 
     public void Talk(Actor target, string text)
     {
+        ShowSpeech(text);
         target.Hear(this, text);
     }
     #endregion

@@ -54,12 +54,12 @@ public interface ITimeService : IService
     /// 시간 범위 내에 있는지 확인
     /// </summary>
     bool IsTimeBetween(int startHour, int startMinute, int endHour, int endMinute);
-    
+
     /// <summary>
     /// API 호출 시작 (시간 자동 정지)
     /// </summary>
     void StartAPICall();
-    
+
     /// <summary>
     /// API 호출 종료 (모든 Actor가 완료되면 시간 재개)
     /// </summary>
@@ -237,7 +237,7 @@ public class TimeManager : ITimeService
 
     private float accumulatedTime = 0f;
     private Action<GameTime> onTimeChanged;
-    
+
     // API 호출 중인 Actor 수 추적
     private int apiCallingActorCount = 0;
     private bool wasTimeFlowingBeforeAPI = false;
@@ -316,9 +316,10 @@ public class TimeManager : ITimeService
     /// </summary>
     public void UpdateTime(float deltaTime)
     {
+       // Debug.Log($"[TimeManager] UpdateTime");
         if (!isTimeFlowing)
             return;
-
+        //Debug.Log($"[TimeManager] UpdateTime: {currentTime}");
         // 시간 누적
         accumulatedTime += deltaTime * timeScale;
 
@@ -391,14 +392,14 @@ public class TimeManager : ITimeService
             return current >= startTime || current <= endTime;
         }
     }
-    
+
     /// <summary>
     /// API 호출 시작 (시간 자동 정지)
     /// </summary>
     public void StartAPICall()
     {
         apiCallingActorCount++;
-        
+
         // 첫 번째 API 호출이면 시간 정지
         if (apiCallingActorCount == 1)
         {
@@ -409,10 +410,10 @@ public class TimeManager : ITimeService
                 Debug.Log($"[TimeManager] Time paused for API call (Actor count: {apiCallingActorCount})");
             }
         }
-        
+
         Debug.Log($"[TimeManager] API call started (Actor count: {apiCallingActorCount})");
     }
-    
+
     /// <summary>
     /// API 호출 종료 (모든 Actor가 완료되면 시간 재개)
     /// </summary>
@@ -423,10 +424,10 @@ public class TimeManager : ITimeService
             Debug.LogWarning("[TimeManager] EndAPICall called but no API calls are active!");
             return;
         }
-        
+
         apiCallingActorCount--;
         Debug.Log($"[TimeManager] API call ended (Actor count: {apiCallingActorCount})");
-        
+
         // 모든 Actor의 API 호출이 완료되면 시간 재개
         if (apiCallingActorCount == 0 && wasTimeFlowingBeforeAPI)
         {
