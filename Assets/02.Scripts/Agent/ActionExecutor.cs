@@ -1,55 +1,32 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
-/// ActionAgent가 결정한 액션을 실제로 실행하는 클래스 (MonoBehaviour 아님)
+/// 액션 실행을 담당하는 클래스
 /// </summary>
 public class ActionExecutor
 {
-    private readonly Dictionary<ActionType, Action<Dictionary<string, object>>> actionHandlers = new();
-    private readonly bool enableLogging;
-    private readonly float actionDelay;
-
-    public ActionExecutor(bool enableLogging = true, float actionDelay = 0.5f)
-    {
-        this.enableLogging = enableLogging;
-        this.actionDelay = actionDelay;
-    }
+    private Dictionary<ActionType, Func<Dictionary<string, object>, Task>> actionHandlers = new();
+    private float actionDelay = 5f; // 기본 5초 딜레이
 
     /// <summary>
-    /// 외부에서 액션 핸들러를 등록할 수 있도록 함
+    /// 액션 핸들러를 등록합니다.
     /// </summary>
     public void RegisterHandler(
         ActionType actionType,
-        Action<Dictionary<string, object>> handler
+        Func<Dictionary<string, object>, Task> handler
     )
     {
         actionHandlers[actionType] = handler;
     }
 
     /// <summary>
-    /// 외부에서 액션 핸들러를 제거할 수 있도록 함
+    /// 액션을 실행합니다.
     /// </summary>
-    public void UnregisterHandler(ActionType actionType)
-    {
-        actionHandlers.Remove(actionType);
-    }
-
-    /// <summary>
-    /// 모든 핸들러를 초기화(제거)
-    /// </summary>
-    public void ResetHandlers()
-    {
-        actionHandlers.Clear();
-    }
-
-    /// <summary>
-    /// ActionReasoning을 받아서 실제 액션을 실행
-    /// </summary>
-    public async System.Threading.Tasks.Task<ActionExecutionResult> ExecuteActionAsync(
-        ActionReasoning reasoning
-    )
+    public async Task<ActionExecutionResult> ExecuteActionAsync(ActionReasoning reasoning)
     {
         if (reasoning?.Action == null)
             return Fail("No action provided");
@@ -57,14 +34,12 @@ public class ActionExecutor
         var action = reasoning.Action;
         Log($"Executing action: {action.ActionType}");
 
-        if (actionDelay > 0)
-            await System.Threading.Tasks.Task.Delay((int)(actionDelay * 1000));
-
         if (actionHandlers.TryGetValue(action.ActionType, out var handler))
         {
             try
             {
-                handler(action.Parameters);
+                // 핸들러 실행을 await로 기다림
+                await handler(action.Parameters);
                 return Success($"Action {action.ActionType} executed successfully");
             }
             catch (Exception ex)
@@ -75,24 +50,38 @@ public class ActionExecutor
         return Fail($"Action handler not found: {action.ActionType}");
     }
 
-    private void Log(string msg)
+    private void Log(string message)
     {
-        if (enableLogging)
-            Debug.Log($"[ActionExecutor] {msg}");
+        Debug.Log($"[ActionExecutor] {message}");
     }
 
-    private ActionExecutionResult Success(string msg) => new() { Success = true, Message = msg };
-
-    private ActionExecutionResult Fail(string msg)
+    private ActionExecutionResult Success(string message, string feedback = null, object data = null)
     {
-        Log(msg);
-        return new() { Success = false, Message = msg };
+        Log($"Success: {message}");
+        return new ActionExecutionResult 
+        { 
+            Success = true, 
+            Message = message,
+            Feedback = feedback ?? $"Action completed successfully: {message}",
+            Data = data,
+            ShouldRetry = false
+        };
+    }
+
+    private ActionExecutionResult Fail(string message, string feedback = null, bool shouldRetry = false, object data = null)
+    {
+        Log($"Failed: {message}");
+        return new ActionExecutionResult 
+        { 
+            Success = false, 
+            Message = message,
+            Feedback = feedback ?? $"Action failed: {message}",
+            Data = data,
+            ShouldRetry = shouldRetry
+        };
     }
 }
 
-/// <summary>
-/// 액션 실행 결과를 담는 클래스
-/// </summary>
 public class ActionExecutionResult
 {
     public bool Success { get; set; }
