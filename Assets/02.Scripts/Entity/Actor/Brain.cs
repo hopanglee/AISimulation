@@ -67,7 +67,7 @@ public class Brain
     /// DayPlan 생성 및 Think/Act 루프를 시작합니다.
     /// </summary>
     public void StartDayPlanAndThink()
-    {
+        {
         _ = StartDayPlanAndThinkAsync();
     }
 
@@ -84,7 +84,7 @@ public class Brain
     /// DayPlan 생성을 시작합니다.
     /// </summary>
     private async UniTask StartDayPlan()
-    {
+            {
         Debug.Log($"[{actor.Name}] DayPlan 시작");
         await dayPlanner.PlanToday();
     }
@@ -93,24 +93,50 @@ public class Brain
     /// 외부 이벤트가 발생했을 때 호출됩니다.
     /// </summary>
     public void OnExternalEvent()
-    {
+            {
         thinker.OnExternalEvent();
     }
 
     /// <summary>
     /// Think 프로세스를 실행합니다.
     /// 현재 상황을 분석하고 다음 행동을 결정합니다.
+    /// 빌딩에 있을 때는 빌딩 Agent의 Think를 사용합니다.
     /// </summary>
     public async UniTask<(ActSelectorAgent.ActSelectionResult, ActParameterResult)> Think()
     {
         try
         {
-            // 상황 설명 생성
+            // 빌딩에 있는지 확인
+            var buildingAgent = GetCurrentBuildingAgent();
+            if (buildingAgent != null)
+            {
+                // 빌딩 Agent의 Think 사용
+                var buildingAction = await buildingAgent.Think(CancellationToken.None);
+                
+                // BuildingAction을 ActSelectionResult로 변환
+                var buildingSelection = new ActSelectorAgent.ActSelectionResult
+                {
+                    ActType = ActionType.EnterBuilding, // 빌딩 내부 행동은 EnterBuilding으로 처리
+                    Reasoning = buildingAction.reasoning,
+                    Intention = buildingAction.reasoning
+                };
+                
+                // BuildingAction을 ActParameterResult로 변환
+                var buildingParamResult = new ActParameterResult
+                {
+                    ActType = ActionType.EnterBuilding,
+                    Parameters = buildingAction.parameters ?? new Dictionary<string, object>()
+                };
+                
+                return (buildingSelection, buildingParamResult);
+            }
+            
+            // 일반적인 Think 프로세스 (빌딩 밖에 있을 때)
             var situationDescription = GenerateSituationDescription();
             
             // ActSelectorAgent를 통해 행동 선택
             var selection = await actSelectorAgent.SelectActAsync(situationDescription);
-            
+
             // 선택된 행동에 대한 파라미터 생성
             var paramResult = await GenerateActionParameters(selection);
             
@@ -125,12 +151,41 @@ public class Brain
 
     /// <summary>
     /// 선택된 행동을 실행합니다.
+    /// 빌딩에 있을 때는 빌딩 Agent의 Act를 사용합니다.
     /// </summary>
     public async UniTask Act(ActParameterResult paramResult, CancellationToken token)
     {
         try
         {
-            // AgentAction으로 변환
+            // 빌딩에 있는지 확인
+            var buildingAgent = GetCurrentBuildingAgent();
+            if (buildingAgent != null && paramResult.ActType == ActionType.EnterBuilding)
+            {
+                // 빌딩 Agent의 Act 사용
+                var buildingAction = new BuildingAction(
+                    paramResult.Parameters.ContainsKey("actionType") ? paramResult.Parameters["actionType"].ToString() : "sit_at_table",
+                    paramResult.Parameters.ContainsKey("reasoning") ? paramResult.Parameters["reasoning"].ToString() : "Default action",
+                    paramResult.Parameters,
+                    paramResult.Parameters.ContainsKey("shouldExit") && (bool)paramResult.Parameters["shouldExit"]
+                );
+                
+                await buildingAgent.Act(buildingAction, token);
+                
+                // 빌딩에서 나가야 하는지 확인
+                if (buildingAction.shouldExit)
+                {
+                    // 빌딩에서 나가기
+                    var currentBuilding = GetCurrentBuilding();
+                    if (currentBuilding != null)
+                    {
+                        currentBuilding.ExitBuilding(actor);
+                    }
+                }
+                
+                return;
+            }
+            
+            // 일반적인 Act 프로세스 (빌딩 밖에 있을 때)
             var action = new AgentAction
             {
                 ActionType = paramResult.ActType,
@@ -148,10 +203,44 @@ public class Brain
     }
 
     /// <summary>
+    /// 현재 Actor가 있는 빌딩의 Agent를 가져옵니다.
+    /// </summary>
+    private BuildingActionAgentBase GetCurrentBuildingAgent()
+    {
+        var currentBuilding = GetCurrentBuilding();
+        return currentBuilding?.GetActorAgent(actor.Name);
+    }
+
+    /// <summary>
+    /// 현재 Actor가 있는 빌딩을 가져옵니다.
+    /// </summary>
+    private Building GetCurrentBuilding()
+    {
+        // Actor가 현재 위치한 빌딩을 찾기
+        var locationService = Services.Get<ILocationService>();
+        var currentArea = locationService.GetArea(actor.curLocation);
+        
+        if (currentArea != null)
+        {
+            // 현재 영역에서 빌딩 찾기 (FindObjectsOfType 사용)
+            var buildings = UnityEngine.Object.FindObjectsOfType<Building>();
+            foreach (var building in buildings)
+            {
+                if (building.GetCurrentActors().Contains(actor.Name))
+                {
+                    return building;
+                }
+            }
+        }
+        
+        return null;
+    }
+
+    /// <summary>
     /// 선택된 행동에 대한 파라미터를 생성합니다.
     /// </summary>
     private async UniTask<ActParameterResult> GenerateActionParameters(ActSelectorAgent.ActSelectionResult selection)
-    {
+                {
         if (parameterAgents.TryGetValue(selection.ActType, out var parameterAgent))
         {
             var request = new ActParameterRequest
@@ -177,7 +266,7 @@ public class Brain
     /// 현재 상황에 대한 설명을 생성합니다.
     /// </summary>
     private string GenerateSituationDescription()
-    {
+            {
         var sb = new System.Text.StringBuilder();
 
         // 시간 정보
@@ -195,7 +284,7 @@ public class Brain
         // 아이템 상태
         sb.AppendLine("\n=== Your Current Items ===");
         if (actor.HandItem != null)
-        {
+    {
             sb.AppendLine($"Hand: {actor.HandItem.Name}");
         }
         else
@@ -208,7 +297,7 @@ public class Brain
         for (int i = 0; i < actor.InventoryItems.Length; i++)
         {
             if (actor.InventoryItems[i] != null)
-            {
+    {
                 inventoryItems.Add($"Slot {i + 1}: {actor.InventoryItems[i].Name}");
             }
             else
@@ -232,10 +321,10 @@ public class Brain
         {
             sb.AppendLine("\n=== Lookable Entities ===");
             foreach (var entity in lookable)
-            {
+        {
                 sb.AppendLine($"- {entity.Key}: {entity.Value.GetStatusDescription()}");
-            }
         }
+    }
 
         // Interactable entities are organized by type
         var allInteractable = new List<(string, string)>();
@@ -244,15 +333,15 @@ public class Brain
             allInteractable.Add((actor.Key, $"Actor: {actor.Value.Name}"));
         }
         foreach (var item in interactable.items)
-        {
+            {
             allInteractable.Add((item.Key, $"Item: {item.Value.Name}"));
-        }
+            }
         foreach (var building in interactable.buildings)
         {
             allInteractable.Add((building.Key, $"Building: {building.Value.Name}"));
         }
         foreach (var prop in interactable.props)
-        {
+    {
             allInteractable.Add((prop.Key, $"Prop: {prop.Value.Name}"));
         }
 
@@ -266,13 +355,13 @@ public class Brain
         }
 
         if (movable.Count > 0)
-        {
+            {
             sb.AppendLine("\n=== Movable Positions ===");
             foreach (var position in movable)
             {
                 sb.AppendLine($"- {position.Key}");
-            }
         }
+    }
 
         return sb.ToString();
     }
@@ -339,7 +428,7 @@ public class Brain
     /// 로깅 활성화 여부를 설정합니다.
     /// </summary>
     public void SetLoggingEnabled(bool enabled)
-    {
+        {
         // GPT 로깅 설정
         if (gpt != null)
         {
