@@ -158,13 +158,14 @@ public class GPT
             using (var stream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
             using (var writer = new StreamWriter(stream, System.Text.Encoding.UTF8))
             {
-                writer.WriteLine(logContent.ToString());
+                await writer.WriteAsync(logContent.ToString());
             }
-            Debug.Log($"[GPT] Conversation log saved (appended): {filePath}");
+
+            Debug.Log($"[GPT] Conversation log saved to: {filePath}");
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[GPT] Error saving conversation log: {ex.Message}");
+            Debug.LogError($"[GPT] Failed to save conversation log: {ex.Message}");
         }
     }
 

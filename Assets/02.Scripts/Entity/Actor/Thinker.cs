@@ -48,11 +48,11 @@ public class Thinker
         {
             while (!token.IsCancellationRequested)
             {
-                // 1. Think - 행동 선택
+                // 1. Think - 행동 선택 (빌딩에 있으면 빌딩 Agent 사용)
                 var (selection, paramResult) = await brain.Think();
                 token.ThrowIfCancellationRequested();
                 
-                // 2. Act - 선택한 행동 실행
+                // 2. Act - 선택한 행동 실행 (빌딩에 있으면 빌딩 Agent 사용)
                 await brain.Act(paramResult, token);
                 token.ThrowIfCancellationRequested();
                 
