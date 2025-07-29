@@ -108,7 +108,7 @@ public class Brain
             // 상황 설명 생성
             var situationDescription = GenerateSituationDescription();
             
-            // ActSelectorAgent를 통해 행동 선택
+            // ActSelectorAgent를 통해 행동 선택 (Tool을 통해 동적으로 액션 정보 제공)
             var selection = await actSelectorAgent.SelectActAsync(situationDescription);
             
             // 선택된 행동에 대한 파라미터 생성

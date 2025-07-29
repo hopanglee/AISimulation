@@ -119,12 +119,6 @@ public class ActionPerformer
             async (parameters) => await HandleInteractWithNPC(parameters)
         );
 
-        // Building interaction handlers
-        actionExecutor.RegisterHandler(
-            ActionType.EnterBuilding,
-            async (parameters) => await HandleEnterBuilding(parameters)
-        );
-
         // Wait and observation handlers
         actionExecutor.RegisterHandler(
             ActionType.Wait,
@@ -138,23 +132,36 @@ public class ActionPerformer
     }
 
     /// <summary>
-    /// 특정 영역으로 이동하는 액션을 처리합니다.
+    /// 특정 영역이나 건물로 이동하는 액션을 처리합니다.
     /// </summary>
     private async Task HandleMoveToArea(Dictionary<string, object> parameters)
     {
         if (parameters.TryGetValue("area_name", out var areaNameObj) && areaNameObj is string areaName)
         {
-            Debug.Log($"[{actor.Name}] 영역으로 이동: {areaName}");
+            Debug.Log($"[{actor.Name}] 영역/건물로 이동: {areaName}");
             
-            var locationService = Services.Get<ILocationService>();
-            var area = locationService.GetArea(actor.curLocation);
-            if (area != null)
+            // 먼저 현재 Area에서 이동 가능한 위치들을 확인
+            var movablePositions = actor.sensor.GetMovablePositions();
+            
+            if (movablePositions.ContainsKey(areaName))
             {
-                ExecutePathfindingMove(areaName);
+                // 직접 이동 가능한 위치 (Area, Building, Prop 등)
+                actor.Move(areaName);
+                Debug.Log($"[{actor.Name}] {areaName}로 직접 이동");
             }
             else
             {
-                Debug.LogWarning($"[{actor.Name}] Area를 찾을 수 없음: {areaName}");
+                // 경로찾기를 통한 이동 (연결된 Area로)
+                var locationService = Services.Get<ILocationService>();
+                var area = locationService.GetArea(actor.curLocation);
+                if (area != null)
+                {
+                    ExecutePathfindingMove(areaName);
+                }
+                else
+                {
+                    Debug.LogWarning($"[{actor.Name}] Area를 찾을 수 없음: {areaName}");
+                }
             }
         }
         await Task.Delay(5000); // 임시 5초 딜레이
@@ -313,30 +320,6 @@ public class ActionPerformer
             else
             {
                 Debug.LogWarning($"[{actor.Name}] NPC를 찾을 수 없음: {npcName}");
-            }
-        }
-        await Task.Delay(5000); // 임시 5초 딜레이
-    }
-
-    /// <summary>
-    /// 건물에 들어가는 액션을 처리합니다.
-    /// </summary>
-    private async Task HandleEnterBuilding(Dictionary<string, object> parameters)
-    {
-        if (parameters.TryGetValue("building_name", out var buildingNameObj) && buildingNameObj is string buildingName)
-        {
-            Debug.Log($"[{actor.Name}] 건물 입장: {buildingName}");
-            
-            var interactableEntities = actor.sensor.GetInteractableEntities();
-            if (interactableEntities.buildings.ContainsKey(buildingName))
-            {
-                var building = interactableEntities.buildings[buildingName];
-                var result = building.Interact(actor);
-                Debug.Log($"[{actor.Name}] {building.Name} 입장: {result}");
-            }
-            else
-            {
-                Debug.LogWarning($"[{actor.Name}] 건물을 찾을 수 없음: {buildingName}");
             }
         }
         await Task.Delay(5000); // 임시 5초 딜레이

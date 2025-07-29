@@ -1,0 +1,31 @@
+{
+  "name": "UseObject",
+  "displayName": "Use Object",
+  "description": "Use or operate an object in the simulation world.",
+  "usage": "Use this action when you want to interact with an object to perform a specific function.",
+  "parameters": [
+    {
+      "name": "object_name",
+      "type": "string",
+      "description": "The name of the object to use",
+      "required": true
+    }
+  ],
+  "examples": [
+    "Using a phone to make a call",
+    "Using a computer to check emails",
+    "Using a kitchen appliance to cook",
+    "Using furniture to sit or rest"
+  ],
+  "requirements": [
+    "Object must be nearby and interactable",
+    "Object must be included in the available interactable entities"
+  ],
+  "whenToUse": [
+    "Need to perform a task with an object",
+    "Want to operate a device or appliance",
+    "Need to use furniture for its intended purpose",
+    "Want to interact with interactive objects"
+  ],
+  "category": "interaction"
+} 

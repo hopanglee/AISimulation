@@ -36,7 +36,7 @@ namespace Agent
                                 ""area_name"": {{
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(movableAreas)},
-                                    ""description"": ""One of the available locations to move to""
+                                    ""description"": ""One of the available locations to move to (Areas or Buildings)""
                                 }}
                             }},
                             ""required"": [""area_name""]

@@ -1,0 +1,37 @@
+{
+  "name": "SpeakToCharacter",
+  "displayName": "Speak to Character",
+  "description": "Talk to another character in the simulation world.",
+  "usage": "Use this action when you want to communicate with another character.",
+  "parameters": [
+    {
+      "name": "character_name",
+      "type": "string",
+      "description": "The name of the character to talk to",
+      "required": true
+    },
+    {
+      "name": "message",
+      "type": "string",
+      "description": "The message to say to the character",
+      "required": true
+    }
+  ],
+  "examples": [
+    "Greeting someone: \"Good morning!\"",
+    "Asking a question: \"How are you today?\"",
+    "Making a request: \"Can you help me with this?\""
+  ],
+  "requirements": [
+    "Target character must be nearby and interactable",
+    "Character must be included in the available interactable entities"
+  ],
+  "whenToUse": [
+    "Want to greet someone",
+    "Need to ask for information",
+    "Want to have a conversation",
+    "Need to coordinate with others",
+    "Want to express thoughts or feelings"
+  ],
+  "category": "social"
+} 
