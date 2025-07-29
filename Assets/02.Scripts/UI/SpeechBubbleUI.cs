@@ -6,41 +6,100 @@ using DG.Tweening;
 
 public class SpeechBubbleUI : MonoBehaviour
 {
-    public RectTransform rectTransform;
-    public TMP_Text speechText; // 또는 TMP_Text
-    public Transform targetWorld; // Actor의 머리 Transform
-    public Image backgroundImage; // 말풍선 배경
+    public TMP_Text speechText;
+    public Image backgroundImage;
 
-    private Camera mainCam;
+    [Header("Speech Bubble Style")]
+    public Color speechBgColor = Color.black;
+    public Color speechTextColor = Color.white;
 
-    void Awake()
+    private Coroutine hideCoroutine;
+    private Sequence fadeSequence;
+    private Camera mainCamera;
+    private Canvas canvas;
+    private Transform canvasParent;
+
+    private void Awake()
     {
-        mainCam = Camera.main;
+        // 초기 상태는 숨김
+        gameObject.SetActive(false);
+        
+        // 기본 스타일 설정
+        SetStyle(speechBgColor, speechTextColor);
+        
+        // 메인 카메라 찾기
+        mainCamera = Camera.main;
+        
+        // Canvas와 그 부모 찾기
+        canvas = GetComponent<Canvas>();
+        if (canvas != null)
+        {
+            canvasParent = canvas.transform.parent;
+            
+            // Canvas 설정
+            SetupCanvas();
+        }
     }
 
-    void Update()
+    private void SetupCanvas()
     {
-        if (targetWorld != null)
+       
+    }
+
+    private void LateUpdate()
+    {
+        // Canvas의 부모를 카메라에 항상 직각으로 보이도록 회전 조정
+        if (mainCamera != null && canvasParent != null && gameObject.activeInHierarchy)
         {
-            Vector3 screenPos = mainCam.WorldToScreenPoint(targetWorld.position);
-            rectTransform.position = screenPos;
+            // Canvas의 부모 오브젝트를 카메라 방향으로 회전
+            canvasParent.rotation = mainCamera.transform.rotation;
         }
     }
 
     public void SetStyle(Color bgColor, Color textColor)
     {
-        backgroundImage.color = bgColor;
-        speechText.color = textColor;
+        if (backgroundImage != null)
+            backgroundImage.color = bgColor;
+        if (speechText != null)
+            speechText.color = textColor;
     }
 
-    public void Show(string message, Transform worldTarget, float duration = 2.5f, Color? bgColor = null, Color? textColor = null)
+    public void ShowSpeech(string message, float duration = 2.5f)
     {
-        speechText.text = message;
-        targetWorld = worldTarget;
-        if (bgColor.HasValue && textColor.HasValue)
-            SetStyle(bgColor.Value, textColor.Value);
+        // 이전 애니메이션과 코루틴 취소
+        CancelPreviousAnimation();
+        
+        if (speechText != null)
+            speechText.text = message;
+        
         gameObject.SetActive(true);
-        // Reset alpha to 1 instantly
+        
+        // 알파값을 1로 리셋
+        ResetAlpha();
+        
+        // 일정 시간 후 페이드아웃
+        hideCoroutine = StartCoroutine(HideAfterSeconds(duration));
+    }
+
+    private void CancelPreviousAnimation()
+    {
+        // 이전 코루틴 취소
+        if (hideCoroutine != null)
+        {
+            StopCoroutine(hideCoroutine);
+            hideCoroutine = null;
+        }
+        
+        // 이전 DOTween 시퀀스 취소
+        if (fadeSequence != null && fadeSequence.IsActive())
+        {
+            fadeSequence.Kill();
+            fadeSequence = null;
+        }
+    }
+
+    private void ResetAlpha()
+    {
         if (backgroundImage != null)
         {
             var c = backgroundImage.color;
@@ -53,26 +112,35 @@ public class SpeechBubbleUI : MonoBehaviour
             c.a = 1f;
             speechText.color = c;
         }
-        StartCoroutine(HideAfterSeconds(duration));
     }
 
     private IEnumerator HideAfterSeconds(float seconds)
     {
         yield return new WaitForSeconds(seconds);
-        // Fade out using DOTween
+        
+        // 페이드아웃 효과
         float fadeDuration = 0.5f;
-        Sequence seq = DOTween.Sequence();
+        fadeSequence = DOTween.Sequence();
+        
         if (backgroundImage != null)
-            seq.Join(backgroundImage.DOFade(0f, fadeDuration));
+            fadeSequence.Join(backgroundImage.DOFade(0f, fadeDuration));
         if (speechText != null)
-            seq.Join(speechText.DOFade(0f, fadeDuration));
-        yield return seq.WaitForCompletion();
+            fadeSequence.Join(speechText.DOFade(0f, fadeDuration));
+        
+        yield return fadeSequence.WaitForCompletion();
+        
         Hide();
     }
 
     public void Hide()
     {
+        CancelPreviousAnimation();
         gameObject.SetActive(false);
-        targetWorld = null;
     }
-} 
+
+    private void OnDestroy()
+    {
+        // 오브젝트가 파괴될 때 애니메이션 정리
+        CancelPreviousAnimation();
+    }
+}

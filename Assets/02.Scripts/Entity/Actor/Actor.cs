@@ -576,17 +576,19 @@ public abstract class Actor : Entity, ILocationAware
     }
     #endregion
 
-    public Transform headTransform; // 머리 위 위치(빈 오브젝트 등)
-
-    [Header("Speech Bubble Style")]
-    public Color speechBgColor = Color.black;
-    public Color speechTextColor = Color.white;
+    [Header("Speech Bubble")]
+    public SpeechBubbleUI speechBubble;
 
     public void ShowSpeech(string message, float duration = 2.5f)
     {
-        // If headTransform is null, use this.transform as fallback
-        var target = headTransform != null ? headTransform : this.transform;
-        SpeechBubbleManager.Instance.ShowSpeech(target, message, duration, speechBgColor, speechTextColor);
+        if (speechBubble != null)
+        {
+            speechBubble.ShowSpeech(message, duration);
+        }
+        else
+        {
+            Debug.LogWarning($"[{Name}] SpeechBubbleUI가 할당되지 않았습니다.");
+        }
     }
 
     [Button("Test SpeakToCharacter")]
