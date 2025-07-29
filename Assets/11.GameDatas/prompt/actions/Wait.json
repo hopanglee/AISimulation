@@ -1,0 +1,24 @@
+{
+  "name": "Wait",
+  "displayName": "Wait",
+  "description": "Wait or stay idle for a period of time.",
+  "usage": "Use this action when you need to pause, wait for something, or have nothing specific to do.",
+  "parameters": [],
+  "examples": [
+    "Waiting for someone to arrive",
+    "Pausing between activities",
+    "Resting or taking a break",
+    "Waiting for a scheduled time"
+  ],
+  "requirements": [
+    "No specific requirements"
+  ],
+  "whenToUse": [
+    "Need to wait for someone or something",
+    "Want to take a break",
+    "Have nothing specific planned",
+    "Waiting for scheduled activities",
+    "Need to pause between tasks"
+  ],
+  "category": "utility"
+} 

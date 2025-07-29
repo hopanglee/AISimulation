@@ -2,10 +2,5 @@ using UnityEngine;
 
 public class Cafe : Building
 {
-    public override string Interact(Actor actor)
-    {
-        // TODO: 커피 주문, 좌석 선택 등 구체 로직 구현
-        Debug.Log($"[{actor.Name}]이(가) 카페에 들어와 커피를 주문합니다.");
-        return $"{actor.Name}이(가) 카페에 들어와 커피를 주문합니다.";
-    }
+    // Building은 단순히 이동 목적지로만 사용되므로 Interact 메서드 제거
 } 

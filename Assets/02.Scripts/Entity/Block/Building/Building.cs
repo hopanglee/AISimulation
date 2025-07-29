@@ -1,10 +1,7 @@
-public abstract class Building : Block
+public abstract class Building : Entity
 {
-    public override string Interact(Actor actor)
-    {
-        return null;
-    }
-
+    // Building은 단순히 이동 목적지로만 사용되므로 Interact 메서드 제거
+    // Block의 toMovePos는 Entity의 transform.position으로 대체
     public override string Get()
     {
         throw new System.NotImplementedException();

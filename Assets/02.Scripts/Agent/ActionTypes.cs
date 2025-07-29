@@ -21,8 +21,7 @@ public enum ActionType
     InteractWithNPC,
     //ObserveEnvironment,
     Wait,
-    PerformActivity,
-    EnterBuilding
+    PerformActivity
 }
 
 public class ActionReasoning

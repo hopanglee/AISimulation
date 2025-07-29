@@ -66,7 +66,6 @@ namespace Agent
                 { ActionType.InteractWithNPC, SetName(new InteractWithNPCParameterAgent(new List<string>(), gpt)) },
                 { ActionType.Wait, SetName(new WaitParameterAgent(gpt)) },
                 { ActionType.PerformActivity, SetName(new PerformActivityParameterAgent(new List<string>(), gpt)) },
-                { ActionType.EnterBuilding, SetName(new EnterBuildingParameterAgent(new List<string>(), gpt)) },
             };
         }
     }

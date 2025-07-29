@@ -1,0 +1,30 @@
+{
+  "name": "MoveToEntity",
+  "displayName": "Move to Entity",
+  "description": "Move to a specific entity like a person, object, or item in the simulation world.",
+  "usage": "Use this action when you need to approach a specific entity to interact with it.",
+  "parameters": [
+    {
+      "name": "entity_name",
+      "type": "string",
+      "description": "The name of the target entity to move to",
+      "required": true
+    }
+  ],
+  "examples": [
+    "Moving to a specific person to talk to them",
+    "Approaching an object to use it",
+    "Moving to an item to pick it up"
+  ],
+  "requirements": [
+    "Target entity must be accessible from current location",
+    "Must be included in the available movable positions"
+  ],
+  "whenToUse": [
+    "Need to interact with a specific person",
+    "Want to use or examine a particular object",
+    "Need to pick up a specific item",
+    "Want to get closer to something for better interaction"
+  ],
+  "category": "movement"
+} 
