@@ -10,6 +10,7 @@ public abstract class Actor : Entity, ILocationAware
     public Sensor sensor;
     #region Component
     private MoveController moveController;
+    public MoveController MoveController => moveController;
     #endregion
     #region Varaible
     public int Money;
@@ -579,11 +580,11 @@ public abstract class Actor : Entity, ILocationAware
     [Header("Speech Bubble")]
     public SpeechBubbleUI speechBubble;
 
-    public void ShowSpeech(string message, float duration = 2.5f)
+    public void ShowSpeech(string message, float duration = -1f, Color? bgColor = null, Color? textColor = null)
     {
         if (speechBubble != null)
         {
-            speechBubble.ShowSpeech(message, duration);
+            speechBubble.ShowSpeech(message, duration, bgColor, textColor);
         }
         else
         {
@@ -591,11 +592,66 @@ public abstract class Actor : Entity, ILocationAware
         }
     }
 
-    [Button("Test SpeakToCharacter")]
-    private void TestSpeakToCharacter()
+    public void ShowMultipleSpeech(List<string> messages, float durationPerMessage = -1f, Color? bgColor = null, Color? textColor = null)
     {
-        ShowSpeech("(테스트) 안녕하세요! 이것은 SpeakToCharacter 테스트입니다.");
+        if (speechBubble != null)
+        {
+            speechBubble.ShowMultipleSpeech(messages, durationPerMessage, bgColor, textColor);
+        }
+        else
+        {
+            Debug.LogWarning($"[{Name}] SpeechBubbleUI가 할당되지 않았습니다.");
+        }
     }
+
+    public void ClearAllSpeech()
+    {
+        if (speechBubble != null)
+        {
+            speechBubble.ClearAllSpeech();
+        }
+    }
+
+    #region Speech Bubble Test Buttons
+
+    [Button("Test Single Speech")]
+    private void TestSingleSpeech()
+    {
+        ShowSpeech("(테스트) 안녕하세요! 이것은 단일 말풍선 테스트입니다.");
+    }
+
+    [Button("Test Multiple Speech")]
+    private void TestMultipleSpeech()
+    {
+        List<string> messages = new List<string>
+        {
+            "(테스트) 첫 번째 메시지입니다.",
+            "(테스트) 두 번째 메시지입니다.", 
+            "(테스트) 세 번째 메시지입니다."
+        };
+        ShowMultipleSpeech(messages);
+    }
+
+    [Button("Test Continuous Speech")]
+    private void TestContinuousSpeech()
+    {
+        List<string> messages = new List<string>
+        {
+            "안녕하세요!",
+            "오늘 날씨가 정말 좋네요.",
+            "같이 산책하실래요?",
+            "정말 즐거운 하루입니다!"
+        };
+        ShowMultipleSpeech(messages, 2f); // 각 메시지 2초씩 표시
+    }
+
+    [Button("Clear All Speech")]
+    private void TestClearAllSpeech()
+    {
+        ClearAllSpeech();
+    }
+
+    #endregion
 
 
 
