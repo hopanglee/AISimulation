@@ -11,6 +11,7 @@ namespace Agent
         public class PerformActivityParameter
         {
             public string ActivityName { get; set; }
+            public int Duration { get; set; } = 5; // 기본값 5분
         }
 
         private readonly string systemPrompt;
@@ -36,6 +37,12 @@ namespace Agent
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(activityList)},
                                     ""description"": ""One of the available activities to perform""
+                                }},
+                                ""Duration"": {{
+                                    ""type"": ""integer"",
+                                    ""minimum"": 1,
+                                    ""maximum"": 300,
+                                    ""description"": ""Duration of the activity in minutes (1-300 minutes)""
                                 }}
                             }},
                             ""required"": [""ActivityName""]
@@ -69,7 +76,8 @@ namespace Agent
                 ActType = request.ActType,
                 Parameters = new Dictionary<string, object>
                 {
-                    { "activity_name", param.ActivityName }
+                    { "activity_name", param.ActivityName },
+                    { "duration", param.Duration }
                 }
             };
         }
