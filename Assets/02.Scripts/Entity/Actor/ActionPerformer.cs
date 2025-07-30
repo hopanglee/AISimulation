@@ -24,6 +24,7 @@ public class ActionPerformer
 {
     private readonly Actor actor;
     private readonly ActionExecutor actionExecutor;
+    private CancellationToken currentToken;
 
     public ActionPerformer(Actor actor)
     {
@@ -39,6 +40,7 @@ public class ActionPerformer
     {
         try
         {
+            currentToken = token; // 현재 토큰 저장
             Debug.Log($"[{actor.Name}] 액션 실행: {action.ActionType}");
             
             // ActionReasoning으로 래핑하여 ActionExecutor에 전달
@@ -71,6 +73,15 @@ public class ActionPerformer
                 }
             }
         }
+        catch (OperationCanceledException)
+        {
+            Debug.Log($"[{actor.Name}] 액션 취소됨 ({action.ActionType})");
+            // 이동 중이었다면 MoveController 정리
+            if (actor.MoveController.isMoving)
+            {
+                actor.MoveController.Reset();
+            }
+        }
         catch (Exception ex)
         {
             Debug.LogError($"[{actor.Name}] 액션 실행 실패 ({action.ActionType}): {ex.Message}");
@@ -85,56 +96,56 @@ public class ActionPerformer
         // Movement handlers
         actionExecutor.RegisterHandler(
             ActionType.MoveToArea,
-            async (parameters) => await HandleMoveToArea(parameters)
+            async (parameters) => await HandleMoveToArea(parameters, currentToken)
         );
 
         actionExecutor.RegisterHandler(
             ActionType.MoveToEntity,
-            async (parameters) => await HandleMoveToEntity(parameters)
+            async (parameters) => await HandleMoveToEntity(parameters, currentToken)
         );
 
         // Interaction handlers
         actionExecutor.RegisterHandler(
             ActionType.SpeakToCharacter,
-            async (parameters) => await HandleSpeakToCharacter(parameters)
+            async (parameters) => await HandleSpeakToCharacter(parameters, currentToken)
         );
 
         actionExecutor.RegisterHandler(
             ActionType.UseObject,
-            async (parameters) => await HandleUseObject(parameters)
+            async (parameters) => await HandleUseObject(parameters, currentToken)
         );
 
         actionExecutor.RegisterHandler(
             ActionType.PickUpItem,
-            async (parameters) => await HandlePickUpItem(parameters)
+            async (parameters) => await HandlePickUpItem(parameters, currentToken)
         );
 
         actionExecutor.RegisterHandler(
             ActionType.InteractWithObject,
-            async (parameters) => await HandleInteractWithObject(parameters)
+            async (parameters) => await HandleInteractWithObject(parameters, currentToken)
         );
 
         actionExecutor.RegisterHandler(
             ActionType.InteractWithNPC,
-            async (parameters) => await HandleInteractWithNPC(parameters)
+            async (parameters) => await HandleInteractWithNPC(parameters, currentToken)
         );
 
         // Wait and observation handlers
         actionExecutor.RegisterHandler(
             ActionType.Wait,
-            async (parameters) => await HandleWait(parameters)
+            async (parameters) => await HandleWait(parameters, currentToken)
         );
 
         actionExecutor.RegisterHandler(
             ActionType.PerformActivity,
-            async (parameters) => await HandlePerformActivity(parameters)
+            async (parameters) => await HandlePerformActivity(parameters, currentToken)
         );
     }
 
     /// <summary>
     /// 특정 영역이나 건물로 이동하는 액션을 처리합니다.
     /// </summary>
-    private async Task HandleMoveToArea(Dictionary<string, object> parameters)
+    private async Task HandleMoveToArea(Dictionary<string, object> parameters, CancellationToken token = default)
     {
         if (parameters.TryGetValue("area_name", out var areaNameObj) && areaNameObj is string areaName)
         {
@@ -146,8 +157,32 @@ public class ActionPerformer
             if (movablePositions.ContainsKey(areaName))
             {
                 // 직접 이동 가능한 위치 (Area, Building, Prop 등)
+                var moveCompleted = new TaskCompletionSource<bool>();
+                
+                // 이동 시작
                 actor.Move(areaName);
                 Debug.Log($"[{actor.Name}] {areaName}로 직접 이동");
+                
+                // MoveController의 OnReached 이벤트를 구독하여 이동 완료 대기
+                actor.MoveController.OnReached += () => moveCompleted.SetResult(true);
+                
+                // 이동 완료 또는 취소 대기
+                try
+                {
+                    // CancellationToken과 함께 대기
+                    using (token.Register(() => moveCompleted.SetCanceled()))
+                    {
+                        await moveCompleted.Task;
+                    }
+                    Debug.Log($"[{actor.Name}] {areaName}에 도착했습니다.");
+                }
+                catch (OperationCanceledException)
+                {
+                    Debug.Log($"[{actor.Name}] {areaName}로의 이동이 취소되었습니다.");
+                    // 이동 취소 시 MoveController 정리
+                    actor.MoveController.Reset();
+                    throw; // 상위로 취소 예외 전파
+                }
             }
             else
             {
@@ -156,7 +191,31 @@ public class ActionPerformer
                 var area = locationService.GetArea(actor.curLocation);
                 if (area != null)
                 {
+                    var moveCompleted = new TaskCompletionSource<bool>();
+                    
+                    // 경로찾기 이동 시작
                     ExecutePathfindingMove(areaName);
+                    
+                    // MoveController의 OnReached 이벤트를 구독하여 이동 완료 대기
+                    actor.MoveController.OnReached += () => moveCompleted.SetResult(true);
+                    
+                    // 이동 완료 또는 취소 대기
+                    try
+                    {
+                        // CancellationToken과 함께 대기
+                        using (token.Register(() => moveCompleted.SetCanceled()))
+                        {
+                            await moveCompleted.Task;
+                        }
+                        Debug.Log($"[{actor.Name}] {areaName}에 도착했습니다.");
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        Debug.Log($"[{actor.Name}] {areaName}로의 이동이 취소되었습니다.");
+                        // 이동 취소 시 MoveController 정리
+                        actor.MoveController.Reset();
+                        throw; // 상위로 취소 예외 전파
+                    }
                 }
                 else
                 {
@@ -164,13 +223,12 @@ public class ActionPerformer
                 }
             }
         }
-        await Task.Delay(5000); // 임시 5초 딜레이
     }
 
     /// <summary>
     /// 특정 엔티티로 이동하는 액션을 처리합니다.
     /// </summary>
-    private async Task HandleMoveToEntity(Dictionary<string, object> parameters)
+    private async Task HandleMoveToEntity(Dictionary<string, object> parameters, CancellationToken token = default)
     {
         if (parameters.TryGetValue("entity_name", out var entityNameObj) && entityNameObj is string entityName)
         {
@@ -180,20 +238,44 @@ public class ActionPerformer
             var entity = FindEntityByName(entityName);
             if (entity != null)
             {
+                var moveCompleted = new TaskCompletionSource<bool>();
+                
+                // 이동 시작
                 actor.MoveToPosition(entity.transform.position);
+                Debug.Log($"[{actor.Name}] {entityName}로 이동 시작");
+                
+                // MoveController의 OnReached 이벤트를 구독하여 이동 완료 대기
+                actor.MoveController.OnReached += () => moveCompleted.SetResult(true);
+                
+                // 이동 완료 또는 취소 대기
+                try
+                {
+                    // CancellationToken과 함께 대기
+                    using (token.Register(() => moveCompleted.SetCanceled()))
+                    {
+                        await moveCompleted.Task;
+                    }
+                    Debug.Log($"[{actor.Name}] {entityName}에 도착했습니다.");
+                }
+                catch (OperationCanceledException)
+                {
+                    Debug.Log($"[{actor.Name}] {entityName}로의 이동이 취소되었습니다.");
+                    // 이동 취소 시 MoveController 정리
+                    actor.MoveController.Reset();
+                    throw; // 상위로 취소 예외 전파
+                }
             }
             else
             {
                 Debug.LogWarning($"[{actor.Name}] 엔티티를 찾을 수 없음: {entityName}");
             }
         }
-        await Task.Delay(5000); // 임시 5초 딜레이
     }
 
     /// <summary>
     /// 캐릭터와 대화하는 액션을 처리합니다.
     /// </summary>
-    private async Task HandleSpeakToCharacter(Dictionary<string, object> parameters)
+    private async Task HandleSpeakToCharacter(Dictionary<string, object> parameters, CancellationToken token = default)
     {
         if (parameters.TryGetValue("character_name", out var characterNameObj) && characterNameObj is string characterName)
         {
@@ -224,13 +306,13 @@ public class ActionPerformer
                 var feedback = $"Failed to speak to {characterName}: Character not found in current location.";
             }
         }
-        await Task.Delay(5000); // 임시 5초 딜레이
+        await Task.Delay(2000); // 임시 2초 딜레이
     }
 
     /// <summary>
     /// 오브젝트를 사용하는 액션을 처리합니다.
     /// </summary>
-    private async Task HandleUseObject(Dictionary<string, object> parameters)
+    private async Task HandleUseObject(Dictionary<string, object> parameters, CancellationToken token = default)
     {
         if (parameters.TryGetValue("object_name", out var objectNameObj) && objectNameObj is string objectName)
         {
@@ -253,7 +335,7 @@ public class ActionPerformer
     /// <summary>
     /// 아이템을 집는 액션을 처리합니다.
     /// </summary>
-    private async Task HandlePickUpItem(Dictionary<string, object> parameters)
+    private async Task HandlePickUpItem(Dictionary<string, object> parameters, CancellationToken token = default)
     {
         if (parameters.TryGetValue("item_name", out var itemNameObj) && itemNameObj is string itemName)
         {
@@ -282,7 +364,7 @@ public class ActionPerformer
     /// <summary>
     /// 오브젝트와 상호작용하는 액션을 처리합니다.
     /// </summary>
-    private async Task HandleInteractWithObject(Dictionary<string, object> parameters)
+    private async Task HandleInteractWithObject(Dictionary<string, object> parameters, CancellationToken token = default)
     {
         if (parameters.TryGetValue("object_name", out var objectNameObj) && objectNameObj is string objectName)
         {
@@ -305,7 +387,7 @@ public class ActionPerformer
     /// <summary>
     /// NPC와 상호작용하는 액션을 처리합니다.
     /// </summary>
-    private async Task HandleInteractWithNPC(Dictionary<string, object> parameters)
+    private async Task HandleInteractWithNPC(Dictionary<string, object> parameters, CancellationToken token = default)
     {
         if (parameters.TryGetValue("npc_name", out var npcNameObj) && npcNameObj is string npcName)
         {
@@ -328,7 +410,7 @@ public class ActionPerformer
     /// <summary>
     /// 대기하는 액션을 처리합니다.
     /// </summary>
-    private async Task HandleWait(Dictionary<string, object> parameters)
+    private async Task HandleWait(Dictionary<string, object> parameters, CancellationToken token = default)
     {
         Debug.Log($"[{actor.Name}] 대기 중...");
         await Task.Delay(5000); // 임시 5초 딜레이
@@ -337,7 +419,7 @@ public class ActionPerformer
     /// <summary>
     /// 활동을 수행하는 액션을 처리합니다.
     /// </summary>
-    private async Task HandlePerformActivity(Dictionary<string, object> parameters)
+    private async Task HandlePerformActivity(Dictionary<string, object> parameters, CancellationToken token = default)
     {
         if (parameters.TryGetValue("activity_name", out var activityNameObj) && activityNameObj is string activityName)
         {
