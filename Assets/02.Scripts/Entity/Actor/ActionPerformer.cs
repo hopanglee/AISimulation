@@ -42,16 +42,16 @@ public class ActionPerformer
         {
             currentToken = token; // 현재 토큰 저장
             Debug.Log($"[{actor.Name}] 액션 실행: {action.ActionType}");
-            
+
             // ActionReasoning으로 래핑하여 ActionExecutor에 전달
             var actionReasoning = new ActionReasoning
             {
                 Thoughts = new List<string> { $"Executing {action.ActionType}" },
                 Action = action
             };
-            
+
             var result = await actionExecutor.ExecuteActionAsync(actionReasoning);
-            
+
             if (result.Success)
             {
                 Debug.Log($"[{actor.Name}] 액션 완료: {action.ActionType} - {result.Message}");
@@ -150,22 +150,22 @@ public class ActionPerformer
         if (parameters.TryGetValue("area_name", out var areaNameObj) && areaNameObj is string areaName)
         {
             Debug.Log($"[{actor.Name}] 영역/건물로 이동: {areaName}");
-            
+
             // 먼저 현재 Area에서 이동 가능한 위치들을 확인
             var movablePositions = actor.sensor.GetMovablePositions();
-            
+
             if (movablePositions.ContainsKey(areaName))
             {
                 // 직접 이동 가능한 위치 (Area, Building, Prop 등)
                 var moveCompleted = new TaskCompletionSource<bool>();
-                
+
                 // 이동 시작
                 actor.Move(areaName);
                 Debug.Log($"[{actor.Name}] {areaName}로 직접 이동");
-                
+
                 // MoveController의 OnReached 이벤트를 구독하여 이동 완료 대기
                 actor.MoveController.OnReached += () => moveCompleted.SetResult(true);
-                
+
                 // 이동 완료 또는 취소 대기
                 try
                 {
@@ -192,13 +192,13 @@ public class ActionPerformer
                 if (area != null)
                 {
                     var moveCompleted = new TaskCompletionSource<bool>();
-                    
+
                     // 경로찾기 이동 시작
                     ExecutePathfindingMove(areaName);
-                    
+
                     // MoveController의 OnReached 이벤트를 구독하여 이동 완료 대기
                     actor.MoveController.OnReached += () => moveCompleted.SetResult(true);
-                    
+
                     // 이동 완료 또는 취소 대기
                     try
                     {
@@ -233,20 +233,20 @@ public class ActionPerformer
         if (parameters.TryGetValue("entity_name", out var entityNameObj) && entityNameObj is string entityName)
         {
             Debug.Log($"[{actor.Name}] 엔티티로 이동: {entityName}");
-            
+
             // 엔티티의 위치를 찾아서 이동
             var entity = FindEntityByName(entityName);
             if (entity != null)
             {
                 var moveCompleted = new TaskCompletionSource<bool>();
-                
+
                 // 이동 시작
                 actor.MoveToPosition(entity.transform.position);
                 Debug.Log($"[{actor.Name}] {entityName}로 이동 시작");
-                
+
                 // MoveController의 OnReached 이벤트를 구독하여 이동 완료 대기
                 actor.MoveController.OnReached += () => moveCompleted.SetResult(true);
-                
+
                 // 이동 완료 또는 취소 대기
                 try
                 {
@@ -280,7 +280,7 @@ public class ActionPerformer
         if (parameters.TryGetValue("character_name", out var characterNameObj) && characterNameObj is string characterName)
         {
             Debug.Log($"[{actor.Name}] 캐릭터와 대화: {characterName}");
-            
+
             var interactableEntities = actor.sensor.GetInteractableEntities();
             if (interactableEntities.actors.ContainsKey(characterName))
             {
@@ -289,7 +289,7 @@ public class ActionPerformer
                 {
                     actor.ShowSpeech(message);
                     Debug.Log($"[{actor.Name}] {targetActor.Name}에게 말함: {message}");
-                    
+
                     // 성공적인 대화에 대한 피드백
                     var feedback = $"Successfully spoke to {targetActor.Name}: '{message}'. The conversation was delivered.";
                     // TODO: 여기서 ActionExecutor의 Success/Fail 메서드를 직접 호출할 수 있도록 구조 개선 필요
@@ -317,7 +317,7 @@ public class ActionPerformer
         if (parameters.TryGetValue("object_name", out var objectNameObj) && objectNameObj is string objectName)
         {
             Debug.Log($"[{actor.Name}] 오브젝트 사용: {objectName}");
-            
+
             var interactableEntities = actor.sensor.GetInteractableEntities();
             if (interactableEntities.props.ContainsKey(objectName))
             {
@@ -340,7 +340,7 @@ public class ActionPerformer
         if (parameters.TryGetValue("item_name", out var itemNameObj) && itemNameObj is string itemName)
         {
             Debug.Log($"[{actor.Name}] 아이템 집기: {itemName}");
-            
+
             var item = FindItemByName(itemName);
             if (item != null)
             {
@@ -369,7 +369,7 @@ public class ActionPerformer
         if (parameters.TryGetValue("object_name", out var objectNameObj) && objectNameObj is string objectName)
         {
             Debug.Log($"[{actor.Name}] 오브젝트 상호작용: {objectName}");
-            
+
             var interactableEntities = actor.sensor.GetInteractableEntities();
             if (interactableEntities.props.ContainsKey(objectName))
             {
@@ -392,7 +392,7 @@ public class ActionPerformer
         if (parameters.TryGetValue("npc_name", out var npcNameObj) && npcNameObj is string npcName)
         {
             Debug.Log($"[{actor.Name}] NPC 상호작용: {npcName}");
-            
+
             var interactableEntities = actor.sensor.GetInteractableEntities();
             if (interactableEntities.actors.ContainsKey(npcName))
             {
@@ -413,7 +413,7 @@ public class ActionPerformer
     private async Task HandleWait(Dictionary<string, object> parameters, CancellationToken token = default)
     {
         Debug.Log($"[{actor.Name}] 대기 중...");
-        await Task.Delay(5000); // 임시 5초 딜레이
+        await Task.Delay(10000); // 임시 10초 딜레이
     }
 
     /// <summary>
@@ -426,7 +426,14 @@ public class ActionPerformer
             Debug.Log($"[{actor.Name}] 활동 수행: {activityName}");
             actor.StartActivity(activityName);
         }
-        await Task.Delay(5000); // 임시 5초 딜레이
+
+        int delay = 5; // 기본값 5분
+        if (parameters.TryGetValue("duration", out var durationObj))
+        {
+            delay = (int)durationObj;
+        }
+
+        await Task.Delay(delay, token);
     }
 
     // === Helper Methods ===
@@ -444,7 +451,7 @@ public class ActionPerformer
         {
             var nextStep = path[0];
             var movablePositions = actor.sensor.GetMovablePositions();
-            
+
             if (movablePositions.ContainsKey(nextStep))
             {
                 actor.Move(nextStep);
@@ -471,25 +478,25 @@ public class ActionPerformer
 
         // 1. 현재 위치의 상호작용 가능한 엔티티들에서 검색
         var interactableEntities = actor.sensor.GetInteractableEntities();
-        
+
         // Actor 검색
         if (interactableEntities.actors.ContainsKey(entityName))
         {
             return interactableEntities.actors[entityName];
         }
-        
+
         // Item 검색
         if (interactableEntities.items.ContainsKey(entityName))
         {
             return interactableEntities.items[entityName];
         }
-        
+
         // Building 검색
         if (interactableEntities.buildings.ContainsKey(entityName))
         {
             return interactableEntities.buildings[entityName];
         }
-        
+
         // Prop 검색
         if (interactableEntities.props.ContainsKey(entityName))
         {
@@ -589,4 +596,4 @@ public class ActionPerformer
         Debug.LogWarning($"[{actor.Name}] 아이템을 찾을 수 없음: {itemName}");
         return null;
     }
-} 
+}
