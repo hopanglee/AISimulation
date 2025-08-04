@@ -37,7 +37,6 @@ public enum ActionType
     
     // 상호작용 액션들
     InteractWithObject, // 오브젝트와 상호작용
-    InteractWithNPC,    // NPC와 상호작용
     
     // 관찰 액션들
     ObserveEnvironment, // 환경 관찰
@@ -139,7 +138,6 @@ actionAgent.TestActionAgent();
 
 ### 상호작용 액션
 - `InteractWithObject`: 오브젝트와 상호작용
-- `InteractWithNPC`: NPC와 상호작용
 
 ### 관찰 액션
 - `ObserveEnvironment`: 환경 관찰

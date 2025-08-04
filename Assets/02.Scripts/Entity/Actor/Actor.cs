@@ -172,7 +172,7 @@ public abstract class Actor : Entity, ILocationAware
     }
     #endregion
 
-    public bool CanSaveItem(Item item)
+    public bool PickUp(Item item)
     {
         if (HandItem == null)
         {
@@ -248,7 +248,7 @@ public abstract class Actor : Entity, ILocationAware
         {
             var target = interactable.actors[actorKey];
 
-            if (target.CanSaveItem(HandItem))
+            if (target.PickUp(HandItem))
             {
                 HandItem = null;
             }

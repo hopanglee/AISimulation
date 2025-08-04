@@ -18,7 +18,9 @@ public enum ActionType
     UseObject,
     PickUpItem,
     InteractWithObject,
-    InteractWithNPC,
+
+    GiveMoney,
+    GiveItem,
     //ObserveEnvironment,
     Wait,
     PerformActivity

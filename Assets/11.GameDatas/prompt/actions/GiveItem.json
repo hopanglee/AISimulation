@@ -1,0 +1,32 @@
+{
+  "name": "GiveItem",
+  "displayName": "Give Item",
+  "description": "Give an item from your hand to another character.",
+  "usage": "Use this action when you want to give an item you're holding to another character.",
+  "parameters": [
+    {
+      "name": "target_character",
+      "type": "string",
+      "description": "The name of the character to give the item to",
+      "required": true
+    }
+  ],
+  "examples": [
+    "Giving a gift to a friend",
+    "Handing over a tool to someone",
+    "Sharing food with someone",
+    "Giving a book to someone"
+  ],
+  "requirements": [
+    "Target character must be nearby and interactable",
+    "Actor must have an item in hand",
+    "Target character must have space in their inventory"
+  ],
+  "whenToUse": [
+    "Want to give a gift to someone",
+    "Need to share an item",
+    "Want to help someone with a tool",
+    "Need to hand over something"
+  ],
+  "category": "interaction"
+} 
