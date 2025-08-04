@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using OpenAI.Chat;
 using UnityEngine;
 using System.Linq; // Added for .Select()
+using Agent.Tools;
 
 /// <summary>
 /// 세부 활동을 담당하는 전문화된 Agent (Stanford Generative Agent 스타일)
@@ -15,6 +16,7 @@ using System.Linq; // Added for .Select()
 public class DetailedPlannerAgent : GPT
 {
     private Actor actor;
+    private IToolExecutor toolExecutor;
 
     /// <summary>
     /// 세부 활동 계획 구조
@@ -64,15 +66,13 @@ public class DetailedPlannerAgent : GPT
         public string Status { get; set; } = "pending";
     }
 
-    private readonly ChatTool getUserMemoryTool = ChatTool.CreateFunctionTool(
-        functionName: "GetUserMemory",
-        functionDescription: "Query the agent's memory (recent events, observations, conversations, etc.)"
-    );
+
 
     public DetailedPlannerAgent(Actor actor)
         : base()
     {
         this.actor = actor;
+        this.toolExecutor = new ActorToolExecutor(actor);
 
         // Actor 이름 설정 (로깅용)
         SetActorName(actor.Name);
@@ -83,7 +83,6 @@ public class DetailedPlannerAgent : GPT
 
         options = new()
         {
-            Tools = { getWorldAreaInfoTool, getUserMemoryTool },
             ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                 jsonSchemaFormatName: "detailed_plan",
                 jsonSchema: BinaryData.FromBytes(
@@ -128,48 +127,28 @@ public class DetailedPlannerAgent : GPT
                 jsonSchemaIsStrict: true
             ),
         };
+        
+        // 월드 정보 도구 추가
+        ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
     }
 
     // Tool 정의들
-    private readonly ChatTool getWorldAreaInfoTool = ChatTool.CreateFunctionTool(
-        functionName: "GetWorldAreaInfo",
-        functionDescription: "Get information about all areas in the world and their connections"
-    );
+
 
     protected override void ExecuteToolCall(ChatToolCall toolCall)
     {
-        switch (toolCall.FunctionName)
+        if (toolExecutor != null)
         {
-            case "GetWorldAreaInfo":
-                {
-                    string toolResult = GetWorldAreaInfo();
-                    messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
-                    break;
-                }
-            case "GetUserMemory":
-                {
-                    string toolResult = GetUserMemory();
-                    messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
-                    break;
-                }
-            default:
-                {
-                    Debug.LogWarning($"Unknown tool call: {toolCall.FunctionName}");
-                    messages.Add(new ToolChatMessage(toolCall.Id, "Tool not implemented"));
-                    break;
-                }
+            string result = toolExecutor.ExecuteTool(toolCall);
+            messages.Add(new ToolChatMessage(toolCall.Id, result));
+        }
+        else
+        {
+            Debug.LogWarning($"[DetailedPlannerAgent] No tool executor available for tool call: {toolCall.FunctionName}");
         }
     }
 
-    /// <summary>
-    /// 전체 월드의 Area 정보를 반환
-    /// </summary>
-    private string GetWorldAreaInfo()
-    {
-        Debug.Log("GetWorldAreaInfo called from DetailedPlannerAgent");
-        var locationService = Services.Get<ILocationService>();
-        return locationService.GetWorldAreaInfo();
-    }
+
 
     /// <summary>
     /// 세부 활동 계획 생성
@@ -266,13 +245,5 @@ public class DetailedPlannerAgent : GPT
         }
     }
 
-    // Tool 핸들러
-    private string GetUserMemory(string query = null)
-    {
-        var memoryManager = new CharacterMemoryManager(actor.Name);
-        if (string.IsNullOrEmpty(query))
-            return memoryManager.GetMemorySummary();
-        // 쿼리 기반 필터링은 필요시 구현
-        return memoryManager.GetMemorySummary();
-    }
+
 }

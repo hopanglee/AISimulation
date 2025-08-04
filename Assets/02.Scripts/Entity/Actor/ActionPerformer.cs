@@ -126,8 +126,13 @@ public class ActionPerformer
         );
 
         actionExecutor.RegisterHandler(
-            ActionType.InteractWithNPC,
-            async (parameters) => await HandleInteractWithNPC(parameters, currentToken)
+            ActionType.GiveMoney,
+            async (parameters) => await HandleGiveMoney(parameters, currentToken)
+        );
+
+        actionExecutor.RegisterHandler(
+            ActionType.GiveItem,
+            async (parameters) => await HandleGiveItem(parameters, currentToken)
         );
 
         // Wait and observation handlers
@@ -344,7 +349,7 @@ public class ActionPerformer
             var item = FindItemByName(itemName);
             if (item != null)
             {
-                if (actor.CanSaveItem(item))
+                if (actor.PickUp(item))
                 {
                     Debug.Log($"[{actor.Name}] 아이템을 성공적으로 집었습니다: {itemName}");
                 }
@@ -358,7 +363,7 @@ public class ActionPerformer
                 Debug.LogWarning($"[{actor.Name}] 아이템을 찾을 수 없음: {itemName}");
             }
         }
-        await Task.Delay(5000); // 임시 5초 딜레이
+        await Task.Delay(3000); // 임시 3초 딜레이
     }
 
     /// <summary>
@@ -385,27 +390,75 @@ public class ActionPerformer
     }
 
     /// <summary>
-    /// NPC와 상호작용하는 액션을 처리합니다.
+    /// 돈을 주는 액션을 처리합니다.
     /// </summary>
-    private async Task HandleInteractWithNPC(Dictionary<string, object> parameters, CancellationToken token = default)
+    private async Task HandleGiveMoney(Dictionary<string, object> parameters, CancellationToken token = default)
     {
-        if (parameters.TryGetValue("npc_name", out var npcNameObj) && npcNameObj is string npcName)
+        if (parameters.TryGetValue("target_character", out var targetCharacterObj) && targetCharacterObj is string targetCharacter &&
+            parameters.TryGetValue("amount", out var amountObj) && amountObj is int amount)
         {
-            Debug.Log($"[{actor.Name}] NPC 상호작용: {npcName}");
+            Debug.Log($"[{actor.Name}] 돈 주기: {targetCharacter}에게 {amount}원");
 
-            var interactableEntities = actor.sensor.GetInteractableEntities();
-            if (interactableEntities.actors.ContainsKey(npcName))
+            var targetActor = FindActorByName(targetCharacter);
+            if (targetActor != null)
             {
-                var npc = interactableEntities.actors[npcName];
-                Debug.Log($"[{actor.Name}] {npc.Name}와 상호작용");
+                try
+                {
+                    actor.GiveMoney(targetActor, amount);
+                    Debug.Log($"[{actor.Name}] {targetActor.Name}에게 {amount}원을 성공적으로 주었습니다.");
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning($"[{actor.Name}] 돈 주기 실패: {ex.Message}");
+                }
             }
             else
             {
-                Debug.LogWarning($"[{actor.Name}] NPC를 찾을 수 없음: {npcName}");
+                Debug.LogWarning($"[{actor.Name}] 대상 캐릭터를 찾을 수 없음: {targetCharacter}");
             }
+        }
+        else
+        {
+            Debug.LogWarning($"[{actor.Name}] 돈 주기 파라미터가 올바르지 않음");
         }
         await Task.Delay(5000); // 임시 5초 딜레이
     }
+
+    /// <summary>
+    /// 아이템을 주는 액션을 처리합니다.
+    /// </summary>
+    private async Task HandleGiveItem(Dictionary<string, object> parameters, CancellationToken token = default)
+    {
+        if (parameters.TryGetValue("target_character", out var targetCharacterObj) && targetCharacterObj is string targetCharacter)
+        {
+            Debug.Log($"[{actor.Name}] 아이템 주기: {targetCharacter}에게");
+
+            if (actor.HandItem == null)
+            {
+                Debug.LogWarning($"[{actor.Name}] 손에 아이템이 없습니다.");
+                await Task.Delay(1000);
+                return;
+            }
+
+            var targetActor = FindActorByName(targetCharacter);
+            if (targetActor != null)
+            {
+                actor.Give(targetCharacter);
+                Debug.Log($"[{actor.Name}] {targetActor.Name}에게 {actor.HandItem?.Name ?? "아이템"}을 성공적으로 주었습니다.");
+            }
+            else
+            {
+                Debug.LogWarning($"[{actor.Name}] 대상 캐릭터를 찾을 수 없음: {targetCharacter}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[{actor.Name}] 아이템 주기 파라미터가 올바르지 않음");
+        }
+        await Task.Delay(2000); // 임시 2초 딜레이
+    }
+
+    
 
     /// <summary>
     /// 대기하는 액션을 처리합니다.

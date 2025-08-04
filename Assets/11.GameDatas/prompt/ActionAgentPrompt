@@ -31,7 +31,7 @@ Available actions:
 - OpenDoor: Open a door (parameters: must include "door_name")
 - PressSwitch: Press a switch (parameters: must include "switch_name")
 - InteractWithObject: Interact with an object (parameters: must include "object_name")
-- InteractWithNPC: Interact with NPC (parameters: must include "npc_name")
+
 - ObserveEnvironment: Observe the environment (no parameters needed)
 - ExamineObject: Examine an object in detail (parameters: must include "object_name")
 - ScanArea: Scan an area (no parameters needed)
