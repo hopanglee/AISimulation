@@ -95,7 +95,7 @@ namespace Agent
         /// <param name="situation">상황 설명</param>
         /// <param name="availableActions">사용 가능한 액션 집합 (null이면 모든 액션 사용 가능)</param>
         /// <returns>ActSelectionResult</returns>
-        public async UniTask<ActSelectionResult> SelectActAsync(string situation, HashSet<ActionType> availableActions = null)
+        public async UniTask<ActSelectionResult> SelectActAsync(string situation)
         {
             string userMessage = situation;
             
@@ -103,14 +103,6 @@ namespace Agent
             var currentAvailableActions = GetCurrentAvailableActions();
             var formattedActions = FormatAvailableActionsToString(currentAvailableActions);
             userMessage += $"\n\nCurrently Available Actions:\n{formattedActions}";
-            
-            // 사용 가능한 액션 집합이 제공되면 추가
-            if (availableActions != null && availableActions.Count > 0)
-            {
-                var actionNames = availableActions.Select(a => a.ToString()).ToList();
-                userMessage += $"\n\nAvailable Actions: {string.Join(", ", actionNames)}";
-                userMessage += "\nPlease select only from the available actions listed above.";
-            }
             
             messages.Add(new UserChatMessage(userMessage));
             var response = await SendGPTAsync<ActSelectionResult>(messages, options);
