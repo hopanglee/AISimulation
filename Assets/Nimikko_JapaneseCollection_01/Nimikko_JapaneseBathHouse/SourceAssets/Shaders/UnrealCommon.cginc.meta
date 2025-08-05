@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 37afcfde52af4af41ad74774c2697fbc
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  preprocessorOverride: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 278795
+  packageName: Japanese Collection #1
+  packageVersion: 1.0
+  assetPath: Assets/Nimikko_JapaneseCollection_01/Nimikko_JapaneseBathHouse/SourceAssets/Shaders/UnrealCommon.cginc
+  uploadId: 648225
