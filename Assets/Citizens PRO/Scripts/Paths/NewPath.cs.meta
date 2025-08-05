@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 4fc78bdccdc52b44bb7f74c927edb5e3
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 143604
+  packageName: Citizens Pro 2024
+  packageVersion: 2.0
+  assetPath: Assets/Citizens PRO/Scripts/Paths/NewPath.cs
+  uploadId: 740988

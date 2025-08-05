@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: abe990a6e5c995445a58f3cc9e60780f
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 143604
+  packageName: Citizens Pro 2024
+  packageVersion: 2.0
+  assetPath: Assets/Citizens PRO/Editor/PeopleWalkPathEditor.cs
+  uploadId: 740988

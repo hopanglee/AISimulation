@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 0b96ea4ae0398da48b96b4c87e2634d7
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 143604
+  packageName: Citizens Pro 2024
+  packageVersion: 2.0
+  assetPath: Assets/Citizens PRO/Scripts/Camera/MouseLookAdvanced.cs
+  uploadId: 740988

@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 9f8370fa99fff594b96e32bbf92e5e0f
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 143604
+  packageName: Citizens Pro 2024
+  packageVersion: 2.0
+  assetPath: Assets/Citizens PRO/Scripts/Street And Concert/StandingPeopleStreet.cs
+  uploadId: 740988
