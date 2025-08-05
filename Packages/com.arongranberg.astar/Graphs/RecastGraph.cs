@@ -370,6 +370,38 @@ namespace Pathfinding {
 			public FilterMode collectionMode = FilterMode.Layers;
 
 			/// <summary>
+			/// The physics scene for collecting colliders when scanning the graph.
+			///
+			/// If null (the default), the physics scene that the <see cref="AstarPath"/> component is part of will be used.
+			///
+			/// You typically don't have to set this, but it can be useful in some rare situations.
+			///
+			/// Note: This field cannot be serialized, so you must set it via code before the graphs are scanned.
+			///
+			/// Only used if <see cref="rasterizeColliders"/> is enabled.
+			///
+			/// See: <see cref="physicsScene2D"/>
+			/// </summary>
+			[System.NonSerialized]
+			public PhysicsScene? physicsScene = null;
+
+			/// <summary>
+			/// The physics scene for collecting 2D colliders when scanning the graph.
+			///
+			/// If null (the default), the physics scene that the <see cref="AstarPath"/> component is part of will be used.
+			///
+			/// You typically don't have to set this, but it can be useful in some rare situations.
+			///
+			/// Note: This field cannot be serialized, so you must set it via code before the graphs are scanned.
+			///
+			/// Only used if <see cref="rasterizeColliders"/> is enabled.
+			///
+			/// See: <see cref="physicsScene"/>
+			/// </summary>
+			[System.NonSerialized]
+			public PhysicsScene2D? physicsScene2D = null;
+
+			/// <summary>
 			/// Objects in all of these layers will be rasterized.
 			///
 			/// Will only be used if <see cref="collectionMode"/> is set to Layers.
@@ -1201,7 +1233,6 @@ namespace Pathfinding {
 				tileLayout.graphSpaceSize.x = float.PositiveInfinity;
 				tileLayout.graphSpaceSize.z = float.PositiveInfinity;
 				var buildSettings = RecastBuilder.BuildTileMeshes(graph, tileLayout, createdTiles);
-				buildSettings.scene = graph.active.gameObject.scene;
 
 				// Schedule the jobs asynchronously.
 				// These jobs will prepare the data for the update, but will not change any graph data.

@@ -30,7 +30,7 @@ using Thread = System.Threading.Thread;
 [HelpURL("https://arongranberg.com/astar/documentation/stable/astarpath.html")]
 public class AstarPath : VersionedMonoBehaviour {
 	/// <summary>The version number for the A* Pathfinding Project</summary>
-	public static readonly System.Version Version = new System.Version(5, 3, 3);
+	public static readonly System.Version Version = new System.Version(5, 3, 8);
 
 	/// <summary>Information about where the package was downloaded</summary>
 	public enum AstarDistribution { WebsiteDownload, AssetStore, PackageManager };
@@ -1560,7 +1560,7 @@ public class AstarPath : VersionedMonoBehaviour {
 		var prevStage = (ScanningStage)(-1);
 
 		if (asyncScanTask != null) {
-			Debug.LogError("An async scan was already running when a new scan was requested. Blocking until it is complete. You can check if a scan is currently in progress using the AstarPath.active.isScanning property.", this);
+			Debug.LogWarning("An async scan was already running when a new scan was requested. Blocking until it is complete. You can check if a scan is currently in progress using the AstarPath.active.isScanning property.", this);
 			BlockUntilAsyncScanComplete();
 		}
 
@@ -1628,7 +1628,7 @@ public class AstarPath : VersionedMonoBehaviour {
 	/// <param name="graphsToScan">The graphs to scan. If this parameter is null then all graphs will be scanned</param>
 	public IEnumerable<Progress> ScanAsync (NavGraph[] graphsToScan = null) {
 		if (asyncScanTask != null) {
-			Debug.LogError("An async scan was already running when a new async scan was requested. Blocking until the previous one is complete. You can check if a scan is currently in progress using the AstarPath.active.isScanning property.", this);
+			Debug.LogWarning("An async scan was already running when a new async scan was requested. Blocking until the previous one is complete. You can check if a scan is currently in progress using the AstarPath.active.isScanning property.", this);
 			BlockUntilAsyncScanComplete();
 		}
 		asyncScanTask = ScanInternal(graphsToScan, true).GetEnumerator();

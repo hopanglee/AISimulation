@@ -190,12 +190,12 @@ namespace Pathfinding.ECS.RVO {
 				// as the movement script's position may not be the same as the transform's position
 				// (in particular if IAstarAI.updatePosition is false).
 				var pos = movementPlane.value.ToPlane(transform.Position, out float elevation);
-				var center = 0.5f * shape.height;
 				if (movementPlaneMode == MovementPlane.XY) {
 					// In 2D it is assumed the Z coordinate differences of agents is ignored.
 					agentData.height[index] = 1;
 					agentData.position[index] = movementPlane.value.ToWorld(pos, 0);
 				} else {
+					var center = 0.5f * shape.height;
 					agentData.height[index] = math.clamp(shape.height * scale, 0, VERY_LARGE);
 					agentData.position[index] = movementPlane.value.ToWorld(pos, elevation + (center - 0.5f * shape.height) * scale);
 				}
@@ -205,10 +205,13 @@ namespace Pathfinding.ECS.RVO {
 				var reached = agentOutputData.effectivelyReachedDestination[index];
 				var prio = math.clamp(controller.priority * controller.priorityMultiplier, 0, VERY_LARGE);
 				var flow = math.clamp(controller.flowFollowingStrength, 0, 1);
+				// TODO: This is gettting overriden every frame, right?
 				if (reached == ReachedEndOfPath.Reached) {
+					// Override flow following strength and make it go towards 1
 					flow = math.lerp(agentData.flowFollowingStrength[index], 1.0f, 6.0f * dt);
 					prio *= 0.3f;
 				} else if (reached == ReachedEndOfPath.ReachedSoon) {
+					// Override flow following strength and make it go towards 1
 					flow = math.lerp(agentData.flowFollowingStrength[index], 1.0f, 6.0f * dt);
 					prio *= 0.45f;
 				}

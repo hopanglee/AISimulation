@@ -215,7 +215,7 @@ namespace Pathfinding {
 			}
 
 			GridGraph gg = GetGridGraph(GraphIndex);
-			var cellOffset = (other as GridNode).CoordinatesInGrid - CoordinatesInGrid;
+			var cellOffset = (other as GridNodeBase).CoordinatesInGrid - CoordinatesInGrid;
 			var dir = OffsetToConnectionDirection(cellOffset.x, cellOffset.y);
 			if (dir == -1 || !HasConnectionInDirection(dir)) {
 				left = right = Vector3.zero;
@@ -226,9 +226,7 @@ namespace Pathfinding {
 
 			if (dir < 4) {
 				Vector3 middle = ((Vector3)(position + other.position))*0.5f;
-				Vector3 cross = Vector3.Cross(gg.collision.up, (Vector3)(other.position-position));
-				cross.Normalize();
-				cross *= gg.nodeSize*0.5f;
+				var cross = gg.transform.TransformVector(new Vector3(cellOffset.y, 0, -cellOffset.x)*0.5f);
 				left = middle - cross;
 				right = middle + cross;
 			} else {
@@ -249,9 +247,7 @@ namespace Pathfinding {
 				}
 
 				Vector3 middle = ((Vector3)(position + other.position))*0.5f;
-				Vector3 cross = Vector3.Cross(gg.collision.up, (Vector3)(other.position-position));
-				cross.Normalize();
-				cross *= gg.nodeSize*1.4142f;
+				var cross = gg.transform.TransformVector(new Vector3(cellOffset.y, 0, -cellOffset.x));
 				left = middle - (lClear ? cross : Vector3.zero);
 				right = middle + (rClear ? cross : Vector3.zero);
 			}

@@ -22,7 +22,8 @@ namespace Pathfinding.Graphs.Navmesh {
 		public readonly List<string> tagMask;
 		readonly float maxColliderApproximationError;
 		public readonly Bounds bounds;
-		public readonly UnityEngine.SceneManagement.Scene scene;
+		public readonly PhysicsScene physicsScene;
+		public readonly PhysicsScene2D physicsScene2D;
 		Dictionary<MeshCacheItem, int> cachedMeshes = new Dictionary<MeshCacheItem, int>();
 		readonly Dictionary<GameObject, TreeInfo> cachedTreePrefabs = new Dictionary<GameObject, TreeInfo>();
 		readonly List<NativeArray<Vector3> > vertexBuffers;
@@ -39,7 +40,7 @@ namespace Pathfinding.Graphs.Navmesh {
 		List<GatheredMesh> meshes;
 		List<Material> dummyMaterials = new List<Material>();
 
-		public RecastMeshGatherer (UnityEngine.SceneManagement.Scene scene, Bounds bounds, int terrainDownsamplingFactor, LayerMask mask, List<string> tagMask, List<RecastGraph.PerLayerModification> perLayerModifications, float maxColliderApproximationError) {
+		public RecastMeshGatherer (PhysicsScene physicsScene, PhysicsScene2D physicsScene2D, Bounds bounds, int terrainDownsamplingFactor, LayerMask mask, List<string> tagMask, List<RecastGraph.PerLayerModification> perLayerModifications, float maxColliderApproximationError) {
 			// Clamp to at least 1 since that's the resolution of the heightmap
 			terrainDownsamplingFactor = Math.Max(terrainDownsamplingFactor, 1);
 
@@ -48,7 +49,8 @@ namespace Pathfinding.Graphs.Navmesh {
 			this.mask = mask;
 			this.tagMask = tagMask ?? new List<string>();
 			this.maxColliderApproximationError = maxColliderApproximationError;
-			this.scene = scene;
+			this.physicsScene = physicsScene;
+			this.physicsScene2D = physicsScene2D;
 			meshes = ListPool<GatheredMesh>.Claim();
 			vertexBuffers = ListPool<NativeArray<Vector3> >.Claim();
 			triangleBuffers = ListPool<NativeArray<int> >.Claim();
@@ -628,7 +630,7 @@ namespace Pathfinding.Graphs.Navmesh {
 			}
 
 			// Figure out which samples we need from the terrain heightmap
-			var sampleRect = new IntRect(0, 0, chunks.x * chunkSizeAlongX - 1, chunks.y * chunkSizeAlongZ - 1).Offset(startSample);
+			var sampleRect = new IntRect(0, 0, chunks.x * chunkSizeAlongX, chunks.y * chunkSizeAlongZ).Offset(startSample);
 			var allSamples = new IntRect(0, 0, heightmapWidth - 1, heightmapDepth - 1);
 			// Clamp the samples to the heightmap bounds
 			sampleRect = IntRect.Intersection(sampleRect, allSamples);
@@ -852,7 +854,6 @@ namespace Pathfinding.Graphs.Navmesh {
 		public void CollectColliderMeshes () {
 			if (tagMask.Count == 0 && mask == 0) return;
 
-			var physicsScene = scene.GetPhysicsScene();
 			// Find all colliders that could possibly be inside the bounds
 			// TODO: Benchmark?
 			// Repeatedly do a OverlapBox check and make the buffer larger if it's too small.
@@ -1109,7 +1110,6 @@ namespace Pathfinding.Graphs.Navmesh {
 		public void Collect2DColliderMeshes () {
 			if (tagMask.Count == 0 && mask == 0) return;
 
-			var physicsScene = scene.GetPhysicsScene2D();
 			// Find all colliders that could possibly be inside the bounds
 			// TODO: Benchmark?
 			int numColliders = 256;
@@ -1134,7 +1134,7 @@ namespace Pathfinding.Graphs.Navmesh {
 				do {
 					if (colliderBuffer != null) ArrayPool<Collider2D>.Release(ref colliderBuffer);
 					colliderBuffer = ArrayPool<Collider2D>.Claim(numColliders * 4);
-					numColliders = physicsScene.OverlapArea(min2D, max2D, filter, colliderBuffer);
+					numColliders = physicsScene2D.OverlapArea(min2D, max2D, filter, colliderBuffer);
 				} while (numColliders == colliderBuffer.Length);
 			}
 

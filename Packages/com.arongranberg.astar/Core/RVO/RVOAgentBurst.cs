@@ -16,7 +16,7 @@ namespace Pathfinding.RVO {
 	using System.Diagnostics;
 
 	[BurstCompile(CompileSynchronously = false, FloatMode = FloatMode.Fast)]
-	public struct JobRVOPreprocess : IJob {
+	public struct JobRVOPreprocess<MovementPlaneWrapper> : IJob where MovementPlaneWrapper : struct, IMovementPlaneWrapper {
 		[ReadOnly]
 		public SimulatorBurst.AgentData agentData;
 
@@ -42,7 +42,10 @@ namespace Pathfinding.RVO {
 					temporaryAgentData.desiredVelocity[i] = float3.zero;
 					temporaryAgentData.currentVelocity[i] = float3.zero;
 				} else {
-					var desiredTargetPointInVelocitySpace = agentData.movementPlane[i].ToPlane(agentData.targetPoint[i] - agentData.position[i]);
+					MovementPlaneWrapper movementPlane = default;
+					movementPlane.Set(agentData.movementPlane[i]);
+
+					var desiredTargetPointInVelocitySpace = movementPlane.ToPlane(agentData.targetPoint[i] - agentData.position[i]);
 					temporaryAgentData.desiredTargetPointInVelocitySpace[i] = desiredTargetPointInVelocitySpace;
 
 					// Estimate our current velocity
@@ -51,7 +54,7 @@ namespace Pathfinding.RVO {
 					var currentVelocity = math.normalizesafe(previousOutput.targetPoint[i] - agentData.position[i]) * previousOutput.speed[i];
 
 					// Calculate the desired velocity from the point we want to reach
-					temporaryAgentData.desiredVelocity[i] = agentData.movementPlane[i].ToWorld(math.normalizesafe(desiredTargetPointInVelocitySpace) * agentData.desiredSpeed[i], 0);
+					temporaryAgentData.desiredVelocity[i] = movementPlane.ToWorld(math.normalizesafe(desiredTargetPointInVelocitySpace) * agentData.desiredSpeed[i], 0);
 
 					var collisionNormal = math.normalizesafe(agentData.collisionNormal[i]);
 					// Check if the velocity is going into the wall
@@ -70,7 +73,7 @@ namespace Pathfinding.RVO {
 	/// See: http://www.gdcvault.com/play/1014514/AI-Navigation-It-s-Not
 	/// </summary>
 	[BurstCompile(FloatMode = FloatMode.Fast)]
-	public struct JobHorizonAvoidancePhase1 : Pathfinding.Jobs.IJobParallelForBatched {
+	public struct JobHorizonAvoidancePhase1<MovementPlaneWrapper> : Pathfinding.Jobs.IJobParallelForBatched where MovementPlaneWrapper : struct, IMovementPlaneWrapper {
 		[ReadOnly]
 		public SimulatorBurst.AgentData agentData;
 
@@ -143,7 +146,9 @@ namespace Pathfinding.RVO {
 				float radius = agentData.radius[i];
 
 				var position = agentData.position[i];
-				var movementPlane = agentData.movementPlane[i];
+				MovementPlaneWrapper movementPlane = default;
+				movementPlane.Set(agentData.movementPlane[i]);
+
 				var distSqToEndOfPath = math.all(math.isfinite(agentData.endOfPath[i])) ? math.lengthsq(agentData.endOfPath[i] - position) : float.PositiveInfinity;
 
 				var agentNeighbours = neighbours.Slice(i*SimulatorBurst.MaxNeighbourCount, SimulatorBurst.MaxNeighbourCount);
@@ -233,7 +238,7 @@ namespace Pathfinding.RVO {
 	/// See: http://www.gdcvault.com/play/1014514/AI-Navigation-It-s-Not
 	/// </summary>
 	[BurstCompile(FloatMode = FloatMode.Fast)]
-	public struct JobHorizonAvoidancePhase2 : Pathfinding.Jobs.IJobParallelForBatched {
+	public struct JobHorizonAvoidancePhase2<MovementPlaneWrapper> : Pathfinding.Jobs.IJobParallelForBatched where MovementPlaneWrapper : struct, IMovementPlaneWrapper {
 		[ReadOnly]
 		public NativeArray<int> neighbours;
 		[ReadOnly]
@@ -276,7 +281,11 @@ namespace Pathfinding.RVO {
 				float bestAngle = horizonAgentData.horizonSide[i] < 0 ? horizonAgentData.horizonMinAngle[i] : horizonAgentData.horizonMaxAngle[i];
 				float2 desiredDirection;
 				math.sincos(bestAngle, out desiredDirection.y, out desiredDirection.x);
-				desiredVelocity[i] = movementPlane[i].ToWorld(math.length(desiredVelocity[i]) * desiredDirection, 0);
+
+				MovementPlaneWrapper movementPlane = default;
+				movementPlane.Set(this.movementPlane[i]);
+
+				desiredVelocity[i] = movementPlane.ToWorld(math.length(desiredVelocity[i]) * desiredDirection, 0);
 				desiredTargetPointInVelocitySpace[i] = math.length(desiredTargetPointInVelocitySpace[i]) * desiredDirection;
 			}
 		}
@@ -403,6 +412,7 @@ namespace Pathfinding.RVO {
 
 			MovementPlaneWrapper movementPlane = default;
 			movementPlane.Set(agentData.movementPlane[agentIndex]);
+
 			movementPlane.ToPlane(agentData.position[agentIndex], out float localElevation);
 
 			// Filter out invalid neighbours
@@ -469,9 +479,6 @@ namespace Pathfinding.RVO {
 		[ReadOnly]
 		public SimulatorBurst.TemporaryAgentData temporaryAgentData;
 
-		[ReadOnly]
-		public SimulatorBurst.ObstacleData obstacleData;
-
 		public SimulatorBurst.AgentOutputData output;
 		public int numAgents;
 		public CommandBuilder draw;
@@ -520,7 +527,9 @@ namespace Pathfinding.RVO {
 				if (!agentData.version[agentIndex].Valid) continue;
 
 				var position = agentData.position[agentIndex];
-				var movementPlane = agentData.movementPlane[agentIndex];
+				MovementPlaneWrapper movementPlane = default;
+				movementPlane.Set(agentData.movementPlane[agentIndex]);
+
 				var ourSpeed = output.speed[agentIndex];
 				var ourEndOfPath = agentData.endOfPath[agentIndex];
 

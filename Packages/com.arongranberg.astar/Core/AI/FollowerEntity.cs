@@ -1074,6 +1074,58 @@ namespace Pathfinding {
 		public bool reachedEndOfPath => entityStorageCache.GetComponentData(entity, ref movementStateAccessRW, out var movementState) ? movementState.value.reachedEndOfPathAndOrientation : false;
 
 		/// <summary>
+		/// Like <see cref="reachedEndOfPath"/>, but will also return true if the end of the path is crowded, and this agent has stopped because it cannot get closer.
+		///
+		/// This is only relevant if the agent is using local avoidance. Otherwise, this will be identical to <see cref="reachedEndOfPath"/>.
+		///
+		/// If the agent has a stale path (e.g. because the destination changed significantly, or a graph update happened near the agent), false will be returned
+		/// until the path has been recalculated (typically in the next one or two frames).
+		///
+		/// You can see a visualization of this state by enabling "Reached State" in the <see cref="rvoSettings.debug;Local Avoidance Debug Rendering"/> field.
+		///
+		/// Note: The agent may not be completely stopped when this is true. It knows that there are other agents in the way, but it might still be able to slowly make some progress.
+		/// Check the <see cref="velocity"/> property to see if the agent is actually moving.
+		///
+		/// In the video below, the agents will get a red ring around them when this property is true.
+		///
+		/// [Open online documentation to see videos]
+		///
+		/// See: local-avoidance (view in online documentation for working links).
+		/// See: <see cref="ReachedEndOfPath"/>
+		/// </summary>
+		public bool reachedCrowdedEndOfPath {
+			get {
+				if (reachedEndOfPath) return true;
+				if (!hasPath) return false;
+
+				var entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+				if (RVO.RVOSimulator.active != null && entityManager.HasComponent<AgentIndex>(entity)) {
+					var agentIndex = entityManager.GetComponentData<AgentIndex>(entity);
+					var simulator = RVO.RVOSimulator.active.GetSimulator();
+					if (agentIndex.TryGetIndex(ref simulator.simulationData, out var index)) {
+						var effectivelyReachedDestination = simulator.outputData.effectivelyReachedDestination[index];
+						if (effectivelyReachedDestination == RVO.ReachedEndOfPath.Reached) {
+							managedStateAccessRO.Update(entityManager);
+
+							// Check if the RVO simulator state is roughly in sync with the path tracer
+							var rvoEndOfPath = (Vector3)simulator.simulationData.endOfPath[index];
+							var endOfPath = managedState.pathTracer.endPoint;
+							const float MaxChangeRadians = 0.1f;
+							if ((rvoEndOfPath - endOfPath).sqrMagnitude < (endOfPath - position).sqrMagnitude*MaxChangeRadians*MaxChangeRadians) {
+								return true;
+							} else {
+								// The RVO simulator has a different end of path than the path tracer.
+								// This can happen if the destination has just changed, but the rvo simulation has not yet run another iteration.
+								// In that case we should not consider it reached.
+							}
+						}
+					}
+				}
+				return false;
+			}
+		}
+
+		/// <summary>
 		/// End point of path the agent is currently following.
 		/// If the agent has no path (or if it's not calculated yet), this will return the <see cref="destination"/> instead.
 		/// If the agent has no destination it will return the agent's current position.

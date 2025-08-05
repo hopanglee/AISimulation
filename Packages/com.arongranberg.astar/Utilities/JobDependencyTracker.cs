@@ -34,21 +34,22 @@ namespace Pathfinding.Jobs {
 
 		public void Add<T>(NativeArray<T> data) where T : unmanaged {
 			if (buffer == null) buffer = ListPool<NativeArray<byte> >.Claim();
-			buffer.Add(data.Reinterpret<byte>(UnsafeUtility.SizeOf<T>()));
+			// SAFETY: This is safe because NativeArray<byte> and NativeArray<T> have the same memory layout.
+			// Note: The resulting array will have the wrong length, but the length is not used when disposing the array.
+			// Note: It's important *not* to use the Reinterpret method, as for large arrays with large structs, the length in bytes could overflow 32-bits.
+			buffer.Add(UnsafeUtility.As<NativeArray<T>, NativeArray<byte> >(ref data));
 		}
 
 		public void Add<T>(NativeList<T> data) where T : unmanaged {
 			// SAFETY: This is safe because NativeList<byte> and NativeList<T> have the same memory layout.
-			var byteList = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.As<NativeList<T>, NativeList<byte> >(ref data);
 			if (buffer2 == null) buffer2 = ListPool<NativeList<byte> >.Claim();
-			buffer2.Add(byteList);
+			buffer2.Add(UnsafeUtility.As<NativeList<T>, NativeList<byte> >(ref data));
 		}
 
 		public void Add<T>(NativeQueue<T> data) where T : unmanaged {
 			// SAFETY: This is safe because NativeQueue<byte> and NativeQueue<T> have the same memory layout.
-			var byteList = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.As<NativeQueue<T>, NativeQueue<byte> >(ref data);
 			if (buffer3 == null) buffer3 = ListPool<NativeQueue<byte> >.Claim();
-			buffer3.Add(byteList);
+			buffer3.Add(UnsafeUtility.As<NativeQueue<T>, NativeQueue<byte> >(ref data));
 		}
 
 		public void Remove<T>(NativeArray<T> data) where T : unmanaged {
@@ -233,6 +234,15 @@ namespace Pathfinding.Jobs {
 			public void Execute () {}
 		}
 
+		struct JobSpherecastCommandDummy : IJob {
+			[ReadOnly]
+			public NativeArray<UnityEngine.SpherecastCommand> commands;
+			[WriteOnly]
+			public NativeArray<UnityEngine.RaycastHit> results;
+
+			public void Execute () {}
+		}
+
 #if UNITY_2022_2_OR_NEWER
 		struct JobOverlapCapsuleCommandDummy : IJob {
 			[ReadOnly]
@@ -339,6 +349,25 @@ namespace Pathfinding.Jobs {
 			var job = UnityEngine.RaycastCommand.ScheduleBatch(commands, results, minCommandsPerJob, dependencies);
 
 			JobDependencyAnalyzer<JobRaycastCommandDummy>.Scheduled(ref dummy, this, job);
+			return job;
+		}
+
+		/// <summary>
+		/// Schedules a spherecast batch command.
+		/// Like RaycastCommand.ScheduleBatch, but dependencies are tracked automatically.
+		/// </summary>
+		public JobHandle ScheduleBatch (NativeArray<UnityEngine.SpherecastCommand> commands, NativeArray<UnityEngine.RaycastHit> results, int minCommandsPerJob) {
+			if (forceLinearDependencies) {
+				UnityEngine.SpherecastCommand.ScheduleBatch(commands, results, minCommandsPerJob).Complete();
+				return default;
+			}
+
+			// Create a dummy structure to allow the analyzer to determine how the job reads/writes data
+			var dummy = new JobSpherecastCommandDummy { commands = commands, results = results };
+			var dependencies = JobDependencyAnalyzer<JobSpherecastCommandDummy>.GetDependencies(ref dummy, this);
+			var job = UnityEngine.SpherecastCommand.ScheduleBatch(commands, results, minCommandsPerJob, dependencies);
+
+			JobDependencyAnalyzer<JobSpherecastCommandDummy>.Scheduled(ref dummy, this, job);
 			return job;
 		}
 

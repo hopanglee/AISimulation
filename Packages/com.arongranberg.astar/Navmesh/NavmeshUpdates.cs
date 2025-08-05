@@ -79,7 +79,10 @@ namespace Pathfinding.Graphs.Navmesh {
 
 			public NavmeshUpdateSettings(NavmeshBase graph) {
 				this.graph = graph;
-				dirtyTiles = new UnsafeBitArray(0, Allocator.Persistent);
+				// Note: This must not be initialized here. This is because this class may be created when the AstarPath component is disabled, or if it's a prefab.
+				// It's very hard to properly handled disposing unmanaged memory in those cases (unity doesn't send all useful lifetime events).
+				// So we ensure that we don't initialize unmanaged memory until Enable is called.
+				dirtyTiles = default;
 			}
 
 			public NavmeshUpdateSettings(NavmeshBase graph, TileLayout tileLayout) {

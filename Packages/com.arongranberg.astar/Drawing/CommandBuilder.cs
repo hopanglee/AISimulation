@@ -1074,7 +1074,7 @@ namespace Pathfinding.Drawing {
 		///
 		/// [Open online documentation to see images]
 		///
-		/// See: <see cref="Circle(float3,float3,float)"/>
+		/// See: <see cref="CommandBuilder.Circle(float3,float3,float)"/>
 		/// See: <see cref="CircleXY(float3,float,float,float)"/>
 		/// See: <see cref="Arc(float3,float3,float3)"/>
 		/// </summary>
@@ -1110,7 +1110,7 @@ namespace Pathfinding.Drawing {
 		///
 		/// [Open online documentation to see images]
 		///
-		/// See: <see cref="Circle(float3,float3,float)"/>
+		/// See: <see cref="CommandBuilder.Circle(float3,float3,float)"/>
 		/// See: <see cref="Arc(float3,float3,float3)"/>
 		/// </summary>
 		/// <param name="center">Center of the circle or arc.</param>

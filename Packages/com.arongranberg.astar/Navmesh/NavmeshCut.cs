@@ -487,12 +487,33 @@ namespace Pathfinding {
 		public static readonly Color GizmoColor = new Color(37.0f/255, 184.0f/255, 239.0f/255);
 		public static readonly Color GizmoColor2 = new Color(169.0f/255, 92.0f/255, 242.0f/255);
 
+		static NavmeshBase ClosestGraph (Vector3 position) {
+			var graphs = AstarPath.active?.data.graphs;
+			if (graphs == null) return null;
+
+			NavmeshBase closestGraph = null;
+			float closestDistance = float.PositiveInfinity;
+			for (int i = 0; i < graphs.Length; i++) {
+				var graph = graphs[i] as NavmeshBase;
+				if (graph == null) continue;
+
+				var d = graph.IsInsideBounds(position) ? -1 : graph.bounds.SqrDistance(position);
+				if (d < closestDistance) {
+					closestDistance = d;
+					closestGraph = graph;
+				}
+			}
+			return closestGraph;
+		}
+
 		public override void DrawGizmos () {
 			if (tr == null) tr = transform;
 
 			bool selected = GizmoContext.InActiveSelection(tr);
 
-			var graph = AstarPath.active != null ? (AstarPath.active.data.recastGraph as NavmeshBase ?? AstarPath.active.data.navmeshGraph) : null;
+			// Draw the gizmos relative to the closest graph, for visualization purposes.
+			// If the cut overlaps multiple graphs, the cut will be applied to all of them, in the correct orientation for each graph.
+			var graph = ClosestGraph(tr.position);
 			var matrix = graph != null ? graph.transform : GraphTransform.identityTransform;
 
 			var characterRadius = graph != null ? graph.NavmeshCuttingCharacterRadius : 0;

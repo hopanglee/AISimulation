@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f25391e84c9d973e3a706515c0e373c6
+guid: 5804b9ab9025ef553b227fd4d2a5e663
 DefaultImporter:
   externalObjects: {}
   userData: 
@@ -9,6 +9,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 87744
   packageName: A* Pathfinding Project Pro
-  packageVersion: 5.3.3
+  packageVersion: 5.3.8
   assetPath: Packages/com.arongranberg.astar/Editor/EditorAssets/tooltips.tsv
-  uploadId: 728703
+  uploadId: 764484

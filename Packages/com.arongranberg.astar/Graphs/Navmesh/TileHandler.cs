@@ -299,14 +299,17 @@ namespace Pathfinding.Graphs.Navmesh {
 		static readonly Unity.Profiling.ProfilerMarker MarkerAllocate = new Unity.Profiling.ProfilerMarker("Allocate");
 		static readonly Unity.Profiling.ProfilerMarker MarkerCore = new Unity.Profiling.ProfilerMarker("Core");
 		static readonly Unity.Profiling.ProfilerMarker MarkerCompress = new Unity.Profiling.ProfilerMarker("Compress");
+		static readonly Unity.Profiling.ProfilerMarker MarkerRemoveDegenerateTriangles = new Unity.Profiling.ProfilerMarker("Remove Degenerate Tris");
 		static readonly Unity.Profiling.ProfilerMarker MarkerRefine = new Unity.Profiling.ProfilerMarker("Refine");
 		static readonly Unity.Profiling.ProfilerMarker MarkerEdgeSnapping = new Unity.Profiling.ProfilerMarker("EdgeSnapping");
+		static readonly Unity.Profiling.ProfilerMarker MarkerRemoveDegenerateLines = new Unity.Profiling.ProfilerMarker("Remove Degenerate Lines");
+		static readonly Unity.Profiling.ProfilerMarker MarkerClipHorizontal = new Unity.Profiling.ProfilerMarker("ClipHorizontal");
 		static readonly Unity.Profiling.ProfilerMarker MarkerCopyClippingResult = new Unity.Profiling.ProfilerMarker("CopyClippingResult");
 		static readonly Unity.Profiling.ProfilerMarker CopyTriangulationToOutputMarker = new Unity.Profiling.ProfilerMarker("Copy to output");
 
 #if UNITY_2022_3_OR_NEWER && MODULE_COLLECTIONS_2_2_0_OR_NEWER
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-		private delegate bool CutFunction(ref UnsafeSpan<Point64Wrapper> subject, ref UnsafeSpan<Point64Wrapper> contourVertices, ref UnsafeSpan<NavmeshCut.ContourBurst> contours, ref UnsafeSpan<int> contourIndices, ref UnsafeSpan<int> contourIndicesDual, ref UnsafeList<Vector2Int> outputVertices, ref UnsafeList<int> outputVertexCountPerPolygon, int dual);
+		private delegate bool CutFunction(ref UnsafeSpan<Point64Wrapper> subject, ref UnsafeSpan<UnsafeSpan<Point64Wrapper> > contours, ref UnsafeSpan<UnsafeSpan<Point64Wrapper> > contoursDual, ref UnsafeList<Vector2Int> outputVertices, ref UnsafeList<int> outputVertexCountPerPolygon, int dual);
 
 		struct CutFunctionKey {}
 		private static readonly SharedStatic<IntPtr> CutFunctionPtr = SharedStatic<IntPtr>.GetOrCreate<CutFunctionKey>();
@@ -315,6 +318,20 @@ namespace Pathfinding.Graphs.Navmesh {
 
 		/// <summary>See <see cref="SnapEdges"/></summary>
 		const int EdgeSnappingMaxDistance = 1;
+
+		/// <summary>
+		/// Scale all coordinates by this value to make intersection calculations more accurate, while clipping.
+		///
+		/// When an intersection is calculated during clipping, it has to be rounded to the nearest integer coordinate.
+		/// If this intersection is then used to calculate another intersection, the error will accumulate.
+		/// By scaling up the coordinates, and dividing all coordinates after all clipping is finished, the error is reduced.
+		///
+		/// This should be a power of two, for best performance. It should not be too large, as then large coordinates
+		/// can cause overflows in various calculations.
+		///
+		/// To disable, set to 1. But this is not recommended.
+		/// </summary>
+		const int Scale = 16;
 
 		/// <summary>
 		/// See <see cref="ConvertVerticesAndSnapToTileBoundaries"/>.
@@ -348,6 +365,9 @@ namespace Pathfinding.Graphs.Navmesh {
 			public UnsafeList<NavmeshCut.ContourBurst> contours;
 			public UnsafeList<ContourMeta> contoursExtra;
 			public UnsafeList<TileCuts> tileCuts;
+#if DEBUG
+			public UnsafeList<Matrix4x4> tileToWorldMatrices;
+#endif
 			[MarshalAs(UnmanagedType.U1)]
 			public bool cuttingRequired;
 
@@ -356,6 +376,9 @@ namespace Pathfinding.Graphs.Navmesh {
 				contours.Dispose();
 				contoursExtra.Dispose();
 				tileCuts.Dispose();
+#if DEBUG
+				tileToWorldMatrices.Dispose();
+#endif
 			}
 		}
 
@@ -378,7 +401,10 @@ namespace Pathfinding.Graphs.Navmesh {
 			var contoursExtra = new UnsafeList<ContourMeta>(0, Allocator.Persistent);
 			bool cuttingRequired = false;
 
-			var tileCuts = new UnsafeList<TileCuts>(0, Allocator.Persistent);
+			var tileCuts = new UnsafeList<TileCuts>(tileCoordinates.Count, Allocator.Persistent);
+#if DEBUG
+			var tileToWorldMatrices = new UnsafeList<Matrix4x4>(tileCoordinates.Count, Allocator.Persistent);
+#endif
 			Int3[] vbuffer = null;
 
 			for (int tileIndex = 0; tileIndex < tileCoordinates.Count; tileIndex++) {
@@ -398,16 +424,15 @@ namespace Pathfinding.Graphs.Navmesh {
 
 				for (int cutIndex = 0; cutIndex < navmeshCuts.Count; cutIndex++) {
 					int startIndex = contours.Length;
+					var cut = navmeshCuts[cutIndex];
 					unsafe {
-						navmeshCuts[cutIndex].GetContourBurst(&contourVertices, &contours, transform.inverseMatrix, characterRadius);
+						cut.GetContourBurst(&contourVertices, &contours, transform.inverseMatrix, characterRadius);
 					}
 					var m = new ContourMeta {
-						isDual = navmeshCuts[cutIndex].isDual,
-						cutsAddedGeom = navmeshCuts[cutIndex].cutsAddedGeom
+						isDual = cut.isDual,
+						cutsAddedGeom = cut.cutsAddedGeom
 					};
-					for (int k = startIndex; k < contours.Length; k++) {
-						contoursExtra.Add(m);
-					}
+					contoursExtra.AddReplicate(m, contours.Length - startIndex);
 				}
 
 				ListPool<NavmeshCut>.Release(ref navmeshCuts);
@@ -428,9 +453,7 @@ namespace Pathfinding.Graphs.Navmesh {
 						tspan[i] = tbuffer[i];
 					}
 					var tagsSpan = new UnsafeSpan<int>(Allocator.Persistent, tbuffer.Length / 3);
-					for (int i = 0; i < tagsSpan.Length; i++) {
-						tagsSpan[i] = 0;
-					}
+					tagsSpan.FillZeros();
 
 					tileVertices[tileIndex].Add(vspan);
 					tileTriangles[tileIndex].Add(tspan);
@@ -439,10 +462,13 @@ namespace Pathfinding.Graphs.Navmesh {
 
 				ListPool<NavmeshAdd>.Release(ref navmeshAdds);
 
-				tileCuts.Add(new TileCuts {
+				tileCuts.AddNoResize(new TileCuts {
 					contourStartIndex = tileStartIndex,
 					contourEndIndex = contours.Length
 				});
+#if DEBUG
+				tileToWorldMatrices.AddNoResize(transform.matrix);
+#endif
 			}
 
 			Profiler.BeginSample("Convert vertices");
@@ -460,6 +486,9 @@ namespace Pathfinding.Graphs.Navmesh {
 					   contoursExtra = contoursExtra,
 					   tileCuts = tileCuts,
 					   cuttingRequired = cuttingRequired,
+#if DEBUG
+					   tileToWorldMatrices = tileToWorldMatrices,
+#endif
 			};
 		}
 
@@ -503,14 +532,18 @@ namespace Pathfinding.Graphs.Navmesh {
 			var contourVerticesP64 = cutCollection.contourVertices;
 			var cutBounds = CalculateCutBounds(ref cutCollection, ref contourVerticesP64);
 			MarkerPrepare.End();
+			ScaleUpCoordinates(contourVerticesP64.AsUnsafeSpan().Reinterpret<long>(16));
 
 			MarkerAllocate.Begin();
 			var tileCount = tileVertices.Length;
 			var interestingCuts = new NativeList<int>(4, Allocator.Temp);
-			var interestingDualCuts = new NativeList<int>(0, Allocator.Temp);
 			var triBufferClip = new NativeArray<Int3>(7, Allocator.Temp);
 			var triBufferClipTemp = new NativeArray<Int3>(7, Allocator.Temp);
 			var triBuffer = new NativeArray<Point64Wrapper>(16, Allocator.Temp);
+			var finalContourVertices = new NativeList<UnsafeSpan<Point64Wrapper> >(Allocator.Temp);
+			var finalDualContourVertices = new NativeList<UnsafeSpan<Point64Wrapper> >(Allocator.Temp);
+			var contourScratchVertices = new NativeList<Point64Wrapper>(32, Allocator.Temp);
+
 
 			var triangulationPositions = new NativeList<int2>(Allocator.Temp);
 			var constraintEdges = new NativeList<int>(Allocator.Temp);
@@ -550,6 +583,14 @@ namespace Pathfinding.Graphs.Navmesh {
 				tileOutputVertices.Clear();
 				tileOutputTriangles.Clear();
 				tileOutputTags.Clear();
+				var tileContoursMeta = cutCollection.contoursExtra.AsUnsafeSpan().Slice(cuts.contourStartIndex, cuts.contourEndIndex - cuts.contourStartIndex);
+				var tileCutBounds = cutBounds.AsUnsafeSpan().Slice(cuts.contourStartIndex, cuts.contourEndIndex - cuts.contourStartIndex);
+#if DEBUG
+				var tileToWorldMatrix = cutCollection.tileToWorldMatrices[tileIndex];
+#endif
+
+				// Ensure we have enough space for all cuts in the tile
+				if (tileCutBounds.Length > interestingCuts.Capacity) interestingCuts.SetCapacity(tileCutBounds.Length);
 
 				// Iterate over all meshes in the tile
 				// This will typically only be 1, but there can be more if NavmeshAdd components are present
@@ -567,20 +608,18 @@ namespace Pathfinding.Graphs.Navmesh {
 						var c = vertices[tri.z];
 
 						var triBounds = TriangleBounds(a, b, c);
-						triBounds.max += EdgeSnappingMaxDistance;
-						triBounds.min -= EdgeSnappingMaxDistance;
+						triBounds.max.xz += EdgeSnappingMaxDistance;
+						triBounds.min.xz -= EdgeSnappingMaxDistance;
 
-						FindIntersectingCuts(
-							cutCollection.contoursExtra.AsUnsafeSpan().Slice(cuts.contourStartIndex, cuts.contourEndIndex - cuts.contourStartIndex),
-							cutBounds.AsUnsafeSpan().Slice(cuts.contourStartIndex, cuts.contourEndIndex - cuts.contourStartIndex),
+						CollectCutsTouchingBounds(
+							tileCutBounds,
 							interestingCuts,
-							interestingDualCuts,
-							triBounds,
-							mi > 0
+							triBounds
 							);
+						bool addedGeometry = mi > 0;
 
 						var tag = tags[tileTriangleIndex];
-						if (interestingCuts.Length == 0 && interestingDualCuts.Length == 0 && mi == 0) {
+						if (interestingCuts.Length == 0 && !addedGeometry) {
 							// Copy triangle to output as-is
 							var vertexOffset = tileOutputVertices.Length;
 							tileOutputVertices.Capacity = math.max(tileOutputVertices.Capacity, tileOutputVertices.Length + 3);
@@ -595,41 +634,88 @@ namespace Pathfinding.Graphs.Navmesh {
 							tileOutputTags.Add(tag);
 							continue;
 						} else {
+							var contoursSpan = cutCollection.contours.AsUnsafeSpan().Slice(cuts.contourStartIndex, cuts.contourEndIndex - cuts.contourStartIndex);
+							contourScratchVertices.Clear();
+							finalContourVertices.Clear();
+							finalDualContourVertices.Clear();
+
 							// Copy triangle to buffer, and clip it against the tile if necessary
 							int vertexCount;
-							if (mi > 0) {
+							if (addedGeometry) {
 								triBufferClip[0] = a;
 								triBufferClip[1] = b;
 								triBufferClip[2] = c;
 								// This is a navmesh add. We need to clip it against the tile bounds
 								vertexCount = ClipAgainstRectangle(triBufferClip.AsUnsafeSpan(), triBufferClipTemp.AsUnsafeSpan(), tileSize);
 								for (int i = 0; i < vertexCount; i++) {
-									triBuffer[i] = new Point64Wrapper(triBufferClip[i].x, triBufferClip[i].z);
+									triBuffer[i] = new Point64Wrapper(triBufferClip[i].x * Scale, triBufferClip[i].z * Scale);
+								}
+
+								for (int i = 0; i < interestingCuts.Length; i++) {
+									var cutIndex = interestingCuts[i];
+									if (tileContoursMeta[cutIndex].cutsAddedGeom) {
+										var cut = contoursSpan[cutIndex];
+										var cutVertices = contourVerticesP64.AsUnsafeSpan().Slice(cut.startIndex, cut.endIndex - cut.startIndex);
+										if (tileContoursMeta[cutIndex].isDual) finalDualContourVertices.Add(cutVertices);
+										else finalContourVertices.Add(cutVertices);
+									}
 								}
 							} else {
 								vertexCount = 3;
-								triBuffer[0] = new Point64Wrapper(a.x, a.z);
-								triBuffer[1] = new Point64Wrapper(b.x, b.z);
-								triBuffer[2] = new Point64Wrapper(c.x, c.z);
+								triBuffer[0] = new Point64Wrapper(a.x * Scale, a.z * Scale);
+								triBuffer[1] = new Point64Wrapper(b.x * Scale, b.z * Scale);
+								triBuffer[2] = new Point64Wrapper(c.x * Scale, c.z * Scale);
+
+								MarkerClipHorizontal.Begin();
+
+								// Clip the cuts against its vertical bounds.
+								// This prevents the cut from extending further down or up than it should.
+								// In most cases, cuts go through the whole triangle, and this is not necessary.
+								var triangleIsFlat = triBounds.min.y == triBounds.max.y-1;
+								for (int ci = 0; ci < interestingCuts.Length; ci++) {
+									var bounds = tileCutBounds[interestingCuts[ci]];
+
+									var cut = contoursSpan[interestingCuts[ci]];
+									var cutVertices = contourVerticesP64.AsUnsafeSpan().Slice(cut.startIndex, cut.endIndex - cut.startIndex);
+
+									if (!triangleIsFlat) {
+										var hmin = bounds.min.y;
+										if (triBounds.min.y <= hmin && triBounds.max.y-1 >= hmin) {
+											var touchesOnlyTopOfTriangle = hmin == triBounds.max.y-1;
+											if (touchesOnlyTopOfTriangle) cutVertices = default; // The cut only touches the triangle along a single line or point
+											ClipAgainstHorizontalHalfPlane(ref cutVertices, contourScratchVertices, hmin, a, b, c, false);
+										}
+
+										var hmax = bounds.max.y;
+										if (triBounds.min.y <= hmax && triBounds.max.y-1 >= hmax) {
+											if (hmax == triBounds.min.y) cutVertices = default; // The cut only touches the triangle along a single line or point
+											ClipAgainstHorizontalHalfPlane(ref cutVertices, contourScratchVertices, hmax, a, b, c, true);
+										}
+									}
+
+									if (cutVertices.length > 0) {
+										(tileContoursMeta[interestingCuts[ci]].isDual ? finalDualContourVertices : finalContourVertices).Add(cutVertices);
+									}
+								}
+								MarkerClipHorizontal.End();
 							}
 
 							// Insert extra vertices on the edges of the triangle, if necessary
-							var contoursSpan = cutCollection.contours.AsUnsafeSpan().Slice(cuts.contourStartIndex, cuts.contourEndIndex - cuts.contourStartIndex);
 							MarkerEdgeSnapping.Begin();
-							SnapEdges(ref triBuffer, ref vertexCount, contoursSpan, ref interestingCuts, contourVerticesP64.AsUnsafeSpan(), tileSize);
+							SnapEdges(ref triBuffer, ref vertexCount, finalContourVertices.AsUnsafeSpan(), tileSize);
 							MarkerEdgeSnapping.End();
 
 							// First iteration: Cut the triangle using normal navmesh cuts
 							// Second iteration: Handle dual navmesh cuts (we keep the interior of these cuts)
 							for (int mode = 0; mode < 2; mode++) {
-								if (mode == 1 && interestingDualCuts.Length == 0) {
+								if (mode == 1 && finalDualContourVertices.Length == 0) {
 									// No dual cuts. Skip the second iteration
 									break;
 								}
 
 								var triSpan = triBuffer.AsUnsafeReadOnlySpan().Slice(0, vertexCount);
-								var interestingCutsSpan = interestingCuts.AsUnsafeSpan();
-								var interestingCutsDualSpan = interestingDualCuts.AsUnsafeSpan();
+								var finalContourVerticesSpan = finalContourVertices.AsUnsafeSpan();
+								var finalDualContourVerticesSpan = finalDualContourVertices.AsUnsafeSpan();
 								var verticesSpan = contourVerticesP64.AsUnsafeSpan();
 								triangulationOutputVertices.Clear();
 								triangulationVertexCountPerPolygon.Clear();
@@ -643,10 +729,8 @@ namespace Pathfinding.Graphs.Navmesh {
 									var cutFunction = new FunctionPointer<CutFunction>(CutFunctionPtr.Data);
 									var ok = cutFunction.Invoke(
 										ref triSpan,
-										ref verticesSpan,
-										ref contoursSpan,
-										ref interestingCutsSpan,
-										ref interestingCutsDualSpan,
+										ref finalContourVerticesSpan,
+										ref finalDualContourVerticesSpan,
 										ref UnsafeUtility.AsRef<UnsafeList<Vector2Int> >(triangulationOutputVertices.GetUnsafeList()),
 										ref UnsafeUtility.AsRef<UnsafeList<int> >(triangulationVertexCountPerPolygon.GetUnsafeList()),
 										mode
@@ -670,7 +754,7 @@ namespace Pathfinding.Graphs.Navmesh {
 
 									var interpolator = new Polygon.BarycentricTriangleInterpolator(a, b, c);
 									for (int i = 0; i < 3; i++) {
-										var p = new Int3(triangulationOutputVertices[i].x, 0, triangulationOutputVertices[i].y);
+										var p = new Int3(triangulationOutputVertices[i].x/Scale, 0, triangulationOutputVertices[i].y/Scale);
 										p.y = interpolator.SampleY(new int2(p.x, p.z));
 										tileOutputVertices.Add(p);
 									}
@@ -687,16 +771,20 @@ namespace Pathfinding.Graphs.Navmesh {
 									constraintEdges.Clear();
 									seenVertices.Clear();
 
+									ScaleDownCoordinates(triangulationOutputVertices.AsUnsafeSpan().Reinterpret<int>(8));
+
 									var vertexIndexOffset = 0;
 									for (int ki = 0; ki < triangulationVertexCountPerPolygon.Length; ki++) {
 										var startIndex = vertexIndexOffset;
 										vertexIndexOffset += triangulationVertexCountPerPolygon[ki];
-										var endIndex = vertexIndexOffset;
+										var polygon = triangulationOutputVertices.AsUnsafeSpan().Slice(startIndex, vertexIndexOffset - startIndex).Reinterpret<int2>();
+
+										RemoveDegenerateSegments(ref polygon);
 
 										var prevVertexId = -1;
 										var startConstraintId = constraintEdges.Length;
-										for (int k = startIndex; k < endIndex; k++) {
-											var p = new int2((int)triangulationOutputVertices[k].x, (int)triangulationOutputVertices[k].y);
+										for (int k = 0; k < polygon.length; k++) {
+											var p = polygon[k];
 											int vertexId;
 											if (seenVertices.TryGetValue(p, out vertexId)) {
 											} else {
@@ -714,6 +802,7 @@ namespace Pathfinding.Graphs.Navmesh {
 										constraintEdges.Add(prevVertexId);
 										constraintEdges.Add(constraintEdges[startConstraintId]);
 									}
+
 									Assert.IsTrue(triangulationPositions.Length >= 3);
 
 									var input = new andywiecko.BurstTriangulator.LowLevel.Unsafe.InputData<int2>() {
@@ -761,22 +850,47 @@ namespace Pathfinding.Graphs.Navmesh {
 			tileOutputTags.Dispose();
 		}
 
-		static void FindIntersectingCuts (UnsafeSpan<ContourMeta> contoursMeta, UnsafeSpan<IntBounds> cutBounds, NativeList<int> interestingCuts, NativeList<int> interestingDualCuts, IntBounds triBounds, bool addedGeometry) {
-			interestingCuts.Clear();
-			interestingDualCuts.Clear();
-			triBounds.max += EdgeSnappingMaxDistance;
-			triBounds.min -= EdgeSnappingMaxDistance;
+		static void ScaleUpCoordinates (UnsafeSpan<long> coords) {
+			for (int i = 0; i < coords.Length; i++) coords[i] *= Scale;
+		}
+
+		static void ScaleDownCoordinates (UnsafeSpan<int> coords) {
+			for (int i = 0; i < coords.Length; i++) coords[i] /= Scale;
+		}
+
+		static void RemoveDegenerateSegments (ref UnsafeSpan<int2> polygon) {
+			MarkerRemoveDegenerateLines.Begin();
+			for (int i = 0; i < polygon.Length; i++) {
+				var p1 = polygon[i];
+				var p2 = polygon[(i + 1) % polygon.Length];
+				var p3 = polygon[(i + 2) % polygon.Length];
+				if (VectorMath.IsColinear(p1, p2, p3) && math.dot(p2 - p1, p3 - p2) < 0) {
+					// Degenerate segment
+					//
+					// 1      3     2
+					// x------x-----x
+					// We need to remove vertex 2 to get rid of the degeneracy.
+					// Clipper2 can output these degenerate segments in some cases,
+					// in particular when two navmesh cuts touch each other along an edge like:
+					//
+					// ┌───┬───┐
+					// │   │   │
+					// └───┴───┘
+					//
+					UnsafeSpan<int2>.RemoveAt(ref polygon, (i + 1) % polygon.Length);
+					i--;
+				}
+			}
+			MarkerRemoveDegenerateLines.End();
+		}
+
+		static void CollectCutsTouchingBounds (UnsafeSpan<IntBounds> cutBounds, NativeList<int> outputCutIndices, IntBounds bounds) {
+			outputCutIndices.Clear();
 
 			for (int k = 0; k < cutBounds.Length; k++) {
-				// Check if the cut potentially intersects the triangle
-				if (IntBounds.Intersects(triBounds, cutBounds[k])) {
-					if (addedGeometry && !contoursMeta[k].cutsAddedGeom) continue;
-
-					if (contoursMeta[k].isDual) {
-						interestingDualCuts.Add(k);
-					} else {
-						interestingCuts.Add(k);
-					}
+				// Check if the cut potentially intersects the bounds
+				if (IntBounds.Intersects(bounds, cutBounds[k])) {
+					outputCutIndices.AddNoResize(k);
 				}
 			}
 		}
@@ -795,12 +909,20 @@ namespace Pathfinding.Graphs.Navmesh {
 			unsafe {
 				MarkerCompress.Begin();
 				// This next step will remove all duplicate vertices in the data (of which there are quite a few)
-				new MeshUtility.JobRemoveDuplicateVertices {
+				new MeshUtility.JobMergeNearbyVertices {
+					vertices = tileOutputVertices,
+					triangles = tileOutputTriangles,
+					mergeRadiusSq = 8,
+				}.Execute();
+				MarkerCompress.End();
+				MarkerRemoveDegenerateTriangles.Begin();
+				new MeshUtility.JobRemoveDegenerateTriangles {
 					vertices = tileOutputVertices,
 					triangles = tileOutputTriangles,
 					tags = tileOutputTags,
+					verbose = false,
 				}.Execute();
-				MarkerCompress.End();
+				MarkerRemoveDegenerateTriangles.End();
 			}
 
 			MarkerRefine.Begin();
@@ -861,7 +983,7 @@ namespace Pathfinding.Graphs.Navmesh {
 		/// navmesh cuts exactly touch the edges of the triangles.
 		/// The overhead seems to be roughly 1% of the total cutting time.
 		/// </summary>
-		static void SnapEdges (ref NativeArray<Point64Wrapper> triBuffer, ref int vertexCount, UnsafeSpan<NavmeshCut.ContourBurst> contours, ref NativeList<int> interestingCuts, UnsafeSpan<Point64Wrapper> contourVerticesP64, Vector2Int tileSize) {
+		static void SnapEdges (ref NativeArray<Point64Wrapper> triBuffer, ref int vertexCount, UnsafeSpan<UnsafeSpan<Point64Wrapper> > contours, Vector2Int tileSize) {
 			for (int next = 0, prev = vertexCount - 1; next < vertexCount; prev = next, next++) {
 				var c1 = new int2((int)triBuffer[prev].x, (int)triBuffer[prev].y);
 				var c2 = new int2((int)triBuffer[next].x, (int)triBuffer[next].y);
@@ -870,10 +992,10 @@ namespace Pathfinding.Graphs.Navmesh {
 				var baseLength = (long)math.sqrt((double)lengthSq);
 				var threshold = baseLength * EdgeSnappingMaxDistance * 2;
 
-				for (int i = 0; i < interestingCuts.Length; i++) {
-					var cut = contours[interestingCuts[i]];
-					for (int pi = cut.startIndex; pi < cut.endIndex; pi++) {
-						var p = new int2((int)contourVerticesP64[pi].x, (int)contourVerticesP64[pi].y);
+				for (int i = 0; i < contours.Length; i++) {
+					var cut = contours[i];
+					for (uint pi = 0; pi < cut.length; pi++) {
+						var p = new int2((int)cut[pi].x, (int)cut[pi].y);
 						// Check if the point is close enough to the (infinite) line
 						// Use the fact that the a triangle's area is base * height / 2
 						if (math.abs(VectorMath.SignedTriangleAreaTimes2(c1, c2, p)) <= threshold) {
@@ -942,12 +1064,10 @@ namespace Pathfinding.Graphs.Navmesh {
 			return cutBounds;
 		}
 
-		static void AddContours (Clipper64 clipper, ref UnsafeSpan<NavmeshCut.ContourBurst> contours, ref UnsafeSpan<Point64Wrapper> contourVertices, ref UnsafeSpan<int> contourIndices) {
-			for (int i = 0; i < contourIndices.Length; i++) {
-				var contour = contours[contourIndices[i]];
-				var vertices = contourVertices.Slice(contour.startIndex, contour.endIndex - contour.startIndex);
+		static void AddContours (Clipper64 clipper, ref UnsafeSpan<UnsafeSpan<Point64Wrapper> > contours) {
+			for (int i = 0; i < contours.Length; i++) {
 				unsafe {
-					clipper.AddPath((Point64*)vertices.ptr, vertices.Length, PathType.Clip);
+					clipper.AddPath((Point64*)contours[i].ptr, contours[i].Length, PathType.Clip);
 				}
 			}
 		}
@@ -964,7 +1084,7 @@ namespace Pathfinding.Graphs.Navmesh {
 		}
 
 		[AOT.MonoPInvokeCallback(typeof(CutFunction))]
-		static bool CutPolygon (ref UnsafeSpan<Point64Wrapper> subject, ref UnsafeSpan<Point64Wrapper> contourVertices, ref UnsafeSpan<NavmeshCut.ContourBurst> contours, ref UnsafeSpan<int> contourIndices, ref UnsafeSpan<int> contourIndicesDual, ref UnsafeList<Vector2Int> outputVertices, ref UnsafeList<int> outputVertexCountPerPolygon, int mode) {
+		static bool CutPolygon (ref UnsafeSpan<Point64Wrapper> subject, ref UnsafeSpan<UnsafeSpan<Point64Wrapper> > contours, ref UnsafeSpan<UnsafeSpan<Point64Wrapper> > contoursDual, ref UnsafeList<Vector2Int> outputVertices, ref UnsafeList<int> outputVertexCountPerPolygon, int mode) {
 			// Cache the clipper object to avoid unnecessary allocations.
 			// This method may be executed from multiple threads at the same time,
 			// so we must ensure that we use different cached clipper objects for different threads.
@@ -983,8 +1103,8 @@ namespace Pathfinding.Graphs.Navmesh {
 				unsafe {
 					clipper.AddPath((Point64*)subject.ptr, subject.Length, PathType.Subject);
 				}
-				AddContours(clipper, ref contours, ref contourVertices, ref contourIndices);
-				AddContours(clipper, ref contours, ref contourVertices, ref contourIndicesDual);
+				AddContours(clipper, ref contours);
+				AddContours(clipper, ref contoursDual);
 			} else {
 				// Handle dual cuts
 				// 1. Replace the subject with the intersection of subject and dual cuts
@@ -994,7 +1114,7 @@ namespace Pathfinding.Graphs.Navmesh {
 				unsafe {
 					clipper.AddPath((Point64*)subject.ptr, subject.Length, PathType.Subject);
 				}
-				AddContours(clipper, ref contours, ref contourVertices, ref contourIndicesDual);
+				AddContours(clipper, ref contoursDual);
 
 				if (!clipper.Execute(ClipType.Intersection, FillRule.NonZero, closedSolutions, openSolutions)) return false;
 
@@ -1009,7 +1129,7 @@ namespace Pathfinding.Graphs.Navmesh {
 						}
 					}
 				}
-				AddContours(clipper, ref contours, ref contourVertices, ref contourIndices);
+				AddContours(clipper, ref contours);
 
 				closedSolutions.Clear();
 				openSolutions.Clear();
@@ -1065,6 +1185,76 @@ namespace Pathfinding.Graphs.Navmesh {
 
 			ct = simpleClipper.ClipPolygon(clipTmp, ct, clipIn, -1, size.y, 2);
 			return ct;
+		}
+
+		static bool ClipAgainstHalfPlane (UnsafeSpan<Point64Wrapper> clipIn, NativeList<Point64Wrapper> clipOut, Point64Wrapper a, Point64Wrapper b) {
+			static long SignedDistanceToHalfPlane (Point64Wrapper a, Point64Wrapper b, Point64Wrapper p) {
+				return (b.x - a.x) * (p.y - a.y) - (p.x - a.x) * (b.y - a.y);
+			}
+
+			if (clipIn.length == 0) return false;
+
+			bool clipHappened = false;
+			var prev = SignedDistanceToHalfPlane(a, b, clipIn[clipIn.length-1]);
+			for (uint i = 0, j = clipIn.length-1; i < clipIn.length; j = i, i++) {
+				var curr = SignedDistanceToHalfPlane(a, b, clipIn[i]);
+
+				if ((prev > 0) != (curr > 0)) {
+					double s = (double)prev / (prev - curr);
+
+					var intX = clipIn[j].x + (long)math.round((clipIn[i].x - clipIn[j].x) * s);
+					var intY = clipIn[j].y + (long)math.round((clipIn[i].y - clipIn[j].y) * s);
+					clipOut.Add(new Point64Wrapper(intX, intY));
+				}
+
+				if (curr > 0) {
+					clipOut.Add(clipIn[i]);
+				} else {
+					clipHappened = true;
+				}
+				prev = curr;
+			}
+
+			return clipHappened;
+		}
+
+		static void ClipAgainstHorizontalHalfPlane (ref UnsafeSpan<Point64Wrapper> contourVertices, NativeList<Point64Wrapper> scratchVertices, int h, Int3 a, Int3 b, Int3 c, bool preserveBelow) {
+			var prev = a;
+			var curr = b;
+			var next = c;
+			for (int i = 0; i < 3; i++) {
+				if ((curr.y < h && prev.y >= h && next.y >= h) || (curr.y > h && prev.y <= h && next.y <= h)) {
+					// The segments extending from corner i intersects the y=h plane
+					// Calculate intersection points
+
+					// This is done carefully to make sure that for two adjacent triangles,
+					// we will calculate the exact same intersection point for the edge between them.
+					// This is important to avoid cracks between the triangles.
+					// curr is always the vertex with the outlier y coordinate, regardless of the triangle,
+					// ensuring the calculations are identical.
+					var t1 = (h - curr.y) / (double)(prev.y - curr.y);
+					var t2 = (h - curr.y) / (double)(next.y - curr.y);
+					var int1 = new Point64Wrapper((long)math.round(Scale * (curr.x + t1 * (prev.x - curr.x))), (long)math.round(Scale * (curr.z + t1 * (prev.z - curr.z))));
+					var int2 = new Point64Wrapper((long)math.round(Scale * (curr.x + t2 * (next.x - curr.x))), (long)math.round(Scale * (curr.z + t2 * (next.z - curr.z))));
+					if ((curr.y > h) != preserveBelow) Memory.Swap(ref int1, ref int2);
+
+					// Clip the cut's contours against the half-plane int1->int2.
+					var startLength = scratchVertices.Length;
+
+					if (ClipAgainstHalfPlane(contourVertices, scratchVertices, int2, int1)) {
+						contourVertices = scratchVertices.AsUnsafeSpan().Slice(startLength);
+						if (contourVertices.length == 0) break;
+					} else {
+						// Clip was not necessary
+						scratchVertices.Length = startLength;
+					}
+					break;
+				}
+				var tmp = prev;
+				prev = curr;
+				curr = next;
+				next = tmp;
+			}
 		}
 
 		/// <summary>

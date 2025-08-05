@@ -74,7 +74,12 @@ namespace Pathfinding.Graphs.Navmesh.Jobs {
 			unsafe {
 				UnityEngine.Assertions.Assert.IsTrue(this.outputBuffers.Length == 1);
 				var tile = (TileMesh.TileMeshUnsafe*) this.outputBuffers.GetUnsafePtr();
-				new MeshUtility.JobRemoveDuplicateVertices {
+				new MeshUtility.JobMergeNearbyVertices {
+					vertices = int3vertices,
+					triangles = triangles,
+					mergeRadiusSq = 0,
+				}.Execute();
+				new MeshUtility.JobRemoveDegenerateTriangles {
 					vertices = int3vertices,
 					triangles = triangles,
 					tags = tags,

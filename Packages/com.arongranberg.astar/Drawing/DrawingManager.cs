@@ -1,19 +1,16 @@
+// TODO: Check HDRP custom pass support, and log a warning if it is disabled
 #pragma warning disable 649 // Field `Drawing.GizmoContext.activeTransform' is never assigned to, and will always have its default value `null'. Not used outside of the unity editor.
 using UnityEngine;
-using System.Collections;
-using System;
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
 #endif
 using System.Collections.Generic;
 using Unity.Jobs;
-using Unity.Mathematics;
 using UnityEngine.Rendering;
 using Unity.Profiling;
 #if MODULE_RENDER_PIPELINES_UNIVERSAL
 using UnityEngine.Rendering.Universal;
-using UnityEngine.Profiling;
 #endif
 #if MODULE_RENDER_PIPELINES_HIGH_DEFINITION
 using UnityEngine.Rendering.HighDefinition;
@@ -55,9 +52,14 @@ namespace Pathfinding.Drawing {
 				DrawingManager.MarkerRefreshSelectionCache.Begin();
 				activeTransform = Selection.activeTransform;
 				selectedTransforms.Clear();
-				var topLevel = Selection.transforms;
-				for (int i = 0; i < topLevel.Length; i++) selectedTransforms.Add(topLevel[i]);
-				selectionSize = topLevel.Length;
+				// Optimization to avoid allocating an empty array when calling Selection.transforms in many cases
+				if (Selection.count > 0) {
+					var topLevel = Selection.transforms;
+					for (int i = 0; i < topLevel.Length; i++) selectedTransforms.Add(topLevel[i]);
+					selectionSize = topLevel.Length;
+				} else {
+					selectionSize = 0;
+				}
 				DrawingManager.MarkerRefreshSelectionCache.End();
 			}
 #endif
@@ -139,10 +141,14 @@ namespace Pathfinding.Drawing {
 		public DrawingData gizmos;
 		static List<GizmoDrawerGroup> gizmoDrawers = new List<GizmoDrawerGroup>();
 		static Dictionary<System.Type, int> gizmoDrawerIndices = new Dictionary<System.Type, int>();
+#if UNITY_EDITOR
+		static float lastGizmoInfoRefresh = float.NegativeInfinity;
+#endif
+		static bool ignoreAllDrawing;
 		static DrawingManager _instance;
 		bool framePassed;
 		int lastFrameCount = int.MinValue;
-		float lastFrameTime = -float.NegativeInfinity;
+		float lastFrameTime = float.NegativeInfinity;
 		int lastFilterFrame;
 #if UNITY_EDITOR
 		bool builtGizmos;
@@ -237,6 +243,14 @@ namespace Pathfinding.Drawing {
 			};
 			_instance = go.AddComponent<DrawingManager>();
 			if (Application.isPlaying) DontDestroyOnLoad(go);
+
+			if (Application.isBatchMode) {
+				// In batch mode, we never want to draw anything.
+				// See https://forum.arongranberg.com/t/drawingmanager-holds-on-to-memory-in-batch-mode/17765
+				ignoreAllDrawing = true;
+				gizmoDrawers.Clear();
+				gizmoDrawerIndices.Clear();
+			}
 		}
 
 		/// <summary>Detects which render pipeline is being used and configures them for rendering</summary>
@@ -593,37 +607,48 @@ namespace Pathfinding.Drawing {
 #if UNITY_EDITOR
 		void DrawGizmos (bool usingRenderPipeline) {
 			GizmoContext.SetDirty();
+
+			// Reduce overhead if there's nothing to render
+			if (gizmoDrawers.Count == 0) return;
+
 			MarkerGizmosAllowed.Begin();
 
-			// Figure out which component types should be rendered
-			for (int i = 0; i < gizmoDrawers.Count; i++) {
-				var group = gizmoDrawers[i];
+			// When playing, reduce how often we check for updates to the gizmo info, to avoid allocating garbage unnecessarily.
+			// It's not possible to check for gizmo info without generating garbage unfortunately.
+			bool refreshGizmoInfo = !Application.isPlaying || Time.realtimeSinceStartup - lastGizmoInfoRefresh > 0.1f;
+			if (refreshGizmoInfo) {
+				lastGizmoInfoRefresh = Time.realtimeSinceStartup;
+
+				// Figure out which component types should be rendered
+				for (int i = 0; i < gizmoDrawers.Count; i++) {
+					var group = gizmoDrawers[i];
 #if UNITY_2022_1_OR_NEWER
-				// In Unity 2022.1 we can use a new utility class which is more robust.
-				if (GizmoUtility.TryGetGizmoInfo(group.type, out var gizmoInfo)) {
-					group.enabled = gizmoInfo.gizmoEnabled;
-				} else {
-					group.enabled = true;
-				}
-#else
-				// We take advantage of the fact that IsGizmosAllowedForObject only depends on the type of the object and if it is active and enabled
-				// and not the specific object instance.
-				// When using a render pipeline the ShouldDrawGizmos method cannot be used because it seems to occasionally crash Unity :(
-				// So we need these two separate cases.
-				if (!usingRenderPipeline) {
-					group.enabled = false;
-					for (int j = group.drawers.Count - 1; j >= 0; j--) {
-						// Find the first active and enabled drawer
-						if ((group.drawers[j] as MonoBehaviour).isActiveAndEnabled) {
-							group.enabled = ShouldDrawGizmos((UnityEngine.Object)group.drawers[j]);
-							break;
-						}
+					// In Unity 2022.1 we can use a new utility class which is more robust.
+					if (GizmoUtility.TryGetGizmoInfo(group.type, out var gizmoInfo)) {
+						group.enabled = gizmoInfo.gizmoEnabled;
+					} else {
+						group.enabled = true;
 					}
-				} else {
-					group.enabled = true;
-				}
+#else
+					// We take advantage of the fact that IsGizmosAllowedForObject only depends on the type of the object and if it is active and enabled
+					// and not the specific object instance.
+					// When using a render pipeline the ShouldDrawGizmos method cannot be used because it seems to occasionally crash Unity :(
+					// So we need these two separate cases.
+					if (!usingRenderPipeline) {
+						group.enabled = false;
+						for (int j = group.drawers.Count - 1; j >= 0; j--) {
+							// Find the first active and enabled drawer
+							if ((group.drawers[j] as MonoBehaviour).isActiveAndEnabled) {
+								group.enabled = ShouldDrawGizmos((UnityEngine.Object)group.drawers[j]);
+								break;
+							}
+						}
+					} else {
+						group.enabled = true;
+					}
 #endif
-				gizmoDrawers[i] = group;
+					gizmoDrawers[i] = group;
+				}
 			}
 
 			MarkerGizmosAllowed.End();
@@ -720,11 +745,12 @@ namespace Pathfinding.Drawing {
 		/// The DrawGizmos method on the object will be called every frame until it is destroyed (assuming there are cameras with gizmos enabled).
 		/// </summary>
 		public static void Register (IDrawGizmos item) {
+			if (ignoreAllDrawing) return;
+
 			var tp = item.GetType();
 
 			int index;
-			if (gizmoDrawerIndices.TryGetValue(tp, out index)) {
-			} else {
+			if (!gizmoDrawerIndices.TryGetValue(tp, out index)) {
 				// Use reflection to figure out if the DrawGizmos method has not been overriden from the MonoBehaviourGizmos class.
 				// If it hasn't, then we know that this type will never draw gizmos and we can skip it.
 				// This improves performance by not having to keep track of objects and check if they are active and enabled every frame.
@@ -744,6 +770,9 @@ namespace Pathfinding.Drawing {
 						drawers = new List<IDrawGizmos>(),
 						profilerMarker = new ProfilerMarker(ProfilerCategory.Render, "Gizmos for " + tp.Name),
 					});
+#if UNITY_EDITOR
+					lastGizmoInfoRefresh = float.NegativeInfinity;
+#endif
 				} else {
 					index = gizmoDrawerIndices[tp] = -1;
 				}
@@ -781,9 +810,41 @@ namespace Pathfinding.Drawing {
 
 		/// <summary>
 		/// Get an empty builder for queuing drawing commands.
-		/// TODO: Example usage.
+		///
+		/// <code>
+		/// // Just a nice looking curve (which uses a lot of complex math)
+		/// // See https://en.wikipedia.org/wiki/Butterfly_curve_(transcendental)
+		/// static float2 ButterflyCurve (float t) {
+		///     t *= 12 * math.PI;
+		///     var k = math.exp(math.cos(t)) - 2*math.cos(4*t) - math.pow(math.sin(t/12f), 5);
+		///     return new float2(k * math.sin(t), k * math.cos(t));
+		/// }
+		///
+		/// // Make the butterfly "flap its wings" two times per second
+		/// var scale = Time.time % 0.5f < 0.25f ? new float2(1, 1) : new float2(0.7f, 1);
+		///
+		/// // Hash all inputs that you use for drawing something complex
+		/// var hasher = new DrawingData.Hasher();
+		/// // The only thing making the drawing change, in this case, is the scale
+		/// hasher.Add(scale);
+		///
+		/// // Try to draw a previously cached mesh with this hash
+		/// if (!DrawingManager.TryDrawHasher(hasher)) {
+		///     // If there's no cached mesh, then draw it from scratch
+		///     using (var builder = DrawingManager.GetBuilder(hasher)) {
+		///         // Draw a complex curve using 10000 lines
+		///         var prev = ButterflyCurve(0);
+		///         for (float t = 0; t < 1; t += 0.0001f) {
+		///             var next = ButterflyCurve(t);
+		///             builder.xy.Line(prev*scale, next*scale, Color.white);
+		///             prev = next;
+		///         }
+		///     }
+		/// }
+		/// </code>
 		///
 		/// See: <see cref="Drawing.CommandBuilder"/>
+		/// See: caching (view in online documentation for working links)
 		/// </summary>
 		/// <param name="hasher">Hash of whatever inputs you used to generate the drawing data.</param>
 		/// <param name="redrawScope">Scope for this command builder. See #GetRedrawScope.</param>
@@ -791,7 +852,50 @@ namespace Pathfinding.Drawing {
 		public static CommandBuilder GetBuilder(DrawingData.Hasher hasher, RedrawScope redrawScope = default, bool renderInGame = false) => instance.gizmos.GetBuilder(hasher, redrawScope, renderInGame);
 
 		/// <summary>
-		/// A scope which can be used to draw things over multiple frames.
+		/// Tries to draw a builder that was rendered during the last frame using the same hash.
+		///
+		/// Returns: True if the builder was found and scheduled for rendering. If false, you should draw everything again and submit a new command builder.
+		///
+		/// <code>
+		/// // Just a nice looking curve (which uses a lot of complex math)
+		/// // See https://en.wikipedia.org/wiki/Butterfly_curve_(transcendental)
+		/// static float2 ButterflyCurve (float t) {
+		///     t *= 12 * math.PI;
+		///     var k = math.exp(math.cos(t)) - 2*math.cos(4*t) - math.pow(math.sin(t/12f), 5);
+		///     return new float2(k * math.sin(t), k * math.cos(t));
+		/// }
+		///
+		/// // Make the butterfly "flap its wings" two times per second
+		/// var scale = Time.time % 0.5f < 0.25f ? new float2(1, 1) : new float2(0.7f, 1);
+		///
+		/// // Hash all inputs that you use for drawing something complex
+		/// var hasher = new DrawingData.Hasher();
+		/// // The only thing making the drawing change, in this case, is the scale
+		/// hasher.Add(scale);
+		///
+		/// // Try to draw a previously cached mesh with this hash
+		/// if (!DrawingManager.TryDrawHasher(hasher)) {
+		///     // If there's no cached mesh, then draw it from scratch
+		///     using (var builder = DrawingManager.GetBuilder(hasher)) {
+		///         // Draw a complex curve using 10000 lines
+		///         var prev = ButterflyCurve(0);
+		///         for (float t = 0; t < 1; t += 0.0001f) {
+		///             var next = ButterflyCurve(t);
+		///             builder.xy.Line(prev*scale, next*scale, Color.white);
+		///             prev = next;
+		///         }
+		///     }
+		/// }
+		/// </code>
+		///
+		/// See: caching (view in online documentation for working links)
+		/// </summary>
+		/// <param name="hasher">Hash of whatever inputs you used to generate the drawing data.</param>
+		/// <param name="redrawScope">Optional redraw scope for this command builder. See #GetRedrawScope.</param>
+		public static bool TryDrawHasher(DrawingData.Hasher hasher, RedrawScope redrawScope = default) => instance.gizmos.Draw(hasher, redrawScope);
+
+		/// <summary>
+		/// A scope which will persist rendered items over multiple frames until it is disposed.
 		///
 		/// You can use <see cref="GetBuilder(RedrawScope,bool)"/> to get a builder with a given redraw scope.
 		/// Everything drawn using the redraw scope will be drawn every frame until the redraw scope is disposed.
@@ -810,6 +914,8 @@ namespace Pathfinding.Drawing {
 		///     redrawScope.Dispose();
 		/// }
 		/// </code>
+		///
+		/// See: caching (view in online documentation for working links)
 		/// </summary>
 		/// <param name="associatedGameObject">If not null, the scope will only be drawn if gizmos for the associated GameObject are drawn.
 		/// 		This is useful in the unity editor when e.g. opening a prefab in isolation mode, to disable redraw scopes for objects outside the prefab. Has no effect in standalone builds.</param>

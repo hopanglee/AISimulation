@@ -56,6 +56,9 @@ namespace Pathfinding {
 	///
 	/// You can also apply a NavmeshPrefab to a graph manually by calling the <see cref="Apply(RecastGraph)"/> method.
 	///
+	/// Note: A navmesh prefab will fully replace the tiles within its bounding box. You cannot stack multiple navmesh prefabs on top of each other
+	/// to make e.g. a building with multiple floors.
+	///
 	/// See: <see cref="RecastGraph"/>
 	/// See: <see cref="TileMeshes"/>
 	/// </summary>
@@ -366,7 +369,9 @@ namespace Pathfinding {
 			tileLayout.graphSpaceSize.x = float.PositiveInfinity;
 			tileLayout.graphSpaceSize.z = float.PositiveInfinity;
 			var buildSettings = RecastBuilder.BuildTileMeshes(graph, tileLayout, new IntRect(0, 0, tileLayout.tileCount.x - 1, tileLayout.tileCount.y - 1));
-			buildSettings.scene = this.gameObject.scene;
+			var scene = this.gameObject.scene;
+			buildSettings.collectionSettings.physicsScene = scene.GetPhysicsScene();
+			buildSettings.collectionSettings.physicsScene2D = scene.GetPhysicsScene2D();
 
 			// Schedule the jobs asynchronously
 			var tileMeshesPromise = buildSettings.Schedule(arena);
@@ -436,16 +441,31 @@ namespace Pathfinding {
 				if (prefabPath != null && prefabPath != "") {
 					name = System.IO.Path.GetFileNameWithoutExtension(prefabPath);
 				}
-				name = name.Replace("/", "_").Replace(".", "_").Replace("__", "_");
+				name = name.Replace("/", "_").Replace("\\", "_").Replace(".", "_").Replace("__", "_");
 				path = UnityEditor.AssetDatabase.GenerateUniqueAssetPath("Assets/Tiles/" + name + ".bytes");
 			}
 			var fullPath = Application.dataPath + "/../" + path;
-			System.IO.File.WriteAllBytes(fullPath, data);
+			WriteFileSomewhatAtomic(fullPath, data);
 
 			UnityEditor.AssetDatabase.Refresh();
 			serializedNavmesh = UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(TextAsset)) as TextAsset;
 			// Required if we do this in edit mode
 			UnityEditor.EditorUtility.SetDirty(this);
+		}
+
+		static void WriteFileSomewhatAtomic (string path, byte[] data) {
+			// Ensure the temp path is likely on the same disk as the final path.
+			// This is not necessarily true for the system wide "get temp path" function.
+			var tempPath = Application.dataPath + "/../Temp/tmp_" + System.Guid.NewGuid().ToString() + ".bytes";
+			System.IO.File.WriteAllBytes(tempPath, data);
+			try {
+				// Unfortunately the Move + overwrite operation doesn't exist until .net core 3.0.
+				// So we have to delete the target file before moving to it.
+				if (System.IO.File.Exists(path)) System.IO.File.Delete(path);
+				System.IO.File.Move(tempPath, path);
+			} catch {
+				if (System.IO.File.Exists(tempPath)) System.IO.File.Delete(tempPath);
+			}
 		}
 
 		/// <summary>

@@ -208,8 +208,6 @@ namespace Pathfinding.Serialization {
 		/// </summary>
 		private Dictionary<NavGraph, int> graphIndexInZip;
 
-		private int graphIndexOffset;
-
 		/// <summary>Extension to use for binary files</summary>
 		const string binaryExt = ".binary";
 
@@ -286,10 +284,6 @@ namespace Pathfinding.Serialization {
 			this.data = data;
 			this.contextRoot = contextRoot;
 			this.settings = settings;
-		}
-
-		public void SetGraphIndexOffset (int offset) {
-			graphIndexOffset = offset;
 		}
 
 		void AddChecksum (byte[] bytes) {
@@ -613,15 +607,14 @@ namespace Pathfinding.Serialization {
 		/// Deserializes graph settings.
 		/// Note: Stored in files named "graph<see cref=".json"/>" where # is the graph number.
 		/// </summary>
-		public NavGraph[] DeserializeGraphs (System.Type[] availableGraphTypes, bool allowLoadingNodes) {
+		public NavGraph[] DeserializeGraphs (System.Type[] availableGraphTypes, bool allowLoadingNodes, System.Func<int> nextGraphIndex) {
 			// Allocate a list of graphs to be deserialized
 			var graphList = new List<NavGraph>();
 
 			graphIndexInZip = new Dictionary<NavGraph, int>();
 
 			for (int i = 0; i < meta.graphs; i++) {
-				var newIndex = graphList.Count + graphIndexOffset;
-				var graph = DeserializeGraph(i, newIndex, availableGraphTypes);
+				var graph = DeserializeGraph(i, nextGraphIndex(), availableGraphTypes);
 				if (graph != null) {
 					graphList.Add(graph);
 					graphIndexInZip[graph] = i;

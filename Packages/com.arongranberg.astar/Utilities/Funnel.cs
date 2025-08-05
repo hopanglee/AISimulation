@@ -198,7 +198,7 @@ namespace Pathfinding {
 		}
 
 
-		public static void Simplify (List<PathPart> parts, ref List<GraphNode> nodes) {
+		public static void Simplify (List<PathPart> parts, ref List<GraphNode> nodes, System.Func<GraphNode, bool> filter = null) {
 			List<GraphNode> resultNodes = ListPool<GraphNode>.Claim();
 
 			for (int i = 0; i < parts.Count; i++) {
@@ -210,7 +210,7 @@ namespace Pathfinding {
 
 				if (part.type == PartType.NodeSequence) {
 					if (nodes[part.startIndex].Graph is IRaycastableGraph graph) {
-						Simplify(part, graph, nodes, resultNodes, Path.ZeroTagPenalties, -1);
+						Simplify(part, graph, nodes, resultNodes, Path.ZeroTagPenalties, -1, filter);
 						newPart.endIndex = resultNodes.Count - 1;
 						parts[i] = newPart;
 						continue;
@@ -236,7 +236,7 @@ namespace Pathfinding {
 		///
 		/// Requires graph to implement IRaycastableGraph
 		/// </summary>
-		public static void Simplify (PathPart part, IRaycastableGraph graph, List<GraphNode> nodes, List<GraphNode> result, int[] tagPenalties, int traversableTags) {
+		public static void Simplify (PathPart part, IRaycastableGraph graph, List<GraphNode> nodes, List<GraphNode> result, int[] tagPenalties, int traversableTags, System.Func<GraphNode, bool> filter = null) {
 			var start = part.startIndex;
 			var end = part.endIndex;
 			var startPoint = part.startPoint;
@@ -263,6 +263,7 @@ namespace Pathfinding {
 					for (int i = 0; i < result.Count; i++) {
 						penaltySum2 += result[i].Penalty + tagPenalties[result[i].Tag];
 						walkable &= ((traversableTags >> (int)result[i].Tag) & 1) == 1;
+						walkable &= filter == null || filter(result[i]);
 					}
 
 					// Allow 40% more penalty on average per node
