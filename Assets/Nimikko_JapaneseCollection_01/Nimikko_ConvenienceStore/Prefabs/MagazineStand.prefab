@@ -1,0 +1,877 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7152093947507286271
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4679729382597389071}
+  - component: {fileID: 4480677352967432616}
+  m_Layer: 0
+  m_Name: MagazineStand
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 1
+--- !u!4 &4679729382597389071
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7152093947507286271}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5682606682215121882}
+  - {fileID: 621199438940793778}
+  - {fileID: 7781084238526621538}
+  - {fileID: 6106698891666483413}
+  - {fileID: 816501373222949263}
+  - {fileID: 1549218681477503185}
+  - {fileID: 4054013631884802167}
+  - {fileID: 5746451113326419113}
+  - {fileID: 3361394015036595220}
+  - {fileID: 2782536748286883391}
+  - {fileID: 5600822546609550924}
+  - {fileID: 7427907502237913474}
+  - {fileID: 7514874955068642421}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &4480677352967432616
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7152093947507286271}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0, y: 0, z: 0}
+  m_Size: 1
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.6
+    fadeTransitionWidth: 0
+    renderers: []
+  - screenRelativeHeight: 0.3
+    fadeTransitionWidth: 0
+    renderers: []
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers: []
+  m_Enabled: 1
+--- !u!1001 &621199438220307445
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4679729382597389071}
+    m_Modifications:
+    - target: {fileID: 1031258182, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_Name
+      value: SM_Newspaper_16
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.059999943
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.13
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: abc00000000005631256660770911082, type: 3}
+--- !u!4 &621199438940793778 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+  m_PrefabInstance: {fileID: 621199438220307445}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &816501374084010378
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4679729382597389071}
+    m_Modifications:
+    - target: {fileID: 1031258116, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_Name
+      value: SM_Newspaper_20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.03999996
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.51
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.13
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: abc00000000018109563117663456636, type: 3}
+--- !u!4 &816501373222949263 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+  m_PrefabInstance: {fileID: 816501374084010378}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1549218682363336928
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4679729382597389071}
+    m_Modifications:
+    - target: {fileID: 1031258160, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_Name
+      value: SM_Newspaper_15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.059999943
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.120000005
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: abc00000000006401948228907852019, type: 3}
+--- !u!4 &1549218681477503185 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+  m_PrefabInstance: {fileID: 1549218682363336928}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &2782536748510213668
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4679729382597389071}
+    m_Modifications:
+    - target: {fileID: 1031258138, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_Name
+      value: SM_Newspaper_19
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.03999996
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.51
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.120000005
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: abc00000000015944400543621628712, type: 3}
+--- !u!4 &2782536748286883391 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+  m_PrefabInstance: {fileID: 2782536748510213668}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &3361394015249800265
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4679729382597389071}
+    m_Modifications:
+    - target: {fileID: 1031258204, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_Name
+      value: SM_Newspaper_24
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.13999987
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.78
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.13
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: abc00000000006774275336376731133, type: 3}
+--- !u!4 &3361394015036595220 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+  m_PrefabInstance: {fileID: 3361394015249800265}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &4054013632611252294
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4679729382597389071}
+    m_Modifications:
+    - target: {fileID: 1031258160, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_Name
+      value: SM_Newspaper_22
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.089999914
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.64
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.13
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: abc00000000006401948228907852019, type: 3}
+--- !u!4 &4054013631884802167 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1031258161, guid: abc00000000006401948228907852019, type: 3}
+  m_PrefabInstance: {fileID: 4054013632611252294}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &5600822547502265867
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4679729382597389071}
+    m_Modifications:
+    - target: {fileID: 1031258182, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_Name
+      value: SM_Newspaper_21
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.089999914
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.64
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.120000005
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: abc00000000005631256660770911082, type: 3}
+--- !u!4 &5600822546609550924 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1031258183, guid: abc00000000005631256660770911082, type: 3}
+  m_PrefabInstance: {fileID: 5600822547502265867}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &5682606681595724713
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4679729382597389071}
+    m_Modifications:
+    - target: {fileID: 1031258226, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_Name
+      value: SM_Newspaper_23
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.13999987
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.78
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.120000005
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: abc00000000010092278175575477076, type: 3}
+--- !u!4 &5682606682215121882 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+  m_PrefabInstance: {fileID: 5682606681595724713}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &5746451112732384500
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4679729382597389071}
+    m_Modifications:
+    - target: {fileID: 1031258204, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_Name
+      value: SM_Newspaper_17
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.00999999
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.38
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.120000005
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: abc00000000006774275336376731133, type: 3}
+--- !u!4 &5746451113326419113 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1031258205, guid: abc00000000006774275336376731133, type: 3}
+  m_PrefabInstance: {fileID: 5746451112732384500}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &6106698892294400208
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4679729382597389071}
+    m_Modifications:
+    - target: {fileID: 1031258116, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_Name
+      value: SM_Newspaper_13
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.11000013
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.120000005
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.120000005
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: abc00000000018109563117663456636, type: 3}
+--- !u!4 &6106698891666483413 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1031258117, guid: abc00000000018109563117663456636, type: 3}
+  m_PrefabInstance: {fileID: 6106698892294400208}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &7427907501211668889
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4679729382597389071}
+    m_Modifications:
+    - target: {fileID: 1031258138, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_Name
+      value: SM_Newspaper_14
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.11000013
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.120000005
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.13
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: abc00000000015944400543621628712, type: 3}
+--- !u!4 &7427907502237913474 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1031258139, guid: abc00000000015944400543621628712, type: 3}
+  m_PrefabInstance: {fileID: 7427907501211668889}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &7514874955955117920
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4679729382597389071}
+    m_Modifications:
+    - target: {fileID: 1031244564, guid: abc00000000017091550378196075010, type: 3}
+      propertyPath: m_Name
+      value: SM_NewspaperStand2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031244565, guid: abc00000000017091550378196075010, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031244565, guid: abc00000000017091550378196075010, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031244565, guid: abc00000000017091550378196075010, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031244565, guid: abc00000000017091550378196075010, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031244565, guid: abc00000000017091550378196075010, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031244565, guid: abc00000000017091550378196075010, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031244565, guid: abc00000000017091550378196075010, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031244565, guid: abc00000000017091550378196075010, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031244565, guid: abc00000000017091550378196075010, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031244565, guid: abc00000000017091550378196075010, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: abc00000000017091550378196075010, type: 3}
+--- !u!4 &7514874955068642421 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1031244565, guid: abc00000000017091550378196075010, type: 3}
+  m_PrefabInstance: {fileID: 7514874955955117920}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &7781084238877746961
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4679729382597389071}
+    m_Modifications:
+    - target: {fileID: 1031258226, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_Name
+      value: SM_Newspaper_18
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.00999999
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.38
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.13
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: abc00000000010092278175575477076, type: 3}
+--- !u!4 &7781084238526621538 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1031258227, guid: abc00000000010092278175575477076, type: 3}
+  m_PrefabInstance: {fileID: 7781084238877746961}
+  m_PrefabAsset: {fileID: 0}
