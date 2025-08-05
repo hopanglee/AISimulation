@@ -261,15 +261,23 @@ namespace Pathfinding {
 
 		/// <summary>Called by modifiers to register themselves</summary>
 		public void RegisterModifier (IPathModifier modifier) {
-			modifiers.Add(modifier);
+			// Modifier might already be registered if pathfinding is used outside of play mode
+			if (!modifiers.Contains(modifier)) {
+				modifiers.Add(modifier);
 
-			// Sort the modifiers based on their specified order
-			modifiers.Sort((a, b) => a.Order.CompareTo(b.Order));
+				// Sort the modifiers based on their specified order
+				modifiers.Sort((a, b) => a.Order.CompareTo(b.Order));
+			}
 		}
 
 		/// <summary>Called by modifiers when they are disabled or destroyed</summary>
 		public void DeregisterModifier (IPathModifier modifier) {
 			modifiers.Remove(modifier);
+		}
+
+		void ForceRegisterModifiers () {
+			GetComponents<IPathModifier>(modifiers);
+			modifiers.Sort((a, b) => a.Order.CompareTo(b.Order));
 		}
 
 		/// <summary>
@@ -284,6 +292,8 @@ namespace Pathfinding {
 
 		/// <summary>Runs modifiers on a path</summary>
 		public void RunModifiers (ModifierPass pass, Path path) {
+			if (!Application.isPlaying) ForceRegisterModifiers();
+
 			if (pass == ModifierPass.PreProcess) {
 				if (preProcessPath != null) preProcessPath(path);
 

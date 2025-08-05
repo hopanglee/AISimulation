@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: cf478225bf63e2d49ae9365e4f8cc30a
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 276792
+  packageName: Modular Abandoned Hospital (Horror Hospital, Abandoned hospital, Hospital)
+  packageVersion: 1.0
+  assetPath: Assets/Hivemind/HorrorHospital/HDRP/LensFlarePresets/Simple.asset
+  uploadId: 657930

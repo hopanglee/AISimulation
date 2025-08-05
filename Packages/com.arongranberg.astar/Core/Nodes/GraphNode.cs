@@ -808,7 +808,7 @@ namespace Pathfinding {
 		public Connection[] connections;
 
 		/// <summary>Get a vertex of this node.</summary>
-		/// <param name="i">vertex index. Must be between 0 and #GetVertexCount (exclusive).</param>
+		/// <param name="i">vertex index. Must be between 0 and #GetVertexCount (exclusive). Typically between 0 and 3.</param>
 		public abstract Int3 GetVertex(int i);
 
 		/// <summary>

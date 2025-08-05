@@ -2,7 +2,17 @@
 /// \page changelog Changelog
 /// \order{-10}
 ///
-/// - 1.7.7
+/// - 1.7.9
+///     - Got rid of some small GC allocations.
+///
+/// - 1.7.8 (2025-05-06)
+///     - Fixed a minor GC allocation happening every frame when using URP.
+///     - Improved performance in standalone builds when nothing is being rendered.
+///     - Fixed a significant memory leak when starting unity in batch mode.
+///
+/// - 1.7.7 (2025-03-20)
+///     - Added a new tutorial on using caching to improve performance: caching (view in online documentation for working links).
+///
 ///     - Fixed <see cref="Draw.xz.SolidRectangle"/> would render the rectangle in the XY plane, instead of the XZ plane.
 ///     - Fixed an exception could be thrown when cameras were rendered without a color target.
 ///     - Added <see cref="PolylineWithSymbol.up"/>, to allow you to configure the orientation of the symbols. Previously it was hardcoded to Vector3.up.

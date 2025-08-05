@@ -60,6 +60,9 @@ namespace Pathfinding {
 					var ai = target as FollowerEntity;
 					EditorGUILayout.Toggle("Reached Destination", ai.reachedDestination);
 					EditorGUILayout.Toggle("Reached End Of Path", ai.reachedEndOfPath);
+					if (ai.enableLocalAvoidance) {
+						EditorGUILayout.Toggle("Reached (maybe crowded) End Of Path", ai.reachedCrowdedEndOfPath);
+					}
 					EditorGUILayout.Toggle("Has Path", ai.hasPath);
 					EditorGUILayout.Toggle("Path Pending", ai.pathPending);
 					if (ai.isTraversingOffMeshLink) {
@@ -79,15 +82,18 @@ namespace Pathfinding {
 				} else {
 					int nReachedDestination = 0;
 					int nReachedEndOfPath = 0;
+					int nReachedCrowdedEndOfPath = 0;
 					int nPending = 0;
 					for (int i = 0; i < targets.Length; i++) {
-						var ai = targets[i] as IAstarAI;
+						var ai = targets[i] as FollowerEntity;
 						if (ai.reachedDestination) nReachedDestination++;
 						if (ai.reachedEndOfPath) nReachedEndOfPath++;
+						if (ai.reachedCrowdedEndOfPath) nReachedCrowdedEndOfPath++;
 						if (ai.pathPending) nPending++;
 					}
 					EditorGUILayout.LabelField("Reached Destination", nReachedDestination + " of " + targets.Length);
 					EditorGUILayout.LabelField("Reached End Of Path", nReachedEndOfPath + " of " + targets.Length);
+					EditorGUILayout.LabelField("Reached (maybe crowded) End Of Path", nReachedCrowdedEndOfPath + " of " + targets.Length);
 					EditorGUILayout.LabelField("Path Pending", nPending + " of " + targets.Length);
 				}
 				EditorGUI.EndDisabledGroup();

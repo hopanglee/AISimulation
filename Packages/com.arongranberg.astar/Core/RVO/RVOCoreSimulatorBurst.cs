@@ -351,6 +351,17 @@ namespace Pathfinding.RVO {
 	}
 
 	// TODO: Change to byte?
+
+	/// <summary>
+	/// Indicates if the agent has reached the end of its path, or been blocked by other agents.
+	///
+	/// In the video below, the agents will get a red ring around them for the Reached state,
+	/// and a brown ring for the ReachedSoon state.
+	///
+	/// [Open online documentation to see videos]
+	///
+	/// See: <see cref="IAgent.SetTarget"/>
+	/// </summary>
 	public enum ReachedEndOfPath {
 		/// <summary>The agent has no reached the end of its path yet</summary>
 		NotReached,
@@ -463,14 +474,6 @@ namespace Pathfinding.RVO {
 		Stack<int> freeAgentIndices = new Stack<int>();
 		TemporaryAgentData temporaryAgentData;
 		HorizonAgentData horizonAgentData;
-
-		/// <summary>
-		/// Internal obstacle data.
-		/// Normally you will never need to access this directly.
-		///
-		/// Warning: Before accessing this, you should call <see cref="LockSimulationDataReadOnly"/> or <see cref="LockSimulationDataReadWrite"/>.
-		/// </summary>
-		public ObstacleData obstacleData;
 
 		/// <summary>
 		/// Internal simulation data.
@@ -865,7 +868,6 @@ namespace Pathfinding.RVO {
 			this.DesiredDeltaTime = 1;
 			this.movementPlane = movementPlane;
 
-			obstacleData.Init(Allocator.Persistent);
 			AllocateAgentSpace();
 
 			// Just to make sure the quadtree is in a valid state
@@ -887,7 +889,6 @@ namespace Pathfinding.RVO {
 			debugDrawingScope.Dispose();
 			BlockUntilSimulationStepDone();
 			ClearAgents();
-			obstacleData.Dispose();
 			simulationData.Dispose();
 			temporaryAgentData.Dispose();
 			outputData.Dispose();
@@ -908,6 +909,8 @@ namespace Pathfinding.RVO {
 				for (int i = prevSize; i < newSize; i++) simulationData.version[i] = new AgentIndex(0, i);
 			}
 		}
+
+		public bool anyAgentsInSimulation => numAgents > freeAgentIndices.Count;
 
 		/// <summary>
 		/// Add an agent at the specified position.
@@ -1049,6 +1052,18 @@ namespace Pathfinding.RVO {
 				new JobRVO<XZMovementPlane>().ScheduleBatch(0, 0);
 				new JobRVO<ArbitraryMovementPlane>().ScheduleBatch(0, 0);
 
+				new JobRVOPreprocess<XYMovementPlane>().Schedule();
+				new JobRVOPreprocess<XZMovementPlane>().Schedule();
+				new JobRVOPreprocess<ArbitraryMovementPlane>().Schedule();
+
+				new JobHorizonAvoidancePhase1<XYMovementPlane>().ScheduleBatch(0, 0);
+				new JobHorizonAvoidancePhase1<XZMovementPlane>().ScheduleBatch(0, 0);
+				new JobHorizonAvoidancePhase1<ArbitraryMovementPlane>().ScheduleBatch(0, 0);
+
+				new JobHorizonAvoidancePhase2<XYMovementPlane>().ScheduleBatch(0, 0);
+				new JobHorizonAvoidancePhase2<XZMovementPlane>().ScheduleBatch(0, 0);
+				new JobHorizonAvoidancePhase2<ArbitraryMovementPlane>().ScheduleBatch(0, 0);
+
 				new JobRVOCalculateNeighbours<XYMovementPlane>().ScheduleBatch(0, 0);
 				new JobRVOCalculateNeighbours<XZMovementPlane>().ScheduleBatch(0, 0);
 				new JobRVOCalculateNeighbours<ArbitraryMovementPlane>().ScheduleBatch(0, 0);
@@ -1062,7 +1077,11 @@ namespace Pathfinding.RVO {
 				new JobDestinationReached<ArbitraryMovementPlane>().Schedule();
 			}
 
-			// The burst jobs are specialized for the type of movement plane used. This improves performance for the XY and XZ movement planes quite a lot
+			// The burst jobs are specialized for the type of movement plane used. This improves performance for the XY and XZ movement planes quite a lot.
+			// Note: The agents' own movement planes could be colinear with e.g. the XY plane, but may add an additional rotation,
+			// so we must ensure that we always use the movement plane wrappers for all conversions.
+			// Otherwise some conversions may add a rotation, and some may not.
+			// All external communication with the rest of the world happens in world space, so we just need to be consistent internally.
 			if (movementPlane == MovementPlane.XY) return UpdateInternal<XYMovementPlane>(dependency, dt, drawGizmos, allocator);
 			else if (movementPlane == MovementPlane.XZ) return UpdateInternal<XZMovementPlane>(dependency, dt, drawGizmos, allocator);
 			else return UpdateInternal<ArbitraryMovementPlane>(dependency, dt, drawGizmos, allocator);
@@ -1093,6 +1112,12 @@ namespace Pathfinding.RVO {
 		}
 
 		JobHandle UpdateInternal<T>(JobHandle dependency, float deltaTime, bool drawGizmos, Allocator allocator) where T : struct, IMovementPlaneWrapper {
+			if (!anyAgentsInSimulation) {
+				// No agents, nothing to do
+				// This saves some performance, since scheduling jobs has some overhead
+				return dependency;
+			}
+
 			// Prevent a zero delta time
 			deltaTime = math.max(deltaTime, 1.0f/2000f);
 
@@ -1110,7 +1135,7 @@ namespace Pathfinding.RVO {
 
 			var quadtreeJob = quadtree.BuildJob(simulationData.position, simulationData.version, outputData.speed, simulationData.radius, numAgents, movementPlane).Schedule(dependency);
 
-			var preprocessJob = new JobRVOPreprocess {
+			var preprocessJob = new JobRVOPreprocess<T> {
 				agentData = simulationData,
 				previousOutput = outputData,
 				temporaryAgentData = temporaryAgentData,
@@ -1134,7 +1159,7 @@ namespace Pathfinding.RVO {
 			debugDrawingScope.Rewind();
 			var draw = DrawingManager.GetBuilder(debugDrawingScope);
 
-			var horizonJob1 = new JobHorizonAvoidancePhase1 {
+			var horizonJob1 = new JobHorizonAvoidancePhase1<T> {
 				agentData = simulationData,
 				neighbours = temporaryAgentData.neighbours,
 				desiredTargetPointInVelocitySpace = temporaryAgentData.desiredTargetPointInVelocitySpace,
@@ -1142,7 +1167,7 @@ namespace Pathfinding.RVO {
 				draw = draw,
 			}.ScheduleBatch(numAgents, batchSize, combinedJob);
 
-			var horizonJob2 = new JobHorizonAvoidancePhase2 {
+			var horizonJob2 = new JobHorizonAvoidancePhase2<T> {
 				neighbours = temporaryAgentData.neighbours,
 				versions = simulationData.version,
 				desiredVelocity = temporaryAgentData.desiredVelocity,
@@ -1212,7 +1237,6 @@ namespace Pathfinding.RVO {
 
 			var reachedJob = new JobDestinationReached<T> {
 				agentData = simulationData,
-				obstacleData = obstacleData,
 				temporaryAgentData = temporaryAgentData,
 				output = outputData,
 				draw = draw,

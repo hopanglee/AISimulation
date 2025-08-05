@@ -36,7 +36,7 @@ namespace Pathfinding.Graphs.Util {
 		/// <summary>All children of this transform will be used as pivot points</summary>
 		public Transform pivotPointRoot;
 
-		public int spreadOutCount = 1;
+		public int spreadOutCount = 10;
 
 		[System.NonSerialized]
 		public bool dirty;
@@ -102,8 +102,9 @@ namespace Pathfinding.Graphs.Util {
 		}
 
 		void GetClosestWalkableNodesToChildrenRecursively (Transform tr, List<GraphNode> nodes) {
+			var nn = NNConstraint.Walkable;
 			foreach (Transform ch in tr) {
-				var info = AstarPath.active.GetNearest(ch.position, NNConstraint.Walkable);
+				var info = AstarPath.active.GetNearest(ch.position, nn);
 				if (info.node != null && info.node.Walkable) {
 					nodes.Add(info.node);
 				}
@@ -127,22 +128,26 @@ namespace Pathfinding.Graphs.Util {
 			int n = 0;
 
 			var graphs = AstarPath.active.graphs;
+			if (graphs == null) return;
 
 			// Loop through all graphs
+			// TODO: Probability to pick node should go up (more) if the area the node is in is larger
 			for (int j = 0; j < graphs.Length; j++) {
 				// Loop through all nodes in the graph
-				graphs[j].GetNodes(node => {
-					if (!node.Destroyed && node.Walkable) {
-						n++;
-						if ((GetRandom() % n) < count) {
-							if (buffer.Count < count) {
-								buffer.Add(node);
-							} else {
-								buffer[(int)(n%buffer.Count)] = node;
+				if (graphs[j] != null) {
+					graphs[j].GetNodes(node => {
+						if (!node.Destroyed && node.Walkable) {
+							n++;
+							if ((GetRandom() % n) < count) {
+								if (buffer.Count < count) {
+									buffer.Add(node);
+								} else {
+									buffer[(int)(n%buffer.Count)] = node;
+								}
 							}
 						}
-					}
-				});
+					});
+				}
 			}
 		}
 
@@ -152,11 +157,13 @@ namespace Pathfinding.Graphs.Util {
 
 			// Find any node in the graphs
 			for (int j = 0; j < graphs.Length; j++) {
-				graphs[j].GetNodes(node => {
-					if (node != null && node.Walkable && first == null) {
-						first = node;
-					}
-				});
+				if (graphs[j] != null) {
+					graphs[j].GetNodes(node => {
+						if (node != null && node.Walkable && first == null) {
+							first = node;
+						}
+					});
+				}
 			}
 
 			return first;

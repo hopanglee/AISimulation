@@ -18,19 +18,23 @@ namespace Pathfinding {
 	[BurstCompile]
 	public class NavmeshEdges {
 		public RVO.SimulatorBurst.ObstacleData obstacleData;
-		SpinLock allocationLock = new SpinLock();
+		NativeReference<SpinLock> allocationLock;
 		const int JobRecalculateObstaclesBatchCount = 32;
 		RWLock rwLock = new RWLock();
 		public HierarchicalGraph hierarchicalGraph;
 		int gizmoVersion = 0;
 
 		public void Dispose () {
+			// Waits for any jobs to finish
 			rwLock.WriteSync().Unlock();
 			obstacleData.Dispose();
+			// Note: The IsCreated check is necessary to not throw an exception in old versions of the collections package.
+			if (allocationLock.IsCreated) allocationLock.Dispose();
 		}
 
 		void Init () {
 			obstacleData.Init(Allocator.Persistent);
+			if (!allocationLock.IsCreated) allocationLock = new NativeReference<SpinLock>(Allocator.Persistent);
 		}
 
 		public JobHandle RecalculateObstacles (NativeList<int> dirtyHierarchicalNodes, NativeReference<int> numHierarchicalNodes, JobHandle dependency) {
@@ -51,8 +55,7 @@ namespace Pathfinding {
 					obstacles = obstacleData.obstacles.AsDeferredJobArray(),
 					bounds = hierarchicalGraph.bounds.AsDeferredJobArray(),
 					dirtyHierarchicalNodes = dirtyHierarchicalNodes,
-					// SAFETY: This is safe because the class will wait for the job to complete before it is disposed
-					allocationLock = (SpinLock*)UnsafeUtility.AddressOf(ref this.allocationLock),
+					allocationLock = allocationLock,
 				}.ScheduleBatch(JobRecalculateObstaclesBatchCount, 1, lastJob);
 				writeLock.UnlockAfter(lastJob);
 				gizmoVersion++;
@@ -138,8 +141,8 @@ namespace Pathfinding {
 			public NativeArray<Bounds> bounds;
 			[ReadOnly]
 			public NativeList<int> dirtyHierarchicalNodes;
-			[NativeDisableUnsafePtrRestriction]
-			public unsafe SpinLock* allocationLock;
+			[NativeDisableParallelForRestriction]
+			public NativeReference<SpinLock> allocationLock;
 
 			public void Execute (int startIndex, int count) {
 				var hGraph = hGraphGC.Target as HierarchicalGraph;
@@ -215,49 +218,52 @@ namespace Pathfinding {
 				RVO.RVOObstacleCache.CollectContours(hGraph.children[hierarchicalNode], edgesScratch);
 				MarkerCollect.End();
 				var prev = obstacles[hierarchicalNode];
-				if (prev.groupsAllocation != SlabAllocator<ObstacleVertexGroup>.ZeroLengthArray) {
-					unsafe {
-						allocationLock->Lock();
-						obstacleVertices.Free(prev.verticesAllocation);
-						obstacleVertexGroups.Free(prev.groupsAllocation);
-						allocationLock->Unlock();
-					}
-				}
 				unsafe {
-					// Find the graph's natural movement plane.
-					// This is used to simplify almost colinear segments into a single segment.
-					var children = hGraph.children[hierarchicalNode];
-					NativeMovementPlane movementPlane;
-					bool simplifyObstacles = true;
-					if (children.Count > 0) {
-						if (children[0] is GridNodeBase) {
-							movementPlane = new NativeMovementPlane((children[0].Graph as GridGraph).transform.rotation);
-						} else if (children[0] is TriangleMeshNode) {
-							var graph = children[0].Graph as NavmeshBase;
-							movementPlane = new NativeMovementPlane(graph.transform.rotation);
-							// If normal recalculation is disabled, the graph may have very a strange shape, like a spherical world.
-							// In that case we should not simplify the obstacles, as there is no well defined movement plane.
-							simplifyObstacles = graph.RecalculateNormals;
-						} else {
-							movementPlane = new NativeMovementPlane(quaternion.identity);
-							simplifyObstacles = false;
+					ref var allocationLockRef = ref UnsafeUtility.AsRef<SpinLock>(allocationLock.GetUnsafePtr());
+					if (prev.groupsAllocation != SlabAllocator<ObstacleVertexGroup>.ZeroLengthArray) {
+						unsafe {
+							allocationLockRef.Lock();
+							obstacleVertices.Free(prev.verticesAllocation);
+							obstacleVertexGroups.Free(prev.groupsAllocation);
+							allocationLockRef.Unlock();
 						}
-					} else {
-						movementPlane = default;
 					}
-					MarkerTrace.Begin();
-					var edgesSpan = edgesScratch.AsUnsafeSpan();
-					RVO.RVOObstacleCache.TraceContours(
-						ref edgesSpan,
-						ref movementPlane,
-						hierarchicalNode,
-						(UnmanagedObstacle*)obstacles.GetUnsafePtr(),
-						ref obstacleVertices,
-						ref obstacleVertexGroups,
-						ref UnsafeUtility.AsRef<SpinLock>(allocationLock),
-						simplifyObstacles
-						);
-					MarkerTrace.End();
+					unsafe {
+						// Find the graph's natural movement plane.
+						// This is used to simplify almost colinear segments into a single segment.
+						var children = hGraph.children[hierarchicalNode];
+						NativeMovementPlane movementPlane;
+						bool simplifyObstacles = true;
+						if (children.Count > 0) {
+							if (children[0] is GridNodeBase) {
+								movementPlane = new NativeMovementPlane((children[0].Graph as GridGraph).transform.rotation);
+							} else if (children[0] is TriangleMeshNode) {
+								var graph = children[0].Graph as NavmeshBase;
+								movementPlane = new NativeMovementPlane(graph.transform.rotation);
+								// If normal recalculation is disabled, the graph may have very a strange shape, like a spherical world.
+								// In that case we should not simplify the obstacles, as there is no well defined movement plane.
+								simplifyObstacles = graph.RecalculateNormals;
+							} else {
+								movementPlane = new NativeMovementPlane(quaternion.identity);
+								simplifyObstacles = false;
+							}
+						} else {
+							movementPlane = default;
+						}
+						MarkerTrace.Begin();
+						var edgesSpan = edgesScratch.AsUnsafeSpan();
+						RVO.RVOObstacleCache.TraceContours(
+							ref edgesSpan,
+							ref movementPlane,
+							hierarchicalNode,
+							(UnmanagedObstacle*)obstacles.GetUnsafePtr(),
+							ref obstacleVertices,
+							ref obstacleVertexGroups,
+							ref allocationLockRef,
+							simplifyObstacles
+							);
+						MarkerTrace.End();
+					}
 				}
 				MarkerObstacles.End();
 			}

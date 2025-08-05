@@ -51,7 +51,7 @@ public class MoveController : MonoBehaviour
 
         yield return null;
 
-        while (!followerEntity.reachedEndOfPath)
+        while (!followerEntity.reachedCrowdedEndOfPath)
         {
             yield return null; // 프레임 대기
         }

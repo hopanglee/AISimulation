@@ -163,6 +163,18 @@ namespace Pathfinding.Collections {
 		}
 
 		/// <summary>
+		/// Removes an element from a span, reducing its length by one.
+		/// This is done by moving all elements after the index one step back.
+		///
+		/// The underlaying allocation is not resized, only the length field is changed.
+		/// </summary>
+		public static void RemoveAt (ref UnsafeSpan<T> span, int index) {
+			if (index < 0 || index >= span.length) throw new System.ArgumentOutOfRangeException();
+			span.Move(index + 1, index, (int)span.length - index - 1);
+			span = span.Slice(0, (int)span.length - 1);
+		}
+
+		/// <summary>
 		/// Copies the memory of this span to another span.
 		/// The other span must be large enough to hold the contents of this span.
 		///
@@ -436,6 +448,13 @@ namespace Pathfinding.Collections {
 		public static void AddReplicate<T>(this NativeList<T> list, T value, int count) where T : unmanaged {
 			var origLength = list.Length;
 			list.ResizeUninitialized(origLength + count);
+			list.AsUnsafeSpan().Slice(origLength).Fill(value);
+		}
+
+		/// <summary>Appends value count times to the end of this list</summary>
+		public static void AddReplicate<T>(this UnsafeList<T> list, T value, int count) where T : unmanaged {
+			var origLength = list.Length;
+			list.Resize(origLength + count, NativeArrayOptions.UninitializedMemory);
 			list.AsUnsafeSpan().Slice(origLength).Fill(value);
 		}
 #endif

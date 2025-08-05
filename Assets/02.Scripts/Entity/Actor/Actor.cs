@@ -282,37 +282,37 @@ public abstract class Actor : Entity, ILocationAware
             moveController.SetTarget(targetPos);
             moveController.OnReached += () =>
             {
-                // 도착한 위치로 curLocation 설정
-                var locationService = Services.Get<ILocationService>();
-                var curArea = locationService.GetArea(curLocation);
+                // // 도착한 위치로 curLocation 설정
+                // var locationService = Services.Get<ILocationService>();
+                // var curArea = locationService.GetArea(curLocation);
                 
-                if (curArea != null)
-                {
-                    // Building에 도착한 경우
-                    var buildings = locationService.GetBuilding(curArea);
-                    foreach (var building in buildings)
-                    {
-                        if (building.GetSimpleKey() == locationKey)
-                        {
-                            curLocation = building;
-                            Debug.Log($"[{Name}] {building.Name}에 도착했습니다. curLocation: {building.Name}");
-                            return;
-                        }
-                    }
+                // if (curArea != null)
+                // {
+                //     // Building에 도착한 경우
+                //     var buildings = locationService.GetBuilding(curArea);
+                //     foreach (var building in buildings)
+                //     {
+                //         if (building.GetSimpleKey() == locationKey)
+                //         {
+                //             curLocation = building;
+                //             Debug.Log($"[{Name}] {building.Name}에 도착했습니다. curLocation: {building.Name}");
+                //             return;
+                //         }
+                //     }
                     
-                    // Area에 도착한 경우
-                    foreach (var area in curArea.connectedAreas)
-                    {
-                        if (area.locationName == locationKey)
-                        {
-                            curLocation = area;
-                            Debug.Log($"[{Name}] {area.locationName}에 도착했습니다. curLocation: {area.locationName}");
-                            return;
-                        }
-                    }
-                }
+                //     // Area에 도착한 경우
+                //     foreach (var area in curArea.connectedAreas)
+                //     {
+                //         if (area.locationName == locationKey)
+                //         {
+                //             curLocation = area;
+                //             Debug.Log($"[{Name}] {area.locationName}에 도착했습니다. curLocation: {area.locationName}");
+                //             return;
+                //         }
+                //     }
+                // }
                 
-                Debug.Log($"[{Name}] {locationKey}에 도착했습니다.");
+                // Debug.Log($"[{Name}] {locationKey}에 도착했습니다.");
             };
             Debug.Log($"[{Name}] Moving to {locationKey} at position {targetPos}");
         }

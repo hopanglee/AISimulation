@@ -34,7 +34,6 @@ namespace Pathfinding.Graphs.Navmesh {
 		public int minRegionSize;
 		public float maxEdgeLength;
 		public float contourMaxError;
-		public UnityEngine.SceneManagement.Scene scene;
 		public TileLayout tileLayout;
 		public IntRect tileRect;
 		public List<RecastGraph.PerLayerModification> perLayerModifications;
@@ -81,8 +80,10 @@ namespace Pathfinding.Graphs.Navmesh {
 			this.maxEdgeLength = graph.maxEdgeLength;
 			this.contourMaxError = graph.contourMaxError;
 			this.relevantGraphSurfaceMode = graph.relevantGraphSurfaceMode;
-			this.scene = graph.active.gameObject.scene;
 			this.perLayerModifications = graph.perLayerModifications;
+
+			if (collectionSettings.physicsScene == null) collectionSettings.physicsScene = graph.active.gameObject.scene.GetPhysicsScene();
+			if (collectionSettings.physicsScene2D == null) collectionSettings.physicsScene2D = graph.active.gameObject.scene.GetPhysicsScene2D();
 		}
 
 		/// <summary>
@@ -115,9 +116,9 @@ namespace Pathfinding.Graphs.Navmesh {
 			if (collectionSettings.collectionMode == RecastGraph.CollectionSettings.FilterMode.Layers) {
 				tagMask = null;
 			} else {
-				mask = -1;
+				mask = 0;
 			}
-			var meshGatherer = new RecastMeshGatherer(scene, bounds, collectionSettings.terrainHeightmapDownsamplingFactor, mask, collectionSettings.tagMask, perLayerModifications, tileLayout.cellSize / collectionSettings.colliderRasterizeDetail);
+			var meshGatherer = new RecastMeshGatherer(collectionSettings.physicsScene.Value, collectionSettings.physicsScene2D.Value, bounds, collectionSettings.terrainHeightmapDownsamplingFactor, mask, tagMask, perLayerModifications, tileLayout.cellSize / collectionSettings.colliderRasterizeDetail);
 
 			if (collectionSettings.rasterizeMeshes && dimensionMode == RecastGraph.DimensionMode.Dimension3D) {
 				Profiler.BeginSample("Find meshes");

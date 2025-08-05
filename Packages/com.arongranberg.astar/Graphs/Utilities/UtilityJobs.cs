@@ -261,6 +261,26 @@ namespace Pathfinding.Jobs {
 	}
 
 	/// <summary>
+	/// Clamps spherecast hit points to the ray, based on the origin and direction.
+	/// Spherecasts will return a hit on the sphere, not the ray.
+	/// </summary>
+	[BurstCompile(FloatMode = FloatMode.Fast)]
+	public struct JobClampHitToRay : IJob {
+		[ReadOnly]
+		public NativeArray<SpherecastCommand> commands;
+		public NativeArray<RaycastHit> hits;
+
+		public void Execute () {
+			Assert.AreEqual(hits.Length, commands.Length);
+			for (int i = 0; i < hits.Length; i++) {
+				var hit = hits[i];
+				hit.point = (Vector3)VectorMath.ClosestPointOnLine((float3)commands[i].origin, (float3)commands[i].origin+(float3)commands[i].direction, (float3)hit.point);
+				hits[i] = hit;
+			}
+		}
+	}
+
+	/// <summary>
 	/// Copies hit points and normals.
 	/// points[i] = hits[i].point (if anything was hit), normals[i] = hits[i].normal.normalized.
 	/// </summary>

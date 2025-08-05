@@ -509,7 +509,8 @@ namespace Pathfinding {
 		}
 
 		protected void DrawUnwalkableNodes (DrawingData gizmos, float size, RedrawScope redrawScope) {
-			var hasher = DrawingData.Hasher.Create(this);
+			var hasher = new DrawingData.Hasher();
+			hasher.Add(this);
 
 			GetNodes(node => {
 				hasher.Add(node.Walkable);

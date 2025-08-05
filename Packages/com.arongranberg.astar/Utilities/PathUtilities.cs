@@ -555,7 +555,6 @@ namespace Pathfinding {
 
 				// Assume the whole group uses the same movement plane, or at least a similar one
 				var movementPlane = group[0].movementPlane;
-				Debug.Log(((Quaternion)movementPlane.rotation).eulerAngles);
 
 				// Figure out if the group if the destination point is in the middle of the group,
 				// or if it is outside the group

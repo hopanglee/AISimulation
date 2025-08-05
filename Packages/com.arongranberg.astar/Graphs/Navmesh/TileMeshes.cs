@@ -105,7 +105,10 @@ namespace Pathfinding.Graphs.Navmesh {
 						writer.Write(v.y);
 						writer.Write(v.z);
 					}
-					for (int i = 0; i < tile.triangles.Length; i++) writer.Write(tile.triangles[i]);
+					for (int i = 0; i < tile.triangles.Length; i++) {
+						UnityEngine.Assertions.Assert.IsTrue(tile.triangles[i] >= 0 && tile.triangles[i] < tile.verticesInTileSpace.Length, "Triangle index is out of bounds");
+						writer.Write(tile.triangles[i]);
+					}
 					for (int i = 0; i < tile.tags.Length; i++) writer.Write(tile.tags[i]);
 				}
 			}
@@ -138,7 +141,7 @@ namespace Pathfinding.Graphs.Navmesh {
 					for (int i = 0; i < vertsInTileSpace.Length; i++) vertsInTileSpace[i] = new Int3(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
 					for (int i = 0; i < tris.Length; i++) {
 						tris[i] = reader.ReadInt32();
-						UnityEngine.Assertions.Assert.IsTrue(tris[i] >= 0 && tris[i] < vertsInTileSpace.Length);
+						UnityEngine.Assertions.Assert.IsTrue(tris[i] >= 0 && tris[i] < vertsInTileSpace.Length, "Triangle index is out of bounds");
 					}
 					for (int i = 0; i < tags.Length; i++) tags[i] = reader.ReadUInt32();
 

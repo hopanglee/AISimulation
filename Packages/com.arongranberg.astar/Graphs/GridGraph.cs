@@ -1508,7 +1508,7 @@ namespace Pathfinding {
 			neighbourOffsets[7] = -width-1;
 
 			// The width of a single node, and thus also the distance between two adjacent nodes (axis aligned).
-			// For hexagonal graphs the node size is different from the width of a hexaon.
+			// For hexagonal graphs the node size is different from the width of a hexagon.
 			float nodeWidth = neighbours == NumNeighbours.Six ? ConvertNodeSizeToHexagonSize(InspectorGridHexagonNodeSize.Width, nodeSize) : nodeSize;
 
 			uint straightCost = (uint)Mathf.RoundToInt(nodeWidth*Int3.Precision);
@@ -1843,7 +1843,8 @@ namespace Pathfinding {
 					var heightCheck = collision.heightCheck && !collision.use2D;
 					if (heightCheck) {
 						var layerCount = dependencyTracker.NewNativeArray<int>(1, allocationMethod, NativeArrayOptions.UninitializedMemory);
-						yield return context.data.HeightCheck(collision, graph.MaxLayers, fullRecalculationBounds, layerCount, characterHeight, allocationMethod);
+						float nodeWidth = graph.neighbours == NumNeighbours.Six ? ConvertNodeSizeToHexagonSize(InspectorGridHexagonNodeSize.Width, graph.nodeSize) : graph.nodeSize;
+						yield return context.data.HeightCheck(collision, nodeWidth, graph.MaxLayers, fullRecalculationBounds, layerCount, characterHeight, allocationMethod);
 						// The size of the buffers depend on the height check for layered grid graphs since the number of layers might change.
 						// Never reduce the layer count of the graph.
 						// Unless we are recalculating the whole graph: in that case we don't care about the existing layers.

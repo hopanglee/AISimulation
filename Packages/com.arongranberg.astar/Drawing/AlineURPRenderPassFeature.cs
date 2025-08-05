@@ -32,6 +32,7 @@ namespace Pathfinding.Drawing {
 #if MODULE_RENDER_PIPELINES_UNIVERSAL_17_0_0_OR_NEWER
 			private class PassData {
 				public Camera camera;
+				public bool allowDisablingWireframe;
 			}
 
 			public override void RecordRenderGraph (RenderGraph renderGraph, ContextContainer frameData) {
@@ -45,12 +46,12 @@ namespace Pathfinding.Drawing {
 				}
 
 				using (IRasterRenderGraphBuilder builder = renderGraph.AddRasterRenderPass<PassData>("ALINE", out PassData passData, profilingSampler)) {
-					bool allowDisablingWireframe = false;
+					passData.allowDisablingWireframe = false;
 
 					if (Application.isEditor && (cameraData.cameraType & (CameraType.SceneView | CameraType.Preview)) != 0) {
 						// We need this to be able to disable wireframe rendering in the scene view
 						builder.AllowGlobalStateModification(true);
-						allowDisablingWireframe = true;
+						passData.allowDisablingWireframe = true;
 					}
 
 					builder.SetRenderAttachment(resourceData.activeColorTexture, 0);
@@ -59,7 +60,7 @@ namespace Pathfinding.Drawing {
 
 					builder.SetRenderFunc<PassData>(
 						(PassData data, RasterGraphContext context) => {
-						DrawingManager.instance.ExecuteCustomRenderGraphPass(new DrawingData.CommandBufferWrapper { cmd2 = context.cmd, allowDisablingWireframe = allowDisablingWireframe }, data.camera);
+						DrawingManager.instance.ExecuteCustomRenderGraphPass(new DrawingData.CommandBufferWrapper { cmd2 = context.cmd, allowDisablingWireframe = data.allowDisablingWireframe }, data.camera);
 					}
 						);
 				}

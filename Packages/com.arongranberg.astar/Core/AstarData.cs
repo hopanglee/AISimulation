@@ -55,7 +55,7 @@ namespace Pathfinding {
 		/// </summary>
 		public static System.Type[] graphTypes { get; private set; }
 
-#if ASTAR_FAST_NO_EXCEPTIONS || UNITY_WINRT || UNITY_WEBGL
+#if ASTAR_FAST_NO_EXCEPTIONS || UNITY_WINRT
 		/// <summary>
 		/// Graph types to use when building with Fast But No Exceptions for iPhone.
 		/// If you add any custom graph types, you need to add them to this hard-coded list.
@@ -389,6 +389,10 @@ namespace Pathfinding {
 		/// Returns: The deserialized graphs
 		/// </summary>
 		public NavGraph[] DeserializeGraphsAdditive (byte[] bytes) {
+			return DeserializeGraphsAdditive(bytes, true);
+		}
+
+		NavGraph[] DeserializeGraphsAdditive (byte[] bytes, bool warnIfDuplicateGuids) {
 			using (AssertSafe()) {
 				try {
 					MarkerDeserializeGraphs.Begin();
@@ -397,7 +401,7 @@ namespace Pathfinding {
 						var sr = new AstarSerializer(this, active.gameObject);
 
 						if (sr.OpenDeserialize(bytes)) {
-							result = DeserializeGraphsPartAdditive(sr);
+							result = DeserializeGraphsPartAdditive(sr, warnIfDuplicateGuids);
 							sr.CloseDeserialize();
 						} else {
 							throw new System.ArgumentException("Invalid data file (cannot read zip).\nThe data is either corrupt or it was saved using a 3.0.x or earlier version of the system");
@@ -409,7 +413,7 @@ namespace Pathfinding {
 					GraphModifier.TriggerEvent(GraphModifier.EventType.PostGraphLoad);
 					return result;
 				} catch (System.Exception e) {
-					Debug.LogError(new System.Exception("Caught exception while deserializing data.", e));
+					Debug.LogException(new System.Exception("Caught exception while deserializing data.", e));
 					graphs = new NavGraph[0];
 					UpdateShortcuts();
 					throw;
@@ -420,7 +424,7 @@ namespace Pathfinding {
 		}
 
 		/// <summary>Helper function for deserializing graphs</summary>
-		NavGraph[] DeserializeGraphsPartAdditive (AstarSerializer sr) {
+		NavGraph[] DeserializeGraphsPartAdditive (AstarSerializer sr, bool warnIfDuplicateGuids) {
 			if (graphs == null) graphs = new NavGraph[0];
 
 			var gr = new List<NavGraph>(graphs);
@@ -428,16 +432,25 @@ namespace Pathfinding {
 			// Trim nulls at the end
 			while (gr.Count > 0 && gr[gr.Count-1] == null) gr.RemoveAt(gr.Count-1);
 
-			// Set an offset so that the deserializer will load
-			// the graphs with the correct graph indexes
-			sr.SetGraphIndexOffset(gr.Count);
-
 			FindGraphTypes();
 			// This may be false if the user is editing a prefab, for example.
 			// If it is false, we must not try to load any nodes
 			bool astarInitialized = active == AstarPath.active;
-			var newGraphs = sr.DeserializeGraphs(graphTypes, astarInitialized);
-			gr.AddRange(newGraphs);
+			int lastUsedGraphIndex = -1;
+			var newGraphs = sr.DeserializeGraphs(graphTypes, astarInitialized, () => {
+				// Find the index to insert the new graph at
+				// This is the first index which is not yet filled with a graph
+				lastUsedGraphIndex++;
+				while (lastUsedGraphIndex < gr.Count && gr[lastUsedGraphIndex] != null) {
+					lastUsedGraphIndex++;
+				}
+				return lastUsedGraphIndex;
+			});
+
+			for (int i = 0; i < newGraphs.Length; i++) {
+				while (gr.Count < (int)newGraphs[i].graphIndex + 1) gr.Add(null);
+				gr[(int)newGraphs[i].graphIndex] = newGraphs[i];
+			}
 
 			if (gr.Count > GraphNode.MaxGraphIndex + 1) {
 				throw new System.InvalidOperationException("Graph Count Limit Reached. You cannot have more than " + GraphNode.MaxGraphIndex + " graphs.");
@@ -456,7 +469,7 @@ namespace Pathfinding {
 			for (int i = 0; i < graphs.Length; i++) {
 				for (int j = i+1; j < graphs.Length; j++) {
 					if (graphs[i] != null && graphs[j] != null && graphs[i].guid == graphs[j].guid) {
-						Debug.LogWarning("Guid Conflict when importing graphs additively. Imported graph will get a new Guid.\nThis message is (relatively) harmless.");
+						if (warnIfDuplicateGuids) Debug.LogWarning("Guid Conflict when importing graphs additively. Imported graph will get a new Guid.\nThis message is (relatively) harmless.");
 						graphs[i].guid = Pathfinding.Util.Guid.NewGuid();
 						break;
 					}
@@ -495,7 +508,7 @@ namespace Pathfinding {
 			if (graphTypes != null) return;
 
 			MarkerFindGraphTypes.Begin();
-#if !ASTAR_FAST_NO_EXCEPTIONS && !UNITY_WINRT && !UNITY_WEBGL
+#if !ASTAR_FAST_NO_EXCEPTIONS && !UNITY_WINRT
 			graphTypes = AssemblySearcher.FindTypesInheritingFrom<NavGraph>().ToArray();
 #else
 			graphTypes = DefaultGraphTypes;
@@ -587,8 +600,12 @@ namespace Pathfinding {
 				if (i != -1) graphs[i] = null;
 
 				UpdateShortcuts();
-				active.AddWorkItem(() => active.offMeshLinks.Refresh());
-				active.FlushWorkItems();
+
+				// If we are working on a prefab, this may not be true
+				if (AstarPath.active == active) {
+					active.AddWorkItem(() => active.offMeshLinks.Refresh());
+					active.FlushWorkItems();
+				}
 				return i != -1;
 			}
 		}
@@ -607,7 +624,7 @@ namespace Pathfinding {
 			if (i == -1) throw new System.ArgumentException("Graph doesn't exist");
 
 			var bytes = SerializeGraphs(SerializeSettings.Settings, out var _, new NavGraph[] { graph });
-			var newGraphs = DeserializeGraphsAdditive(bytes);
+			var newGraphs = DeserializeGraphsAdditive(bytes, false);
 			UnityEngine.Assertions.Assert.AreEqual(1, newGraphs.Length);
 
 #if UNITY_EDITOR

@@ -1,5 +1,57 @@
+## 5.3.8 (2025-06-13)
+- Fixed an incompatibility with an older version of the unity collections package, which could cause an exception to be thrown when exiting the scene (introduced in 5.3.7).
+- Fixed scanning very large layered grid graphs could throw an exception.
+- Got rid of some small GC allocations in the example scenes relating to OnGUI calls.
+- Fixed the update checker throwing exceptions in some rare cases. This was a regression in 5.3.5.
+
+## 5.3.7 (2025-05-06)
+- Significantly improved performance when scanning grid graphs when using Unity 6000.1+.
+		This optimization has been tried multiple times before, but due to Unity bugs it has had to be rolled back.
+		I think Unity has fixed the final physx bug relating to this now, so this optimization is back.
+		Please report in the forum if you notice any hard crashes of the unity editor, when scanning grid graphs, after this update.
+- Fixed using local avoidance on rotated graphs and isometric/hexagonal grid graphs could result in agents taking curved instead of straight paths.
+- Fixed enabling thick raycasts on grid graphs did not do anything.
+
+## 5.3.6 (2025-04-25)
+- Fixed a tiny native memory leak accidentally introduced in 5.3.5.
+- Fixed using the 'Duplicate Graph' button in the A* inspector would log a warning about duplicate guids.
+- Reduced overhead of the RVO system when there are no agents using local avoidance in the scene.
+
+## 5.3.5 (2025-04-22)
+- Added \reflink{RecastGraph.collectionSettings.physicsScene} and \reflink{RecastGraph.collectionSettings.physicsScene2D} to allow specifying which physics scene to use when scanning a recast graph.
+- Added \reflink{FollowerEntity.reachedCrowdedEndOfPath} which is like \reflink{FollowerEntity.reachedEndOfPath}, but will also return true if the end of the path is crowded, and this agent has stopped because it cannot get closer.
+		\video{generated/scenes/Recast3D/crowdeddestination.webm}
+- Fixed an edge case which could cause navmesh cutting to throw an exception (regression in 5.3.4).
+- Fixed \reflink{FollowerEntity} would not take tags or penalties into account when simplifying its path on recast/navmesh graphs. This could cause it to move over high penalty areas that it should have avoided.
+- Fixed \reflink{FollowerEntity} would behave strangely on isometric grid graphs.
+- \reflink{FollowerEntity} now behaves better (though not perfectly) on hexagonal graphs.
+- Fixed \reflink{FunnelModifier} would not take \reflink{ITraversalProvider}s into account when simplifying its path on recast/navmesh graphs.
+- Fixed a minor GC allocation happening every frame when using URP.
+- Fixed debug drawing would cause a minor overhead even in standalone builds, where it wasn't used.
+- Fixed a significant memory leak when starting unity in batch mode.
+- Fixed modifiers attached to a Seeker would not run when pathfinding is done outside of play-mode.
+- When using \reflink{AstarData.DeserializeGraphsAdditive}, the new graphs will fill any empty slots in the array of graphs (if any graphs have been removed), instead of always being appended to the end of the array.
+		This fixes the graphs array growing indefinitely when repeatedly removing and adding graphs in some cases.
+
+## 5.3.4 (2025-03-18)
+- Navmesh cuts now work much better in slopes.
+		Previously, whenever the navmesh cut bounds touched a triangle bounds, the triangle would be cut by the full navmesh cut.
+		Now, the full 3d extruded cut shape is used to calculate the cut. Resulting is more predictable cuts, and fixes
+		a ton of edge cases where a navmesh cut could cause an agent to not be able to navigate across a seemingly navigable area.
+		The video below shows the old behavior on the left, and the new one on the right.
+		\video{changelog/navmeshcutfallingslowly_5_3_4_stack.webm}
+- Navmesh cut gizmos are now oriented relative to the closest graph, instead of the first graph.
+		This has no effect on the actual navmesh cut, but it makes it easier to see where the cut will be applied, in case there are multiple graphs in the scene.
+- Fixed updating a recast graph on a unity terrain could in rare cases create reactangular gaps along a border of tiles.
+- Reflection is now used to find graph types even in WebGL builds. This allows you to use custom graph types in WebGL builds too.
+		Make sure your custom graph types are annotated with the [Pathfinding.Util.Preserve] attribute, otherwise they may be stripped out by the Unity WebGL build process.
+- Fixed a bug causing navmesh cuts to add a tiny gap in the navmesh.
+
 ## 5.3.3 (2025-01-31)
+- Fixed sometimes not being able to delete graphs from AstarPath components on prefabs.
+- Fixed a tiny memory leak happening sometimes when editing a prefab with an AstarPath component.
 - Fixed scanning grid graphs in Unity 6000.0.36f1+ would throw an exception, due to changes to unity's job system.
+- Fixed setting Recast graph -> 'Filter Objects By' to Tags would incorrectly include everything in the scene.
 
 ## 5.3.2 (2025-01-27)
 - Fixed compatibility with com.unity.entities version 1.3.9 (latest version at the time of this update).

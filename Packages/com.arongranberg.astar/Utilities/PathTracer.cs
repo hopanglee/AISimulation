@@ -1267,7 +1267,8 @@ namespace Pathfinding {
 			// The path may go around the vertex in a full loop. How silly! Let's fix that.
 			if (startNode == endNode) return true;
 
-			while (true) {
+			bool foundAlternativePath = false;
+			while (!foundAlternativePath) {
 				bool found = false;
 				for (int j = 0; j < currentNode.connections.Length; j++) {
 					if (currentNode.connections[j].node is TriangleMeshNode neighbour && (traversalProvider != null ? traversalProvider.CanTraverse(path, currentNode, neighbour) : nnConstraint.Suitable(neighbour)) && currentNode.connections[j].isOutgoing) {
@@ -1279,18 +1280,31 @@ namespace Pathfinding {
 							// We try to follow it and see where we end up
 							currentNode = neighbour;
 							alternativeNodes.Add(currentNode);
-
-							// Return if we have found an alternative path
-							if (currentNode == endNode) return true;
+							found = true;
 
 							if (cnt++ > 100) throw new System.Exception("Caught in a potentially infinite loop. The navmesh probably contains degenerate geometry.");
-							found = true;
+
+							// Stop if we have found an alternative path around the vertex
+							if (currentNode == endNode) foundAlternativePath = true;
 							break;
 						}
 					}
 				}
 				if (!found) return false;
 			}
+
+			var costDerivate = 0;
+			for (int i = 0; i < alternativeNodes.Count; i++) {
+				costDerivate += traversalProvider != null ? (int)traversalProvider.GetTraversalCost(path, alternativeNodes[i]) : (int)DefaultITraversalProvider.GetTraversalCost(path, alternativeNodes[i]);
+			}
+			for (int i = startIndex; i < endIndex; i++) {
+				costDerivate -= traversalProvider != null ? (int)traversalProvider.GetTraversalCost(path, nodes.GetAbsolute(i)) : (int)DefaultITraversalProvider.GetTraversalCost(path, nodes.GetAbsolute(i));
+			}
+
+			// If the alternative path is cheaper than the current path, we should use it.
+			// Making the path shorter does not necessarily make it less costly if penalties are involved.
+			// TODO: Should estimate the derivative properly when changing to use length-based penalties.
+			return costDerivate <= 0;
 		}
 
 		bool FirstInnerVertex (NativeArray<int> indices, int numCorners, List<GraphNode> alternativePath, out int alternativeStartIndex, out int alternativeEndIndex, ITraversalProvider traversalProvider, Path path) {

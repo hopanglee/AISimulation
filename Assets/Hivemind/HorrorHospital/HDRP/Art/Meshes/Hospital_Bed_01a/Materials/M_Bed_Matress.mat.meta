@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0da0262e31875a444b41ae6ed602fe9a
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 276792
+  packageName: Modular Abandoned Hospital (Horror Hospital, Abandoned hospital, Hospital)
+  packageVersion: 1.0
+  assetPath: Assets/Hivemind/HorrorHospital/HDRP/Art/Meshes/Hospital_Bed_01a/Materials/M_Bed_Matress.mat
+  uploadId: 657930
