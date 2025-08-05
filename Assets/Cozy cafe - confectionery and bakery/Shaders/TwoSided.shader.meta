@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: e27f1873f7e0cef4995cb9894079ab95
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 216922
+  packageName: Cozy cafe - confectionery and bakery
+  packageVersion: 1.0
+  assetPath: Assets/Cozy cafe - confectionery and bakery/Shaders/TwoSided.shader
+  uploadId: 489992
