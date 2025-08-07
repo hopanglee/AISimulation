@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1031290621}
   - component: {fileID: 1031290622}
   - component: {fileID: 1031290623}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Chips_Cylinder_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 1031290625}
   - component: {fileID: 1031290626}
   - component: {fileID: 1031290627}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Chips_Cylinder_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -140,6 +140,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -184,7 +187,7 @@ GameObject:
   - component: {fileID: 1031290629}
   - component: {fileID: 1031290630}
   - component: {fileID: 1031290631}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Chips_Cylinder_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223,6 +226,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -267,7 +273,7 @@ GameObject:
   - component: {fileID: 1031290633}
   - component: {fileID: 1031290634}
   - component: {fileID: 1031290635}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Chips_Cylinder_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -306,6 +312,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -350,7 +359,7 @@ GameObject:
   - component: {fileID: 1031290637}
   - component: {fileID: 1031290638}
   - component: {fileID: 1031290639}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Chips_Cylinder_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -389,6 +398,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

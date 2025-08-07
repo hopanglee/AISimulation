@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1030982131}
   - component: {fileID: 1030982132}
   - component: {fileID: 1030982133}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_GlassTower_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 1030982135}
   - component: {fileID: 1030982136}
   - component: {fileID: 1030982137}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_GlassTower_01_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -141,6 +141,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -185,7 +188,7 @@ GameObject:
   - component: {fileID: 1030982139}
   - component: {fileID: 1030982140}
   - component: {fileID: 1030982141}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_GlassTower_01_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,6 +227,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -268,7 +274,7 @@ GameObject:
   - component: {fileID: 1030982143}
   - component: {fileID: 1030982144}
   - component: {fileID: 1030982145}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_GlassTower_01_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -307,6 +313,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -351,7 +360,7 @@ GameObject:
   - component: {fileID: 1030982147}
   - component: {fileID: 1030982148}
   - component: {fileID: 1030982149}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_GlassTower_01_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -390,6 +399,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1031261611}
   - component: {fileID: 1031261612}
   - component: {fileID: 1031261613}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Can_01_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 1031261615}
   - component: {fileID: 1031261616}
   - component: {fileID: 1031261617}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Can_01_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -140,6 +140,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -184,7 +187,7 @@ GameObject:
   - component: {fileID: 1031261619}
   - component: {fileID: 1031261620}
   - component: {fileID: 1031261621}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Can_01_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223,6 +226,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -267,7 +273,7 @@ GameObject:
   - component: {fileID: 1031261623}
   - component: {fileID: 1031261624}
   - component: {fileID: 1031261625}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Can_01_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -306,6 +312,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -350,7 +359,7 @@ GameObject:
   - component: {fileID: 1031261627}
   - component: {fileID: 1031261628}
   - component: {fileID: 1031261629}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Can_01_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -389,6 +398,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

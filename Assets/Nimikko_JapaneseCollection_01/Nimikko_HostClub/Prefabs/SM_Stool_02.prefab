@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1030981356}
   - component: {fileID: 1030981357}
   - component: {fileID: 1030981358}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Stool_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 1030981360}
   - component: {fileID: 1030981361}
   - component: {fileID: 1030981362}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Stool_02_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -141,6 +141,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -185,7 +188,7 @@ GameObject:
   - component: {fileID: 1030981364}
   - component: {fileID: 1030981365}
   - component: {fileID: 1030981366}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Stool_02_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,6 +227,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -268,7 +274,7 @@ GameObject:
   - component: {fileID: 1030981368}
   - component: {fileID: 1030981369}
   - component: {fileID: 1030981370}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Stool_02_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -307,6 +313,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -351,7 +360,7 @@ GameObject:
   - component: {fileID: 1030981372}
   - component: {fileID: 1030981373}
   - component: {fileID: 1030981374}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Stool_02_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -390,6 +399,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

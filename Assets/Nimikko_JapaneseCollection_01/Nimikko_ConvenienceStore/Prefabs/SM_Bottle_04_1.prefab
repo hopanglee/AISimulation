@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1031270019}
   - component: {fileID: 1031270020}
   - component: {fileID: 1031270021}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Bottle_04_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 1031270023}
   - component: {fileID: 1031270024}
   - component: {fileID: 1031270025}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Bottle_04_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -140,6 +140,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -184,7 +187,7 @@ GameObject:
   - component: {fileID: 1031270027}
   - component: {fileID: 1031270028}
   - component: {fileID: 1031270029}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Bottle_04_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223,6 +226,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -267,7 +273,7 @@ GameObject:
   - component: {fileID: 1031270031}
   - component: {fileID: 1031270032}
   - component: {fileID: 1031270033}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Bottle_04_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -306,6 +312,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -350,7 +359,7 @@ GameObject:
   - component: {fileID: 1031270035}
   - component: {fileID: 1031270036}
   - component: {fileID: 1031270037}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Bottle_04_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -389,6 +398,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

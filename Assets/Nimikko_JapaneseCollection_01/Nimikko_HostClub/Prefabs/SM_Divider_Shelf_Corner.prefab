@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1030981006}
   - component: {fileID: 1030981007}
   - component: {fileID: 1030981008}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Divider_Shelf_Corner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 1030981010}
   - component: {fileID: 1030981011}
   - component: {fileID: 1030981012}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Divider_Shelf_Corner_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -141,6 +141,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -185,7 +188,7 @@ GameObject:
   - component: {fileID: 1030981014}
   - component: {fileID: 1030981015}
   - component: {fileID: 1030981016}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Divider_Shelf_Corner_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,6 +227,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -268,7 +274,7 @@ GameObject:
   - component: {fileID: 1030981018}
   - component: {fileID: 1030981019}
   - component: {fileID: 1030981020}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Divider_Shelf_Corner_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -307,6 +313,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -351,7 +360,7 @@ GameObject:
   - component: {fileID: 1030981022}
   - component: {fileID: 1030981023}
   - component: {fileID: 1030981024}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Divider_Shelf_Corner_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -390,6 +399,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

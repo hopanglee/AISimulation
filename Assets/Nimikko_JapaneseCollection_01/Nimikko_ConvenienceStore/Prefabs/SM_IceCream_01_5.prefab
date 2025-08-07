@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1031249468}
   - component: {fileID: 1031249469}
   - component: {fileID: 1031249470}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_IceCream_01_5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 1031249472}
   - component: {fileID: 1031249473}
   - component: {fileID: 1031249474}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_IceCream_01_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -140,6 +140,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -184,7 +187,7 @@ GameObject:
   - component: {fileID: 1031249476}
   - component: {fileID: 1031249477}
   - component: {fileID: 1031249478}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_IceCream_01_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223,6 +226,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -267,7 +273,7 @@ GameObject:
   - component: {fileID: 1031249480}
   - component: {fileID: 1031249481}
   - component: {fileID: 1031249482}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_IceCream_01_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -306,6 +312,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -350,7 +359,7 @@ GameObject:
   - component: {fileID: 1031249484}
   - component: {fileID: 1031249485}
   - component: {fileID: 1031249486}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_IceCream_01_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -389,6 +398,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

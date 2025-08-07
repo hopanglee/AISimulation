@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1031253052}
   - component: {fileID: 1031253053}
   - component: {fileID: 1031253054}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Sandwich
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 1031253056}
   - component: {fileID: 1031253057}
   - component: {fileID: 1031253058}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Sandwich_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -140,6 +140,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -184,7 +187,7 @@ GameObject:
   - component: {fileID: 1031253060}
   - component: {fileID: 1031253061}
   - component: {fileID: 1031253062}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Sandwich_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223,6 +226,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -267,7 +273,7 @@ GameObject:
   - component: {fileID: 1031253064}
   - component: {fileID: 1031253065}
   - component: {fileID: 1031253066}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Sandwich_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -306,6 +312,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -350,7 +359,7 @@ GameObject:
   - component: {fileID: 1031253068}
   - component: {fileID: 1031253069}
   - component: {fileID: 1031253070}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_Sandwich_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -389,6 +398,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

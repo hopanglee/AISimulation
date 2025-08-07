@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4288482805078029684}
   - component: {fileID: 2046665209797083582}
   - component: {fileID: -5074119343331991644}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Whiteboard_180_90
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -59,6 +59,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

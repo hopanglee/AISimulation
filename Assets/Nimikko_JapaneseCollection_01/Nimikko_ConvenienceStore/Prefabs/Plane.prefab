@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1031258040}
   - component: {fileID: 1031258041}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -66,7 +66,7 @@ GameObject:
   - component: {fileID: 7699215136784566829}
   - component: {fileID: 3498039072076329281}
   - component: {fileID: 1092690584928955430}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Plane (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -113,6 +113,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

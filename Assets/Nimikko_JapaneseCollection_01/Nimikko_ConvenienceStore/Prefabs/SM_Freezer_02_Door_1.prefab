@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1031360305}
   - component: {fileID: 1031360306}
   - component: {fileID: 1031360307}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Freezer_02_Door_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 1031360309}
   - component: {fileID: 1031360310}
   - component: {fileID: 1031360311}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Freezer_02_Door_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -140,6 +140,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -185,7 +188,7 @@ GameObject:
   - component: {fileID: 1031360313}
   - component: {fileID: 1031360314}
   - component: {fileID: 1031360315}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Freezer_02_Door_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,6 +227,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -269,7 +275,7 @@ GameObject:
   - component: {fileID: 1031360317}
   - component: {fileID: 1031360318}
   - component: {fileID: 1031360319}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Freezer_02_Door_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -308,6 +314,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -353,7 +362,7 @@ GameObject:
   - component: {fileID: 1031360321}
   - component: {fileID: 1031360322}
   - component: {fileID: 1031360323}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Freezer_02_Door_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -392,6 +401,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

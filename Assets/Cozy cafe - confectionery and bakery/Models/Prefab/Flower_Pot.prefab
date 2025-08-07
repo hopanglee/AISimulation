@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5542595155431037112}
   - component: {fileID: 8871386027379785261}
   - component: {fileID: 2114037214307728762}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Flower_Pot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25,13 +25,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2839012149281109685}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3893809155724305030}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8871386027379785261
 MeshFilter:
@@ -52,10 +53,15 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -80,6 +86,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &4096270018018580535
 GameObject:
   m_ObjectHideFlags: 0
@@ -92,7 +99,7 @@ GameObject:
   - component: {fileID: 2903550951541477953}
   - component: {fileID: 4682240560010755690}
   - component: {fileID: 4560744050770788648}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Plant
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -106,12 +113,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4096270018018580535}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.22422916, z: -0, w: 0.9745365}
   m_LocalPosition: {x: -0.0065, y: -0.023, z: -0.0028}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5542595155431037112}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -25.915, z: 0}
 --- !u!33 &2903550951541477953
 MeshFilter:
@@ -132,10 +140,15 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 2
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -160,6 +173,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!259 &4560744050770788648
 LightProbeProxyVolume:
   m_ObjectHideFlags: 0
@@ -179,3 +193,4 @@ LightProbeProxyVolume:
   m_ProbePositionMode: 0
   m_RefreshMode: 0
   m_QualityMode: 1
+  m_DataFormat: 1

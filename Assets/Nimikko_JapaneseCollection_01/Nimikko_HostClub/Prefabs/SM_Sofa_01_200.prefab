@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1030979008}
   - component: {fileID: 1030979009}
   - component: {fileID: 1030979010}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Sofa_01_200
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 1030979012}
   - component: {fileID: 1030979013}
   - component: {fileID: 1030979014}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Sofa_01_200_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -141,6 +141,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -185,7 +188,7 @@ GameObject:
   - component: {fileID: 1030979016}
   - component: {fileID: 1030979017}
   - component: {fileID: 1030979018}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Sofa_01_200_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,6 +227,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -268,7 +274,7 @@ GameObject:
   - component: {fileID: 1030979020}
   - component: {fileID: 1030979021}
   - component: {fileID: 1030979022}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Sofa_01_200_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -307,6 +313,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -351,7 +360,7 @@ GameObject:
   - component: {fileID: 1030979024}
   - component: {fileID: 1030979025}
   - component: {fileID: 1030979026}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Sofa_01_200_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -390,6 +399,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

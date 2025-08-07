@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1030982251}
   - component: {fileID: 1030982252}
   - component: {fileID: 1030982253}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_SpeakerCeiling_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 1030982255}
   - component: {fileID: 1030982256}
   - component: {fileID: 1030982257}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_SpeakerCeiling_01_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -141,6 +141,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -185,7 +188,7 @@ GameObject:
   - component: {fileID: 1030982259}
   - component: {fileID: 1030982260}
   - component: {fileID: 1030982261}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_SpeakerCeiling_01_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,6 +227,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -268,7 +274,7 @@ GameObject:
   - component: {fileID: 1030982263}
   - component: {fileID: 1030982264}
   - component: {fileID: 1030982265}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_SpeakerCeiling_01_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -307,6 +313,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -351,7 +360,7 @@ GameObject:
   - component: {fileID: 1030982267}
   - component: {fileID: 1030982268}
   - component: {fileID: 1030982269}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_SpeakerCeiling_01_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -390,6 +399,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

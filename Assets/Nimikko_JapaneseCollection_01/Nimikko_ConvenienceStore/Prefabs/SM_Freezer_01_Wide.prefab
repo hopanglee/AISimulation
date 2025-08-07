@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1031244334}
   - component: {fileID: 1031244335}
   - component: {fileID: 1031244336}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Freezer_01_Wide
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 1031244338}
   - component: {fileID: 1031244339}
   - component: {fileID: 1031244340}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Freezer_01_Wide_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -140,6 +140,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -185,7 +188,7 @@ GameObject:
   - component: {fileID: 1031244342}
   - component: {fileID: 1031244343}
   - component: {fileID: 1031244344}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Freezer_01_Wide_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,6 +227,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -269,7 +275,7 @@ GameObject:
   - component: {fileID: 1031244346}
   - component: {fileID: 1031244347}
   - component: {fileID: 1031244348}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Freezer_01_Wide_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -308,6 +314,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -353,7 +362,7 @@ GameObject:
   - component: {fileID: 1031244350}
   - component: {fileID: 1031244351}
   - component: {fileID: 1031244352}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Freezer_01_Wide_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -392,6 +401,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

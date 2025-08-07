@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1031244265}
   - component: {fileID: 1031244266}
   - component: {fileID: 1031244267}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Counter_01_Corner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 1031244269}
   - component: {fileID: 1031244270}
   - component: {fileID: 1031244271}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Counter_01_Corner_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -140,6 +140,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -185,7 +188,7 @@ GameObject:
   - component: {fileID: 1031244273}
   - component: {fileID: 1031244274}
   - component: {fileID: 1031244275}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Counter_01_Corner_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,6 +227,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -269,7 +275,7 @@ GameObject:
   - component: {fileID: 1031244277}
   - component: {fileID: 1031244278}
   - component: {fileID: 1031244279}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Counter_01_Corner_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -308,6 +314,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -353,7 +362,7 @@ GameObject:
   - component: {fileID: 1031244281}
   - component: {fileID: 1031244282}
   - component: {fileID: 1031244283}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Counter_01_Corner_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -392,6 +401,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

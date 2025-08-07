@@ -11723,6 +11723,10 @@ PrefabInstance:
       value: Plane_4 (1)
       objectReference: {fileID: 0}
     - target: {fileID: 1030983726, guid: abc00000000011442283700724663502, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030983726, guid: abc00000000011442283700724663502, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
@@ -26385,6 +26389,14 @@ PrefabInstance:
     - target: {fileID: 1030983679, guid: abc00000000013965522448038040256, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030983680, guid: abc00000000013965522448038040256, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030983680, guid: abc00000000013965522448038040256, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1030983680, guid: abc00000000013965522448038040256, type: 3}
       propertyPath: m_StaticEditorFlags

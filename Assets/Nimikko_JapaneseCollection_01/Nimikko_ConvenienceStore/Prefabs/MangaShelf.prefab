@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3967061755492584342}
   - component: {fileID: 2082319100891675797}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MangaShelf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -75,6 +75,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Manga_2
       objectReference: {fileID: 0}
+    - target: {fileID: 1031333898, guid: abc00000000000634667476384056686, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 1031333899, guid: abc00000000000634667476384056686, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -115,6 +119,22 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0.049604975
       objectReference: {fileID: 0}
+    - target: {fileID: 1031333902, guid: abc00000000000634667476384056686, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333906, guid: abc00000000000634667476384056686, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333910, guid: abc00000000000634667476384056686, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333914, guid: abc00000000000634667476384056686, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -136,6 +156,10 @@ PrefabInstance:
     - target: {fileID: 1031333876, guid: abc00000000005828116499378911264, type: 3}
       propertyPath: m_Name
       value: Manga_3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333876, guid: abc00000000005828116499378911264, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1031333877, guid: abc00000000005828116499378911264, type: 3}
       propertyPath: m_LocalScale.x
@@ -177,6 +201,22 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0.049604975
       objectReference: {fileID: 0}
+    - target: {fileID: 1031333880, guid: abc00000000005828116499378911264, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333884, guid: abc00000000005828116499378911264, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333888, guid: abc00000000005828116499378911264, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333892, guid: abc00000000005828116499378911264, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -198,6 +238,10 @@ PrefabInstance:
     - target: {fileID: 1031333940, guid: abc00000000011459440795578611243, type: 3}
       propertyPath: m_Name
       value: Manga_4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333940, guid: abc00000000011459440795578611243, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1031333941, guid: abc00000000011459440795578611243, type: 3}
       propertyPath: m_LocalScale.x
@@ -239,6 +283,22 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0.049604975
       objectReference: {fileID: 0}
+    - target: {fileID: 1031333944, guid: abc00000000011459440795578611243, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333948, guid: abc00000000011459440795578611243, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333952, guid: abc00000000011459440795578611243, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333956, guid: abc00000000011459440795578611243, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -260,6 +320,10 @@ PrefabInstance:
     - target: {fileID: 1031333962, guid: abc00000000013669827778350179881, type: 3}
       propertyPath: m_Name
       value: Manga_5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333962, guid: abc00000000013669827778350179881, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1031333963, guid: abc00000000013669827778350179881, type: 3}
       propertyPath: m_LocalScale.x
@@ -301,6 +365,22 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0.049604975
       objectReference: {fileID: 0}
+    - target: {fileID: 1031333966, guid: abc00000000013669827778350179881, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333970, guid: abc00000000013669827778350179881, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333974, guid: abc00000000013669827778350179881, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333978, guid: abc00000000013669827778350179881, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -322,6 +402,10 @@ PrefabInstance:
     - target: {fileID: 1031333940, guid: abc00000000011459440795578611243, type: 3}
       propertyPath: m_Name
       value: Manga_6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333940, guid: abc00000000011459440795578611243, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1031333941, guid: abc00000000011459440795578611243, type: 3}
       propertyPath: m_LocalScale.x
@@ -363,6 +447,22 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: -0
       objectReference: {fileID: 0}
+    - target: {fileID: 1031333944, guid: abc00000000011459440795578611243, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333948, guid: abc00000000011459440795578611243, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333952, guid: abc00000000011459440795578611243, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333956, guid: abc00000000011459440795578611243, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -384,6 +484,10 @@ PrefabInstance:
     - target: {fileID: 1031333876, guid: abc00000000005828116499378911264, type: 3}
       propertyPath: m_Name
       value: Manga_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333876, guid: abc00000000005828116499378911264, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1031333877, guid: abc00000000005828116499378911264, type: 3}
       propertyPath: m_LocalScale.x
@@ -425,6 +529,22 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0.049604975
       objectReference: {fileID: 0}
+    - target: {fileID: 1031333880, guid: abc00000000005828116499378911264, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333884, guid: abc00000000005828116499378911264, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333888, guid: abc00000000005828116499378911264, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031333892, guid: abc00000000005828116499378911264, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -446,6 +566,10 @@ PrefabInstance:
     - target: {fileID: 1031244115, guid: abc00000000007450868263164115405, type: 3}
       propertyPath: m_Name
       value: Shelf_14
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031244115, guid: abc00000000007450868263164115405, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1031244116, guid: abc00000000007450868263164115405, type: 3}
       propertyPath: m_LocalScale.x
@@ -486,6 +610,22 @@ PrefabInstance:
     - target: {fileID: 1031244116, guid: abc00000000007450868263164115405, type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031244119, guid: abc00000000007450868263164115405, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031244123, guid: abc00000000007450868263164115405, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031244127, guid: abc00000000007450868263164115405, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031244131, guid: abc00000000007450868263164115405, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

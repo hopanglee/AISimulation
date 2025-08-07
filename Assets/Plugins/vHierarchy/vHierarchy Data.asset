@@ -15,6 +15,7 @@ MonoBehaviour:
   sceneDatas_byGuid:
     keys:
     - 3593ce073bd93f74797273054295fb74
+    - cdab9b710b4118341bb9c6922a99462c
     values:
     - goDatas_byGlobalId:
         keys:
@@ -238,3 +239,6 @@ MonoBehaviour:
           iconNameOrGuid: MeshCollider Icon
         - colorIndex: 1
           iconNameOrGuid: MeshCollider Icon
+    - goDatas_byGlobalId:
+        keys: []
+        values: []

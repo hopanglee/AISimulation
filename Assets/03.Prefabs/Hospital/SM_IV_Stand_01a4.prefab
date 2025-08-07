@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3085513902633181325}
   - component: {fileID: 427363980450145041}
   - component: {fileID: 101287698978680457}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 2726210855426402070}
   - component: {fileID: 6383741894495825666}
   - component: {fileID: 4177788366911063516}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_IV_Stand_01a_LOD4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -172,7 +172,7 @@ GameObject:
   - component: {fileID: 9131949063924281500}
   - component: {fileID: 4400552605944880313}
   - component: {fileID: 812278543078814956}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_IV_Stand_01a_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -258,7 +258,7 @@ GameObject:
   - component: {fileID: 1850030394274433494}
   - component: {fileID: 5332609790103646214}
   - component: {fileID: 3761451088270237052}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_IV_Stand_01a_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -344,7 +344,7 @@ GameObject:
   - component: {fileID: 8188249793174433887}
   - component: {fileID: 7390243277342913101}
   - component: {fileID: 6951156346335502983}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_IV_Stand_01a_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -430,7 +430,7 @@ GameObject:
   - component: {fileID: 8288849595894136759}
   - component: {fileID: 4460645434903969893}
   - component: {fileID: 8423611582893519478}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_IV_Stand_01a_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -516,7 +516,7 @@ GameObject:
   - component: {fileID: 2469703475477399304}
   - component: {fileID: 285942362817001885}
   - component: {fileID: 8220736678342372793}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_IV_Stand_01a_LOD5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -601,7 +601,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4324639932185457754}
   - component: {fileID: 1791124483121183207}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_IV_Stand_01a4
   m_TagString: Untagged
   m_Icon: {fileID: 0}

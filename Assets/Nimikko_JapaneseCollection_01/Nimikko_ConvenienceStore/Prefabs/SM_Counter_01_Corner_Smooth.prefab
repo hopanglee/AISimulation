@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1031244256}
   - component: {fileID: 1031244257}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Counter_01_Corner_Smooth
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -66,7 +66,7 @@ GameObject:
   - component: {fileID: 1031244259}
   - component: {fileID: 1031244260}
   - component: {fileID: 1031244261}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Counter_01_Corner_Smooth
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -105,6 +105,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1031257004}
   - component: {fileID: 1031257005}
   - component: {fileID: 1031257006}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_FrontWindows_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 1031257008}
   - component: {fileID: 1031257009}
   - component: {fileID: 1031257010}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_FrontWindows_01_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -140,6 +140,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -186,7 +189,7 @@ GameObject:
   - component: {fileID: 1031257012}
   - component: {fileID: 1031257013}
   - component: {fileID: 1031257014}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_FrontWindows_01_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -225,6 +228,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -271,7 +277,7 @@ GameObject:
   - component: {fileID: 1031257016}
   - component: {fileID: 1031257017}
   - component: {fileID: 1031257018}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_FrontWindows_01_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -310,6 +316,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -356,7 +365,7 @@ GameObject:
   - component: {fileID: 1031257020}
   - component: {fileID: 1031257021}
   - component: {fileID: 1031257022}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_FrontWindows_01_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -395,6 +404,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

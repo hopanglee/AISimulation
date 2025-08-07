@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1031244459}
   - component: {fileID: 1031244460}
   - component: {fileID: 1031244461}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Shelf_Tobacco
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 1031244463}
   - component: {fileID: 1031244464}
   - component: {fileID: 1031244465}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Shelf_Tobacco_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -140,6 +140,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -185,7 +188,7 @@ GameObject:
   - component: {fileID: 1031244467}
   - component: {fileID: 1031244468}
   - component: {fileID: 1031244469}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Shelf_Tobacco_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,6 +227,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -269,7 +275,7 @@ GameObject:
   - component: {fileID: 1031244471}
   - component: {fileID: 1031244472}
   - component: {fileID: 1031244473}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Shelf_Tobacco_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -308,6 +314,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -353,7 +362,7 @@ GameObject:
   - component: {fileID: 1031244475}
   - component: {fileID: 1031244476}
   - component: {fileID: 1031244477}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Shelf_Tobacco_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -392,6 +401,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
