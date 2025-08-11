@@ -74,7 +74,12 @@ public class Sensor
         var _props = locationManager.GetProps(curArea);
         foreach (var prop in _props)
         {
-            var distance = MathExtension.SquaredDistance2D(curPos, prop.toMovePos.position);
+            Vector3 toMovePos = prop.transform.position;
+            if(prop.toMovePos != null)
+            {
+                toMovePos = prop.toMovePos.position;
+            }
+            var distance = MathExtension.SquaredDistance2D(curPos, toMovePos);
             if (distance <= interactionRange * interactionRange)
             {
                 // 간단한 키 사용
@@ -135,7 +140,12 @@ public class Sensor
             // var distance = MathExtension.SquaredDistance2D(curPos, prop.toMovePos.position);
             // if (distance <= interactionRange * interactionRange)
             // {
-            toMovable.Add(prop.GetSimpleKey(), prop.toMovePos.position);
+            Vector3 toMovePos = prop.transform.position;
+            if(prop.toMovePos != null)
+            {
+                toMovePos = prop.toMovePos.position;
+            }
+            toMovable.Add(prop.GetSimpleKey(), toMovePos);
             //}
         }
 
