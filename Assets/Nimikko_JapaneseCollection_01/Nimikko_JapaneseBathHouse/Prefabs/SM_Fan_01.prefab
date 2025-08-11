@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1030995819}
   - component: {fileID: 1030995820}
   - component: {fileID: 1030995821}
+  - component: {fileID: 1468593295323280742}
   m_Layer: 0
   m_Name: SM_Fan_01
   m_TagString: Untagged
@@ -91,6 +92,26 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300008, guid: abc00000000004703767161581116272, type: 3}
+--- !u!114 &1468593295323280742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1030995818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6404fcf14aea64fb12cd49e5812b78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 0}
+  _preposition: in front of
+  _isHideChild: 0
+  _name: Fan
+  _currentStatusDescription: 
+  Description: 
+  toMovePos: {fileID: 0}
+  currentSpeed: 0
 --- !u!1 &1030995822
 GameObject:
   m_ObjectHideFlags: 0
@@ -102,7 +123,7 @@ GameObject:
   - component: {fileID: 1030995823}
   - component: {fileID: 1030995824}
   - component: {fileID: 1030995825}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Fan_01_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -141,6 +162,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -185,7 +209,7 @@ GameObject:
   - component: {fileID: 1030995827}
   - component: {fileID: 1030995828}
   - component: {fileID: 1030995829}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Fan_01_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,6 +248,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -268,7 +295,7 @@ GameObject:
   - component: {fileID: 1030995831}
   - component: {fileID: 1030995832}
   - component: {fileID: 1030995833}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Fan_01_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -307,6 +334,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -351,7 +381,7 @@ GameObject:
   - component: {fileID: 1030995835}
   - component: {fileID: 1030995836}
   - component: {fileID: 1030995837}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Fan_01_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -390,6 +420,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

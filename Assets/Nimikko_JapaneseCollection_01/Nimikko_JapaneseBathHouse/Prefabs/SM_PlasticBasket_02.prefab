@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1030998458}
   - component: {fileID: 1030998459}
   - component: {fileID: 1030998460}
+  - component: {fileID: 5592857155396662061}
   m_Layer: 0
   m_Name: SM_PlasticBasket_02
   m_TagString: Untagged
@@ -91,6 +92,29 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300008, guid: abc00000000004124711262996877760, type: 3}
+--- !u!114 &5592857155396662061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1030998457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90657eda3fab66244ba843b085a7979a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 0}
+  _preposition: in
+  _isHideChild: 0
+  _name: Trash Basket
+  _currentStatusDescription: 
+  Description: 
+  toMovePos: {fileID: 0}
+  maxItems: 10
+  items: []
+  itemPlacementPositions: []
+  isFull: 0
 --- !u!1 &1030998461
 GameObject:
   m_ObjectHideFlags: 0
@@ -102,7 +126,7 @@ GameObject:
   - component: {fileID: 1030998462}
   - component: {fileID: 1030998463}
   - component: {fileID: 1030998464}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_PlasticBasket_02_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -141,6 +165,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -185,7 +212,7 @@ GameObject:
   - component: {fileID: 1030998466}
   - component: {fileID: 1030998467}
   - component: {fileID: 1030998468}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_PlasticBasket_02_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,6 +251,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -268,7 +298,7 @@ GameObject:
   - component: {fileID: 1030998470}
   - component: {fileID: 1030998471}
   - component: {fileID: 1030998472}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_PlasticBasket_02_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -307,6 +337,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -351,7 +384,7 @@ GameObject:
   - component: {fileID: 1030998474}
   - component: {fileID: 1030998475}
   - component: {fileID: 1030998476}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_PlasticBasket_02_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -390,6 +423,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
