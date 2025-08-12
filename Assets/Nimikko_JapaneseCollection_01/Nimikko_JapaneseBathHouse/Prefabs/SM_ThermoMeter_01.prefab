@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1030999357}
   - component: {fileID: 1030999358}
   - component: {fileID: 1030999359}
+  - component: {fileID: 2548264363030581408}
   m_Layer: 0
   m_Name: SM_ThermoMeter_01
   m_TagString: Untagged
@@ -91,6 +92,32 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300008, guid: abc00000000007817345086926927755, type: 3}
+--- !u!114 &2548264363030581408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1030999356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce50a6ba8879cc346814ecdc9699366e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 0}
+  _preposition: in front of
+  _isHideChild: 0
+  _name: Thermometer
+  _currentStatusDescription: 
+  Description: 
+  toMovePos: {fileID: 0}
+  currentTemperature: 20
+  minTemperature: -10
+  maxTemperature: 50
+  isWorking: 1
+  isWallMounted: 1
+  showCelsius: 1
+  showFahrenheit: 0
 --- !u!1 &1030999360
 GameObject:
   m_ObjectHideFlags: 0
@@ -102,7 +129,7 @@ GameObject:
   - component: {fileID: 1030999361}
   - component: {fileID: 1030999362}
   - component: {fileID: 1030999363}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_ThermoMeter_01_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -141,6 +168,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -185,7 +215,7 @@ GameObject:
   - component: {fileID: 1030999365}
   - component: {fileID: 1030999366}
   - component: {fileID: 1030999367}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_ThermoMeter_01_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,6 +254,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -268,7 +301,7 @@ GameObject:
   - component: {fileID: 1030999369}
   - component: {fileID: 1030999370}
   - component: {fileID: 1030999371}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_ThermoMeter_01_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -307,6 +340,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -351,7 +387,7 @@ GameObject:
   - component: {fileID: 1030999373}
   - component: {fileID: 1030999374}
   - component: {fileID: 1030999375}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_ThermoMeter_01_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -390,6 +426,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

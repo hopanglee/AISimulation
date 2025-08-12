@@ -152,7 +152,11 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 4992363949574352507}
+  - {fileID: 8550567327467774612}
+  - {fileID: 5692033863587690619}
+  - {fileID: 3386544234959891981}
   m_Father: {fileID: 6741473572490864852}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &222506837766974167
@@ -514,9 +518,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
-  _preposition: 
+  _preposition: on
   _isHideChild: 0
-  _name: 
+  _name: Bathtub
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -3021,7 +3025,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
-  _preposition: in
+  _preposition: on
   _isHideChild: 0
   _name: Bathtub
   _currentStatusDescription: 
@@ -4967,10 +4971,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4992363949574352507}
-  - {fileID: 8550567327467774612}
-  - {fileID: 5692033863587690619}
-  - {fileID: 3386544234959891981}
+  - {fileID: 8684608901144285773}
+  - {fileID: 2285869614109211354}
+  - {fileID: 7320934258704342923}
+  - {fileID: 8124500734285259059}
   m_Father: {fileID: 6741473572490864852}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5102986726845098035
@@ -5633,61 +5637,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2660623038733029882}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &5926441727689326163
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8685781162548521524}
-  m_Layer: 11
-  m_Name: SoapBottle
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8685781162548521524
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5926441727689326163}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 4719443318975763852}
-  - {fileID: 7854644956160782791}
-  - {fileID: 7221940545026408689}
-  - {fileID: 7842900365789798995}
-  - {fileID: 2897239408343783517}
-  - {fileID: 6590584811538611561}
-  - {fileID: 355305217999545794}
-  - {fileID: 5545727059660092134}
-  - {fileID: 5271399528293631651}
-  - {fileID: 9195555942919492899}
-  - {fileID: 6100557236862658389}
-  - {fileID: 4739612909850194198}
-  - {fileID: 3011243826745570945}
-  - {fileID: 853838134824312426}
-  - {fileID: 4976569744099902409}
-  - {fileID: 5253700638666088856}
-  - {fileID: 8684608901144285773}
-  - {fileID: 2285869614109211354}
-  - {fileID: 7320934258704342923}
-  - {fileID: 8124500734285259059}
-  - {fileID: 7437865124514850943}
-  - {fileID: 6234583044374447300}
-  - {fileID: 4369360457552156720}
-  - {fileID: 8503994549871923928}
-  m_Father: {fileID: 7111669851522346631}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5969939631889433251
 GameObject:
   m_ObjectHideFlags: 0
@@ -5716,7 +5665,11 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 7437865124514850943}
+  - {fileID: 6234583044374447300}
+  - {fileID: 4369360457552156720}
+  - {fileID: 8503994549871923928}
   m_Father: {fileID: 1619237275798173729}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5989105747796725341
@@ -5868,7 +5821,15 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 5271399528293631651}
+  - {fileID: 9195555942919492899}
+  - {fileID: 6100557236862658389}
+  - {fileID: 4739612909850194198}
+  - {fileID: 3011243826745570945}
+  - {fileID: 853838134824312426}
+  - {fileID: 4976569744099902409}
+  - {fileID: 5253700638666088856}
   m_Father: {fileID: 503521712965876062}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6024655214713774237
@@ -7258,7 +7219,6 @@ Transform:
   - {fileID: 4907307436262261783}
   - {fileID: 503521712965876062}
   - {fileID: 1619237275798173729}
-  - {fileID: 8685781162548521524}
   m_Father: {fileID: 6936514119379764336}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8068278758783134207
@@ -7644,7 +7604,15 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 4719443318975763852}
+  - {fileID: 7854644956160782791}
+  - {fileID: 7221940545026408689}
+  - {fileID: 7842900365789798995}
+  - {fileID: 2897239408343783517}
+  - {fileID: 6590584811538611561}
+  - {fileID: 355305217999545794}
+  - {fileID: 5545727059660092134}
   m_Father: {fileID: 4907307436262261783}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8413202933135579643
@@ -8581,6 +8549,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5290671998562445524}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -8806,6 +8778,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1196123337887540990}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -8984,6 +8960,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 2548264363030581408, guid: abc00000000008202993061918910632, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 9203747093275829444}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -9002,6 +8982,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7997277038114660878}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -9350,6 +9334,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1196123337887540990}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -9528,6 +9516,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -9634,6 +9626,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -9652,6 +9648,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4304971541627613134}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -9944,6 +9944,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -9960,11 +9964,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 7936713058704034087}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_2_SM_SoapBottle_01_8
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -9992,7 +9996,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10.104886
+      value: 10.104889
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -10053,8 +10057,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 428670326289742902}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &355305217999544893 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 355305218185322946}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &428670326289742902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 355305217999544893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &355305217999545794 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -10182,6 +10215,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7741157229474935979}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -10378,6 +10415,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7741157229474935979}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -10642,7 +10683,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_4_SM_SoapBottle_01_7
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -10731,8 +10772,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1523974828611916024}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &524359049994463533 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 524359050047892178}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1523974828611916024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 524359049994463533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &524359049994464978 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -10960,7 +11030,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_4_SM_SoapBottle_01_20
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -11049,13 +11119,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3645836794596667588}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
 --- !u!4 &595669655100371261 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
   m_PrefabInstance: {fileID: 595669654480844093}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &595669655100372674 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 595669654480844093}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3645836794596667588
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 595669655100372674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &603296620636410226
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11712,7 +11811,9 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4558555968134246878, guid: abc00000000006626485251670986175, type: 3}
+    - {fileID: 5774155040705822292, guid: abc00000000006626485251670986175, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -12090,7 +12191,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_4_SM_SoapBottle_01_21
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -12179,24 +12280,53 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2782202788857468310}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
 --- !u!4 &829129103026739539 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
   m_PrefabInstance: {fileID: 829129102168104275}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &829129103026740908 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 829129102168104275}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2782202788857468310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 829129103026740908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &853838135808842346
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 2331901859239897784}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_01_SM_SoapBottle_01_9
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -12224,7 +12354,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.620099
+      value: 7.620102
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -12285,8 +12415,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1162139449264967178}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &853838134824311189 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 853838135808842346}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1162139449264967178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 853838134824311189}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &853838134824312426 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -12560,6 +12719,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -12580,7 +12743,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_3_SM_SoapBottle_01_10
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -12669,8 +12832,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4237755898386954336}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &1019705885031884905 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 1019705885653511062}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4237755898386954336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1019705885031884905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &1019705885031886742 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -12986,6 +13178,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4304971541627613134}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -13658,6 +13854,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 2548264363030581408, guid: abc00000000008202993061918910632, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 9203747093275829444}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -13678,7 +13878,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_Name
-      value: SoapBottle_10
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_Layer
@@ -13767,13 +13967,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1503123382806976414}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000010515603088278883623, type: 3}
 --- !u!4 &1283285145284158936 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030997012, guid: abc00000000010515603088278883623, type: 3}
   m_PrefabInstance: {fileID: 1283285145369010636}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1283285145284158943 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
+  m_PrefabInstance: {fileID: 1283285145369010636}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1503123382806976414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1283285145284158943}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &1343007868551257194
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13870,6 +14099,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -13890,7 +14123,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_Name
-      value: SoapBottle_6
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_Layer
@@ -13979,13 +14212,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 761483982577912836}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000010515603088278883623, type: 3}
 --- !u!4 &1364552116267305392 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030997012, guid: abc00000000010515603088278883623, type: 3}
   m_PrefabInstance: {fileID: 1364552117128072612}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1364552116267305399 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
+  m_PrefabInstance: {fileID: 1364552117128072612}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &761483982577912836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1364552116267305399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &1391846099944070926
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14192,6 +14454,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -14404,7 +14670,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_4_SM_SoapBottle_01_8
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -14493,13 +14759,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6102799912979542218}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
 --- !u!4 &1680680622012602815 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
   m_PrefabInstance: {fileID: 1680680620981902783}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1680680622012603968 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 1680680620981902783}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6102799912979542218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1680680622012603968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &1681304440703449660
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14748,6 +15043,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -14766,6 +15065,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7997277038114660878}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -15156,6 +15459,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -15262,6 +15569,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -15368,6 +15679,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -15474,6 +15789,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -15598,6 +15917,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1196123337887540990}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -15988,6 +16311,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -16094,6 +16421,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -16290,6 +16621,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 2548264363030581408, guid: abc00000000008202993061918910632, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 6978778184231841976}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -16500,7 +16835,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_3_SM_SoapBottle_01_7
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -16589,13 +16924,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7624928837250501809}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
 --- !u!4 &2196185232960662108 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
   m_PrefabInstance: {fileID: 2196185233016483420}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2196185232960662947 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 2196185233016483420}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7624928837250501809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2196185232960662947}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &2237002457901241506
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16694,6 +17058,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2033291072917411889}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -16872,6 +17240,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -16996,6 +17368,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4304971541627613134}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -17084,11 +17460,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 6199221463843039342}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: SoapBottle_17
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -17116,7 +17492,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 12.426793
+      value: 12.426796
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -17177,13 +17553,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7804224283026793004}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
 --- !u!4 &2285869614109211354 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
   m_PrefabInstance: {fileID: 2285869614693187290}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2285869614109211941 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 2285869614693187290}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7804224283026793004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2285869614109211941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &2368654661535201500
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17496,6 +17901,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -17716,6 +18125,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -18008,6 +18421,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4304971541627613134}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -18339,6 +18756,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5290671998562445524}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -18707,6 +19128,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3747282620807693256}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -18881,11 +19306,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 7936713058704034087}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_2_SM_SoapBottle_01_10
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -18913,7 +19338,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10.104154
+      value: 10.1041565
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -18974,13 +19399,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8674263800725174694}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
 --- !u!4 &2897239408343783517 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
   m_PrefabInstance: {fileID: 2897239409339128925}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2897239408343785378 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 2897239409339128925}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8674263800725174694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2897239408343785378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &2908679926083322572
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19279,6 +19733,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3301360379953532579}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -19653,11 +20111,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 2331901859239897784}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_01_SM_SoapBottle_01_10
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -19685,7 +20143,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.6041536
+      value: 7.6041565
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -19746,8 +20204,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3159526022429698600}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &3011243826745569662 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 3011243826660651649}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3159526022429698600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3011243826745569662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &3011243826745570945 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -19867,6 +20354,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2033291072917411889}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -20065,7 +20556,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_4_SM_SoapBottle_01_9
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -20154,8 +20645,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4322672656376739622}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &3048349298473779441 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 3048349297480598286}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4322672656376739622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3048349298473779441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &3048349298473781006 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -20346,6 +20866,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -20683,6 +21207,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7741157229474935979}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -20985,6 +21513,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3747282620807693256}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -21075,6 +21607,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3747282620807693256}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -21163,7 +21699,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 6199221463843039342}
+    m_TransformParent: {fileID: 2199273327823506963}
     m_Modifications:
     - target: {fileID: 1030997408, guid: abc00000000010341879886547496579, type: 3}
       propertyPath: m_Name
@@ -21695,6 +22231,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3747282620807693256}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -22145,6 +22685,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5290671998562445524}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -22553,6 +23097,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4304971541627613134}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -22751,7 +23299,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_3_SM_SoapBottle_01_9
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -22840,13 +23388,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1416781235402349637}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
 --- !u!4 &3880832168739709472 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
   m_PrefabInstance: {fileID: 3880832169766053408}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &3880832168739710431 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 3880832169766053408}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1416781235402349637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3880832168739710431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &3888759048166642269
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22857,7 +23434,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: SoapBottle_9
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -22946,8 +23523,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6117892774016051503}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &3888759047553077666 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 3888759048166642269}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6117892774016051503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3888759047553077666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &3888759047553078877 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -23069,7 +23675,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: SoapBottle_5
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -23158,13 +23764,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7838118024096857212}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
 --- !u!4 &3998709512321497154 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
   m_PrefabInstance: {fileID: 3998709513037691970}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &3998709512321499069 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 3998709513037691970}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7838118024096857212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3998709512321499069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &4012006146666286195
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23261,6 +23896,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -23279,6 +23918,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1196123337887540990}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -24204,6 +24847,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3301360379953532579}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -24382,6 +25029,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -24400,6 +25051,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7997277038114660878}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -24684,7 +25339,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: SoapBottle_7
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -24773,8 +25428,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6276939097140051213}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &4284816532943608537 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 4284816533527517478}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6276939097140051213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4284816532943608537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &4284816532943609126 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -24894,6 +25578,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3747282620807693256}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -25178,6 +25866,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -25194,11 +25886,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 7118456250461960961}
     m_Modifications:
     - target: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_Name
-      value: SoapBottle_12
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_Layer
@@ -25226,7 +25918,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030997012, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5.147214
+      value: 5.147217
       objectReference: {fileID: 0}
     - target: {fileID: 1030997012, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_LocalPosition.y
@@ -25287,13 +25979,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7294697051599132946}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000010515603088278883623, type: 3}
 --- !u!4 &4369360457552156720 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030997012, guid: abc00000000010515603088278883623, type: 3}
   m_PrefabInstance: {fileID: 4369360456972442660}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &4369360457552156727 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
+  m_PrefabInstance: {fileID: 4369360456972442660}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7294697051599132946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4369360457552156727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &4391415636284565802
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25302,6 +26023,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5290671998562445524}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -25480,6 +26205,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -25500,7 +26229,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_3_SM_SoapBottle_01_20
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -25589,8 +26318,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3343472267786337853}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &4434698252387457782 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 4434698253382605065}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3343472267786337853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4434698252387457782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &4434698252387458313 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -25692,6 +26450,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -25904,6 +26666,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -25922,10 +26688,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2033291072917411889}
     m_Modifications:
-    - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 7765343683374424809, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_RootOrder
       value: 47
@@ -25970,27 +26736,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7765343683374530241, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 7765343683374530249, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Name
       value: SM_Mirror_01 (37)
       objectReference: {fileID: 0}
     - target: {fileID: 7765343683374530249, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 7765343683374530251, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 7765343683374530253, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 7765343683374530255, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
@@ -26206,6 +26956,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -26655,11 +27409,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 7936713058704034087}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_2_SM_SoapBottle_01_35
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -26687,7 +27441,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 9.850003
+      value: 9.850006
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -26748,8 +27502,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3758889643960304060}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &4719443318975763059 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 4719443318761050508}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3758889643960304060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4719443318975763059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &4719443318975763852 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -26761,11 +27544,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 2331901859239897784}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_01_SM_SoapBottle_01_20
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -26793,7 +27576,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.34435
+      value: 7.3443527
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -26854,13 +27637,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6775918866063790484}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
 --- !u!4 &4739612909850194198 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
   m_PrefabInstance: {fileID: 4739612908987233558}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &4739612909850195689 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 4739612908987233558}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6775918866063790484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4739612909850195689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &4765414135183049951
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26977,7 +27789,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_4_SM_SoapBottle_01_35
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -27066,8 +27878,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5957771284967712956}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &4772303473188082417 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 4772303473239576846}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5957771284967712956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4772303473188082417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &4772303473188082958 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -27593,7 +28434,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_3_SM_SoapBottle_01_8
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -27682,8 +28523,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4340301842552424564}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &4937606222114105936 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 4937606222698080687}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4340301842552424564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4937606222114105936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &4937606222114106799 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -27695,11 +28565,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 2331901859239897784}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_01_SM_SoapBottle_01_8
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -27727,7 +28597,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.604886
+      value: 7.604889
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -27788,13 +28658,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6782427711058424249}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
 --- !u!4 &4976569744099902409 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
   m_PrefabInstance: {fileID: 4976569743352514505}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &4976569744099902518 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 4976569743352514505}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6782427711058424249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4976569744099902518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &4978578912296312681
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27891,7 +28790,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 6199221463843039342}
+    m_TransformParent: {fileID: 2199273327823506963}
     m_Modifications:
     - target: {fileID: 1030997408, guid: abc00000000010341879886547496579, type: 3}
       propertyPath: m_Name
@@ -28200,6 +29099,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7741157229474935979}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -28676,11 +29579,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 2331901859239897784}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_01_SM_SoapBottle_01_7
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -28708,7 +29611,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.60938
+      value: 7.6093826
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -28769,13 +29672,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7335164568458265939}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
 --- !u!4 &5253700638666088856 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
   m_PrefabInstance: {fileID: 5253700639650522520}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &5253700638666090087 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 5253700639650522520}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7335164568458265939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5253700638666090087}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &5270201715062362816
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28784,6 +29716,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2033291072917411889}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -28872,11 +29808,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 2331901859239897784}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_01_SM_SoapBottle_01_35
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -28904,7 +29840,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.3500032
+      value: 7.350006
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -28965,8 +29901,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7115986521932371809}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &5271399528293630300 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 5271399528214905507}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7115986521932371809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5271399528293630300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &5271399528293631651 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -29174,6 +30139,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 2548264363030581408, guid: abc00000000008202993061918910632, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 6978778184231841976}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -29452,11 +30421,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 7936713058704034087}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_2_SM_SoapBottle_01_7
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -29484,7 +30453,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10.10938
+      value: 10.109383
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -29545,13 +30514,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6409532077935043587}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
 --- !u!4 &5545727059660092134 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
   m_PrefabInstance: {fileID: 5545727060011153126}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &5545727059660092697 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 5545727060011153126}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6409532077935043587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5545727059660092697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &5568797154551429306
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -29560,6 +30558,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2033291072917411889}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -29922,6 +30924,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -29938,7 +30944,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 6199221463843039342}
+    m_TransformParent: {fileID: 2199273327823506963}
     m_Modifications:
     - target: {fileID: 1030997408, guid: abc00000000010341879886547496579, type: 3}
       propertyPath: m_Name
@@ -30048,7 +31054,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: SoapBottle_44
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -30137,8 +31143,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7303428724523837730}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &5743192113729861803 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 5743192112976018260}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7303428724523837730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5743192113729861803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &5743192113729863508 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -30346,6 +31381,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -30364,6 +31403,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7997277038114660878}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -30572,11 +31615,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 2331901859239897784}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_01_SM_SoapBottle_01_21
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -30604,7 +31647,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.3500032
+      value: 7.350006
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -30665,8 +31708,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4382701051475918169}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &6100557236862656682 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 6100557237050205013}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4382701051475918169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6100557236862656682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &6100557236862658389 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -30870,11 +31942,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 7118456250461960961}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: SoapBottle_13
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -30902,7 +31974,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5.147214
+      value: 5.147217
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -30963,8 +32035,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5108509844046136022}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &6234583044374446907 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 6234583044329504964}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5108509844046136022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6234583044374446907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &6234583044374447300 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -31152,6 +32253,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 2548264363030581408, guid: abc00000000008202993061918910632, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 9203747093275829444}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -31170,6 +32275,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7741157229474935979}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -31392,7 +32501,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_3_SM_SoapBottle_01_35
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -31481,13 +32590,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2977119195913488817}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
 --- !u!4 &6346094536140185892 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
   m_PrefabInstance: {fileID: 6346094536864638244}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &6346094536140187355 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 6346094536864638244}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2977119195913488817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6346094536140187355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &6373087200098042391
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -31630,7 +32768,9 @@ PrefabInstance:
       propertyPath: _curLocation
       value: 
       objectReference: {fileID: 7788430314627412137}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4558555968134246878, guid: abc00000000006626485251670986175, type: 3}
+    - {fileID: 5774155040705822292, guid: abc00000000006626485251670986175, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -31650,7 +32790,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_Name
-      value: SoapBottle_4
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_Layer
@@ -31739,8 +32879,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2781379767411255369}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000010515603088278883623, type: 3}
+--- !u!1 &6409368559907230779 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
+  m_PrefabInstance: {fileID: 6409368559148863528}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2781379767411255369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6409368559907230779}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &6409368559907230780 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030997012, guid: abc00000000010515603088278883623, type: 3}
@@ -32360,6 +33529,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -32376,11 +33549,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 7936713058704034087}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_2_SM_SoapBottle_01_9
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -32408,7 +33581,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10.120099
+      value: 10.120102
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -32469,8 +33642,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4587608771253767527}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &6590584811538610838 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 6590584810646026601}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4587608771253767527
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6590584811538610838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &6590584811538611561 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -32486,7 +33688,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_Name
-      value: SoapBottle_8
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_Layer
@@ -32575,13 +33777,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6030141250903375397}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000010515603088278883623, type: 3}
 --- !u!4 &6593417477040113642 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030997012, guid: abc00000000010515603088278883623, type: 3}
   m_PrefabInstance: {fileID: 6593417477657969662}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &6593417477040113645 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
+  m_PrefabInstance: {fileID: 6593417477657969662}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6030141250903375397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6593417477040113645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &6624557424808228011
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32590,6 +33821,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4304971541627613134}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -32680,6 +33915,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3301360379953532579}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -32996,6 +34235,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -33014,6 +34257,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2033291072917411889}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -33210,6 +34457,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7741157229474935979}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -33511,6 +34762,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -33529,6 +34784,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7741157229474935979}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -33707,6 +34966,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -33917,6 +35180,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4304971541627613134}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -34201,6 +35468,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -34413,6 +35684,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -34743,7 +36018,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_3_SM_SoapBottle_01_34
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -34832,8 +36107,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6691593181748693781}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &7061476396453003683 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 7061476397202588252}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6691593181748693781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7061476396453003683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &7061476396453004892 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -35041,6 +36345,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -35531,11 +36839,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 7936713058704034087}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_2_SM_SoapBottle_01_21
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -35563,7 +36871,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 9.850003
+      value: 9.850006
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -35624,13 +36932,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1071614125626162941}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
 --- !u!4 &7221940545026408689 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
   m_PrefabInstance: {fileID: 7221940545880950001}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &7221940545026410254 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 7221940545880950001}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1071614125626162941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7221940545026410254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &7226079564198878965
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -35849,11 +37186,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 6199221463843039342}
     m_Modifications:
     - target: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_Name
-      value: SoapBottle_16
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_Layer
@@ -35881,7 +37218,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030997012, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 12.426785
+      value: 12.426788
       objectReference: {fileID: 0}
     - target: {fileID: 1030997012, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_LocalPosition.y
@@ -35942,13 +37279,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8643154350613227985}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000010515603088278883623, type: 3}
 --- !u!4 &7320934258704342923 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030997012, guid: abc00000000010515603088278883623, type: 3}
   m_PrefabInstance: {fileID: 7320934258929605535}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &7320934258704342924 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
+  m_PrefabInstance: {fileID: 7320934258929605535}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8643154350613227985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7320934258704342924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &7334718749743486335
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -36045,6 +37411,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -36169,6 +37539,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3747282620807693256}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -36483,11 +37857,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 7118456250461960961}
     m_Modifications:
     - target: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_Name
-      value: SoapBottle_14
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_Layer
@@ -36515,7 +37889,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030997012, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5.1472063
+      value: 5.147209
       objectReference: {fileID: 0}
     - target: {fileID: 1030997012, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_LocalPosition.y
@@ -36576,8 +37950,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6329731642301802507}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000010515603088278883623, type: 3}
+--- !u!1 &7437865124514850936 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
+  m_PrefabInstance: {fileID: 7437865124692143211}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6329731642301802507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7437865124514850936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &7437865124514850943 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030997012, guid: abc00000000010515603088278883623, type: 3}
@@ -36679,6 +38082,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -37127,6 +38534,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2033291072917411889}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -37411,6 +38822,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -37517,6 +38932,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -37533,11 +38952,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 7936713058704034087}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_2_SM_SoapBottle_01_20
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -37565,7 +38984,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 9.84435
+      value: 9.844353
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -37626,13 +39045,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5617057369008208934}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
 --- !u!4 &7842900365789798995 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
   m_PrefabInstance: {fileID: 7842900366648501843}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &7842900365789799852 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 7842900366648501843}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5617057369008208934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7842900365789799852}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &7845941993769307236
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -37745,11 +39193,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 7936713058704034087}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_2_SM_SoapBottle_01_34
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -37777,7 +39225,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 9.84435
+      value: 9.844353
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -37838,13 +39286,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 636057256457927984}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
 --- !u!4 &7854644956160782791 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
   m_PrefabInstance: {fileID: 7854644956646159815}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &7854644956160783928 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 7854644956646159815}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &636057256457927984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7854644956160783928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &7877968389016992406
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -38288,6 +39765,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -38308,7 +39789,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_3_SM_SoapBottle_01_21
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -38397,8 +39878,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6017647860246499789}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &7926222863478116687 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 7926222864100004528}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6017647860246499789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7926222863478116687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &7926222863478118064 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -38716,7 +40226,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_4_SM_SoapBottle_01_34
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -38805,13 +40315,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6790849182834709306}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
 --- !u!4 &8017747938206335916 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
   m_PrefabInstance: {fileID: 8017747938385790892}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8017747938206336083 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 8017747938385790892}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6790849182834709306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8017747938206336083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &8020405010782130757
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -38908,6 +40447,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -39092,6 +40635,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -39108,11 +40655,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 6199221463843039342}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: SoapBottle_15
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -39140,7 +40687,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 12.426785
+      value: 12.426788
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -39201,13 +40748,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8896166336029378412}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
 --- !u!4 &8124500734285259059 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
   m_PrefabInstance: {fileID: 8124500734630356275}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8124500734285260492 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 8124500734630356275}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8896166336029378412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8124500734285260492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &8149417404347546806
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -39428,6 +41004,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7741157229474935979}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -39518,6 +41098,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4304971541627613134}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -39942,6 +41526,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -39960,6 +41548,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2033291072917411889}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -40544,11 +42136,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 7118456250461960961}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: SoapBottle_11
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -40576,7 +42168,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5.147214
+      value: 5.147217
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -40637,13 +42229,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3911945691713443958}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
 --- !u!4 &8503994549871923928 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
   m_PrefabInstance: {fileID: 8503994549411682008}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8503994549871924519 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 8503994549411682008}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3911945691713443958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8503994549871924519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!1001 &8550014347250326102
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -40814,38 +42435,10 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: 1030997332, guid: abc00000000017652915725051800568, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1030997332, guid: abc00000000017652915725051800568, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 4294967295
-      objectReference: {fileID: 0}
-    - target: {fileID: 1030997336, guid: abc00000000017652915725051800568, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1030997336, guid: abc00000000017652915725051800568, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 4294967295
-      objectReference: {fileID: 0}
-    - target: {fileID: 1030997340, guid: abc00000000017652915725051800568, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1030997340, guid: abc00000000017652915725051800568, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 4294967295
-      objectReference: {fileID: 0}
-    - target: {fileID: 1030997344, guid: abc00000000017652915725051800568, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1030997344, guid: abc00000000017652915725051800568, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 4294967295
-      objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -40862,7 +42455,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 6199221463843039342}
+    m_TransformParent: {fileID: 2199273327823506963}
     m_Modifications:
     - target: {fileID: 1030997408, guid: abc00000000010341879886547496579, type: 3}
       propertyPath: m_Name
@@ -41058,6 +42651,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -41359,11 +42956,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 6199221463843039342}
     m_Modifications:
     - target: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_Name
-      value: SoapBottle_18
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_Layer
@@ -41391,7 +42988,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030997012, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 12.426793
+      value: 12.426796
       objectReference: {fileID: 0}
     - target: {fileID: 1030997012, guid: abc00000000010515603088278883623, type: 3}
       propertyPath: m_LocalPosition.y
@@ -41452,8 +43049,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3792831888270531802}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000010515603088278883623, type: 3}
+--- !u!1 &8684608901144285770 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030997011, guid: abc00000000010515603088278883623, type: 3}
+  m_PrefabInstance: {fileID: 8684608901457729113}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3792831888270531802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8684608901144285770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &8684608901144285773 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030997012, guid: abc00000000010515603088278883623, type: 3}
@@ -41679,6 +43305,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3301360379953532579}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -41835,6 +43465,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3747282620807693256}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -42227,6 +43861,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3747282620807693256}
     m_Modifications:
+    - target: {fileID: 5302822972878673944, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     - target: {fileID: 6514571944353160133, guid: 085cf645ce0a8dd469823db3cf333ad5, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -42405,6 +44043,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -42511,6 +44153,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -42797,38 +44443,10 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: 1030999360, guid: abc00000000008202993061918910632, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1030999360, guid: abc00000000008202993061918910632, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 4294967295
-      objectReference: {fileID: 0}
-    - target: {fileID: 1030999364, guid: abc00000000008202993061918910632, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1030999364, guid: abc00000000008202993061918910632, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 4294967295
-      objectReference: {fileID: 0}
-    - target: {fileID: 1030999368, guid: abc00000000008202993061918910632, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1030999368, guid: abc00000000008202993061918910632, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 4294967295
-      objectReference: {fileID: 0}
-    - target: {fileID: 1030999372, guid: abc00000000008202993061918910632, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1030999372, guid: abc00000000008202993061918910632, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 4294967295
-      objectReference: {fileID: 0}
+    - target: {fileID: 2548264363030581408, guid: abc00000000008202993061918910632, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 6978778184231841976}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -42935,6 +44553,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 3963049094771640954}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -43233,6 +44855,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -43249,11 +44875,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8685781162548521524}
+    m_TransformParent: {fileID: 2331901859239897784}
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_01_SM_SoapBottle_01_34
+      value: Bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -43281,7 +44907,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.34435
+      value: 7.3443527
       objectReference: {fileID: 0}
     - target: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_LocalPosition.y
@@ -43342,8 +44968,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5145138379731048354}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &9195555942919492316 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 9195555942291280163}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5145138379731048354
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9195555942919492316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3963049094771640954}
+  _preposition: 
+  _isHideChild: 0
+  _name: Bodywash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &9195555942919492899 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -43445,6 +45100,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 852214133787516943, guid: abc00000000017652915725051800568, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2133606054693151362}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -43465,7 +45124,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Name
-      value: BP_BathDivider_4_SM_SoapBottle_01_10
+      value: Shampoo
       objectReference: {fileID: 0}
     - target: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
       propertyPath: m_Layer
@@ -43554,8 +45213,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4212812586315162944}
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000003482005524535963647, type: 3}
+--- !u!1 &9222637563082259220 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1030996991, guid: abc00000000003482005524535963647, type: 3}
+  m_PrefabInstance: {fileID: 9222637562060011755}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4212812586315162944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9222637563082259220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2133606054693151362}
+  _preposition: 
+  _isHideChild: 0
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  volume: 500
+  remainingVolume: 500
 --- !u!4 &9222637563082259691 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}

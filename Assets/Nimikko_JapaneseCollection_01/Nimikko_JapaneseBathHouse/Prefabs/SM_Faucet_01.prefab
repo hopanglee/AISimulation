@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1030997329}
   - component: {fileID: 1030997330}
   - component: {fileID: 1030997331}
+  - component: {fileID: 852214133787516943}
   m_Layer: 0
   m_Name: SM_Faucet_01
   m_TagString: Untagged
@@ -91,6 +92,30 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300008, guid: abc00000000001388460496398192921, type: 3}
+--- !u!114 &852214133787516943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1030997328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e19a1e1f8c908a4b88a57a13c1280a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 0}
+  _preposition: under the
+  _isHideChild: 0
+  _name: Shower Head
+  _currentStatusDescription: 
+  Description: 
+  toMovePos: {fileID: 0}
+  isOn: 0
+  waterTemperature: 37
+  waterPressure: 1
+  isHotWaterAvailable: 1
+  isColdWaterAvailable: 1
 --- !u!1 &1030997332
 GameObject:
   m_ObjectHideFlags: 0
@@ -102,7 +127,7 @@ GameObject:
   - component: {fileID: 1030997333}
   - component: {fileID: 1030997334}
   - component: {fileID: 1030997335}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Faucet_01_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -141,6 +166,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -185,7 +213,7 @@ GameObject:
   - component: {fileID: 1030997337}
   - component: {fileID: 1030997338}
   - component: {fileID: 1030997339}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Faucet_01_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,6 +252,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -268,7 +299,7 @@ GameObject:
   - component: {fileID: 1030997341}
   - component: {fileID: 1030997342}
   - component: {fileID: 1030997343}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Faucet_01_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -307,6 +338,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -351,7 +385,7 @@ GameObject:
   - component: {fileID: 1030997345}
   - component: {fileID: 1030997346}
   - component: {fileID: 1030997347}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Faucet_01_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -390,6 +424,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

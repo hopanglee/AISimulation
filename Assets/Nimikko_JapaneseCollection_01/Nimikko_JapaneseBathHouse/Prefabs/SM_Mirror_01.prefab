@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7765343683374424801}
   - component: {fileID: 7765343683375751887}
   - component: {fileID: 7765343683376717839}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Mirror_01_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -58,6 +58,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -95,6 +98,7 @@ GameObject:
   - component: {fileID: 4626531490506751497}
   - component: {fileID: 7765343683391911497}
   - component: {fileID: 6514571944353160133}
+  - component: {fileID: 5302822972878673944}
   m_Layer: 0
   m_Name: SM_Mirror_01
   m_TagString: Untagged
@@ -123,7 +127,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &4626531490506751497
 Animator:
-  serializedVersion: 5
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -137,6 +141,7 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -190,10 +195,31 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5302822972878673944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7765343683374530249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78f6659a42abf07419d7db3331c5d776, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 0}
+  _preposition: in front of
+  _isHideChild: 0
+  _name: Mirror
+  _currentStatusDescription: 
+  Description: 
+  toMovePos: {fileID: 0}
+  isClean: 1
+  isBroken: 0
 --- !u!1 &7765343683374530251
 GameObject:
   m_ObjectHideFlags: 0
@@ -205,7 +231,7 @@ GameObject:
   - component: {fileID: 7765343683374424811}
   - component: {fileID: 7765343683375751881}
   - component: {fileID: 7765343683376717833}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Mirror_01_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -252,6 +278,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -288,7 +317,7 @@ GameObject:
   - component: {fileID: 7765343683374424813}
   - component: {fileID: 7765343683375751883}
   - component: {fileID: 7765343683376717835}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Mirror_01_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -335,6 +364,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -371,7 +403,7 @@ GameObject:
   - component: {fileID: 7765343683374424815}
   - component: {fileID: 7765343683375751885}
   - component: {fileID: 7765343683376717837}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Mirror_01_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -418,6 +450,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
