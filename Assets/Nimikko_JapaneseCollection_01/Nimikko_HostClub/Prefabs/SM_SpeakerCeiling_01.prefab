@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1030982251}
   - component: {fileID: 1030982252}
   - component: {fileID: 1030982253}
+  - component: {fileID: 3580267657805946689}
   m_Layer: 6
   m_Name: SM_SpeakerCeiling_01
   m_TagString: Untagged
@@ -91,6 +92,28 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300008, guid: abc00000000004763044326258220354, type: 3}
+--- !u!114 &3580267657805946689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1030982250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6a0cb85cc92f7948a50afcd737a24e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 0}
+  _preposition: 
+  _isHideChild: 0
+  _name: Speaker
+  _currentStatusDescription: 
+  Description: 
+  toMovePos: {fileID: 0}
+  volume: 50
+  currentContent: 
+  contentType: "\uC74C\uC545"
 --- !u!1 &1030982254
 GameObject:
   m_ObjectHideFlags: 0

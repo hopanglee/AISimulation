@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1030981356}
   - component: {fileID: 1030981357}
   - component: {fileID: 1030981358}
+  - component: {fileID: 2005772219028137413}
   m_Layer: 6
   m_Name: SM_Stool_02
   m_TagString: Untagged
@@ -35,6 +36,7 @@ Transform:
   - {fileID: 1030981364}
   - {fileID: 1030981368}
   - {fileID: 1030981372}
+  - {fileID: 7571841718813650887}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!205 &1030981357
@@ -91,6 +93,28 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300008, guid: abc00000000007424530294623488100, type: 3}
+--- !u!114 &2005772219028137413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1030981355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07c503f3c0ec8aa41b2f6dbe1d4146f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 0}
+  _preposition: on
+  _isHideChild: 0
+  _name: Chair
+  _currentStatusDescription: 
+  Description: 
+  toMovePos: {fileID: 0}
+  isComfortable: 1
+  sitPosition: {fileID: 7571841718813650887}
+  seatedActor: {fileID: 0}
 --- !u!1 &1030981359
 GameObject:
   m_ObjectHideFlags: 0
@@ -435,3 +459,34 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1030981371}
   m_Mesh: {fileID: 4300006, guid: abc00000000007424530294623488100, type: 3}
+--- !u!1 &2855538493517095
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7571841718813650887}
+  m_Layer: 6
+  m_Name: Seated Pos
+  m_TagString: Untagged
+  m_Icon: {fileID: 3443629218296621865, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7571841718813650887
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2855538493517095}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.394, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1030981356}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

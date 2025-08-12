@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1030978968}
   - component: {fileID: 1030978969}
   - component: {fileID: 1030978970}
+  - component: {fileID: 1603951495835430908}
   m_Layer: 6
   m_Name: SM_Sofa_01
   m_TagString: Untagged
@@ -35,6 +36,8 @@ Transform:
   - {fileID: 1030978976}
   - {fileID: 1030978980}
   - {fileID: 1030978984}
+  - {fileID: 6221441662261493955}
+  - {fileID: 794216410248021520}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!205 &1030978969
@@ -91,6 +94,31 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300008, guid: abc00000000004976962669527384895, type: 3}
+--- !u!114 &1603951495835430908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1030978967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fff25fbf67c6e4b4abea5cc60e6a8fde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 0}
+  _preposition: on
+  _isHideChild: 0
+  _name: Sofa
+  _currentStatusDescription: 
+  Description: 
+  toMovePos: {fileID: 0}
+  maxOccupants: 4
+  sitHeight: 0.5
+  sitPositions:
+  - {fileID: 6221441662261493955}
+  - {fileID: 794216410248021520}
+  seatedActors: []
 --- !u!1 &1030978971
 GameObject:
   m_ObjectHideFlags: 0
@@ -435,3 +463,65 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1030978983}
   m_Mesh: {fileID: 4300006, guid: abc00000000004976962669527384895, type: 3}
+--- !u!1 &5050844285128897681
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 794216410248021520}
+  m_Layer: 6
+  m_Name: Seated Pos (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 3443629218296621865, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &794216410248021520
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5050844285128897681}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.418, y: 0.389, z: 0.46}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1030978968}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &9111113067145144915
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6221441662261493955}
+  m_Layer: 6
+  m_Name: Seated Pos
+  m_TagString: Untagged
+  m_Icon: {fileID: 3443629218296621865, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6221441662261493955
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9111113067145144915}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.418, y: 0.389, z: 1.067}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1030978968}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

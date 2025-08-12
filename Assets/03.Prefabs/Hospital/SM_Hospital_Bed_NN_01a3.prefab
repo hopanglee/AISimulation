@@ -450,6 +450,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1740242643094956121}
   - component: {fileID: 5509004731212788910}
+  - component: {fileID: -1765785691909396427}
   m_Layer: 0
   m_Name: SM_Hospital_Bed_NN_01a3
   m_TagString: Untagged
@@ -518,6 +519,25 @@ LODGroup:
     renderers:
     - renderer: {fileID: 7087608069500266070}
   m_Enabled: 1
+--- !u!114 &-1765785691909396427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8129294638878048018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a71190c67fa872b4f884a5890bfc3a8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 0}
+  _preposition: on
+  _isHideChild: 0
+  _name: Hospital Bed
+  _currentStatusDescription: 
+  Description: 
+  toMovePos: {fileID: 0}
 --- !u!1 &8648101493980070141
 GameObject:
   m_ObjectHideFlags: 0

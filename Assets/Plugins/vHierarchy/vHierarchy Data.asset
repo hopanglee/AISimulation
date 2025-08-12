@@ -16,6 +16,7 @@ MonoBehaviour:
     keys:
     - 3593ce073bd93f74797273054295fb74
     - cdab9b710b4118341bb9c6922a99462c
+    - 6d76517458ecd7f4b9f64ec462ec2667
     values:
     - goDatas_byGlobalId:
         keys:
@@ -239,6 +240,9 @@ MonoBehaviour:
           iconNameOrGuid: MeshCollider Icon
         - colorIndex: 1
           iconNameOrGuid: MeshCollider Icon
+    - goDatas_byGlobalId:
+        keys: []
+        values: []
     - goDatas_byGlobalId:
         keys: []
         values: []
