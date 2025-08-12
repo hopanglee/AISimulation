@@ -9,7 +9,9 @@ public class Refrigerator : InventoryBox
     public float temperature = 4.0f; // 섭씨
     public bool isWorking = true;
     
-    // 기본 AddItem과 GetItem 구현을 사용하므로 override 불필요
+    [Header("Placement Settings")]
+    [Tooltip("true로 설정하면 placementPosition을 무시하고 냉장고 위치에 직접 배치합니다")]
+    public bool useSimplePlacement = false;
     
     public void OpenRefrigerator()
     {
@@ -42,6 +44,31 @@ public class Refrigerator : InventoryBox
     public void TurnOff()
     {
         isWorking = false;
+    }
+    
+    // useSimplePlacement가 true일 때 placementPosition을 무시하고 직접 배치
+    public override bool AddItem(Entity item)
+    {
+        if (items.Count >= maxItems)
+        {
+            return false;
+        }
+        
+        if (useSimplePlacement)
+        {
+            // 간단한 배치 방식: 냉장고 위치에 직접 배치하고 비활성화
+            items.Add(item);
+            item.transform.SetParent(transform);
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localRotation = Quaternion.identity;
+            item.gameObject.SetActive(false);
+            return true;
+        }
+        else
+        {
+            // 기본 방식: 부모 클래스의 placementPosition 사용
+            return base.AddItem(item);
+        }
     }
     
     public override string Get()

@@ -13,7 +13,7 @@ public class TrashBin : InventoryBox
         UpdateTrashStatus();
     }
     
-    // 기본 AddItem과 GetItem 구현을 사용하되, 추가 로직만 override
+    // maxItems와 itemPlacementPosition 제한을 우회하여 무제한으로 아이템 추가
     public override bool AddItem(Entity item)
     {
         if (isFull)
@@ -21,12 +21,19 @@ public class TrashBin : InventoryBox
             return false;
         }
         
-        bool success = base.AddItem(item);
-        if (success)
-        {
-            UpdateTrashStatus();
-        }
-        return success;
+        // 부모 클래스의 제한을 우회하고 직접 아이템 추가
+        items.Add(item);
+        
+        // 아이템을 쓰레기통 위치에 직접 배치 (위치 제한 무시)
+        item.transform.SetParent(transform);
+        item.transform.localPosition = Vector3.zero;
+        item.transform.localRotation = Quaternion.identity;
+        
+        // 아이템을 비활성화 상태로 만듦 (쓰레기통 안에 있는 것처럼)
+        item.gameObject.SetActive(false);
+        
+        UpdateTrashStatus();
+        return true;
     }
     
     public override Entity GetItem(string itemKey)
@@ -67,16 +74,12 @@ public class TrashBin : InventoryBox
     
     private void UpdateTrashStatus()
     {
-        isFull = items.Count >= maxItems;
+        // maxItems 제한을 무시하고 항상 false로 설정 (무제한)
+        isFull = false;
     }
     
     public override string Get()
     {
-        if (isFull)
-        {
-            return "쓰레기통이 가득 찼습니다.";
-        }
-        
         if (items.Count > 0)
         {
             return $"쓰레기통에 {items.Count}개의 아이템이 있습니다.";
@@ -90,11 +93,6 @@ public class TrashBin : InventoryBox
         if (items.Count == 0)
         {
             return "쓰레기통이 비어있습니다.";
-        }
-        
-        if (isFull)
-        {
-            return "쓰레기통이 가득 찼습니다. 비워주세요.";
         }
         
         return $"쓰레기통에 {items.Count}개의 아이템이 있습니다. 아이템을 추가하거나 비울 수 있습니다.";
