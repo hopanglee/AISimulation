@@ -7,9 +7,6 @@ public class Locker : InventoryBox
     public string lockerNumber;
     public bool isAvailable = true;
     
-
-    
-    // 기본 AddItem과 GetItem 구현을 사용하므로 override 불필요
     
     public override string Get()
     {

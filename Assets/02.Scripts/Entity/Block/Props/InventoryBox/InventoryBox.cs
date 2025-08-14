@@ -7,10 +7,20 @@ public abstract class InventoryBox : Prop
     public List<Entity> items;
     public List<Transform> itemPlacementPositions;
     
+    [Header("Placement Settings")]
+    [Tooltip("true로 설정하면 placementPosition을 무시하고 오브젝트 위치에 직접 배치합니다")]
+    public bool useSimplePlacement = false;
+    
     protected Entity[] positionEntities; // 각 위치에 있는 Entity 추적
     
     protected virtual void Start()
     {
+        // useSimplePlacement가 true면 itemPlacementPositions가 필요 없음
+        if (useSimplePlacement)
+        {
+            return;
+        }
+        
         // 자동으로 itemPlacementPositions의 자식들을 확인하여 positionEntities 초기화
         if (itemPlacementPositions != null && itemPlacementPositions.Count > 0)
         {
@@ -118,19 +128,33 @@ public abstract class InventoryBox : Prop
             return false;
         }
         
-        // 빈 위치 찾기
-        int emptyPosition = FindEmptyPosition();
-        if (emptyPosition == -1)
+        if (useSimplePlacement)
         {
-            return false;
+            // 간단한 배치 방식: 오브젝트 위치에 직접 배치하고 비활성화
+            items.Add(item);
+            item.transform.SetParent(transform);
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localRotation = Quaternion.identity;
+            item.gameObject.SetActive(false);
+            return true;
         }
-        
-        items.Add(item);
-        
-        // 아이템을 위치에 배치
-        PlaceItemAtPosition(item, emptyPosition);
-        
-        return true;
+        else
+        {
+            // 기본 방식: placementPosition 사용
+            // 빈 위치 찾기
+            int emptyPosition = FindEmptyPosition();
+            if (emptyPosition == -1)
+            {
+                return false;
+            }
+            
+            items.Add(item);
+            
+            // 아이템을 위치에 배치
+            PlaceItemAtPosition(item, emptyPosition);
+            
+            return true;
+        }
     }
     
     public virtual Entity GetItem(string itemKey)

@@ -137,8 +137,9 @@ public abstract class Actor : Entity, ILocationAware
         sensor = new(this);
     }
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
         timeService = Services.Get<ITimeService>();
         if (timeService != null)
             timeService.SubscribeToTimeEvent(OnSimulationTimeChanged);

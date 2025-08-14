@@ -106,7 +106,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: in
-  _isHideChild: 0
+  _isHideChild: 1
   _name: Trash Basket
   _currentStatusDescription: 
   Description: 
@@ -114,6 +114,7 @@ MonoBehaviour:
   maxItems: 10
   items: []
   itemPlacementPositions: []
+  useSimplePlacement: 1
   isFull: 0
 --- !u!1 &1030998461
 GameObject:

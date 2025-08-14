@@ -9582,6 +9582,7 @@ MonoBehaviour:
   _preposition: 
   _isHideChild: 0
   _name: 
+  _currentStatusDescription: 
   Description: 
   Nutrition: 10
 --- !u!1001 &715498996882203356
@@ -9784,6 +9785,9 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 6ebcd19768d26da418c09dbbc755e901, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8723853192314197747}
     - targetCorrespondingSourceObject: {fileID: 100002, guid: 6ebcd19768d26da418c09dbbc755e901, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1248562257089899315}
@@ -9819,6 +9823,37 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.49999952, y: 1.1999989, z: 0.50499964}
   m_Center: {x: 0, y: 0.5999994, z: -0.022500023}
+--- !u!1 &715558111011483490 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: 6ebcd19768d26da418c09dbbc755e901, type: 3}
+  m_PrefabInstance: {fileID: 715558111011449282}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8723853192314197747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 715558111011483490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2d186cb90ba38b4cb6e999996cf0723, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 375438815432636927}
+  _preposition: in
+  _isHideChild: 1
+  _name: Refrigator
+  _currentStatusDescription: 
+  Description: 
+  toMovePos: {fileID: 0}
+  maxItems: 0
+  items: []
+  itemPlacementPositions: []
+  useSimplePlacement: 1
+  isOpen: 0
+  temperature: 4
+  isWorking: 1
 --- !u!1001 &739856931464276767
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10405,6 +10440,7 @@ MonoBehaviour:
   _preposition: 
   _isHideChild: 0
   _name: 
+  _currentStatusDescription: 
   Description: 
   HungerRecovery: 5
   ThirstRecovery: 20
@@ -10835,6 +10871,7 @@ MonoBehaviour:
   _preposition: 
   _isHideChild: 0
   _name: 
+  _currentStatusDescription: 
   Description: 
   Nutrition: 10
 --- !u!4 &1335099351501685692 stripped
@@ -14948,6 +14985,7 @@ MonoBehaviour:
   _preposition: 
   _isHideChild: 0
   _name: 
+  _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 934641233982087729}
 --- !u!1001 &3606749282614764889
@@ -18266,6 +18304,7 @@ MonoBehaviour:
   _preposition: 
   _isHideChild: 0
   _name: 
+  _currentStatusDescription: 
   Description: 
   Nutrition: 10
 --- !u!4 &5547572218082690704 stripped
@@ -18416,15 +18455,17 @@ MonoBehaviour:
   _preposition: 
   _isHideChild: 0
   _name: 
+  _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 4898290608762593706}
   maxItems: 0
   items:
   - {fileID: 1554415737470720108}
   - {fileID: 1450306225094131300}
-  transforms:
+  itemPlacementPositions:
   - {fileID: 6292269344207980549}
   - {fileID: 3800682286229525013}
+  useSimplePlacement: 0
 --- !u!1 &5578560454252871923 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100002, guid: 5c6d8f8cd466cc242969377aad35084c, type: 3}
@@ -18789,6 +18830,7 @@ MonoBehaviour:
   _preposition: 
   _isHideChild: 0
   _name: 
+  _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 5483043772208718735}
 --- !u!4 &5722982767548890064 stripped
@@ -22213,15 +22255,17 @@ MonoBehaviour:
   _preposition: 
   _isHideChild: 0
   _name: 
+  _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 9028871841394943710}
   maxItems: 4
   items:
   - {fileID: 5301720456392187889}
   - {fileID: 6913456284336836640}
-  transforms:
+  itemPlacementPositions:
   - {fileID: 3906917712552076797}
   - {fileID: 8239531299098789676}
+  useSimplePlacement: 0
 --- !u!4 &7578380262669965409 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 1b1fff38809631c4bb72f88b4d96af45, type: 3}
@@ -23451,9 +23495,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3187469858088934068}
-  _preposition: 
+  _preposition: on
   _isHideChild: 0
-  _name: 
+  _name: Plate
+  _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 3
@@ -23461,10 +23506,13 @@ MonoBehaviour:
   - {fileID: 6547186971270959095}
   - {fileID: 8240508566553914777}
   - {fileID: 3375511839842929785}
-  transforms:
+  itemPlacementPositions:
   - {fileID: 280809910927938905}
   - {fileID: 3099994898696923288}
   - {fileID: 8908236171559003029}
+  useSimplePlacement: 0
+  isClean: 1
+  isBroken: 0
 --- !u!4 &8384302536847240831 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4485306607717930, guid: 1188a1f846b83b242a210a05a72accf4, type: 3}

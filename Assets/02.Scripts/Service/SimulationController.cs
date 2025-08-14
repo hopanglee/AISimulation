@@ -10,13 +10,18 @@ public class SimulationController : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField]
-    private Button startButton;
+    private Button playPauseButton; // Start/Pause/Resume을 모두 처리하는 단일 버튼
 
     [SerializeField]
-    private Button pauseButton;
+    private Image buttonImage; // 버튼의 이미지 컴포넌트 (Inspector에서 직접 할당)
 
+    [Header("Play/Pause Sprites")]
     [SerializeField]
-    private Button resumeButton;
+    private Sprite startSprite; // 시작 상태 이미지
+    [SerializeField]
+    private Sprite pauseSprite; // 일시정지 상태 이미지
+    [SerializeField]
+    private Sprite resumeSprite; // 재개 상태 이미지
 
     [SerializeField]
     private Button stopButton;
@@ -25,10 +30,7 @@ public class SimulationController : MonoBehaviour
     private TextMeshProUGUI statusText;
 
     [SerializeField]
-    private TextMeshProUGUI timeText;
-
-    [SerializeField]
-    private TextMeshProUGUI dayText;
+    private TextMeshProUGUI dateTimeText;
 
     [Header("Character Focus Buttons")]
     [SerializeField]
@@ -50,6 +52,9 @@ public class SimulationController : MonoBehaviour
     private CameraController cameraController;
     private GameObject hinoMaori;
     private GameObject kamiyaTooru;
+
+    private enum PlayPauseState { Start, Pause, Resume }
+    private PlayPauseState playPauseState = PlayPauseState.Start;
 
     [System.Obsolete]
     private void Start()
@@ -75,6 +80,7 @@ public class SimulationController : MonoBehaviour
         if (autoStartOnPlay)
         {
             StartSimulation();
+            SetPlayPauseState(PlayPauseState.Pause);
         }
 
         // 초기 UI 상태 업데이트
@@ -111,14 +117,10 @@ public class SimulationController : MonoBehaviour
 
     private void SetupUI()
     {
-        if (startButton != null)
-            startButton.onClick.AddListener(StartSimulation);
-
-        if (pauseButton != null)
-            pauseButton.onClick.AddListener(PauseSimulation);
-
-        if (resumeButton != null)
-            resumeButton.onClick.AddListener(ResumeSimulation);
+        if (playPauseButton != null)
+        {
+            SetPlayPauseState(PlayPauseState.Start);
+        }
 
         if (stopButton != null)
             stopButton.onClick.AddListener(StopSimulation);
@@ -144,15 +146,11 @@ public class SimulationController : MonoBehaviour
 
         bool isRunning = gameService.IsSimulationRunning();
 
-        // 버튼 상태 업데이트
-        if (startButton != null)
-            startButton.interactable = !isRunning;
-
-        if (pauseButton != null)
-            pauseButton.interactable = isRunning;
-
-        if (resumeButton != null)
-            resumeButton.interactable = !isRunning;
+        // PlayPause 버튼 상태 업데이트 (텍스트 사용 안 함)
+        if (playPauseButton != null)
+        {
+            playPauseButton.interactable = true;
+        }
 
         if (stopButton != null)
             stopButton.interactable = true;
@@ -167,23 +165,20 @@ public class SimulationController : MonoBehaviour
         // 상태 텍스트 업데이트
         if (statusText != null)
         {
-            statusText.text = isRunning ? "시뮬레이션 실행 중" : "시뮬레이션 정지됨";
+            if (!isRunning)
+                statusText.text = "시뮬레이션 정지됨";
+            else
+                statusText.text = "시뮬레이션 실행 중";
+                
             statusText.color = isRunning ? Color.green : Color.red;
         }
 
-        // 시간 텍스트 업데이트
-        if (timeText != null && timeService != null)
+        // 날짜+시간 텍스트 업데이트 (하나의 필드로 통합)
+        if (dateTimeText != null && timeService != null)
         {
             var currentTime = timeService.CurrentTime;
-            timeText.text = $"시간: {currentTime}";
-        }
-
-        // 날짜 텍스트 업데이트
-        if (dayText != null && timeService != null)
-        {
-            var currentTime = timeService.CurrentTime;
-            dayText.text =
-                $"날짜: {currentTime.year:D4}년 {currentTime.month:D2}월 {currentTime.day:D2}일";
+            dateTimeText.text =
+                $"날짜: {currentTime.year:D4}년 {currentTime.month:D2}월 {currentTime.day:D2}일\n시간: {currentTime}";
         }
     }
 
@@ -225,6 +220,54 @@ public class SimulationController : MonoBehaviour
             gameService.StopSimulation();
             Debug.Log("[SimulationController] Stopping simulation...");
         }
+        SetPlayPauseState(PlayPauseState.Start);
+    }
+
+    private void SetPlayPauseState(PlayPauseState newState)
+    {
+        playPauseState = newState;
+        if (playPauseButton == null) return;
+
+        // 리스너 초기화 후 현재 상태에 맞는 리스너만 바인딩
+        playPauseButton.onClick.RemoveAllListeners();
+
+        // 이미지 교체 (Inspector에서 할당한 buttonImage 사용)
+        if (buttonImage != null)
+        {
+            switch (playPauseState)
+            {
+                case PlayPauseState.Start:
+                    if (startSprite != null) buttonImage.sprite = startSprite;
+                    playPauseButton.onClick.AddListener(OnStartClicked);
+                    break;
+                case PlayPauseState.Pause:
+                    if (pauseSprite != null) buttonImage.sprite = pauseSprite;
+                    playPauseButton.onClick.AddListener(OnPauseClicked);
+                    break;
+                case PlayPauseState.Resume:
+                    if (resumeSprite != null) buttonImage.sprite = resumeSprite;
+                    playPauseButton.onClick.AddListener(OnResumeClicked);
+                    break;
+            }
+        }
+    }
+
+    private void OnStartClicked()
+    {
+        StartSimulation();
+        SetPlayPauseState(PlayPauseState.Pause);
+    }
+
+    private void OnPauseClicked()
+    {
+        PauseSimulation();
+        SetPlayPauseState(PlayPauseState.Resume);
+    }
+
+    private void OnResumeClicked()
+    {
+        ResumeSimulation();
+        SetPlayPauseState(PlayPauseState.Pause);
     }
 
     [Button("Focus on Hino Maori")]
@@ -297,14 +340,12 @@ public class SimulationController : MonoBehaviour
     private void OnDestroy()
     {
         // 이벤트 리스너 정리
-        if (startButton != null)
-            startButton.onClick.RemoveListener(StartSimulation);
-
-        if (pauseButton != null)
-            pauseButton.onClick.RemoveListener(PauseSimulation);
-
-        if (resumeButton != null)
-            resumeButton.onClick.RemoveListener(ResumeSimulation);
+        if (playPauseButton != null)
+        {
+            playPauseButton.onClick.RemoveListener(OnStartClicked);
+            playPauseButton.onClick.RemoveListener(OnPauseClicked);
+            playPauseButton.onClick.RemoveListener(OnResumeClicked);
+        }
 
         if (stopButton != null)
             stopButton.onClick.RemoveListener(StopSimulation);

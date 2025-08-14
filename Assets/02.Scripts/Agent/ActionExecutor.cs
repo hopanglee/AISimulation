@@ -10,7 +10,7 @@ using UnityEngine;
 public class ActionExecutor
 {
     private Dictionary<ActionType, Func<Dictionary<string, object>, Task>> actionHandlers = new();
-    private float actionDelay = 5f; // 기본 5초 딜레이
+    //private float actionDelay = 5f; // 기본 5초 딜레이
 
     /// <summary>
     /// 액션 핸들러를 등록합니다.
