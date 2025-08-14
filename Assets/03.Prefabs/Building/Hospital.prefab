@@ -556,6 +556,37 @@ ReflectionProbe:
   m_UseOcclusionCulling: 1
   m_Importance: 1
   m_CustomBakedTexture: {fileID: 0}
+--- !u!1 &754908733551745492
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8556056742869482081}
+  m_Layer: 0
+  m_Name: MovePos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8556056742869482081
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 754908733551745492}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.026, y: 0, z: 0.125}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9171628149059351452}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &781520143195334784
 GameObject:
   m_ObjectHideFlags: 0
@@ -2235,6 +2266,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4222785803905451438}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2896736707384371900
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 593511376748510889}
+  m_Layer: 0
+  m_Name: MovePos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &593511376748510889
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2896736707384371900}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.082, y: 0, z: 0.257}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5867627977701556393}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2956203131179171557
 GameObject:
   m_ObjectHideFlags: 0
@@ -2451,7 +2513,6 @@ GameObject:
   - component: {fileID: 5367753016029938498}
   - component: {fileID: 6155587215987142581}
   - component: {fileID: 3074492060594977081}
-  - component: {fileID: 4350608717994482417}
   m_Layer: 6
   m_Name: Wall (4)
   m_TagString: Untagged
@@ -2548,25 +2609,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4350608717994482417
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3254649218724384005}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d3e32798934083e4894d8d75cee7ba28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _curLocation: {fileID: 2953825334226901736}
-  _preposition: on
-  _isHideChild: 0
-  _name: Front Desk
-  _currentStatusDescription: 
-  Description: 
-  toMovePos: {fileID: 0}
 --- !u!1 &3310994412535742887
 GameObject:
   m_ObjectHideFlags: 0
@@ -4774,7 +4816,7 @@ MonoBehaviour:
   _curLocation: {fileID: 4896022348185773601}
   _preposition: on
   _isHideChild: 0
-  _name: Desk
+  _name: Doctor's Desk
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -4783,6 +4825,7 @@ MonoBehaviour:
   itemPlacementPositions:
   - {fileID: 6588157239308499821}
   - {fileID: 205626157911501059}
+  useSimplePlacement: 0
 --- !u!1 &5835669676029871733
 GameObject:
   m_ObjectHideFlags: 0
@@ -4792,6 +4835,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5106556835611123876}
+  - component: {fileID: 869470718616327218}
   m_Layer: 0
   m_Name: Desk
   m_TagString: Untagged
@@ -4818,6 +4862,56 @@ Transform:
   - {fileID: 8854788729112606075}
   - {fileID: 2515725255804683091}
   m_Father: {fileID: 8341557574273470195}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &869470718616327218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5835669676029871733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3e32798934083e4894d8d75cee7ba28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 2953825334226901736}
+  _preposition: on
+  _isHideChild: 0
+  _name: Front Desk
+  _currentStatusDescription: 
+  Description: 
+  toMovePos: {fileID: 0}
+--- !u!1 &5847241920917000133
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1434318465768069156}
+  m_Layer: 0
+  m_Name: MovePos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1434318465768069156
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5847241920917000133}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.044, y: 0, z: 0.273}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8428310818052070935}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5999100562153332360
 GameObject:
@@ -6273,6 +6367,37 @@ Transform:
   - {fileID: 4824141199819558624}
   - {fileID: 3559675302706729807}
   m_Father: {fileID: 1072851894702426862}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7757380570730746833
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8605699417598923383}
+  m_Layer: 0
+  m_Name: MovePos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8605699417598923383
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7757380570730746833}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.027, y: 0, z: 0.238}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1212396278126472893}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7800816332458874837
 GameObject:
@@ -8281,9 +8406,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2953825334226901736}
-  _preposition: 
+  _preposition: on
   _isHideChild: 0
-  _name: Lobby Bench
+  _name: Lobby Bench1
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -8387,7 +8512,7 @@ MonoBehaviour:
   _curLocation: {fileID: 2953825334226901736}
   _preposition: on
   _isHideChild: 0
-  _name: Lobby Bench
+  _name: Lobby Bench3
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -8488,6 +8613,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4129210714625633593}
     m_Modifications:
+    - target: {fileID: -1765785691909396427, guid: d83ad3b708fb0f94491a3b8af1038e87, type: 3}
+      propertyPath: _name
+      value: Hospital Bed3
+      objectReference: {fileID: 0}
     - target: {fileID: -1765785691909396427, guid: d83ad3b708fb0f94491a3b8af1038e87, type: 3}
       propertyPath: _curLocation
       value: 
@@ -8669,6 +8798,14 @@ PrefabInstance:
       value: Shelf (3)
       objectReference: {fileID: 0}
     - target: {fileID: 6518092615934312886, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
+      propertyPath: _name
+      value: Shelf4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518092615934312886, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
+      propertyPath: toMovePos
+      value: 
+      objectReference: {fileID: 593511376748510889}
+    - target: {fileID: 6518092615934312886, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
       propertyPath: _curLocation
       value: 
       objectReference: {fileID: 3176694191105927904}
@@ -8710,7 +8847,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6770562148180117892, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
+      insertIndex: 2
+      addedObject: {fileID: 593511376748510889}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
 --- !u!4 &5867627977701556393 stripped
@@ -9341,9 +9481,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2953825334226901736}
-  _preposition: 
+  _preposition: on
   _isHideChild: 0
-  _name: Lobby Bench
+  _name: Lobby Bench2
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -9681,6 +9821,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1322617564766271176}
     m_Modifications:
+    - target: {fileID: -1765785691909396427, guid: d83ad3b708fb0f94491a3b8af1038e87, type: 3}
+      propertyPath: _name
+      value: Hospital Bed2
+      objectReference: {fileID: 0}
     - target: {fileID: -1765785691909396427, guid: d83ad3b708fb0f94491a3b8af1038e87, type: 3}
       propertyPath: _curLocation
       value: 
@@ -10682,6 +10826,14 @@ PrefabInstance:
       value: Shelf
       objectReference: {fileID: 0}
     - target: {fileID: 6518092615934312886, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
+      propertyPath: _name
+      value: Shelf1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518092615934312886, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
+      propertyPath: toMovePos
+      value: 
+      objectReference: {fileID: 7700012801473808815}
+    - target: {fileID: 6518092615934312886, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
       propertyPath: _curLocation
       value: 
       objectReference: {fileID: 3176694191105927904}
@@ -10727,9 +10879,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6770562148180117892, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8556056742869482081}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
+--- !u!4 &7700012801473808815 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5216863313493898167, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
+  m_PrefabInstance: {fileID: 2503426707258391064}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &9171628149059351452 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6770562148180117892, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
@@ -11236,6 +11396,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 6822452795471825020}
     m_Modifications:
     - target: {fileID: -197358837874707387, guid: bae6a4a299c9c864fb0ff90db0bfeee4, type: 3}
+      propertyPath: _name
+      value: Chair3-1
+      objectReference: {fileID: 0}
+    - target: {fileID: -197358837874707387, guid: bae6a4a299c9c864fb0ff90db0bfeee4, type: 3}
       propertyPath: _curLocation
       value: 
       objectReference: {fileID: 3176694191105927904}
@@ -11494,6 +11658,10 @@ PrefabInstance:
       value: Shelf (1)
       objectReference: {fileID: 0}
     - target: {fileID: 6518092615934312886, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
+      propertyPath: _name
+      value: Shelf3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518092615934312886, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
       propertyPath: _curLocation
       value: 
       objectReference: {fileID: 3176694191105927904}
@@ -11539,7 +11707,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6770562148180117892, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1434318465768069156}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
 --- !u!4 &8428310818052070935 stripped
@@ -11836,6 +12007,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1630723595137446056}
     m_Modifications:
     - target: {fileID: -197358837874707387, guid: bae6a4a299c9c864fb0ff90db0bfeee4, type: 3}
+      propertyPath: _name
+      value: Chair4-1
+      objectReference: {fileID: 0}
+    - target: {fileID: -197358837874707387, guid: bae6a4a299c9c864fb0ff90db0bfeee4, type: 3}
       propertyPath: _curLocation
       value: 
       objectReference: {fileID: 3176694191105927904}
@@ -12068,9 +12243,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2953825334226901736}
-  _preposition: 
+  _preposition: on
   _isHideChild: 0
-  _name: Lobby Bench
+  _name: Lobby Bench4
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -12426,7 +12601,7 @@ MonoBehaviour:
   _curLocation: {fileID: 4896022348185773601}
   _preposition: on
   _isHideChild: 0
-  _name: Chair
+  _name: Doctor's Chair
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -13845,12 +14020,16 @@ PrefabInstance:
       value: Shelf (2)
       objectReference: {fileID: 0}
     - target: {fileID: 6518092615934312886, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
+      propertyPath: _name
+      value: Shelf2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518092615934312886, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
       propertyPath: _curLocation
       value: 
       objectReference: {fileID: 3176694191105927904}
     - target: {fileID: 6770562148180117892, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -2.319
       objectReference: {fileID: 0}
     - target: {fileID: 6770562148180117892, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
       propertyPath: m_LocalPosition.y
@@ -13858,7 +14037,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6770562148180117892, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -3.845
       objectReference: {fileID: 0}
     - target: {fileID: 6770562148180117892, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
       propertyPath: m_LocalRotation.w
@@ -13886,7 +14065,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6770562148180117892, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8605699417598923383}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53ea2d66785ad5c4dbb8541ad09b4878, type: 3}
 --- !u!4 &1212396278126472893 stripped
@@ -15247,6 +15429,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1911302489579376765}
     m_Modifications:
     - target: {fileID: -197358837874707387, guid: bae6a4a299c9c864fb0ff90db0bfeee4, type: 3}
+      propertyPath: _name
+      value: Chair2-1
+      objectReference: {fileID: 0}
+    - target: {fileID: -197358837874707387, guid: bae6a4a299c9c864fb0ff90db0bfeee4, type: 3}
       propertyPath: _curLocation
       value: 
       objectReference: {fileID: 3176694191105927904}
@@ -15460,6 +15646,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1683960748143005349}
     m_Modifications:
+    - target: {fileID: -1765785691909396427, guid: d83ad3b708fb0f94491a3b8af1038e87, type: 3}
+      propertyPath: _name
+      value: Hospital Bed1
+      objectReference: {fileID: 0}
     - target: {fileID: -1765785691909396427, guid: d83ad3b708fb0f94491a3b8af1038e87, type: 3}
       propertyPath: _curLocation
       value: 
@@ -15996,6 +16186,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 4222785803905451438}
     m_Modifications:
     - target: {fileID: -1765785691909396427, guid: d83ad3b708fb0f94491a3b8af1038e87, type: 3}
+      propertyPath: _name
+      value: Hospital Bed4
+      objectReference: {fileID: 0}
+    - target: {fileID: -1765785691909396427, guid: d83ad3b708fb0f94491a3b8af1038e87, type: 3}
       propertyPath: _curLocation
       value: 
       objectReference: {fileID: 3176694191105927904}
@@ -16093,6 +16287,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1624960131129674852}
     m_Modifications:
+    - target: {fileID: -197358837874707387, guid: bae6a4a299c9c864fb0ff90db0bfeee4, type: 3}
+      propertyPath: _name
+      value: Chair1-1
+      objectReference: {fileID: 0}
     - target: {fileID: -197358837874707387, guid: bae6a4a299c9c864fb0ff90db0bfeee4, type: 3}
       propertyPath: _curLocation
       value: 
@@ -17980,6 +18178,7 @@ MonoBehaviour:
   maxItems: 0
   items: []
   itemPlacementPositions: []
+  useSimplePlacement: 1
   isFull: 0
 --- !u!1001 &8904844966295739250
 PrefabInstance:

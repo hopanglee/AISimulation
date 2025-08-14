@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7238919834008762976}
-  - component: {fileID: 2925574996600698355}
   m_Layer: 0
   m_Name: Sofa (5)
   m_TagString: Untagged
@@ -42,29 +41,6 @@ Transform:
   - {fileID: 1119493926712811042}
   m_Father: {fileID: 354404671068207293}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2925574996600698355
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 38026150195561690}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fff25fbf67c6e4b4abea5cc60e6a8fde, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _curLocation: {fileID: 8999486157601164919}
-  _preposition: on
-  _isHideChild: 0
-  _name: Sofa
-  _currentStatusDescription: 
-  Description: 
-  toMovePos: {fileID: 0}
-  maxOccupants: 4
-  sitHeight: 0.5
-  sitPositions: []
-  seatedActors: []
 --- !u!1 &123916290516903529
 GameObject:
   m_ObjectHideFlags: 0
@@ -117,7 +93,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table3
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -127,6 +103,7 @@ MonoBehaviour:
   - {fileID: 7447302053885409002}
   - {fileID: 3530299336177071535}
   - {fileID: 2575719997670022942}
+  useSimplePlacement: 0
 --- !u!1 &129909826379489930
 GameObject:
   m_ObjectHideFlags: 0
@@ -178,7 +155,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table14
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -187,6 +164,7 @@ MonoBehaviour:
   itemPlacementPositions:
   - {fileID: 4140729622019694421}
   - {fileID: 2549149280587634583}
+  useSimplePlacement: 0
 --- !u!1 &160486623657735540
 GameObject:
   m_ObjectHideFlags: 0
@@ -379,7 +357,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8665182118859044804}
-  - component: {fileID: 4971204152560865384}
   m_Layer: 0
   m_Name: Sofa (3)
   m_TagString: Untagged
@@ -407,29 +384,6 @@ Transform:
   - {fileID: 5503248147543973912}
   m_Father: {fileID: 354404671068207293}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4971204152560865384
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 192227141411039420}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fff25fbf67c6e4b4abea5cc60e6a8fde, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _curLocation: {fileID: 8999486157601164919}
-  _preposition: on
-  _isHideChild: 0
-  _name: Sofa
-  _currentStatusDescription: 
-  Description: 
-  toMovePos: {fileID: 0}
-  maxOccupants: 4
-  sitHeight: 0.5
-  sitPositions: []
-  seatedActors: []
 --- !u!1 &248947672681712681
 GameObject:
   m_ObjectHideFlags: 0
@@ -1942,7 +1896,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table18
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -1951,6 +1905,7 @@ MonoBehaviour:
   itemPlacementPositions:
   - {fileID: 7413223961392930065}
   - {fileID: 8106644599288885670}
+  useSimplePlacement: 0
 --- !u!1 &942625458194765579
 GameObject:
   m_ObjectHideFlags: 0
@@ -2740,7 +2695,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table15
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -2749,6 +2704,7 @@ MonoBehaviour:
   itemPlacementPositions:
   - {fileID: 7333905116706691159}
   - {fileID: 6857853337188436686}
+  useSimplePlacement: 0
 --- !u!1 &1220424660112946342
 GameObject:
   m_ObjectHideFlags: 0
@@ -3689,7 +3645,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table4
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -3698,6 +3654,7 @@ MonoBehaviour:
   itemPlacementPositions:
   - {fileID: 3242065156907029851}
   - {fileID: 1920377739207790663}
+  useSimplePlacement: 0
 --- !u!1 &1821448939272974433
 GameObject:
   m_ObjectHideFlags: 0
@@ -3828,7 +3785,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4297003063547389541}
-  - component: {fileID: 3268503062072699352}
   m_Layer: 0
   m_Name: Sofa (2)
   m_TagString: Untagged
@@ -3855,29 +3811,6 @@ Transform:
   - {fileID: 3479745852173842242}
   m_Father: {fileID: 354404671068207293}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3268503062072699352
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1826027889480044132}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fff25fbf67c6e4b4abea5cc60e6a8fde, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _curLocation: {fileID: 8999486157601164919}
-  _preposition: on
-  _isHideChild: 0
-  _name: Sofa
-  _currentStatusDescription: 
-  Description: 
-  toMovePos: {fileID: 0}
-  maxOccupants: 4
-  sitHeight: 0.5
-  sitPositions: []
-  seatedActors: []
 --- !u!1 &1860762426084027080
 GameObject:
   m_ObjectHideFlags: 0
@@ -5151,7 +5084,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table16
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -5160,6 +5093,7 @@ MonoBehaviour:
   itemPlacementPositions:
   - {fileID: 7287755028434598160}
   - {fileID: 2401888642129246581}
+  useSimplePlacement: 0
 --- !u!1 &2677871166230831129
 GameObject:
   m_ObjectHideFlags: 0
@@ -5293,7 +5227,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table2
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -5303,6 +5237,7 @@ MonoBehaviour:
   - {fileID: 1337400913074932105}
   - {fileID: 1133018763854613487}
   - {fileID: 2895335153588374114}
+  useSimplePlacement: 0
 --- !u!1 &2803564451615100233
 GameObject:
   m_ObjectHideFlags: 0
@@ -5538,7 +5473,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table12
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -5548,6 +5483,7 @@ MonoBehaviour:
   - {fileID: 619811054357448218}
   - {fileID: 2001016108399206305}
   - {fileID: 923627470628467209}
+  useSimplePlacement: 0
 --- !u!1 &2959976562305863252
 GameObject:
   m_ObjectHideFlags: 0
@@ -5622,7 +5558,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 503668009474876261}
-  - component: {fileID: 4760482592945277935}
   m_Layer: 0
   m_Name: Sofa (9)
   m_TagString: Untagged
@@ -5649,29 +5584,6 @@ Transform:
   - {fileID: 3987769442684839349}
   m_Father: {fileID: 354404671068207293}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4760482592945277935
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2993783221681072354}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fff25fbf67c6e4b4abea5cc60e6a8fde, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _curLocation: {fileID: 8999486157601164919}
-  _preposition: on
-  _isHideChild: 0
-  _name: Sofa
-  _currentStatusDescription: 
-  Description: 
-  toMovePos: {fileID: 0}
-  maxOccupants: 4
-  sitHeight: 0.5
-  sitPositions: []
-  seatedActors: []
 --- !u!1 &3040182792603989114
 GameObject:
   m_ObjectHideFlags: 0
@@ -6067,7 +5979,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table17
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -6076,6 +5988,7 @@ MonoBehaviour:
   itemPlacementPositions:
   - {fileID: 6484353885686066947}
   - {fileID: 4925431568883985936}
+  useSimplePlacement: 0
 --- !u!1 &3248210396936982330
 GameObject:
   m_ObjectHideFlags: 0
@@ -6304,8 +6217,8 @@ Transform:
   - {fileID: 9028968029612398280}
   - {fileID: 450885254608288296}
   - {fileID: 4297003063547389541}
-  - {fileID: 6451320261741675021}
   - {fileID: 7733899263173496597}
+  - {fileID: 6451320261741675021}
   - {fileID: 8665182118859044804}
   - {fileID: 4229238347555724592}
   - {fileID: 3442493574631746392}
@@ -6687,7 +6600,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table1
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -6697,6 +6610,7 @@ MonoBehaviour:
   - {fileID: 7779960145034109751}
   - {fileID: 8671810253387320477}
   - {fileID: 1538403233458716293}
+  useSimplePlacement: 0
 --- !u!1 &3640915001474052312
 GameObject:
   m_ObjectHideFlags: 0
@@ -7053,7 +6967,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table6
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -7063,6 +6977,7 @@ MonoBehaviour:
   - {fileID: 2264385881766179358}
   - {fileID: 1313137839322532304}
   - {fileID: 84814153729139946}
+  useSimplePlacement: 0
 --- !u!1 &3732177235825852576
 GameObject:
   m_ObjectHideFlags: 0
@@ -7911,7 +7826,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table5
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -7920,6 +7835,7 @@ MonoBehaviour:
   itemPlacementPositions:
   - {fileID: 8463316994684515477}
   - {fileID: 1448379380638236183}
+  useSimplePlacement: 0
 --- !u!1 &4054717420339606949
 GameObject:
   m_ObjectHideFlags: 0
@@ -8279,7 +8195,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table21
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -8289,6 +8205,7 @@ MonoBehaviour:
   - {fileID: 5519425355949038328}
   - {fileID: 3519216187960040797}
   - {fileID: 1641438636751454481}
+  useSimplePlacement: 0
 --- !u!1 &4216270869027840530
 GameObject:
   m_ObjectHideFlags: 0
@@ -8876,7 +8793,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7202188926309755116}
-  - component: {fileID: 6624970218496823351}
   m_Layer: 0
   m_Name: Sofa (7)
   m_TagString: Untagged
@@ -8903,29 +8819,6 @@ Transform:
   - {fileID: 5872765787747436908}
   m_Father: {fileID: 354404671068207293}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6624970218496823351
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4734602331945562254}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fff25fbf67c6e4b4abea5cc60e6a8fde, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _curLocation: {fileID: 8999486157601164919}
-  _preposition: on
-  _isHideChild: 0
-  _name: Sofa
-  _currentStatusDescription: 
-  Description: 
-  toMovePos: {fileID: 0}
-  maxOccupants: 4
-  sitHeight: 0.5
-  sitPositions: []
-  seatedActors: []
 --- !u!1 &4780533167083025167
 GameObject:
   m_ObjectHideFlags: 0
@@ -9010,7 +8903,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table22
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -9020,6 +8913,7 @@ MonoBehaviour:
   - {fileID: 7883378385955557478}
   - {fileID: 1365240036210699685}
   - {fileID: 2819255118592182432}
+  useSimplePlacement: 0
 --- !u!1 &4867929578636554151
 GameObject:
   m_ObjectHideFlags: 0
@@ -9309,7 +9203,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8053939224295824749}
-  - component: {fileID: 8922766615879988732}
   m_Layer: 0
   m_Name: Sofa
   m_TagString: Untagged
@@ -9339,29 +9232,6 @@ Transform:
   - {fileID: 3765553856732501832}
   m_Father: {fileID: 354404671068207293}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8922766615879988732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5216603938994692535}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fff25fbf67c6e4b4abea5cc60e6a8fde, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _curLocation: {fileID: 8999486157601164919}
-  _preposition: on
-  _isHideChild: 0
-  _name: Sofa
-  _currentStatusDescription: 
-  Description: 
-  toMovePos: {fileID: 0}
-  maxOccupants: 4
-  sitHeight: 0.5
-  sitPositions: []
-  seatedActors: []
 --- !u!1 &5297447400423493070
 GameObject:
   m_ObjectHideFlags: 0
@@ -9755,7 +9625,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1675049156147010194}
-  - component: {fileID: 6417158930425103985}
   m_Layer: 0
   m_Name: Sofa (1)
   m_TagString: Untagged
@@ -9782,29 +9651,6 @@ Transform:
   - {fileID: 4663973522020456631}
   m_Father: {fileID: 354404671068207293}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6417158930425103985
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5593825195267887795}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fff25fbf67c6e4b4abea5cc60e6a8fde, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _curLocation: {fileID: 8999486157601164919}
-  _preposition: on
-  _isHideChild: 0
-  _name: Sofa
-  _currentStatusDescription: 
-  Description: 
-  toMovePos: {fileID: 0}
-  maxOccupants: 4
-  sitHeight: 0.5
-  sitPositions: []
-  seatedActors: []
 --- !u!1 &5594204220641571287
 GameObject:
   m_ObjectHideFlags: 0
@@ -10070,7 +9916,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table20
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -10079,6 +9925,7 @@ MonoBehaviour:
   itemPlacementPositions:
   - {fileID: 8656735294147083995}
   - {fileID: 9103174272685652866}
+  useSimplePlacement: 0
 --- !u!1 &5831947147948501390
 GameObject:
   m_ObjectHideFlags: 0
@@ -11052,7 +10899,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table13
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -11061,6 +10908,7 @@ MonoBehaviour:
   itemPlacementPositions:
   - {fileID: 34830510093556610}
   - {fileID: 1077801532204024498}
+  useSimplePlacement: 0
 --- !u!1 &6549290724519086187
 GameObject:
   m_ObjectHideFlags: 0
@@ -12154,7 +12002,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7925926609449689912}
-  - component: {fileID: 6075409080254834501}
   m_Layer: 0
   m_Name: Sofa (8)
   m_TagString: Untagged
@@ -12182,29 +12029,6 @@ Transform:
   - {fileID: 5819797789754799244}
   m_Father: {fileID: 354404671068207293}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6075409080254834501
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7131343356216975481}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fff25fbf67c6e4b4abea5cc60e6a8fde, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _curLocation: {fileID: 8999486157601164919}
-  _preposition: on
-  _isHideChild: 0
-  _name: Sofa
-  _currentStatusDescription: 
-  Description: 
-  toMovePos: {fileID: 0}
-  maxOccupants: 4
-  sitHeight: 0.5
-  sitPositions: []
-  seatedActors: []
 --- !u!1 &7164834476978131063
 GameObject:
   m_ObjectHideFlags: 0
@@ -12245,7 +12069,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1571128754990787064}
-  - component: {fileID: 1091906401966831679}
   m_Layer: 0
   m_Name: Sofa (6)
   m_TagString: Untagged
@@ -12276,29 +12099,6 @@ Transform:
   - {fileID: 410871780399798393}
   m_Father: {fileID: 354404671068207293}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1091906401966831679
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7251086356137586608}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fff25fbf67c6e4b4abea5cc60e6a8fde, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _curLocation: {fileID: 8999486157601164919}
-  _preposition: on
-  _isHideChild: 0
-  _name: Sofa
-  _currentStatusDescription: 
-  Description: 
-  toMovePos: {fileID: 0}
-  maxOccupants: 4
-  sitHeight: 0.5
-  sitPositions: []
-  seatedActors: []
 --- !u!1 &7252055718985072236
 GameObject:
   m_ObjectHideFlags: 0
@@ -13839,7 +13639,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table10
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -13848,6 +13648,7 @@ MonoBehaviour:
   itemPlacementPositions:
   - {fileID: 1906982643949880282}
   - {fileID: 6262678300609748217}
+  useSimplePlacement: 0
 --- !u!1 &7937234109818440646
 GameObject:
   m_ObjectHideFlags: 0
@@ -14234,7 +14035,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table19
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -14243,6 +14044,7 @@ MonoBehaviour:
   itemPlacementPositions:
   - {fileID: 8241818708322522134}
   - {fileID: 5408204179981972945}
+  useSimplePlacement: 0
 --- !u!1 &8153891644098341162
 GameObject:
   m_ObjectHideFlags: 0
@@ -14252,7 +14054,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1589908249669220712}
-  - component: {fileID: 8109551471177683529}
   m_Layer: 0
   m_Name: Sofa (4)
   m_TagString: Untagged
@@ -14279,29 +14080,6 @@ Transform:
   - {fileID: 3132363340073895881}
   m_Father: {fileID: 354404671068207293}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8109551471177683529
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8153891644098341162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fff25fbf67c6e4b4abea5cc60e6a8fde, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _curLocation: {fileID: 8999486157601164919}
-  _preposition: on
-  _isHideChild: 0
-  _name: Sofa
-  _currentStatusDescription: 
-  Description: 
-  toMovePos: {fileID: 0}
-  maxOccupants: 4
-  sitHeight: 0.5
-  sitPositions: []
-  seatedActors: []
 --- !u!1 &8196818235424877478
 GameObject:
   m_ObjectHideFlags: 0
@@ -14781,7 +14559,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table11
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -14790,6 +14568,7 @@ MonoBehaviour:
   itemPlacementPositions:
   - {fileID: 7412310392430767743}
   - {fileID: 611442435750057934}
+  useSimplePlacement: 0
 --- !u!1 &8378463468031031486
 GameObject:
   m_ObjectHideFlags: 0
@@ -14930,7 +14709,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: 7
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -14939,6 +14718,7 @@ MonoBehaviour:
   itemPlacementPositions:
   - {fileID: 7156129991943907215}
   - {fileID: 8107367132019473638}
+  useSimplePlacement: 0
 --- !u!1 &8443817999362305685
 GameObject:
   m_ObjectHideFlags: 0
@@ -15770,7 +15550,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table9
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -15779,6 +15559,7 @@ MonoBehaviour:
   itemPlacementPositions:
   - {fileID: 5516998707938581366}
   - {fileID: 4329415422552931526}
+  useSimplePlacement: 0
 --- !u!1 &9017261369603506826
 GameObject:
   m_ObjectHideFlags: 0
@@ -16224,7 +16005,7 @@ MonoBehaviour:
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table8
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -16234,6 +16015,7 @@ MonoBehaviour:
   - {fileID: 5618767117806478480}
   - {fileID: 9066873766931496764}
   - {fileID: 1764217860746788944}
+  useSimplePlacement: 0
 --- !u!1001 &51798517796392275
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16562,9 +16344,17 @@ PrefabInstance:
       value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 380689249024292810, guid: abc00000000007893015502209917505, type: 3}
+      propertyPath: _name
+      value: Sofa1-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 380689249024292810, guid: abc00000000007893015502209917505, type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 380689249024292810, guid: abc00000000007893015502209917505, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 128524338470569744}
     - target: {fileID: 5392477862830712500, guid: abc00000000007893015502209917505, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -16661,6 +16451,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa14-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -17111,6 +16909,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa5-3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -17467,6 +17273,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa3-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -17639,6 +17453,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa7-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -17725,6 +17547,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa18-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -17897,6 +17727,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 2090187958907115871, guid: abc00000000010831859663492127928, type: 3}
+      propertyPath: _name
+      value: Sofa17-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090187958907115871, guid: abc00000000010831859663492127928, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -17983,6 +17821,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa8-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -18246,6 +18092,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair22-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -18865,6 +18719,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 2005772219028137413, guid: abc00000000011390013616014448112, type: 3}
+      propertyPath: _name
+      value: Chair5-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2005772219028137413, guid: abc00000000011390013616014448112, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -19042,6 +18904,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair14-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -19632,6 +19502,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 380689249024292810, guid: abc00000000007893015502209917505, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -19718,6 +19592,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa11-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -19804,6 +19686,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa12-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -20435,6 +20325,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 2005772219028137413, guid: abc00000000011390013616014448112, type: 3}
+      propertyPath: _name
+      value: Chair1-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2005772219028137413, guid: abc00000000011390013616014448112, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -20617,6 +20515,10 @@ PrefabInstance:
     - target: {fileID: 1030982266, guid: abc00000000007577579821534457448, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 3580267657805946689, guid: abc00000000007577579821534457448, type: 3}
+      propertyPath: _name
+      value: Speaker
       objectReference: {fileID: 0}
     - target: {fileID: 3580267657805946689, guid: abc00000000007577579821534457448, type: 3}
       propertyPath: _curLocation
@@ -21691,6 +21593,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair18-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -21868,6 +21778,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair9-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -22047,7 +21965,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 380689249024292810, guid: abc00000000007893015502209917505, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -22221,6 +22139,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa8-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -22570,6 +22496,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair12-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -23281,6 +23215,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa13-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -23458,6 +23400,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa6-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -23545,9 +23495,17 @@ PrefabInstance:
       value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 380689249024292810, guid: abc00000000007893015502209917505, type: 3}
+      propertyPath: _name
+      value: Sofa1-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 380689249024292810, guid: abc00000000007893015502209917505, type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 380689249024292810, guid: abc00000000007893015502209917505, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 128524338470569744}
     - target: {fileID: 5392477862830712500, guid: abc00000000007893015502209917505, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -23821,6 +23779,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa3-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -23907,6 +23873,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair22-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -24546,6 +24520,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa11-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -24820,6 +24802,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair7-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -25088,6 +25078,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 2005772219028137413, guid: abc00000000011390013616014448112, type: 3}
+      propertyPath: _name
+      value: Chair18-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2005772219028137413, guid: abc00000000011390013616014448112, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -25174,6 +25172,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair14-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -25262,7 +25268,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 380689249024292810, guid: abc00000000007893015502209917505, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -25350,6 +25356,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair10-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -25961,6 +25975,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa22-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -26220,6 +26242,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair12-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -26392,6 +26422,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 2090187958907115871, guid: abc00000000010831859663492127928, type: 3}
+      propertyPath: _name
+      value: Sofa2-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090187958907115871, guid: abc00000000010831859663492127928, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -26741,6 +26779,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa19-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -26996,6 +27042,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa1-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -27344,6 +27398,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa9-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -27613,6 +27675,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa6-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -27796,6 +27866,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 2005772219028137413, guid: abc00000000011390013616014448112, type: 3}
+      propertyPath: _name
+      value: Chair6-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2005772219028137413, guid: abc00000000011390013616014448112, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -27881,6 +27959,10 @@ PrefabInstance:
     - target: {fileID: 1030981351, guid: abc00000000001939556790032522491, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair1-1
       objectReference: {fileID: 0}
     - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
       propertyPath: _curLocation
@@ -28063,6 +28145,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair19-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -28331,6 +28421,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 2090187958907115871, guid: abc00000000010831859663492127928, type: 3}
+      propertyPath: _name
+      value: Sofa15-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090187958907115871, guid: abc00000000010831859663492127928, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -28680,6 +28778,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair20-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -28857,6 +28963,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair5-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -28943,6 +29057,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair21-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -29029,6 +29151,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa22-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -29201,6 +29331,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 2090187958907115871, guid: abc00000000010831859663492127928, type: 3}
+      propertyPath: _name
+      value: Sofa13-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090187958907115871, guid: abc00000000010831859663492127928, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -29459,6 +29597,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 380689249024292810, guid: abc00000000007893015502209917505, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -29545,6 +29687,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa12-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -29630,6 +29780,14 @@ PrefabInstance:
     - target: {fileID: 1030982266, guid: abc00000000007577579821534457448, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 3580267657805946689, guid: abc00000000007577579821534457448, type: 3}
+      propertyPath: _name
+      value: SpeakerVIP
+      objectReference: {fileID: 0}
+    - target: {fileID: 3580267657805946689, guid: abc00000000007577579821534457448, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3580267657805946689, guid: abc00000000007577579821534457448, type: 3}
       propertyPath: _curLocation
@@ -29721,6 +29879,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair8-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -30343,6 +30509,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 2090187958907115871, guid: abc00000000010831859663492127928, type: 3}
+      propertyPath: _name
+      value: Sofa21-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090187958907115871, guid: abc00000000010831859663492127928, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -31190,6 +31364,10 @@ PrefabInstance:
       value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 2005772219028137413, guid: abc00000000011390013616014448112, type: 3}
+      propertyPath: _name
+      value: Chair1-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2005772219028137413, guid: abc00000000011390013616014448112, type: 3}
       propertyPath: _curLocation
       value: 
       objectReference: {fileID: 128524338470569744}
@@ -31548,6 +31726,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair16-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -32074,6 +32260,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa10-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -32328,6 +32522,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair4-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -32414,6 +32616,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair1-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -32691,6 +32901,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair3-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -32777,6 +32995,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair2-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -33134,6 +33360,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa2-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -33220,6 +33454,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 2005772219028137413, guid: abc00000000011390013616014448112, type: 3}
+      propertyPath: _name
+      value: Chair19-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2005772219028137413, guid: abc00000000011390013616014448112, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -33306,6 +33548,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair11-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -33572,6 +33822,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 2090187958907115871, guid: abc00000000010831859663492127928, type: 3}
+      propertyPath: _name
+      value: Sofa20-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090187958907115871, guid: abc00000000010831859663492127928, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -34292,6 +34550,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 2005772219028137413, guid: abc00000000011390013616014448112, type: 3}
+      propertyPath: _name
+      value: Chair4-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2005772219028137413, guid: abc00000000011390013616014448112, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -34738,6 +35004,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair7-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -35007,6 +35281,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 380689249024292810, guid: abc00000000007893015502209917505, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -35184,6 +35462,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair20-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -35311,7 +35597,7 @@ MonoBehaviour:
   _curLocation: {fileID: 128524338470569744}
   _preposition: on
   _isHideChild: 0
-  _name: Table
+  _name: Table1
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
@@ -35320,6 +35606,7 @@ MonoBehaviour:
   itemPlacementPositions:
   - {fileID: 1325485066797907894}
   - {fileID: 8221671095789420791}
+  useSimplePlacement: 0
 --- !u!4 &8811198326636820827 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030979448, guid: abc00000000013990799139852904832, type: 3}
@@ -35401,6 +35688,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 2005772219028137413, guid: abc00000000011390013616014448112, type: 3}
+      propertyPath: _name
+      value: Chair17-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2005772219028137413, guid: abc00000000011390013616014448112, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -35756,6 +36051,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _name
+      value: Chair17-2
+      objectReference: {fileID: 0}
+    - target: {fileID: 439979401002843596, guid: abc00000000001939556790032522491, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -35939,6 +36242,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _name
+      value: Sofa4-1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603951495835430908, guid: abc00000000017688508526704582627, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 8999486157601164919}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

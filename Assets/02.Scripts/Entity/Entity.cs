@@ -169,8 +169,13 @@ public abstract class Entity : MonoBehaviour, ILocation
 
     protected virtual void Awake()
     {
-        RegisterToLocationService();
+        //RegisterToLocationService();
         Init();
+    }
+
+    protected virtual void OnEnable()
+    {
+        RegisterToLocationService();
     }
 
     public void RegisterToLocationService()
