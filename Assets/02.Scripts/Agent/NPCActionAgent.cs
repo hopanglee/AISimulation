@@ -129,6 +129,26 @@ public class NPCActionAgent : GPT
     }
     
     /// <summary>
+    /// 대화 기록을 초기화 (디버깅용)
+    /// </summary>
+    public void ClearMessages()
+    {
+        if (messages != null)
+        {
+            // 시스템 프롬프트만 남기고 나머지 메시지 제거
+            var systemPrompt = messages.FirstOrDefault(m => m is SystemChatMessage);
+            messages.Clear();
+            
+            if (systemPrompt != null)
+            {
+                messages.Add(systemPrompt);
+            }
+            
+            Debug.Log($"[NPCActionAgent] 대화 기록 초기화됨 (시스템 프롬프트 유지)");
+        }
+    }
+
+    /// <summary>
     /// 결정된 액션을 실제 INPCAction으로 변환
     /// </summary>
     public INPCAction GetActionFromDecision(NPCActionDecision decision)
