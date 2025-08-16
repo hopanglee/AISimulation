@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 /// <summary>
 /// NPC의 역할을 정의하는 열거형
@@ -89,6 +90,49 @@ public abstract class NPC : Actor
     
     [Header("Time Service")]
     private ITimeService timeService; // 시간 정보를 위한 서비스
+    
+    [Header("Debug Controls")]
+    [FoldoutGroup("Manual Action Testing")]
+    [ValueDropdown("GetAvailableActionNames")]
+    [SerializeField] private string debugActionType = "Wait";
+    
+    [FoldoutGroup("Manual Action Testing")]
+    [SerializeField] private string[] debugParameters = new string[0];
+    
+    [FoldoutGroup("Manual Action Testing")]
+    [Button("Execute Debug Action")]
+    private void ExecuteDebugAction()
+    {
+        if (Application.isPlaying)
+        {
+            _ = ExecuteDebugActionAsync();
+        }
+    }
+    
+    [FoldoutGroup("Manual Action Testing")]
+    [TextArea(3, 5)]
+    [SerializeField] private string debugEventDescription = "Test event from inspector";
+    
+    [FoldoutGroup("Manual Action Testing")]
+    [Button("Send Debug Event")]
+    private void SendDebugEvent()
+    {
+        if (Application.isPlaying)
+        {
+            _ = ProcessEventWithAgent(debugEventDescription);
+        }
+    }
+    
+    [FoldoutGroup("Manual Action Testing")]
+    [Button("Clear Agent Messages")]
+    private void ClearAgentMessages()
+    {
+        if (Application.isPlaying && actionAgent != null)
+        {
+            actionAgent.ClearMessages();
+            Debug.Log($"[{Name}] AI Agent 메시지 기록 초기화됨");
+        }
+    }
     
     // TODO: 이벤트 처리 시스템 재설계 예정
     
@@ -633,6 +677,59 @@ public abstract class NPC : Actor
 
         Debug.LogWarning($"[{Name}] Actor를 찾을 수 없음: {actorName}");
         return null;
+    }
+    
+    #endregion
+    
+    #region Debug Methods
+    
+    /// <summary>
+    /// Odin Inspector의 ValueDropdown을 위한 사용 가능한 액션 이름 목록
+    /// </summary>
+    private IEnumerable<string> GetAvailableActionNames()
+    {
+        if (availableActions == null || availableActions.Count == 0)
+            return new[] { "Wait", "Talk" }; // 기본값
+            
+        return availableActions.Select(action => action.ActionName);
+    }
+    
+    /// <summary>
+    /// 디버그 액션을 비동기로 실행
+    /// </summary>
+    private async UniTask ExecuteDebugActionAsync()
+    {
+        try
+        {
+            // 액션 이름으로 INPCAction 찾기
+            INPCAction debugAction = FindActionByName(debugActionType);
+            
+            if (debugAction == null)
+            {
+                Debug.LogError($"[{Name}] 디버그 액션을 찾을 수 없음: {debugActionType}");
+                return;
+            }
+            
+            // string 배열을 object 배열로 변환
+            object[] parameters = debugParameters?.Cast<object>().ToArray() ?? new object[0];
+            
+            Debug.Log($"[{Name}] 디버그 액션 실행: {debugActionType} with parameters: [{string.Join(", ", debugParameters ?? new string[0])}]");
+            
+            // 액션 실행
+            await ExecuteAction(debugAction, parameters);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[{Name}] 디버그 액션 실행 실패: {ex.Message}");
+        }
+    }
+    
+    /// <summary>
+    /// 액션 이름으로 INPCAction 찾기
+    /// </summary>
+    private INPCAction FindActionByName(string actionName)
+    {
+        return availableActions?.FirstOrDefault(action => action.ActionName == actionName);
     }
     
     #endregion
