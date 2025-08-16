@@ -324,7 +324,14 @@ public class DayPlanAgent : GPT
     {
         var sb = new StringBuilder();
         sb.AppendLine($"Create a high-level plan for tomorrow ({tomorrow}) based on the following context:");
-        sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({actor.Sleepiness})");
+        if (actor is MainActor thinkingActor)
+        {
+            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({thinkingActor.Sleepiness})");
+        }
+        else
+        {
+            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress})");
+        }
         sb.AppendLine($"Current location: {actor.curLocation.LocationToString()}");
 
         // 캐릭터의 메모리 정보 추가
@@ -436,7 +443,14 @@ public class DayPlanAgent : GPT
     {
         var sb = new StringBuilder();
         sb.AppendLine($"Create detailed activities for the high-level tasks in the plan for tomorrow ({tomorrow}) based on the following context:");
-        sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({actor.Sleepiness})");
+        if (actor is MainActor thinkingActor)
+        {
+            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({thinkingActor.Sleepiness})");
+        }
+        else
+        {
+            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress})");
+        }
         sb.AppendLine($"Current location: {actor.curLocation.LocationToString()}");
 
         // 캐릭터의 메모리 정보 추가
@@ -532,7 +546,14 @@ public class DayPlanAgent : GPT
     {
         var sb = new StringBuilder();
         sb.AppendLine($"Create specific actions for the detailed activities in the plan for tomorrow ({tomorrow}) based on the following context:");
-        sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({actor.Sleepiness})");
+        if (actor is MainActor thinkingActor)
+        {
+            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({thinkingActor.Sleepiness})");
+        }
+        else
+        {
+            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress})");
+        }
         sb.AppendLine($"Current location: {actor.curLocation.LocationToString()}");
 
         // 캐릭터의 메모리 정보 추가

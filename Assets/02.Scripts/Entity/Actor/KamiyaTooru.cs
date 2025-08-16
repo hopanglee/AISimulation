@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class KamiyaTooru : Actor
+public class KamiyaTooru : MainActor
 {
     public override string Get()
     {

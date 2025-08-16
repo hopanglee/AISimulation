@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -115,5 +116,101 @@ public static class PromptLoader
             "ActionPlannerAgentPrompt",
             "당신은 구체적 행동을 계획하는 전문화된 AI 에이전트입니다."
         );
+    }
+
+    /// <summary>
+    /// NPCActionAgent용 프롬프트를 로드합니다.
+    /// </summary>
+    /// <returns>NPCActionAgent 시스템 프롬프트</returns>
+    public static string LoadNPCActionAgentPrompt()
+    {
+        return LoadPrompt(
+            "NPC/npc_system_prompt.txt",
+            "You are an intelligent NPC action decision agent. Analyze events and choose appropriate actions."
+        );
+    }
+
+    /// <summary>
+    /// 특정 NPCRole에 맞는 system prompt를 로드합니다.
+    /// </summary>
+    /// <param name="npcRole">NPC의 역할</param>
+    /// <param name="availableActions">사용 가능한 액션 목록</param>
+    /// <returns>커스터마이징된 시스템 프롬프트</returns>
+    public static string LoadNPCRoleSystemPrompt(NPCRole npcRole, INPCAction[] availableActions)
+    {
+        string roleFolder = GetNPCRoleFolder(npcRole);
+        string promptPath = $"NPC/{roleFolder}/system_prompt.txt";
+        
+        // 기본 시스템 프롬프트 로드
+        string basePrompt = LoadPrompt(promptPath, GetDefaultNPCPrompt(npcRole));
+        
+        // 사용 가능한 액션들의 설명 로드
+        string actionsDescription = LoadAvailableActionsDescription(npcRole, availableActions);
+        
+        // {AVAILABLE_ACTIONS} 플레이스홀더를 실제 액션 설명으로 교체
+        return basePrompt.Replace("{AVAILABLE_ACTIONS}", actionsDescription);
+    }
+
+    /// <summary>
+    /// NPCRole에 해당하는 폴더명을 반환합니다.
+    /// </summary>
+    private static string GetNPCRoleFolder(NPCRole npcRole)
+    {
+        return npcRole switch
+        {
+            NPCRole.ConvenienceStoreClerk => "ConvenienceStoreClerk",
+            _ => "Common"
+        };
+    }
+
+    /// <summary>
+    /// 사용 가능한 액션들의 설명을 로드합니다.
+    /// </summary>
+    private static string LoadAvailableActionsDescription(NPCRole npcRole, INPCAction[] availableActions)
+    {
+        if (availableActions == null || availableActions.Length == 0)
+            return "No actions available.";
+
+        string roleFolder = GetNPCRoleFolder(npcRole);
+        var actionDescriptions = new List<string>();
+
+        foreach (var action in availableActions)
+        {
+            string actionPath = $"NPC/{roleFolder}/actions/{action.ActionName}.txt";
+            string description = LoadPrompt(actionPath, $"**{action.ActionName}**: {action.Description}");
+            actionDescriptions.Add(description);
+        }
+
+        return string.Join("\n\n", actionDescriptions);
+    }
+
+    /// <summary>
+    /// NPCRole에 대한 기본 프롬프트를 반환합니다.
+    /// </summary>
+    private static string GetDefaultNPCPrompt(NPCRole npcRole)
+    {
+        return npcRole switch
+        {
+            NPCRole.ConvenienceStoreClerk => @"You are a convenience store clerk NPC. Be helpful and professional.
+
+Response Format:
+{
+    ""actionType"": ""ActionName"",
+    ""parameters"": [""param1""] or null
+}
+
+Available Actions:
+{AVAILABLE_ACTIONS}",
+            _ => @"You are an NPC in a simulation game.
+
+Response Format:
+{
+    ""actionType"": ""ActionName"",
+    ""parameters"": [""param1""] or null
+}
+
+Available Actions:
+{AVAILABLE_ACTIONS}"
+        };
     }
 }

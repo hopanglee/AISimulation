@@ -184,13 +184,9 @@ public class Brain
         var timeService = Services.Get<ITimeService>();
         var currentTime = timeService.CurrentTime;
         sb.AppendLine($"Current time: {FormatTime(currentTime)}");
-        sb.AppendLine($"Sleep status: {(actor.IsSleeping ? "Sleeping" : "Awake")}");
 
         // 위치 정보
         sb.AppendLine($"You are at {actor.curLocation.locationName}.");
-
-        // 상태 정보
-        sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({actor.Sleepiness})");
 
         // 아이템 상태
         sb.AppendLine("\n=== Your Current Items ===");
@@ -223,55 +219,66 @@ public class Brain
         sb.AppendLine("\n=== Your Memories ===");
         sb.AppendLine(memorySummary);
 
-        // 주변 엔티티 정보
-        var lookable = actor.sensor.GetLookableEntities();
-        var interactable = actor.sensor.GetInteractableEntities();
-        var movable = actor.sensor.GetMovablePositions();
-
-        if (lookable.Count > 0)
+        // ThinkingActor인 경우 추가 정보 제공
+        if (actor is MainActor thinkingActor)
         {
-            sb.AppendLine("\n=== Lookable Entities ===");
-            foreach (var entity in lookable)
+            sb.AppendLine($"Sleep status: {(thinkingActor.IsSleeping ? "Sleeping" : "Awake")}");
+            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({thinkingActor.Sleepiness})");
+            
+            // 주변 엔티티 정보
+            var lookable = thinkingActor.sensor.GetLookableEntities();
+            var interactable = thinkingActor.sensor.GetInteractableEntities();
+            var movable = thinkingActor.sensor.GetMovablePositions();
+
+            if (lookable.Count > 0)
             {
-                sb.AppendLine($"- {entity.Key}: {entity.Value.GetStatusDescription()}");
+                sb.AppendLine("\n=== Lookable Entities ===");
+                foreach (var entity in lookable)
+                {
+                    sb.AppendLine($"- {entity.Key}: {entity.Value.GetStatusDescription()}");
+                }
+            }
+
+            // Interactable entities are organized by type
+            var allInteractable = new List<(string, string)>();
+            foreach (var actor in interactable.actors)
+            {
+                allInteractable.Add((actor.Key, $"Actor: {actor.Value.Name}"));
+            }
+            foreach (var item in interactable.items)
+            {
+                allInteractable.Add((item.Key, $"Item: {item.Value.Name}"));
+            }
+            foreach (var building in interactable.buildings)
+            {
+                allInteractable.Add((building.Key, $"Building: {building.Value.Name}"));
+            }
+            foreach (var prop in interactable.props)
+            {
+                allInteractable.Add((prop.Key, $"Prop: {prop.Value.Name}"));
+            }
+
+            if (allInteractable.Count > 0)
+            {
+                sb.AppendLine("\n=== Interactable Entities ===");
+                foreach (var (key, description) in allInteractable)
+                {
+                    sb.AppendLine($"- {key}: {description}");
+                }
+            }
+
+            if (movable.Count > 0)
+            {
+                sb.AppendLine("\n=== Movable Positions ===");
+                foreach (var position in movable)
+                {
+                    sb.AppendLine($"- {position.Key}");
+                }
             }
         }
-
-        // Interactable entities are organized by type
-        var allInteractable = new List<(string, string)>();
-        foreach (var actor in interactable.actors)
+        else
         {
-            allInteractable.Add((actor.Key, $"Actor: {actor.Value.Name}"));
-        }
-        foreach (var item in interactable.items)
-        {
-            allInteractable.Add((item.Key, $"Item: {item.Value.Name}"));
-        }
-        foreach (var building in interactable.buildings)
-        {
-            allInteractable.Add((building.Key, $"Building: {building.Value.Name}"));
-        }
-        foreach (var prop in interactable.props)
-        {
-            allInteractable.Add((prop.Key, $"Prop: {prop.Value.Name}"));
-        }
-
-        if (allInteractable.Count > 0)
-        {
-            sb.AppendLine("\n=== Interactable Entities ===");
-            foreach (var (key, description) in allInteractable)
-            {
-                sb.AppendLine($"- {key}: {description}");
-            }
-        }
-
-        if (movable.Count > 0)
-        {
-            sb.AppendLine("\n=== Movable Positions ===");
-            foreach (var position in movable)
-            {
-                sb.AppendLine($"- {position.Key}");
-            }
+            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress})");
         }
 
         return sb.ToString();

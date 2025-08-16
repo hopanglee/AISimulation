@@ -134,9 +134,9 @@ public class GameService : MonoBehaviour, IGameService
         // GPT 로깅 설정 적용
         foreach (var actor in allActors)
         {
-            if (actor != null && actor.brain != null)
+            if (actor != null && actor is MainActor thinkingActor)
             {
-                actor.brain.SetLoggingEnabled(enableGPTLogging);
+                thinkingActor.brain.SetLoggingEnabled(enableGPTLogging);
             }
         }
 
@@ -533,9 +533,9 @@ public class GameService : MonoBehaviour, IGameService
         // 모든 Actor의 로깅 설정 업데이트
         foreach (var actor in allActors)
         {
-            if (actor != null && actor.brain != null)
+            if (actor != null && actor is MainActor thinkingActor)
             {
-                actor.brain.SetLoggingEnabled(enableGPTLogging);
+                thinkingActor.brain.SetLoggingEnabled(enableGPTLogging);
             }
         }
     }

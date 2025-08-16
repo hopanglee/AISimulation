@@ -6,15 +6,13 @@ using UnityEngine;
 [RequireComponent(typeof(MoveController))]
 public abstract class Actor : Entity, ILocationAware
 {
-    public Brain brain;
-    public Sensor sensor;
+    // Brain과 Sensor는 ThinkingActor로 이동
     #region Component
     private MoveController moveController;
     public MoveController MoveController => moveController;
     #endregion
-    #region Varaible
-    public int Money;
-    public iPhone iPhone;
+    #region Variable
+    // Money와 iPhone은 ThinkingActor로 이동
 
     [ShowInInspector, ReadOnly]
     private SerializableDictionary<string, Entity> lookable = new();
@@ -45,55 +43,11 @@ public abstract class Actor : Entity, ILocationAware
 
     [Header("Sleepiness")]
     [Range(0, 100)]
-    public int Sleepiness; // 졸림 수치. 일정 수치(예: 80 이상) 이상이면 강제로 잠들게 할 수 있음.
-    #endregion
+    public int Sleepiness; // 졸림 수치. 일정 수치(예: 80 이상) 이상이면 강제로 잠들게 할 수 있음
 
-    #region Sleep System
-    [Header("Sleep System")]
-    [SerializeField, Range(0, 23)]
-    private int wakeUpHour = 6; // 기상 시간
-    public int WakeUpHour => wakeUpHour;
-    public int wakeUpMinute = 0;
-    private bool hasAwokenToday = false;
+    // 수면 관련 시스템은 ThinkingActor로 이동
 
-    [SerializeField, Range(0, 23)]
-    private int sleepHour = 22; // 취침 시간
-
-    [SerializeField, Range(0, 100)]
-    private int sleepinessThreshold = 80; // 강제 수면 임계값
-
-    [SerializeField]
-    private bool isSleeping = false;
-
-    [SerializeField]
-    private GameTime sleepStartTime;
-
-    [SerializeField]
-    private GameTime wakeUpTime;
-
-    public bool IsSleeping => isSleeping;
-    public int SleepHour => sleepHour;
-    public int SleepinessThreshold => sleepinessThreshold;
-    #endregion
-
-    #region Activity System
-    [Header("Activity System")]
-    [SerializeField]
-    private string currentActivity = "Idle"; // 현재 수행 중인 활동
-
-    [SerializeField]
-    private string activityDescription = ""; // 활동에 대한 상세 설명
-
-    [SerializeField]
-    private float activityStartTime = 0f; // 활동 시작 시간
-
-    [SerializeField]
-    private float activityDuration = 0f; // 활동 지속 시간
-
-    public string CurrentActivity => currentActivity;
-    public string ActivityDescription => activityDescription;
-    public bool IsPerformingActivity => currentActivity != "Idle";
-    #endregion
+    // Activity System은 ThinkingActor로 이동
 
 
 
@@ -121,57 +75,20 @@ public abstract class Actor : Entity, ILocationAware
     }
     public Inven Inven;
 
-    /// <summary>
-    /// Actor에게 발생한 이벤트들의 기록
-    /// </summary>
-    private List<string> _eventHistory = new();
+    // Event History는 ThinkingActor로 이동
     #endregion
 
-    private ITimeService timeService;
+    // timeService는 ThinkingActor로 이동
 
     protected override void Awake()
     {
         base.Awake();
         moveController = GetComponent<MoveController>();
-        brain = new(this);
-        sensor = new(this);
     }
 
-    protected override void OnEnable()
-    {
-        base.OnEnable();
-        timeService = Services.Get<ITimeService>();
-        if (timeService != null)
-            timeService.SubscribeToTimeEvent(OnSimulationTimeChanged);
-    }
+    // OnEnable과 OnDisable은 ThinkingActor로 이동
 
-    private void OnDisable()
-    {
-        if (timeService != null)
-            timeService.UnsubscribeFromTimeEvent(OnSimulationTimeChanged);
-    }
-
-    #region Update Function
-    // All Entities in same location
-    protected void UpdateLookableEntity()
-    {
-        sensor.UpdateLookableEntities();
-        lookable = sensor.GetLookableEntities();
-    }
-
-    // the entites, near the actor in same location
-    protected void UpdateInteractableEntity()
-    {
-        sensor.UpdateInteractableEntities();
-        interactable = sensor.GetInteractableEntities();
-    }
-
-    protected void UpdateMovablePos()
-    {
-        sensor.UpdateMovablePositions();
-        toMovable = sensor.GetMovablePositions();
-    }
-    #endregion
+    // Update Function들은 ThinkingActor로 이동
 
     public bool PickUp(Item item)
     {
@@ -204,6 +121,18 @@ public abstract class Actor : Entity, ILocationAware
         return false;
     }
 
+    /// <summary>
+    /// 다른 Actor로부터 아이템을 받습니다.
+    /// </summary>
+    /// <param name="from">아이템을 주는 Actor</param>
+    /// <param name="item">받을 아이템</param>
+    /// <returns>받기 성공 여부</returns>
+    public virtual bool Receive(Actor from, Item item)
+    {
+        Debug.Log($"[{Name}] {from.Name}로부터 아이템 받음: {item.Name}");
+        return PickUp(item);
+    }
+
     private void InvenItemSet(int index, Item item)
     {
         _inventoryItems[index] = item;
@@ -213,16 +142,7 @@ public abstract class Actor : Entity, ILocationAware
     }
 
     #region Agent Selectable Fucntion
-    public void GiveMoney(Actor target, int amount)
-    {
-        if (Money >= amount)
-        {
-            Money -= amount;
-            target.Money += amount;
-            return;
-        }
-        Debug.LogError("GiveMoney Error > Can't give money. over amount");
-    }
+    // GiveMoney는 ThinkingActor로 이동
 
     public void Use(object variable)
     {
@@ -249,7 +169,7 @@ public abstract class Actor : Entity, ILocationAware
         {
             var target = interactable.actors[actorKey];
 
-            if (target.PickUp(HandItem))
+            if (target.Receive(this, HandItem))
             {
                 HandItem = null;
             }
@@ -340,150 +260,25 @@ public abstract class Actor : Entity, ILocationAware
         ShowSpeech(text);
         target.Hear(this, text);
     }
+    
+    /// <summary>
+    /// NPC인지 확인
+    /// </summary>
+    public bool IsNPC()
+    {
+        return this is NPC;
+    }
     #endregion
 
-    public virtual void Sleep()
-    {
-        if (isSleeping)
-        {
-            Debug.LogWarning($"[{Name}] Already sleeping!");
-            return;
-        }
-
-        var timeService = Services.Get<ITimeService>();
-        sleepStartTime = timeService.CurrentTime;
-
-        // 기상 시간 계산 (다음 날 기상 시간)
-        var currentTime = timeService.CurrentTime;
-        wakeUpTime = new GameTime(
-            currentTime.year,
-            currentTime.month,
-            currentTime.day + 1,
-            wakeUpHour,
-            0
-        );
-
-        // 월/연도 조정
-        int daysInMonth = GameTime.GetDaysInMonth(wakeUpTime.year, wakeUpTime.month);
-        if (wakeUpTime.day > daysInMonth)
-        {
-            wakeUpTime.day = 1;
-            wakeUpTime.month++;
-            if (wakeUpTime.month > 12)
-            {
-                wakeUpTime.month = 1;
-                wakeUpTime.year++;
-            }
-        }
-
-        isSleeping = true;
-        Sleepiness = 0; // 수면 중에는 졸림 수치 초기화
-
-        Debug.Log($"[{Name}] Started sleeping at {sleepStartTime}. Will wake up at {wakeUpTime}");
-    }
-
-    public virtual void WakeUp()
-    {
-        if (!isSleeping)
-        {
-            Debug.LogWarning($"[{Name}] Not sleeping!");
-            return;
-        }
-
-        var timeService = Services.Get<ITimeService>();
-        var currentTime = timeService.CurrentTime;
-
-        isSleeping = false;
-        Stamina = Mathf.Min(100, Stamina + 30); // 수면으로 체력 회복
-
-        Debug.Log($"[{Name}] Woke up at {currentTime}. Stamina restored to {Stamina}");
-    }
-
-    /// <summary>
-    /// 수면 상태 체크 (시간에 따른 자동 기상)
-    /// </summary>
-    public void CheckSleepStatus()
-    {
-        if (!isSleeping)
-            return;
-
-        var timeService = Services.Get<ITimeService>();
-        var currentTime = timeService.CurrentTime;
-
-        // 기상 시간이 되었는지 확인
-        if (currentTime >= wakeUpTime)
-        {
-            WakeUp();
-        }
-    }
-
-    /// <summary>
-    /// 수면 필요성 체크 (졸림 수치에 따른 강제 수면)
-    /// </summary>
-    public void CheckSleepNeed()
-    {
-        if (isSleeping)
-            return;
-
-        // 졸림 수치가 임계값을 넘으면 강제 수면
-        if (Sleepiness >= sleepinessThreshold)
-        {
-            Debug.Log(
-                $"[{Name}] Sleepiness threshold reached ({Sleepiness}/{sleepinessThreshold}). Forcing sleep."
-            );
-            Sleep();
-        }
-    }
-
-    /// <summary>
-    /// 수면 시간인지 확인
-    /// </summary>
-    public bool IsSleepTime()
-    {
-        var timeService = Services.Get<ITimeService>();
-        var currentTime = timeService.CurrentTime;
-
-        // 수면 시간 범위 확인 (22:00 ~ 06:00)
-        return timeService.IsTimeBetween(sleepHour, 0, wakeUpHour, 0);
-    }
-
-    /// <summary>
-    /// 기상 시간인지 확인
-    /// </summary>
-    public bool IsWakeUpTime()
-    {
-        var timeService = Services.Get<ITimeService>();
-        var currentTime = timeService.CurrentTime;
-        return currentTime.hour == wakeUpHour && currentTime.minute == 0;
-    }
-
-    /// <summary>
-    /// 수면 시간 설정
-    /// </summary>
-    public void SetSleepSchedule(int sleepHour, int wakeUpHour)
-    {
-        this.sleepHour = Mathf.Clamp(sleepHour, 0, 23);
-        this.wakeUpHour = Mathf.Clamp(wakeUpHour, 0, 23);
-
-        Debug.Log($"[{Name}] Sleep schedule set: {sleepHour:D2}:00 ~ {wakeUpHour:D2}:00");
-    }
+    // 수면 관련 메서드들은 ThinkingActor로 이동
 
 
 
-    /// <summary>
-    /// 현재 시간에 맞는 활동 가져오기 (Brain을 통해)
-    /// </summary>
-    public DetailedPlannerAgent.DetailedActivity GetCurrentActivity()
-    {
-        return brain?.GetCurrentActivity();
-    }
+    // GetCurrentActivity는 ThinkingActor로 이동
 
     public override string GetStatusDescription()
     {
-        if (!string.IsNullOrEmpty(CurrentActivity) && CurrentActivity != "Idle")
-        {
-            return $"현재: {CurrentActivity}";
-        }
+        // Activity 정보는 ThinkingActor에서 처리
         return base.GetStatusDescription();
     }
 
@@ -492,9 +287,10 @@ public abstract class Actor : Entity, ILocationAware
         ;
     }
 
-    public void Hear(Actor from, string text)
+    public virtual void Hear(Actor from, string text)
     {
-        _eventHistory.Add($"");
+        // 기본 Actor의 Hear 동작 (현재는 아무것도 하지 않음)
+        // MainActor나 NPC에서 각각 오버라이드하여 적절한 처리를 구현
     }
 
     public void SetCurrentRoom(ILocation newLocation)
@@ -506,77 +302,9 @@ public abstract class Actor : Entity, ILocationAware
         }
     }
 
-    /// <summary>
-    /// 활동 시작
-    /// </summary>
-    public void StartActivity(string activityName, string description = "", float duration = 0f)
-    {
-        currentActivity = activityName;
-        activityDescription = description;
-        activityStartTime = Time.time;
-        activityDuration = duration;
+    // 활동 관련 메서드들은 ThinkingActor로 이동
 
-        Debug.Log($"[{Name}] Started activity: {activityName} - {description}");
-    }
-
-    /// <summary>
-    /// 활동 종료
-    /// </summary>
-    public void StopActivity()
-    {
-        if (IsPerformingActivity)
-        {
-            Debug.Log($"[{Name}] Stopped activity: {currentActivity}");
-            currentActivity = "Idle";
-            activityDescription = "";
-            activityStartTime = 0f;
-            activityDuration = 0f;
-        }
-    }
-
-    /// <summary>
-    /// 현재 활동이 완료되었는지 확인
-    /// </summary>
-    public bool IsActivityCompleted()
-    {
-        if (!IsPerformingActivity || activityDuration <= 0f)
-            return false;
-
-        return Time.time - activityStartTime >= activityDuration;
-    }
-
-    /// <summary>
-    /// 활동 진행률 반환 (0.0 ~ 1.0)
-    /// </summary>
-    public float GetActivityProgress()
-    {
-        if (!IsPerformingActivity || activityDuration <= 0f)
-            return 0f;
-
-        float elapsed = Time.time - activityStartTime;
-        return Mathf.Clamp01(elapsed / activityDuration);
-    }
-
-    #region Odin Inspector Buttons
-
-    [Button("Update Lookable Entities")]
-    private void Odin_UpdateLookableEntity()
-    {
-        UpdateLookableEntity();
-    }
-
-    [Button("Update Interactable Entities")]
-    private void Odin_UpdateInteractableEntity()
-    {
-        UpdateInteractableEntity();
-    }
-
-    [Button("Update Movable Positions")]
-    private void Odin_UpdateMovablePos()
-    {
-        UpdateMovablePos();
-    }
-    #endregion
+    // Odin Inspector Buttons는 ThinkingActor로 이동
 
     [Header("Speech Bubble")]
     public SpeechBubbleUI speechBubble;
@@ -656,18 +384,6 @@ public abstract class Actor : Entity, ILocationAware
 
 
 
-    public void OnSimulationTimeChanged(GameTime currentTime)
-    {
-        if (!hasAwokenToday && currentTime.hour == wakeUpHour && currentTime.minute == wakeUpMinute)
-        {
-            hasAwokenToday = true;
-            Debug.Log($"[{Name}] 기상! DayPlan 및 Think 시작");
-            brain.StartDayPlanAndThink();
-        }
-        // 자정에 플래그 리셋
-        if (currentTime.hour == 0 && currentTime.minute == 0)
-        {
-            hasAwokenToday = false;
-        }
-    }
+    // OnSimulationTimeChanged는 ThinkingActor로 이동
+    #endregion
 }

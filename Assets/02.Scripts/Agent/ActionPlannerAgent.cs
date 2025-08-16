@@ -180,7 +180,14 @@ public class ActionPlannerAgent : GPT
         var timeService = Services.Get<ITimeService>();
         var currentTime = $"{timeService.CurrentTime.hour:D2}:{timeService.CurrentTime.minute:D2}";
         sb.AppendLine($"Create specific actions for the detailed activities in the plan for tomorrow ({tomorrow}) based on the following context:");
-        sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({actor.Sleepiness})");
+        if (actor is MainActor thinkingActor)
+        {
+            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({thinkingActor.Sleepiness})");
+        }
+        else
+        {
+            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress})");
+        }
         sb.AppendLine($"Current location: {actor.curLocation.LocationToString()}");
         sb.AppendLine($"The first activity MUST start exactly at the current time: {currentTime}.");
         sb.AppendLine("Do not leave any gap before the first activity. If the agent is awake, the first activity should begin at the current time.");

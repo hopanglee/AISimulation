@@ -86,7 +86,7 @@ namespace Agent
 
         private string BuildUserMessage(CommonContext context)
         {
-            return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableCharacters: {string.Join(", ", characterList)}\nPersonality: {personality}\nMemorySummary: {memorySummary}\nCurrentMoney: {actor.Money}";
+            return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableCharacters: {string.Join(", ", characterList)}\nPersonality: {personality}\nMemorySummary: {memorySummary}";//\nCurrentMoney: {actor.Money}
         }
     }
 } 
