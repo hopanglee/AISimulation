@@ -91,35 +91,43 @@ public class iPhone : Item
     private string Chat(Actor actor, Actor target, string text)
     {
         // Retrieve the target Actor's iPhone component
-        iPhone targetIPhone = target.iPhone;
-        if (targetIPhone == null)
+        if (target is MainActor thinkingTarget)
+        {
+            iPhone targetIPhone = thinkingTarget.iPhone;
+            if (targetIPhone == null)
+            {
+                return "The target does not have an iPhone.";
+            }
+            
+            string time = GetTime();
+            ChatMessage msg = new ChatMessage(time, actor.Name, text);
+
+            // Add the message to the conversation history on the sender's iPhone using the target's name as the key
+            string targetKey = target.Name;
+            if (!chatHistory.ContainsKey(targetKey))
+            {
+                chatHistory[targetKey] = new List<ChatMessage>();
+            }
+            chatHistory[targetKey].Add(msg);
+
+            // Add the message to the target Actor's iPhone conversation history using the sender's name as the key
+            string senderKey = actor.Name;
+            if (!targetIPhone.chatHistory.ContainsKey(senderKey))
+            {
+                targetIPhone.chatHistory[senderKey] = new List<ChatMessage>();
+            }
+            targetIPhone.chatHistory[senderKey].Add(msg);
+
+            // Update the target iPhone's notifications: set flag to true and add a new notification message
+            targetIPhone.chatNotification = true;
+            targetIPhone.notifications.Add($"New message from {actor.Name} at {time}");
+
+            return $"Message sent to {target.Name}.";
+        }
+        else
         {
             return "The target does not have an iPhone.";
         }
-        string time = GetTime();
-        ChatMessage msg = new ChatMessage(time, actor.Name, text);
-
-        // Add the message to the conversation history on the sender's iPhone using the target's name as the key
-        string targetKey = target.Name;
-        if (!chatHistory.ContainsKey(targetKey))
-        {
-            chatHistory[targetKey] = new List<ChatMessage>();
-        }
-        chatHistory[targetKey].Add(msg);
-
-        // Add the message to the target Actor's iPhone conversation history using the sender's name as the key
-        string senderKey = actor.Name;
-        if (!targetIPhone.chatHistory.ContainsKey(senderKey))
-        {
-            targetIPhone.chatHistory[senderKey] = new List<ChatMessage>();
-        }
-        targetIPhone.chatHistory[senderKey].Add(msg);
-
-        // Update the target iPhone's notifications: set flag to true and add a new notification message
-        targetIPhone.chatNotification = true;
-        targetIPhone.notifications.Add($"New message from {actor.Name} at {time}");
-
-        return $"Message sent to {target.Name}.";
     }
 
     /// <summary>

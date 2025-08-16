@@ -7,8 +7,15 @@ public class Bed : Prop
 
     private string Sleep(Actor actor)
     {
-        actor.Sleep();
-        return $"{actor.Name} fell into a deep sleep.";
+        if (actor is MainActor thinkingActor)
+        {
+            thinkingActor.Sleep();
+            return $"{actor.Name} fell into a deep sleep.";
+        }
+        else
+        {
+            return $"{actor.Name} cannot sleep (not a thinking actor).";
+        }
     }
 
     public override string Get()

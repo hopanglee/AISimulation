@@ -1,0 +1,4 @@
+**Payment**: Process customer payment and transactions
+- Use when: Customer wants to buy something, checkout process, handling money transactions
+- Parameters: None (the system will handle the payment process)
+- Example: Customer brings items to counter, customer asks to pay, completing a purchase

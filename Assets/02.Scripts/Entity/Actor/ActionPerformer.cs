@@ -157,49 +157,18 @@ public class ActionPerformer
             Debug.Log($"[{actor.Name}] 영역/건물로 이동: {areaName}");
 
             // 먼저 현재 Area에서 이동 가능한 위치들을 확인
-            var movablePositions = actor.sensor.GetMovablePositions();
-
-            if (movablePositions.ContainsKey(areaName))
+            if (actor is MainActor thinkingActor)
             {
-                // 직접 이동 가능한 위치 (Area, Building, Prop 등)
-                var moveCompleted = new TaskCompletionSource<bool>();
+                var movablePositions = thinkingActor.sensor.GetMovablePositions();
 
-                // 이동 시작
-                actor.Move(areaName);
-                Debug.Log($"[{actor.Name}] {areaName}로 직접 이동");
-
-                // MoveController의 OnReached 이벤트를 구독하여 이동 완료 대기
-                actor.MoveController.OnReached += () => moveCompleted.SetResult(true);
-
-                // 이동 완료 또는 취소 대기
-                try
+                if (movablePositions.ContainsKey(areaName))
                 {
-                    // CancellationToken과 함께 대기
-                    using (token.Register(() => moveCompleted.SetCanceled()))
-                    {
-                        await moveCompleted.Task;
-                    }
-                    Debug.Log($"[{actor.Name}] {areaName}에 도착했습니다.");
-                }
-                catch (OperationCanceledException)
-                {
-                    Debug.Log($"[{actor.Name}] {areaName}로의 이동이 취소되었습니다.");
-                    // 이동 취소 시 MoveController 정리
-                    actor.MoveController.Reset();
-                    throw; // 상위로 취소 예외 전파
-                }
-            }
-            else
-            {
-                // 경로찾기를 통한 이동 (연결된 Area로)
-                var locationService = Services.Get<ILocationService>();
-                var area = locationService.GetArea(actor.curLocation);
-                if (area != null)
-                {
+                    // 직접 이동 가능한 위치 (Area, Building, Prop 등)
                     var moveCompleted = new TaskCompletionSource<bool>();
 
-                    // 경로찾기 이동 시작
-                    ExecutePathfindingMove(areaName);
+                    // 이동 시작
+                    actor.Move(areaName);
+                    Debug.Log($"[{actor.Name}] {areaName}로 직접 이동");
 
                     // MoveController의 OnReached 이벤트를 구독하여 이동 완료 대기
                     actor.MoveController.OnReached += () => moveCompleted.SetResult(true);
@@ -224,8 +193,46 @@ public class ActionPerformer
                 }
                 else
                 {
-                    Debug.LogWarning($"[{actor.Name}] Area를 찾을 수 없음: {areaName}");
+                    // 경로찾기를 통한 이동 (연결된 Area로)
+                    var locationService = Services.Get<ILocationService>();
+                    var area = locationService.GetArea(actor.curLocation);
+                    if (area != null)
+                    {
+                        var moveCompleted = new TaskCompletionSource<bool>();
+
+                        // 경로찾기 이동 시작
+                        ExecutePathfindingMove(areaName);
+
+                        // MoveController의 OnReached 이벤트를 구독하여 이동 완료 대기
+                        actor.MoveController.OnReached += () => moveCompleted.SetResult(true);
+
+                        // 이동 완료 또는 취소 대기
+                        try
+                        {
+                            // CancellationToken과 함께 대기
+                            using (token.Register(() => moveCompleted.SetCanceled()))
+                            {
+                                await moveCompleted.Task;
+                            }
+                            Debug.Log($"[{actor.Name}] {areaName}에 도착했습니다.");
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            Debug.Log($"[{actor.Name}] {areaName}로의 이동이 취소되었습니다.");
+                            // 이동 취소 시 MoveController 정리
+                            actor.MoveController.Reset();
+                            throw; // 상위로 취소 예외 전파
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[{actor.Name}] Area를 찾을 수 없음: {areaName}");
+                    }
                 }
+            }
+            else
+            {
+                Debug.LogWarning($"[{actor.Name}] sensor 기능을 사용할 수 없습니다.");
             }
         }
     }
@@ -286,29 +293,36 @@ public class ActionPerformer
         {
             Debug.Log($"[{actor.Name}] 캐릭터와 대화: {characterName}");
 
-            var interactableEntities = actor.sensor.GetInteractableEntities();
-            if (interactableEntities.actors.ContainsKey(characterName))
+            if (actor is MainActor thinkingActor)
             {
-                var targetActor = interactableEntities.actors[characterName];
-                if (parameters.TryGetValue("message", out var messageObj) && messageObj is string message)
+                var interactableEntities = thinkingActor.sensor.GetInteractableEntities();
+                if (interactableEntities.actors.ContainsKey(characterName))
                 {
-                    actor.ShowSpeech(message);
-                    Debug.Log($"[{actor.Name}] {targetActor.Name}에게 말함: {message}");
+                    var targetActor = interactableEntities.actors[characterName];
+                    if (parameters.TryGetValue("message", out var messageObj) && messageObj is string message)
+                    {
+                        actor.ShowSpeech(message);
+                        Debug.Log($"[{actor.Name}] {targetActor.Name}에게 말함: {message}");
 
-                    // 성공적인 대화에 대한 피드백
-                    var feedback = $"Successfully spoke to {targetActor.Name}: '{message}'. The conversation was delivered.";
-                    // TODO: 여기서 ActionExecutor의 Success/Fail 메서드를 직접 호출할 수 있도록 구조 개선 필요
+                        // 성공적인 대화에 대한 피드백
+                        var feedback = $"Successfully spoke to {targetActor.Name}: '{message}'. The conversation was delivered.";
+                        // TODO: 여기서 ActionExecutor의 Success/Fail 메서드를 직접 호출할 수 있도록 구조 개선 필요
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[{actor.Name}] 메시지가 제공되지 않음");
+                    }
                 }
                 else
                 {
-                    Debug.LogWarning($"[{actor.Name}] 메시지가 제공되지 않음");
+                    Debug.LogWarning($"[{actor.Name}] 캐릭터를 찾을 수 없음: {characterName}");
+                    // 실패에 대한 피드백
+                    var feedback = $"Failed to speak to {characterName}: Character not found in current location.";
                 }
             }
             else
             {
-                Debug.LogWarning($"[{actor.Name}] 캐릭터를 찾을 수 없음: {characterName}");
-                // 실패에 대한 피드백
-                var feedback = $"Failed to speak to {characterName}: Character not found in current location.";
+                Debug.LogWarning($"[{actor.Name}] sensor 기능을 사용할 수 없습니다.");
             }
         }
         await Task.Delay(2000); // 임시 2초 딜레이
@@ -323,15 +337,22 @@ public class ActionPerformer
         {
             Debug.Log($"[{actor.Name}] 오브젝트 사용: {objectName}");
 
-            var interactableEntities = actor.sensor.GetInteractableEntities();
-            if (interactableEntities.props.ContainsKey(objectName))
+            if (actor is MainActor thinkingActor)
             {
-                var prop = interactableEntities.props[objectName];
-                Debug.Log($"[{actor.Name}] {prop.Name} 사용");
+                var interactableEntities = thinkingActor.sensor.GetInteractableEntities();
+                if (interactableEntities.props.ContainsKey(objectName))
+                {
+                    var prop = interactableEntities.props[objectName];
+                    Debug.Log($"[{actor.Name}] {prop.Name} 사용");
+                }
+                else
+                {
+                    Debug.LogWarning($"[{actor.Name}] 오브젝트를 찾을 수 없음: {objectName}");
+                }
             }
             else
             {
-                Debug.LogWarning($"[{actor.Name}] 오브젝트를 찾을 수 없음: {objectName}");
+                Debug.LogWarning($"[{actor.Name}] sensor 기능을 사용할 수 없습니다.");
             }
         }
         await Task.Delay(5000); // 임시 5초 딜레이
@@ -375,15 +396,22 @@ public class ActionPerformer
         {
             Debug.Log($"[{actor.Name}] 오브젝트 상호작용: {objectName}");
 
-            var interactableEntities = actor.sensor.GetInteractableEntities();
-            if (interactableEntities.props.ContainsKey(objectName))
+            if (actor is MainActor thinkingActor)
             {
-                var prop = interactableEntities.props[objectName];
-                Debug.Log($"[{actor.Name}] {prop.Name}와 상호작용");
+                var interactableEntities = thinkingActor.sensor.GetInteractableEntities();
+                if (interactableEntities.props.ContainsKey(objectName))
+                {
+                    var prop = interactableEntities.props[objectName];
+                    Debug.Log($"[{actor.Name}] {prop.Name}와 상호작용");
+                }
+                else
+                {
+                    Debug.LogWarning($"[{actor.Name}] 오브젝트를 찾을 수 없음: {objectName}");
+                }
             }
             else
             {
-                Debug.LogWarning($"[{actor.Name}] 오브젝트를 찾을 수 없음: {objectName}");
+                Debug.LogWarning($"[{actor.Name}] sensor 기능을 사용할 수 없습니다.");
             }
         }
         await Task.Delay(5000); // 임시 5초 딜레이
@@ -404,7 +432,14 @@ public class ActionPerformer
             {
                 try
                 {
-                    actor.GiveMoney(targetActor, amount);
+                    if (actor is MainActor thinkingActor)
+            {
+                thinkingActor.GiveMoney(targetActor, amount);
+            }
+            else
+            {
+                Debug.LogWarning($"[{actor.Name}] GiveMoney 기능을 사용할 수 없습니다.");
+            }
                     Debug.Log($"[{actor.Name}] {targetActor.Name}에게 {amount}원을 성공적으로 주었습니다.");
                 }
                 catch (System.Exception ex)
@@ -477,7 +512,14 @@ public class ActionPerformer
         if (parameters.TryGetValue("activity_name", out var activityNameObj) && activityNameObj is string activityName)
         {
             Debug.Log($"[{actor.Name}] 활동 수행: {activityName}");
-            actor.StartActivity(activityName);
+            if (actor is MainActor thinkingActor)
+            {
+                thinkingActor.StartActivity(activityName);
+            }
+            else
+            {
+                Debug.LogWarning($"[{actor.Name}] StartActivity 기능을 사용할 수 없습니다.");
+            }
         }
 
         int delay = 5; // 기본값 5분
@@ -503,16 +545,23 @@ public class ActionPerformer
         if (path != null && path.Count > 0)
         {
             var nextStep = path[0];
-            var movablePositions = actor.sensor.GetMovablePositions();
-
-            if (movablePositions.ContainsKey(nextStep))
+            if (actor is MainActor thinkingActor)
             {
-                actor.Move(nextStep);
-                Debug.Log($"[{actor.Name}] {nextStep}로 이동 (목적지: {targetLocationKey})");
+                var movablePositions = thinkingActor.sensor.GetMovablePositions();
+
+                if (movablePositions.ContainsKey(nextStep))
+                {
+                    actor.Move(nextStep);
+                    Debug.Log($"[{actor.Name}] {nextStep}로 이동 (목적지: {targetLocationKey})");
+                }
+                else
+                {
+                    Debug.LogWarning($"[{actor.Name}] 이동할 수 없는 위치: {nextStep}");
+                }
             }
             else
             {
-                Debug.LogWarning($"[{actor.Name}] 이동할 수 없는 위치: {nextStep}");
+                Debug.LogWarning($"[{actor.Name}] sensor 기능을 사용할 수 없습니다.");
             }
         }
         else
@@ -530,37 +579,44 @@ public class ActionPerformer
             return null;
 
         // 1. 현재 위치의 상호작용 가능한 엔티티들에서 검색
-        var interactableEntities = actor.sensor.GetInteractableEntities();
-
-        // Actor 검색
-        if (interactableEntities.actors.ContainsKey(entityName))
+        if (actor is MainActor thinkingActor)
         {
-            return interactableEntities.actors[entityName];
+            var interactableEntities = thinkingActor.sensor.GetInteractableEntities();
+
+            // Actor 검색
+            if (interactableEntities.actors.ContainsKey(entityName))
+            {
+                return interactableEntities.actors[entityName];
+            }
+
+            // Item 검색
+            if (interactableEntities.items.ContainsKey(entityName))
+            {
+                return interactableEntities.items[entityName];
+            }
+
+            // Building 검색
+            if (interactableEntities.buildings.ContainsKey(entityName))
+            {
+                return interactableEntities.buildings[entityName];
+            }
+
+            // Prop 검색
+            if (interactableEntities.props.ContainsKey(entityName))
+            {
+                return interactableEntities.props[entityName];
+            }
+
+            // 2. 현재 위치의 모든 엔티티들에서 검색 (더 넓은 범위)
+            var lookableEntities = thinkingActor.sensor.GetLookableEntities();
+            if (lookableEntities.ContainsKey(entityName))
+            {
+                return lookableEntities[entityName];
+            }
         }
-
-        // Item 검색
-        if (interactableEntities.items.ContainsKey(entityName))
+        else
         {
-            return interactableEntities.items[entityName];
-        }
-
-        // Building 검색
-        if (interactableEntities.buildings.ContainsKey(entityName))
-        {
-            return interactableEntities.buildings[entityName];
-        }
-
-        // Prop 검색
-        if (interactableEntities.props.ContainsKey(entityName))
-        {
-            return interactableEntities.props[entityName];
-        }
-
-        // 2. 현재 위치의 모든 엔티티들에서 검색 (더 넓은 범위)
-        var lookableEntities = actor.sensor.GetLookableEntities();
-        if (lookableEntities.ContainsKey(entityName))
-        {
-            return lookableEntities[entityName];
+            Debug.LogWarning($"[{actor.Name}] sensor 기능을 사용할 수 없습니다.");
         }
 
         // 3. LocationService를 통한 검색 (전체 월드)
@@ -591,10 +647,17 @@ public class ActionPerformer
             return null;
 
         // 1. 현재 위치의 상호작용 가능한 Actor들에서 검색
-        var interactableEntities = actor.sensor.GetInteractableEntities();
-        if (interactableEntities.actors.ContainsKey(actorName))
+        if (actor is MainActor thinkingActor)
         {
-            return interactableEntities.actors[actorName];
+            var interactableEntities = thinkingActor.sensor.GetInteractableEntities();
+            if (interactableEntities.actors.ContainsKey(actorName))
+            {
+                return interactableEntities.actors[actorName];
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[{actor.Name}] sensor 기능을 사용할 수 없습니다.");
         }
 
         // 2. LocationService를 통한 검색
@@ -625,10 +688,17 @@ public class ActionPerformer
             return null;
 
         // 1. 현재 위치의 상호작용 가능한 Item들에서 검색
-        var interactableEntities = actor.sensor.GetInteractableEntities();
-        if (interactableEntities.items.ContainsKey(itemName))
+        if (actor is MainActor thinkingActor)
         {
-            return interactableEntities.items[itemName];
+            var interactableEntities = thinkingActor.sensor.GetInteractableEntities();
+            if (interactableEntities.items.ContainsKey(itemName))
+            {
+                return interactableEntities.items[itemName];
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[{actor.Name}] sensor 기능을 사용할 수 없습니다.");
         }
 
         // 2. LocationService를 통한 검색

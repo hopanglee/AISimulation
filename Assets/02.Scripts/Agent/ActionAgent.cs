@@ -167,14 +167,21 @@ public class ActionAgent : GPT
         Debug.Log("GetCurrentActivity called");
         try
         {
-            var currentActivity = actor.brain.GetCurrentActivity();
-            if (currentActivity != null)
+            if (actor is MainActor thinkingActor)
             {
-                return $"Current scheduled activity: {currentActivity.Description} ({currentActivity.StartTime}-{currentActivity.EndTime}) at {currentActivity.Location}";
+                var currentActivity = thinkingActor.brain.GetCurrentActivity();
+                if (currentActivity != null)
+                {
+                    return $"Current scheduled activity: {currentActivity.Description} ({currentActivity.StartTime}-{currentActivity.EndTime}) at {currentActivity.Location}";
+                }
+                else
+                {
+                    return "No scheduled activity for current time";
+                }
             }
             else
             {
-                return "No scheduled activity for current time";
+                return "Actor does not have brain functionality";
             }
         }
         catch (System.Exception e)
@@ -191,52 +198,59 @@ public class ActionAgent : GPT
         Debug.Log("GetFullDaySchedule called");
         try
         {
-            var hierarchicalPlan = actor.brain.GetCurrentDayPlan();
-            if (hierarchicalPlan != null)
+            if (actor is MainActor thinkingActor)
             {
-                var result = new System.Text.StringBuilder();
-                result.AppendLine($"Full Day Schedule for {actor.Name}:");
-                result.AppendLine($"Summary: {hierarchicalPlan.Summary}");
-                result.AppendLine($"Mood: {hierarchicalPlan.Mood}");
-                result.AppendLine($"Priority Goals: {string.Join(", ", hierarchicalPlan.PriorityGoals)}");
-                result.AppendLine();
-                
-                // High Level Tasks
-                result.AppendLine("High Level Tasks:");
-                foreach (var task in hierarchicalPlan.HighLevelTasks)
+                var hierarchicalPlan = thinkingActor.brain.GetCurrentDayPlan();
+                if (hierarchicalPlan != null)
                 {
-                    result.AppendLine($"- {task.StartTime}-{task.EndTime}: {task.TaskName} at {task.Location} (Priority: {task.Priority})");
-                    result.AppendLine($"  Description: {task.Description}");
-                    if (task.SubTasks.Count > 0)
+                    var result = new System.Text.StringBuilder();
+                    result.AppendLine($"Full Day Schedule for {actor.Name}:");
+                    result.AppendLine($"Summary: {hierarchicalPlan.Summary}");
+                    result.AppendLine($"Mood: {hierarchicalPlan.Mood}");
+                    result.AppendLine($"Priority Goals: {string.Join(", ", hierarchicalPlan.PriorityGoals)}");
+                    result.AppendLine();
+                    
+                    // High Level Tasks
+                    result.AppendLine("High Level Tasks:");
+                    foreach (var task in hierarchicalPlan.HighLevelTasks)
                     {
-                        result.AppendLine($"  Sub-tasks: {string.Join(", ", task.SubTasks)}");
+                        result.AppendLine($"- {task.StartTime}-{task.EndTime}: {task.TaskName} at {task.Location} (Priority: {task.Priority})");
+                        result.AppendLine($"  Description: {task.Description}");
+                        if (task.SubTasks.Count > 0)
+                        {
+                            result.AppendLine($"  Sub-tasks: {string.Join(", ", task.SubTasks)}");
+                        }
                     }
+                    result.AppendLine();
+                    
+                    // Detailed Activities
+                    result.AppendLine("Detailed Activities:");
+                    foreach (var activity in hierarchicalPlan.DetailedActivities)
+                    {
+                        result.AppendLine($"- {activity.StartTime}-{activity.EndTime}: {activity.ActivityName} at {activity.Location}");
+                        result.AppendLine($"  Description: {activity.Description}");
+                    }
+                    result.AppendLine();
+                    
+                    // Specific Actions
+                    result.AppendLine("Specific Actions:");
+                    foreach (var action in hierarchicalPlan.SpecificActions)
+                    {
+                        result.AppendLine($"- {action.StartTime} ({action.DurationMinutes}min): {action.ActionName}");
+                        result.AppendLine($"  Description: {action.Description}");
+                        result.AppendLine($"  Location: {action.Location}");
+                    }
+                    
+                    return result.ToString();
                 }
-                result.AppendLine();
-                
-                // Detailed Activities
-                result.AppendLine("Detailed Activities:");
-                foreach (var activity in hierarchicalPlan.DetailedActivities)
+                else
                 {
-                    result.AppendLine($"- {activity.StartTime}-{activity.EndTime}: {activity.ActivityName} at {activity.Location}");
-                    result.AppendLine($"  Description: {activity.Description}");
+                    return "No hierarchical day plan available";
                 }
-                result.AppendLine();
-                
-                // Specific Actions
-                result.AppendLine("Specific Actions:");
-                foreach (var action in hierarchicalPlan.SpecificActions)
-                {
-                    result.AppendLine($"- {action.StartTime} ({action.DurationMinutes}min): {action.ActionName}");
-                    result.AppendLine($"  Description: {action.Description}");
-                    result.AppendLine($"  Location: {action.Location}");
-                }
-                
-                return result.ToString();
             }
             else
             {
-                return "No hierarchical day plan available";
+                return "Actor does not have brain functionality";
             }
         }
         catch (System.Exception e)

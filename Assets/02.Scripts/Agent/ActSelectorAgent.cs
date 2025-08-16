@@ -134,37 +134,40 @@ namespace Agent
                 availableActions.Add(ActionType.PerformActivity);
                 
                 // 상황에 따른 제한 사항들
-                if (actor.IsSleeping)
+                if (actor is MainActor thinkingActor)
                 {
-                    availableActions.Clear();
-                    availableActions.Add(ActionType.Wait);
-                }
-                
-                // 이동 가능한 위치가 없으면 MoveToArea 제한
-                var movablePositions = actor.sensor.GetMovablePositions();
-                if (movablePositions.Count == 0)
-                {
-                    availableActions.Remove(ActionType.MoveToArea);
-                    availableActions.Remove(ActionType.MoveToEntity);
-                }
-                
-                // 상호작용 가능한 엔티티가 없으면 관련 액션 제한
-                var interactable = actor.sensor.GetInteractableEntities();
-                if (interactable.actors.Count == 0)
-                {
-                    availableActions.Remove(ActionType.SpeakToCharacter);
-                }
-                if (interactable.props.Count == 0 && interactable.items.Count == 0)
-                {
-                    availableActions.Remove(ActionType.UseObject);
-                    availableActions.Remove(ActionType.PickUpItem);
-                    availableActions.Remove(ActionType.InteractWithObject);
-                }
-                
-                if (interactable.actors.Count == 0)
-                {
-                    availableActions.Remove(ActionType.GiveMoney);
-                    availableActions.Remove(ActionType.GiveItem);
+                    if (thinkingActor.IsSleeping)
+                    {
+                        availableActions.Clear();
+                        availableActions.Add(ActionType.Wait);
+                    }
+                    
+                    // 이동 가능한 위치가 없으면 MoveToArea 제한
+                    var movablePositions = thinkingActor.sensor.GetMovablePositions();
+                    if (movablePositions.Count == 0)
+                    {
+                        availableActions.Remove(ActionType.MoveToArea);
+                        availableActions.Remove(ActionType.MoveToEntity);
+                    }
+                    
+                    // 상호작용 가능한 엔티티가 없으면 관련 액션 제한
+                    var interactable = thinkingActor.sensor.GetInteractableEntities();
+                    if (interactable.actors.Count == 0)
+                    {
+                        availableActions.Remove(ActionType.SpeakToCharacter);
+                    }
+                    if (interactable.props.Count == 0 && interactable.items.Count == 0)
+                    {
+                        availableActions.Remove(ActionType.UseObject);
+                        availableActions.Remove(ActionType.PickUpItem);
+                        availableActions.Remove(ActionType.InteractWithObject);
+                    }
+                    
+                    if (interactable.actors.Count == 0)
+                    {
+                        availableActions.Remove(ActionType.GiveMoney);
+                        availableActions.Remove(ActionType.GiveItem);
+                    }
                 }
                 
                 return availableActions;
