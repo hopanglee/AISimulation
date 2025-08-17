@@ -10,6 +10,7 @@ namespace Aoi
 {
     public class SceneScript : MonoBehaviour
     {
+#pragma warning disable CS0414  // 할당되지만 사용되지 않는다는 경고 억제
         private static void SetGuiColorAlpha(float alpha)
         {
             var color = GUI.color;
@@ -101,7 +102,9 @@ namespace Aoi
         private TextAsset txt;
 
         private bool CamModeRote = true;
+
         private bool CamModeMove = false;
+
         private bool CamModeZoom = false;
         private bool CamModeFix = true;
 
@@ -122,7 +125,7 @@ namespace Aoi
         private Vector3 oldMousePosition;
         private float popupWaitingTime = 2;
         private float popupWaitingTimeNow = 0;
-
+#pragma warning restore CS0414
         void Start()
         {
             functionList["particle"] = false;
@@ -1768,7 +1771,7 @@ namespace Aoi
             if (_obj == null)
                 return;
 
-            XmlNode xNode;
+            // XmlNode xNode;  // 사용되지 않는 변수 주석처리
             XmlNode xNodeTex;
             XmlNode xNodeAni;
             string t;

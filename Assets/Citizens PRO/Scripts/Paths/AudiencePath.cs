@@ -185,7 +185,7 @@ public class AudiencePath : WalkPath
                 Vector3 routePosition = GetRoutePosition(pointArray, finalRandomDistance, pCount, loopPath);
 
                 routePosition = new Vector3(routePosition.x, routePosition.y, routePosition.z);
-                Vector3 or;
+                // Vector3 or;  // 사용되지 않는 변수 주석처리
 
                 RaycastHit hit;
 

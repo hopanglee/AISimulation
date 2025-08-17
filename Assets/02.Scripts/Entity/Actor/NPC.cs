@@ -12,7 +12,8 @@ using Sirenix.OdinInspector;
 /// </summary>
 public enum NPCRole
 {
-    ConvenienceStoreClerk  // 편의점 직원
+    ConvenienceStoreClerk,  // 편의점 직원
+    HospitalDoctor         // 병원 의사
 }
 
 /// <summary>
@@ -22,6 +23,7 @@ public enum ActionCategory
 {
     Common,             // 공통 액션
     ConvenienceStore,   // 편의점 전용
+    Hospital,           // 병원 전용
     Restaurant,         // 레스토랑 전용 (미래 확장)
     Bank               // 은행 전용 (미래 확장)
 }
@@ -91,6 +93,8 @@ public abstract class NPC : Actor
     [Header("Time Service")]
     private ITimeService timeService; // 시간 정보를 위한 서비스
     
+
+    
     [Header("Debug Controls")]
     [FoldoutGroup("Manual Action Testing")]
     [ValueDropdown("GetAvailableActionNames")]
@@ -114,12 +118,13 @@ public abstract class NPC : Actor
     [SerializeField] private string debugEventDescription = "Test event from inspector";
     
     [FoldoutGroup("Manual Action Testing")]
-    [Button("Send Debug Event")]
+    [Button("Send Debug Event (with GPT)")]
     private void SendDebugEvent()
     {
-        if (Application.isPlaying)
+        if (Application.isPlaying && actionAgent != null)
         {
-            _ = ProcessEventWithAgent(debugEventDescription);
+            actionAgent.AddUserMessage(debugEventDescription);
+            _ = ProcessEventWithAgent();
         }
     }
     
@@ -133,6 +138,8 @@ public abstract class NPC : Actor
             Debug.Log($"[{Name}] AI Agent 메시지 기록 초기화됨");
         }
     }
+    
+
     
     // TODO: 이벤트 처리 시스템 재설계 예정
     
@@ -156,6 +163,7 @@ public abstract class NPC : Actor
         npcRole = this switch
         {
             ConvenienceStoreClerk => NPCRole.ConvenienceStoreClerk,
+            HospitalDoctor => NPCRole.HospitalDoctor,
             _ => throw new System.NotImplementedException($"NPCRole이 정의되지 않은 타입: {GetType().Name}")
         };
         
@@ -192,6 +200,9 @@ public abstract class NPC : Actor
         // Agent 생성 (NPCRole도 전달)
         actionAgent = new NPCActionAgent(category, actionsArray, npcRole);
         
+        // 커스텀 메시지 변환 함수 설정
+        actionAgent.CustomMessageConverter = CreateCustomMessageConverter();
+        
         Debug.Log($"[{Name}] AI Agent 초기화 완료 - 카테고리: {category}, 역할: {npcRole}");
     }
     
@@ -203,7 +214,44 @@ public abstract class NPC : Actor
         return npcRole switch
         {
             NPCRole.ConvenienceStoreClerk => ActionCategory.ConvenienceStore,
+            NPCRole.HospitalDoctor => ActionCategory.Hospital,
             _ => ActionCategory.Common
+        };
+    }
+    
+    /// <summary>
+    /// 액션을 자연스러운 메시지로 변환하는 커스텀 함수를 생성
+    /// 각 하위 클래스에서 역할에 맞게 오버라이드할 수 있습니다
+    /// </summary>
+    /// <returns>커스텀 메시지 변환 함수</returns>
+    protected virtual System.Func<NPCActionDecision, string> CreateCustomMessageConverter()
+    {
+        return decision =>
+        {
+            if (decision == null || string.IsNullOrEmpty(decision.actionType))
+                return "";
+                
+            string currentTime = GetFormattedCurrentTime();
+            
+            switch (decision.actionType.ToLower())
+            {
+                case "talk":
+                    if (decision.parameters != null && decision.parameters.Length >= 2)
+                    {
+                        string message = decision.parameters[1]?.ToString() ?? "";
+                        if (!string.IsNullOrEmpty(message))
+                        {
+                            return $"[{currentTime}] \"{message}\"";
+                        }
+                    }
+                    return $"[{currentTime}] 말을 한다";
+                    
+                case "wait":
+                    return $"[{currentTime}] 기다린다";
+                    
+                default:
+                    return $"[{currentTime}] {decision.actionType}을 한다";
+            }
         };
     }
     
@@ -356,7 +404,7 @@ public abstract class NPC : Actor
     /// <summary>
     /// 현재 시간을 포맷팅하여 반환
     /// </summary>
-    private string GetFormattedCurrentTime()
+    protected string GetFormattedCurrentTime()
     {
         if (timeService == null)
             return "[시간불명]";
@@ -402,9 +450,9 @@ public abstract class NPC : Actor
     
     /// <summary>
     /// AI Agent를 통해 이벤트에 대한 적절한 액션을 결정하고 실행
+    /// 호출 전에 actionAgent.AddUserMessage 또는 actionAgent.AddSystemMessage로 이벤트 정보를 추가해야 합니다
     /// </summary>
-    /// <param name="eventDescription">발생한 이벤트에 대한 설명</param>
-    public virtual async UniTask ProcessEventWithAgent(string eventDescription)
+    public virtual async UniTask ProcessEventWithAgent()
     {
         if (actionAgent == null)
         {
@@ -414,10 +462,10 @@ public abstract class NPC : Actor
         
         try
         {
-            Debug.Log($"[{Name}] AI Agent로 이벤트 처리 시작: {eventDescription}");
+            Debug.Log($"[{Name}] AI Agent로 이벤트 처리 시작");
             
             // Agent를 통해 액션 결정
-            NPCActionDecision decision = await actionAgent.DecideAction(eventDescription);
+            NPCActionDecision decision = await actionAgent.DecideAction();
             
             // 결정된 액션을 실제 INPCAction으로 변환
             INPCAction action = actionAgent.GetActionFromDecision(decision);
@@ -426,7 +474,7 @@ public abstract class NPC : Actor
             object[] parameters = decision.GetParameters();
             
             // 우선순위에 따라 즉시 실행하거나 대기열에 추가
-            await ProcessActionWithPriority(action, parameters, eventDescription);
+            await ProcessActionWithPriority(action, parameters);
             
             Debug.Log($"[{Name}] AI Agent 이벤트 처리 완료 - 선택된 액션: {action.ActionName}");
         }
@@ -442,7 +490,7 @@ public abstract class NPC : Actor
     /// <summary>
     /// 액션의 우선순위를 판단하여 즉시 실행하거나 대기열에 추가
     /// </summary>
-    private async UniTask ProcessActionWithPriority(INPCAction newAction, object[] parameters, string eventDescription)
+    private async UniTask ProcessActionWithPriority(INPCAction newAction, object[] parameters)
     {
         if (!isExecutingAction || currentAction == null)
         {
@@ -452,7 +500,7 @@ public abstract class NPC : Actor
         else
         {
             // 우선순위 판단 (간단한 규칙 기반)
-            bool shouldInterrupt = ShouldInterruptCurrentAction(newAction, currentAction, eventDescription);
+            bool shouldInterrupt = ShouldInterruptCurrentAction(newAction, currentAction);
             
             if (shouldInterrupt)
             {
@@ -477,7 +525,7 @@ public abstract class NPC : Actor
     /// <summary>
     /// 현재 액션을 중단해야 하는지 판단
     /// </summary>
-    private bool ShouldInterruptCurrentAction(INPCAction newAction, INPCAction currentAction, string eventDescription)
+    private bool ShouldInterruptCurrentAction(INPCAction newAction, INPCAction currentAction)
     {
         // 간단한 우선순위 규칙
         
@@ -534,20 +582,39 @@ public abstract class NPC : Actor
     }
     
     /// <summary>
+    /// 돈을 받았을 때의 반응 처리 (AI Agent 사용)
+    /// </summary>
+    protected override void OnMoneyReceived(Actor from, int amount)
+    {
+        base.OnMoneyReceived(from, amount);
+        
+        // AI Agent를 통해 돈을 받았을 때의 반응 처리
+        _ = ProcessMoneyReceivedEventWithAgent(from, amount);
+    }
+    
+    /// <summary>
     /// Hear 이벤트를 AI Agent를 통해 처리
     /// </summary>
     private async UniTask ProcessHearEventWithAgent(Actor from, string text)
     {
         try
         {
+            // GPT 사용이 비활성화된 경우 처리 안함
+            if (!UseGPT)
+            {
+                Debug.Log($"[{Name}] GPT 비활성화됨 - Hear 이벤트 무시: [{from.Name}] {text}");
+                return;
+            }
+            
             // 시간 정보 포함한 사용자 메시지 형식: "[시간] [발신자이름] : 대화내용"
             string currentTime = GetFormattedCurrentTime();
             string userMessage = $"{currentTime} [{from.Name}] : {text}";
             
             Debug.Log($"[{Name}] AI Agent로 Hear 이벤트 처리 시작: {userMessage}");
             
-            // ProcessEventWithAgent 호출
-            await ProcessEventWithAgent(userMessage);
+            // AI Agent에 사용자 메시지 추가 후 처리
+            actionAgent.AddUserMessage(userMessage);
+            await ProcessEventWithAgent();
         }
         catch (Exception ex)
         {
@@ -565,18 +632,59 @@ public abstract class NPC : Actor
     {
         try
         {
+            // GPT 사용이 비활성화된 경우 처리 안함
+            if (!UseGPT)
+            {
+                Debug.Log($"[{Name}] GPT 비활성화됨 - Receive 이벤트 무시: [{from.Name}] gave {item.Name}");
+                return;
+            }
+            
             // 시간 정보 포함한 시스템 메시지 형식: "[시간] SYSTEM: [발신자이름] gave you [아이템이름]"
             string currentTime = GetFormattedCurrentTime();
-            string systemMessage = $"{currentTime} SYSTEM: {from.Name} gave you {item.Name}";
+            string systemMessage = $"[{currentTime}] SYSTEM: {from.Name} gave you {item.Name}";
             
             Debug.Log($"[{Name}] AI Agent로 Receive 이벤트 처리 시작: {systemMessage}");
             
-            // ProcessEventWithAgent 호출
-            await ProcessEventWithAgent(systemMessage);
+            // AI Agent에 시스템 메시지 추가 후 처리
+            actionAgent.AddSystemMessage(systemMessage);
+            await ProcessEventWithAgent();
         }
         catch (Exception ex)
         {
             Debug.LogError($"[{Name}] Receive 이벤트 처리 실패: {ex.Message}");
+            
+            // 실패 시 기본 응답
+            await ExecuteAction(NPCAction.Talk, from.Name, "감사합니다.");
+        }
+    }
+    
+    /// <summary>
+    /// Money Received 이벤트를 AI Agent를 통해 처리
+    /// </summary>
+    private async UniTask ProcessMoneyReceivedEventWithAgent(Actor from, int amount)
+    {
+        try
+        {
+            // GPT 사용이 비활성화된 경우 처리 안함
+            if (!UseGPT)
+            {
+                Debug.Log($"[{Name}] GPT 비활성화됨 - Money Received 이벤트 무시: [{from.Name}] gave {amount}원");
+                return;
+            }
+            
+            // 시간 정보 포함한 시스템 메시지 형식: "[시간] SYSTEM: [발신자이름] gave you [금액]원"
+            string currentTime = GetFormattedCurrentTime();
+            string systemMessage = $"{currentTime} SYSTEM: {from.Name} gave you {amount}원 (총 보유: {Money}원)";
+            
+            Debug.Log($"[{Name}] AI Agent로 Money Received 이벤트 처리 시작: {systemMessage}");
+            
+            // AI Agent에 시스템 메시지 추가 후 처리
+            actionAgent.AddSystemMessage(systemMessage);
+            await ProcessEventWithAgent();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[{Name}] Money Received 이벤트 처리 실패: {ex.Message}");
             
             // 실패 시 기본 응답
             await ExecuteAction(NPCAction.Talk, from.Name, "감사합니다.");

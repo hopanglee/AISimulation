@@ -45,7 +45,7 @@ public class MenuEditor : MonoBehaviour
 
     private static PopulationSystemManager GetPopulationSystemManager()
     {
-        if (FindObjectOfType<PopulationSystemManager>() == null)
+        if (FindFirstObjectByType<PopulationSystemManager>() == null)
         {
             string[] managerPrefabs = AssetDatabase.FindAssets("Population System t:Prefab");
             if (managerPrefabs.Length > 0)
@@ -55,6 +55,6 @@ public class MenuEditor : MonoBehaviour
             }
         }
 
-        return FindObjectOfType<PopulationSystemManager>();
+        return FindFirstObjectByType<PopulationSystemManager>();
     }
 }

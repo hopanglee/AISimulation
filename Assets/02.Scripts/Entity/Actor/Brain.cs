@@ -40,6 +40,11 @@ public class Brain
     private DayPlanner dayPlanner;
     private Thinker thinker;
     private ActionPerformer actionPerformer;
+    
+    /// <summary>
+    /// Thinker 컴포넌트에 대한 외부 접근을 위한 프로퍼티
+    /// </summary>
+    public Thinker Thinker => thinker;
 
     public Brain(Actor actor)
     {
@@ -105,6 +110,27 @@ public class Brain
     {
         try
         {
+            // GPT 사용이 비활성화된 경우 기본 Wait 액션 반환
+            if (!actor.UseGPT)
+            {
+                Debug.Log($"[{actor.Name}] GPT 비활성화됨 - Think 프로세스 건너뜀, Wait 액션 반환");
+                
+                // 기본 Wait 액션 결과 생성
+                var defaultSelection = new ActSelectorAgent.ActSelectionResult 
+                { 
+                    ActType = ActionType.Wait,
+                    Reasoning = "GPT 비활성화로 인한 기본 대기",
+                    Intention = "수동 제어 모드에서 대기"
+                };
+                var defaultParamResult = new ActParameterResult
+                {
+                    ActType = ActionType.Wait,
+                    Parameters = new Dictionary<string, object>()
+                };
+                
+                return (defaultSelection, defaultParamResult);
+            }
+            
             // 상황 설명 생성
             var situationDescription = GenerateSituationDescription();
             

@@ -45,11 +45,11 @@ namespace Taichi
 
         public string facialMatName = "f01_face_00";
 
-        private bool guiShowFlg = false;
+        //private bool guiShowFlg = false;
         private const string viewerResourcesPath = "Taichi";
         private string viewerSettingPath = viewerResourcesPath + "/Viewer Settings";
-        private string viewerMaterialPath = viewerResourcesPath + "/Viewer Materials";
-        private string viewerBackGroundPath = viewerResourcesPath + "/Viewer BackGrounds";
+        //private string viewerMaterialPath = viewerResourcesPath + "/Viewer Materials";
+        //private string viewerBackGroundPath = viewerResourcesPath + "/Viewer BackGrounds";
         private string texturePath = viewerResourcesPath + "/Textures";
 
         private Dictionary<string, bool> functionList = new Dictionary<string, bool>();
@@ -88,16 +88,16 @@ namespace Taichi
         private string[] modeTextList = { "AddPerticle", "Original" };
 
         private GameObject obj;
-        private GameObject loaded;
+        //private GameObject loaded;
         private SkinnedMeshRenderer SM;
         private SkinnedMeshRenderer faceSM;
         private string faceObjName;
 
         private TextAsset txt;
 
-        private bool CamModeRote = true;
-        private bool CamModeMove = false;
-        private bool CamModeZoom = false;
+        //private bool CamModeRote = true;
+        //private bool CamModeMove = false;
+        //private bool CamModeZoom = false;
         private bool CamModeFix = true;
 
         private int CamMode = 0;
@@ -108,9 +108,9 @@ namespace Taichi
         private Material faceMat_L;
         private Material faceMat_M;
 
-        private GameObject BGObject;
-        private GameObject BGEff;
-        private GameObject BGPlane;
+        //private GameObject BGObject;
+        //private GameObject BGEff;
+        //private GameObject BGPlane;
         private GameObject planeObj;
 
         //Popup
@@ -1599,7 +1599,7 @@ namespace Taichi
             if (_obj == null)
                 return;
 
-            XmlNode xNode;
+            //XmlNode xNode;
             XmlNode xNodeTex;
             XmlNode xNodeAni;
             string t;

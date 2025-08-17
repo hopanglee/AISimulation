@@ -37,6 +37,13 @@ public class Thinker
     /// </summary>
     public async UniTask StartThinkAndActLoop()
     {
+        // GPT 사용이 비활성화된 경우 Think/Act 루프를 시작하지 않음
+        if (!actor.UseGPT)
+        {
+            Debug.Log($"[{actor.Name}] GPT 비활성화됨 - Think/Act 루프 시작 안함");
+            return;
+        }
+        
         // 기존 루프 취소
         thinkActCts?.Cancel();
         thinkActCts = new CancellationTokenSource();
@@ -48,6 +55,13 @@ public class Thinker
         {
             while (!token.IsCancellationRequested)
             {
+                // GPT 사용 상태 재확인 (런타임에서 토글될 수 있음)
+                if (!actor.UseGPT)
+                {
+                    Debug.Log($"[{actor.Name}] 런타임에서 GPT 비활성화됨 - Think/Act 루프 중단");
+                    break;
+                }
+                
                 // 1. Think - 행동 선택
                 var (selection, paramResult) = await brain.Think();
                 token.ThrowIfCancellationRequested();

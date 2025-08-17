@@ -8,6 +8,7 @@ using UnityEngine;
 
 public class TwinSceneScript : MonoBehaviour
 {
+    #pragma warning disable CS0414  // 할당되지만 사용되지 않는다는 경고 억제
     private static void SetGuiColorAlpha(float alpha)
     {
         var color = GUI.color;
@@ -36,14 +37,14 @@ public class TwinSceneScript : MonoBehaviour
     private string FBXListFile = "fbx_list";
     private string AnimationListFile = "animation_list";
     private string AnimationListFileAll = "animation_list_all";
-    private string FbxCtrlFile = "fbx_ctrl";
+    //private string FbxCtrlFile = "fbx_ctrl";
 
-    private string ParticleListFile = "ParticleList";
-    private string ParticleAnimationListFile = "ParticleAnimationList";
+    //private string ParticleListFile = "ParticleList";
+    //private string ParticleAnimationListFile = "ParticleAnimationList";
     private string FacialTexListFile = "facial_texture_list";
     private string facialMatName = "chr01_F03_face";
 
-    private float curParticle = 1;
+    //private float curParticle = 1;
 
     private Vector3 oldMousePosition;
     private float popupWaitingTime = 2;
@@ -52,7 +53,7 @@ public class TwinSceneScript : MonoBehaviour
     //string TitleTextFile = "TitleText";
     private bool guiOn = true;
     private float initPosX = 0.3f;
-    private bool autoResourceMode = true;
+    //private bool autoResourceMode = true;
 
     private string settingFileDir = "Taichi/TwinViewer Settings/";
 
@@ -65,7 +66,9 @@ public class TwinSceneScript : MonoBehaviour
     private bool animReplay = true;
     private bool playOnceFlg = true;
 
+    #pragma warning disable CS0414  // 할당되지만 사용되지 않는다는 경고 억제
     private string resourcesPathFull = "Assets/Taichi Character Pack/Resources/Taichi";
+    #pragma warning restore CS0414
     private string resourcesPath = "";
 
     private float animSpeed = 1;
@@ -76,41 +79,41 @@ public class TwinSceneScript : MonoBehaviour
     private string curAnimName = "";
     private string curBgName = "";
     private string curFacialName = "";
-    private string curParticleName = "";
+    //private string curParticleName = "";
 
     private string curCharacterName = "";
 
     private int facialCount = 0;
-    private float positionY = 0;
+    //private float positionY = 0;
     private string animationPath;
 
     private string[] animationList;
     private string[] animationListAll;
-    private string[] animationNameList;
+    //private string[] animationNameList;
     private string[] modelList;
-    private string[] modelNameList;
+    //private string[] modelNameList;
     private string[] facialTexList;
-    private string[] particleAnimationList;
-    private string[] particleList;
+    //private string[] particleAnimationList;
+    //private string[] particleList;
 
     private float animSpeedSet;
     private string[] backGroundList;
     private string[] stageTexList;
     private string[] lodList = { "_h", "_m", "_l" };
     private string[] lodTextList = { "Hi", "Mid", "Low" };
-    private string[] modeTextList = { "AddPerticle", "Original" };
+    //private string[] modeTextList = { "AddPerticle", "Original" };
 
     private GameObject obj;
-    private GameObject loaded;
+    //private GameObject loaded;
     private SkinnedMeshRenderer SM;
     private SkinnedMeshRenderer faceSM;
     private string faceObjName;
 
     private TextAsset txt;
 
-    private bool CamModeRote = true;
-    private bool CamModeMove = false;
-    private bool CamModeZoom = false;
+    //private bool CamModeRote = true;
+    //private bool CamModeMove = false;
+    //private bool CamModeZoom = false;
     private bool CamModeFix = true;
     private int CamMode = 0;
 
@@ -119,17 +122,21 @@ public class TwinSceneScript : MonoBehaviour
     private XmlNodeList xNodeList;
 
     private float nowTime = 0;
+    #pragma warning disable CS0414  // 할당되지만 사용되지 않는다는 경고 억제
     private bool playFlg = true;
+    #pragma warning restore CS0414
 
     private Material faceMat_L;
     private Material faceMat_M;
 
-    private GameObject BGObject;
-    private GameObject BGEff;
-    private GameObject BGPlane;
+    //private GameObject BGObject;
+    //private GameObject BGEff;
+    //private GameObject BGPlane;
 
     private Dictionary<string, bool> functionList = new Dictionary<string, bool>();
     private GameObject planeObj;
+
+#pragma warning restore CS0414
 
     void Start()
     {
@@ -483,8 +490,8 @@ public class TwinSceneScript : MonoBehaviour
 
         float minX;
         float maxX;
-        float minY;
-        float maxY;
+        // float minY;  // 사용되지 않는 변수 주석처리
+        //float maxY;
 
         minX = 10;
         maxX = 270;
@@ -1035,8 +1042,8 @@ public class TwinSceneScript : MonoBehaviour
     }
     void SetSettings(int _i)
     {
-        string fbxSetting;
-        string animSetting;
+        //string fbxSetting;
+        // string animSetting;  // 사용되지 않는 변수 주석처리
         string fbxCtrlSetting = string.Empty;
         curAnim = 0;
         curModel = 0;
@@ -1779,7 +1786,7 @@ public class TwinSceneScript : MonoBehaviour
         if (_obj == null) return;
 
 
-        XmlNode xNode;
+        //XmlNode xNode;
         XmlNode xNodeTex;
         XmlNode xNodeAni;
         string t;

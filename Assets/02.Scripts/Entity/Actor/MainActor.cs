@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using Agent;
 using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -14,8 +17,7 @@ public abstract class MainActor : Actor
 	public Brain brain;
 	public Sensor sensor;
 	
-	[Header("Financial & Items")]
-	public int Money;
+	[Header("Items")]
 	public iPhone iPhone;
 	
 	[Header("Sleep System")]
@@ -63,6 +65,44 @@ public abstract class MainActor : Actor
 	
 	[Header("Event History")]
 	[SerializeField] private List<string> _eventHistory = new();
+	
+	[Header("Manual Think Act Control")]
+	[FoldoutGroup("Manual Think Act Control")]
+	[ValueDropdown("GetAvailableActionTypes")]
+	[SerializeField] private ActionType debugActionType = ActionType.Wait;
+	
+	[FoldoutGroup("Manual Think Act Control")]
+	[SerializeField] private string[] debugActionParameters = new string[0];
+	
+	[FoldoutGroup("Manual Think Act Control")]
+	[Button("Execute Manual Action")]
+	private void ExecuteManualAction()
+	{
+		if (Application.isPlaying)
+		{
+			_ = ExecuteManualActionAsync();
+		}
+	}
+	
+	[FoldoutGroup("Manual Think Act Control")]
+	[Button("Start Think/Act Loop")]
+	private void StartThinkActLoop()
+	{
+		if (Application.isPlaying && brain != null)
+		{
+			brain.StartDayPlanAndThink();
+		}
+	}
+	
+	[FoldoutGroup("Manual Think Act Control")]
+	[Button("Stop Think/Act Loop")]
+	private void StopThinkActLoop()
+	{
+		if (Application.isPlaying && brain?.Thinker != null)
+		{
+			brain.Thinker.StopThinkAndActLoop();
+		}
+	}
 	
 	private ITimeService timeService;
 
@@ -285,21 +325,7 @@ public abstract class MainActor : Actor
 	}
 	#endregion
 
-	#region Financial System
-	public void GiveMoney(Actor target, int amount)
-	{
-		if (Money >= amount)
-		{
-			Money -= amount;
-			if (target is MainActor thinkingTarget)
-			{
-				thinkingTarget.Money += amount;
-			}
-			return;
-		}
-		Debug.LogError("GiveMoney Error > Can't give money. over amount");
-	}
-	#endregion
+
 
 	#region Brain & Planning
 	/// <summary>
@@ -362,6 +388,56 @@ public abstract class MainActor : Actor
 		}
 	}
 
+	#region Manual Think/Act Debug Methods
+	
+	/// <summary>
+	/// Odin Inspector의 ValueDropdown을 위한 사용 가능한 액션 타입 목록
+	/// </summary>
+	private IEnumerable<ActionType> GetAvailableActionTypes()
+	{
+		return System.Enum.GetValues(typeof(ActionType)).Cast<ActionType>();
+	}
+	
+	/// <summary>
+	/// 수동 액션을 비동기로 실행
+	/// </summary>
+	private async UniTask ExecuteManualActionAsync()
+	{
+		try
+		{
+			if (brain == null)
+			{
+				Debug.LogError($"[{Name}] Brain이 초기화되지 않음");
+				return;
+			}
+			
+			// string 배열을 Dictionary로 변환 (간단한 매개변수 처리)
+			var parameters = new Dictionary<string, object>();
+			for (int i = 0; i < debugActionParameters.Length; i++)
+			{
+				parameters[$"param{i}"] = debugActionParameters[i];
+			}
+			
+			// ActParameterResult 생성
+			var paramResult = new ActParameterResult
+			{
+				ActType = debugActionType,
+				Parameters = parameters
+			};
+			
+			Debug.Log($"[{Name}] 수동 액션 실행: {debugActionType} with parameters: [{string.Join(", ", debugActionParameters)}]");
+			
+			// Brain을 통해 액션 실행
+			await brain.Act(paramResult, System.Threading.CancellationToken.None);
+		}
+		catch (Exception ex)
+		{
+			Debug.LogError($"[{Name}] 수동 액션 실행 실패: {ex.Message}");
+		}
+	}
+	
+	#endregion
+	
 	#region Odin Inspector Buttons
 	[Button("Update Lookable Entities")]
 	private void Odin_UpdateLookableEntity()

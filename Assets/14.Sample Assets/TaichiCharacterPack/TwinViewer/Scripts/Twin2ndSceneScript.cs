@@ -8,6 +8,7 @@ using UnityEngine;
 
 public class Twin2ndSceneScript : MonoBehaviour
 {
+    #pragma warning disable CS0414  // 할당되지만 사용되지 않는다는 경고 억제
     private static void SetGuiColorAlpha(float alpha)
     {
         var color = GUI.color;
@@ -118,7 +119,7 @@ public class Twin2ndSceneScript : MonoBehaviour
 
     private Dictionary<string, bool> functionList = new Dictionary<string, bool>();
     private GameObject planeObj;
-
+#pragma warning restore CS0414
     void Start()
     {
         viewCam = GameObject.Find("Main Camera").GetComponent<TwinViewScript>();
@@ -559,8 +560,8 @@ public class Twin2ndSceneScript : MonoBehaviour
 
     public void SetSettings(int _i)
     {
-        string fbxSetting;
-        string animSetting;
+        // string fbxSetting;  // 사용되지 않는 변수 주석처리
+        //string animSetting;  // 사용되지 않는 변수 주석처리       
         string fbxCtrlSetting = string.Empty;
         curAnim = 0;
         curModel = 0;
@@ -1255,6 +1256,8 @@ public class Twin2ndSceneScript : MonoBehaviour
     void SetBackGround(string _name)
     {
         return;
+        // 아래 코드는 도달할 수 없는 코드로 주석처리됨
+        /*
         if (!string.IsNullOrEmpty(_name))
         {
             //print("SetBackGround : "+_name);
@@ -1282,6 +1285,7 @@ public class Twin2ndSceneScript : MonoBehaviour
 
 
         }
+        */
     }
 
     Transform GetBone(GameObject _obj, string _bone)
@@ -1306,7 +1310,7 @@ public class Twin2ndSceneScript : MonoBehaviour
         if (_obj == null) return;
 
 
-        XmlNode xNode;
+        //XmlNode xNode;
         XmlNode xNodeTex;
         XmlNode xNodeAni;
         string t;
