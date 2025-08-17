@@ -1171,6 +1171,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3730750801000093001, guid: 8393f8062b36a5a46a709d590fd77b81, type: 3}
+      propertyPath: useGPT
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3730750801000093001, guid: 8393f8062b36a5a46a709d590fd77b81, type: 3}
+      propertyPath: debugActionType
+      value: Talk
+      objectReference: {fileID: 0}
     - target: {fileID: 5840542795325484742, guid: 8393f8062b36a5a46a709d590fd77b81, type: 3}
       propertyPath: m_SizeDelta.x
       value: 0

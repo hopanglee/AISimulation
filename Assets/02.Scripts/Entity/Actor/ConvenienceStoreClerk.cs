@@ -66,9 +66,91 @@ public class ConvenienceStoreClerk : NPC
     /// </summary>
     protected virtual async Task HandlePayment(object[] parameters)
     {
-        ShowSpeech("결제를 도와드리겠습니다.");
-        await Task.Delay(1500);
+        try
+        {
+            string customerName = "고객";
+            string amount = "금액";
+            
+            // 매개변수가 있으면 사용
+            if (parameters != null && parameters.Length > 0)
+            {
+                if (parameters.Length >= 1 && !string.IsNullOrEmpty(parameters[0]?.ToString()))
+                    customerName = parameters[0].ToString();
+                    
+                if (parameters.Length >= 2 && !string.IsNullOrEmpty(parameters[1]?.ToString()))
+                    amount = parameters[1].ToString();
+            }
+            
+            Debug.Log($"[{Name}] 결제 처리 시작 - 고객: {customerName}, 금액: {amount}원");
+            
+            ShowSpeech($"{amount}원 결제를 도와드리겠습니다.");
+            
+            // 결제 처리 시뮬레이션
+            await Task.Delay(1500);
+            
+            string paymentReport = $"편의점 직원 {Name}이 {customerName}로부터 {amount}원 결제를 처리했습니다";
+            Debug.Log($"[{Name}] 결제 완료: {paymentReport}");
+            
+            ShowSpeech("결제가 완료되었습니다. 감사합니다!");
+            
+            // AI Agent에 결제 완료 메시지 추가
+            if (actionAgent != null)
+            {
+                string currentTime = GetFormattedCurrentTime();
+                string systemMessage = $"[{currentTime}] [SYSTEM] 결제 완료";
+                actionAgent.AddSystemMessage(systemMessage);
+                Debug.Log($"[{Name}] AI Agent에 결제 완료 메시지 추가: {systemMessage}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[{Name}] 결제 처리 중 오류 발생: {ex.Message}");
+        }
     }
     
     #endregion
+    
+    /// <summary>
+    /// 편의점 직원 전용 커스텀 메시지 변환 함수
+    /// </summary>
+    protected override System.Func<NPCActionDecision, string> CreateCustomMessageConverter()
+    {
+        return decision =>
+        {
+            if (decision == null || string.IsNullOrEmpty(decision.actionType))
+                return "";
+                
+            string currentTime = GetFormattedCurrentTime();
+            
+            switch (decision.actionType.ToLower())
+            {
+                case "talk":
+                    if (decision.parameters != null && decision.parameters.Length >= 2)
+                    {
+                        string message = decision.parameters[1]?.ToString() ?? "";
+                        if (!string.IsNullOrEmpty(message))
+                        {
+                            return $"{currentTime} \"{message}\"";
+                        }
+                    }
+                    return $"{currentTime} 말을 한다";
+                    
+                case "wait":
+                    return $"{currentTime} 기다린다";
+                    
+                case "payment":
+                    if (decision.parameters != null && decision.parameters.Length >= 1)
+                    {
+                        string customerName = decision.parameters.Length >= 1 ? decision.parameters[0]?.ToString() ?? "고객" : "고객";
+                        string amount = decision.parameters.Length >= 2 ? decision.parameters[1]?.ToString() ?? "금액" : "금액";
+                        
+                        return $"{currentTime} 편의점 직원 {Name}이 {customerName}로부터 {amount}원 결제를 처리한다";
+                    }
+                    return $"{currentTime} 결제를 처리한다";
+                    
+                default:
+                    return $"{currentTime} {decision.actionType}을 한다";
+            }
+        };
+    }
 }

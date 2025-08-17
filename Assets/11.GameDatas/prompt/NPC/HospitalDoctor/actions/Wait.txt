@@ -1,0 +1,4 @@
+**Wait**: Do nothing for a period and observe the surroundings.
+- Use when: There are no patients to attend to, or waiting for medical equipment.
+- Parameters: null
+- Example: null

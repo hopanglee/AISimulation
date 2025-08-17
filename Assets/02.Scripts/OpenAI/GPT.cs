@@ -63,10 +63,10 @@ public class GPT
     /// <summary>
     /// 대화 로그를 파일로 저장
     /// </summary>
-    private async UniTask SaveConversationLogAsync(List<ChatMessage> messages, string responseText, string agentType = "GPT")
+    private UniTask SaveConversationLogAsync(List<ChatMessage> messages, string responseText, string agentType = "GPT")
     {
         if (!enableLogging)
-            return;
+            return UniTask.CompletedTask;
 
         try
         {
@@ -166,6 +166,8 @@ public class GPT
         {
             Debug.LogError($"[GPT] Error saving conversation log: {ex.Message}");
         }
+        
+        return UniTask.CompletedTask;
     }
 
     /// <summary>
