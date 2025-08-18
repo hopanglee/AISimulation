@@ -325,7 +325,7 @@ public class ActionPerformer
                 Debug.LogWarning($"[{actor.Name}] sensor 기능을 사용할 수 없습니다.");
             }
         }
-        await Task.Delay(2000); // 임시 2초 딜레이
+        await SimDelay.DelaySimMinutes(2);
     }
 
     /// <summary>
@@ -355,7 +355,7 @@ public class ActionPerformer
                 Debug.LogWarning($"[{actor.Name}] sensor 기능을 사용할 수 없습니다.");
             }
         }
-        await Task.Delay(5000); // 임시 5초 딜레이
+        await SimDelay.DelaySimMinutes(5);
     }
 
     /// <summary>
@@ -384,7 +384,7 @@ public class ActionPerformer
                 Debug.LogWarning($"[{actor.Name}] 아이템을 찾을 수 없음: {itemName}");
             }
         }
-        await Task.Delay(3000); // 임시 3초 딜레이
+        await SimDelay.DelaySimMinutes(3);
     }
 
     /// <summary>
@@ -414,7 +414,7 @@ public class ActionPerformer
                 Debug.LogWarning($"[{actor.Name}] sensor 기능을 사용할 수 없습니다.");
             }
         }
-        await Task.Delay(5000); // 임시 5초 딜레이
+        await SimDelay.DelaySimMinutes(5);
     }
 
     /// <summary>
@@ -456,7 +456,7 @@ public class ActionPerformer
         {
             Debug.LogWarning($"[{actor.Name}] 돈 주기 파라미터가 올바르지 않음");
         }
-        await Task.Delay(5000); // 임시 5초 딜레이
+        await SimDelay.DelaySimMinutes(5);
     }
 
     /// <summary>
@@ -471,7 +471,7 @@ public class ActionPerformer
             if (actor.HandItem == null)
             {
                 Debug.LogWarning($"[{actor.Name}] 손에 아이템이 없습니다.");
-                await Task.Delay(1000);
+                await SimDelay.DelaySimMinutes(1);
                 return;
             }
 
@@ -490,7 +490,7 @@ public class ActionPerformer
         {
             Debug.LogWarning($"[{actor.Name}] 아이템 주기 파라미터가 올바르지 않음");
         }
-        await Task.Delay(2000); // 임시 2초 딜레이
+        await SimDelay.DelaySimMinutes(2);
     }
 
     
@@ -501,7 +501,7 @@ public class ActionPerformer
     private async Task HandleWait(Dictionary<string, object> parameters, CancellationToken token = default)
     {
         Debug.Log($"[{actor.Name}] 대기 중...");
-        await Task.Delay(10000); // 임시 10초 딜레이
+        await SimDelay.DelaySimMinutes(10);
     }
 
     /// <summary>
@@ -528,7 +528,7 @@ public class ActionPerformer
             delay = (int)durationObj;
         }
 
-        await Task.Delay(delay, token);
+        await SimDelay.DelaySimMinutes(delay, token);
     }
 
     // === Helper Methods ===

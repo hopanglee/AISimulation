@@ -221,6 +221,31 @@ public struct GameTime
 
         return new GameTime(year, month, day, hour, minute);
     }
+    
+    /// <summary>
+    /// 요일을 계산합니다 (Zeller의 공식 사용)
+    /// </summary>
+    public DayOfWeek GetDayOfWeek()
+    {
+        int y = year;
+        int m = month;
+        int d = day;
+        
+        // 1월과 2월은 전년도의 13월, 14월로 계산
+        if (m == 1 || m == 2)
+        {
+            m += 12;
+            y--;
+        }
+        
+        int k = y % 100;
+        int j = y / 100;
+        
+        int h = (d + (13 * (m + 1)) / 5 + k + k / 4 + j / 4 - 2 * j) % 7;
+        
+        // Zeller 공식의 결과를 DayOfWeek enum으로 변환
+        return (DayOfWeek)((h + 5) % 7);
+    }
 }
 
 public class TimeManager : ITimeService

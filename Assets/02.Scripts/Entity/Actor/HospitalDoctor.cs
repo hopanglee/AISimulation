@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using Cysharp.Threading.Tasks;
 
 /// <summary>
 /// 병원 의사 NPC 클래스
@@ -46,18 +47,6 @@ public class HospitalDoctor : NPC
         return "";
     }
 
-    protected override void InitializeActionHandlers()
-    {
-        // 기본 액션 등록 (Wait, Talk)
-        RegisterActionHandler(NPCAction.Wait, HandleWait);
-        RegisterActionHandler(NPCAction.Talk, HandleTalk);
-        // 의사 전용 액션 등록
-        RegisterActionHandler(DoctorAction.Examine, HandleExamine);
-        
-        Debug.Log($"[{Name}] 병원 의사 액션 핸들러 초기화 완료");
-        Debug.Log($"[{Name}] 사용 가능한 액션: {string.Join(", ", availableActions)}");
-    }
-
     /// <summary>
     /// 진찰 액션 처리
     /// </summary>
@@ -82,7 +71,7 @@ public class HospitalDoctor : NPC
             Debug.Log($"[{Name}] 진찰 시작 - 대상: {patientName}");
             
             // 진찰 실행 (시뮬레이션)
-            await Task.Delay(2000); // 2초간 진찰 시뮬레이션
+            await SimDelay.DelaySimMinutes(2);
             
             string examineReport = $"의사 {Name}가 {patientName}에게 {examineContent}";
             Debug.Log($"[{Name}] 진찰 완료: {examineReport}");
@@ -102,6 +91,70 @@ public class HospitalDoctor : NPC
             Debug.LogError($"[{Name}] 진찰 처리 중 오류 발생: {ex.Message}");
         }
     }
+
+    /// <summary>
+    /// NPCActionDecision을 기반으로 진찰 액션 처리 (target_key 활용)
+    /// </summary>
+    /// <param name="decision">액션 결정</param>
+    protected async Task HandleExamineWithDecision(NPCActionDecision decision)
+    {
+        try
+        {
+            string patientName = "환자";
+            string examineContent = "일반 건강 검진을 실시했습니다";
+            
+            // target_key가 있으면 해당 Actor를 환자로 설정
+            Actor patientActor = null;
+            if (!string.IsNullOrEmpty(decision.target_key))
+            {
+                patientActor = FindActorByName(decision.target_key);
+                if (patientActor != null)
+                {
+                    patientName = patientActor.Name;
+                }
+            }
+            
+            // parameters에서 진찰 내용 가져오기
+            if (decision.parameters != null && decision.parameters.Length > 0)
+            {
+                if (decision.parameters.Length >= 1 && !string.IsNullOrEmpty(decision.parameters[0]))
+                    examineContent = decision.parameters[0];
+            }
+            
+            Debug.Log($"[{Name}] 진찰 시작 - 대상: {patientName}");
+            
+            // 진찰 실행 (시뮬레이션)
+            await SimDelay.DelaySimMinutes(2);
+            
+            string examineReport = $"의사 {Name}가 {patientName}에게 {examineContent}";
+            Debug.Log($"[{Name}] 진찰 완료: {examineReport}");
+            
+            // AI Agent에 진찰 완료 메시지 추가
+            if (actionAgent != null)
+            {
+                string currentTime = GetFormattedCurrentTime();
+                string systemMessage = $"[{currentTime}] SYSTEM: 진찰 완료";
+                actionAgent.AddSystemMessage(systemMessage);
+                Debug.Log($"[{Name}] AI Agent에 진찰 완료 메시지 추가: {systemMessage}");
+            }
+            
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[{Name}] 진찰 처리 중 오류 발생: {ex.Message}");
+        }
+    }
+
+    protected override void InitializeActionHandlers()
+    {
+        // 기본 액션 등록 (Wait, Talk, GiveItem 등 공통 액션)
+        base.InitializeActionHandlers();
+        // 의사 전용 액션 등록
+        RegisterActionHandler(DoctorAction.Examine, HandleExamine);
+        
+        Debug.Log($"[{Name}] 병원 의사 액션 핸들러 초기화 완료");
+        Debug.Log($"[{Name}] 사용 가능한 액션: {string.Join(", ", availableActions)}");
+    }
     
     /// <summary>
     /// 병원 의사 전용 커스텀 메시지 변환 함수
@@ -117,42 +170,84 @@ public class HospitalDoctor : NPC
             
             switch (decision.actionType.ToLower())
             {
-                case "talk":
-                    if (decision.parameters != null && decision.parameters.Length >= 2)
-                    {
-                        string message = decision.parameters[1]?.ToString() ?? "";
-                        if (!string.IsNullOrEmpty(message))
-                        {
-                            return $"[{currentTime}] \"{message}\"";
-                        }
-                    }
-                    return $"[{currentTime}] 말을 한다";
-                    
-                case "wait":
-                    return $"[{currentTime}] 기다린다";
-                    
                 case "examine":
-                    if (decision.parameters != null && decision.parameters.Length >= 1)
+                {
+                    // target_key 우선, 없으면 parameters[0]
+                    string patientName = !string.IsNullOrEmpty(decision.target_key)
+                        ? decision.target_key
+                        : (decision.parameters != null && decision.parameters.Length >= 1
+                            ? decision.parameters[0]?.ToString() ?? "환자"
+                            : "환자");
+                    string examineDetails = null;
+                    if (decision.parameters != null && decision.parameters.Length >= 2 && !string.IsNullOrEmpty(decision.parameters[1]))
                     {
-                        string patientName = decision.parameters[0]?.ToString() ?? "환자";
-                        string examineDetails = "";
-                        
-                        // 두 번째 매개변수가 있으면 진찰 내용으로 사용
-                        if (decision.parameters.Length >= 2 && !string.IsNullOrEmpty(decision.parameters[1]?.ToString()))
-                        {
-                            examineDetails = decision.parameters[1].ToString();
-                            return $"[{currentTime}] {patientName}에게 {examineDetails}";
-                        }
-                        else
-                        {
-                            return $"[{currentTime}] {patientName}를 진찰한다";
-                        }
+                        examineDetails = decision.parameters[1];
                     }
-                    return $"[{currentTime}] 진찰을 한다";
-                    
+
+                    if (!string.IsNullOrEmpty(examineDetails))
+                    {
+                        return $"[{currentTime}] {patientName}에게 {examineDetails}";
+                    }
+                    return $"[{currentTime}] {patientName}를 진찰한다";
+                }
                 default:
-                    return $"[{currentTime}] {decision.actionType}을 한다";
+                    // 공통 액션은 기본 로직 사용
+                    return ConvertDecisionToMessage(decision, currentTime);
             }
         };
+    }
+
+    /// <summary>
+    /// AI Agent를 통해 이벤트에 대한 적절한 액션을 결정하고 실행 (HospitalDoctor 전용)
+    /// </summary>
+    public override async UniTask ProcessEventWithAgent()
+    {
+        if (actionAgent == null)
+        {
+            Debug.LogWarning($"[{Name}] AI Agent가 초기화되지 않았습니다.");
+            return;
+        }
+        
+        try
+        {
+            Debug.Log($"[{Name}] AI Agent로 이벤트 처리 시작");
+            
+            // Agent를 통해 액션 결정
+            NPCActionDecision decision = await actionAgent.DecideAction();
+            
+            // 결정된 액션을 실제 INPCAction으로 변환
+            INPCAction action = actionAgent.GetActionFromDecision(decision);
+            
+            // Talk 액션의 경우 target_key를 활용한 처리
+            if (action.ActionName == "Talk")
+            {
+                await HandleTalkWithDecision(decision);
+                Debug.Log($"[{Name}] AI Agent 이벤트 처리 완료 - Talk 액션 (대상: {decision.target_key ?? "없음"})");
+                return;
+            }
+            
+            // Examine 액션의 경우 target_key를 활용한 처리 (HospitalDoctor 전용)
+            if (action.ActionName == "Examine")
+            {
+                await HandleExamineWithDecision(decision);
+                Debug.Log($"[{Name}] AI Agent 이벤트 처리 완료 - Examine 액션 (대상: {decision.target_key ?? "없음"})");
+                return;
+            }
+            
+            // 다른 액션들은 기존 방식으로 처리
+            object[] parameters = decision.GetParameters();
+            
+            // 우선순위에 따라 즉시 실행하거나 대기열에 추가
+            await ProcessActionWithPriority(action, parameters);
+            
+            Debug.Log($"[{Name}] AI Agent 이벤트 처리 완료 - 선택된 액션: {action.ActionName}");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[{Name}] AI Agent 이벤트 처리 실패: {ex.Message}");
+            
+            // 실패 시 기본 대기 액션을 대기열에 추가
+            EnqueueAction(NPCAction.Wait, null);
+        }
     }
 }

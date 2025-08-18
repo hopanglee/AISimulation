@@ -86,7 +86,7 @@ public class ConvenienceStoreClerk : NPC
             ShowSpeech($"{amount}원 결제를 도와드리겠습니다.");
             
             // 결제 처리 시뮬레이션
-            await Task.Delay(1500);
+            await SimDelay.DelaySimMinutes(2);
             
             string paymentReport = $"편의점 직원 {Name}이 {customerName}로부터 {amount}원 결제를 처리했습니다";
             Debug.Log($"[{Name}] 결제 완료: {paymentReport}");
@@ -119,37 +119,24 @@ public class ConvenienceStoreClerk : NPC
         {
             if (decision == null || string.IsNullOrEmpty(decision.actionType))
                 return "";
-                
+
             string currentTime = GetFormattedCurrentTime();
-            
+
+            // 편의점 전용 액션만 처리하고, 나머지는 base 로직 재사용
             switch (decision.actionType.ToLower())
             {
-                case "talk":
-                    if (decision.parameters != null && decision.parameters.Length >= 2)
-                    {
-                        string message = decision.parameters[1]?.ToString() ?? "";
-                        if (!string.IsNullOrEmpty(message))
-                        {
-                            return $"{currentTime} \"{message}\"";
-                        }
-                    }
-                    return $"{currentTime} 말을 한다";
-                    
-                case "wait":
-                    return $"{currentTime} 기다린다";
-                    
                 case "payment":
                     if (decision.parameters != null && decision.parameters.Length >= 1)
                     {
                         string customerName = decision.parameters.Length >= 1 ? decision.parameters[0]?.ToString() ?? "고객" : "고객";
                         string amount = decision.parameters.Length >= 2 ? decision.parameters[1]?.ToString() ?? "금액" : "금액";
-                        
+
                         return $"{currentTime} 편의점 직원 {Name}이 {customerName}로부터 {amount}원 결제를 처리한다";
                     }
                     return $"{currentTime} 결제를 처리한다";
-                    
+
                 default:
-                    return $"{currentTime} {decision.actionType}을 한다";
+                    return ConvertDecisionToMessage(decision, currentTime);
             }
         };
     }

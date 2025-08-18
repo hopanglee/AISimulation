@@ -13,6 +13,7 @@ public class NPCActionAgent : GPT
 {
     private readonly ActionCategory npcCategory;
     private readonly INPCAction[] availableActions;
+    private readonly Actor owner; // NPC 또는 MainActor 참조
     
     /// <summary>
     /// 액션을 자연스러운 메시지로 변환하는 커스텀 함수
@@ -22,11 +23,13 @@ public class NPCActionAgent : GPT
     /// <summary>
     /// NPCActionAgent 생성자
     /// </summary>
+    /// <param name="owner">NPC 또는 MainActor 참조</param>
     /// <param name="category">NPC의 카테고리</param>
     /// <param name="availableActions">사용 가능한 액션 목록</param>
     /// <param name="npcRole">NPC의 역할</param>
-    public NPCActionAgent(ActionCategory category, INPCAction[] availableActions, NPCRole npcRole) : base()
+    public NPCActionAgent(Actor owner, ActionCategory category, INPCAction[] availableActions, NPCRole npcRole) : base()
     {
+        this.owner = owner;
         this.npcCategory = category;
         this.availableActions = availableActions;
         
@@ -48,7 +51,7 @@ public class NPCActionAgent : GPT
             )
         };
         
-        Debug.Log($"[NPCActionAgent] 생성됨 - 카테고리: {category}, 액션 수: {availableActions?.Length ?? 0}");
+        Debug.Log($"[NPCActionAgent] 생성됨 - 소유자: {owner?.Name}, 카테고리: {category}, 액션 수: {availableActions?.Length ?? 0}");
     }
     
     /// <summary>
@@ -59,6 +62,10 @@ public class NPCActionAgent : GPT
         var actionNames = availableActions?.Select(a => $"\"{a.ActionName}\"") ?? new[] { "\"Wait\"" };
         string actionEnum = string.Join(", ", actionNames);
         
+        // 주변 Actor들의 key 목록 생성 (null 포함)
+        var nearbyActorKeys = GetNearbyActorKeys();
+        string actorKeysEnum = string.Join(", ", nearbyActorKeys.Select(key => $"\"{key}\""));
+        
         return $@"{{
             ""type"": ""object"",
             ""additionalProperties"": false,
@@ -67,6 +74,11 @@ public class NPCActionAgent : GPT
                     ""type"": ""string"",
                     ""enum"": [ {actionEnum} ],
                     ""description"": ""Type of action to perform""
+                }},
+                ""target_key"": {{
+                    ""type"": [""string"", ""null""],
+                    ""enum"": [ null, {actorKeysEnum} ],
+                    ""description"": ""Key of the target actor to interact with (null if no target needed)""
                 }},
                 ""parameters"": {{
                     ""type"": ""array"",
@@ -81,6 +93,55 @@ public class NPCActionAgent : GPT
     }
     
     /// <summary>
+    /// 주변 Actor들의 key 목록을 반환합니다.
+    /// </summary>
+    private List<string> GetNearbyActorKeys()
+    {
+        var keys = new List<string>();
+        
+        try
+        {
+            // Actor의 sensor를 통해 주변 인물 정보 가져오기
+            if (owner is Actor actor)
+            {
+                // Sensor가 있는 경우 (MainActor 등)
+                if (actor is MainActor mainActor && mainActor.sensor != null)
+                {
+                    var interactableEntities = mainActor.sensor.GetInteractableEntities();
+                    keys.AddRange(interactableEntities.actors.Keys);
+                }
+                // NPC의 경우 직접 LocationService를 통해 주변 인물 찾기
+                else
+                {
+                    var locationService = Services.Get<ILocationService>();
+                    if (locationService != null)
+                    {
+                        var currentArea = locationService.GetArea(actor.curLocation);
+                        if (currentArea != null)
+                        {
+                            var actors = locationService.GetActor(currentArea, actor);
+                            foreach (var nearbyActor in actors)
+                            {
+                                if (nearbyActor != actor) // 자기 자신 제외
+                                {
+                                    keys.Add(nearbyActor.Name);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[NPCActionAgent] 주변 Actor key 가져오기 실패: {ex.Message}");
+        }
+        
+        // 중복 제거 및 정렬
+        return keys.Distinct().OrderBy(k => k).ToList();
+    }
+    
+    /// <summary>
     /// AI Agent를 통해 액션을 결정합니다
     /// 호출 전에 AddUserMessage 또는 AddSystemMessage를 통해 이벤트 정보를 추가해야 합니다
     /// </summary>
@@ -89,6 +150,9 @@ public class NPCActionAgent : GPT
     {
         try
         {
+            // 현재 상황 정보를 system 메시지로 자동 추가
+            AddCurrentSituationInfo();
+            
             // GPT API 호출 전 메시지 수 기록
             int messageCountBeforeGPT = messages.Count;
             
@@ -129,6 +193,241 @@ public class NPCActionAgent : GPT
             };
         }
     }
+    
+    /// <summary>
+    /// 현재 상황 정보를 system 메시지로 추가합니다.
+    /// </summary>
+    private void AddCurrentSituationInfo()
+    {
+        if (owner == null) return;
+        
+        try
+        {
+            var situationInfo = new List<string>();
+            
+            // 1. 시간 정보
+            var timeInfo = GetCurrentTimeInfo();
+            if (!string.IsNullOrEmpty(timeInfo))
+            {
+                situationInfo.Add($"현재 시간: {timeInfo}");
+            }
+            
+            // 2. NPC 상태 정보 (배고픔, 졸림, 스트레스 등)
+            var statusInfo = GetNPCStatusInfo();
+            if (!string.IsNullOrEmpty(statusInfo))
+            {
+                situationInfo.Add($"NPC 상태: {statusInfo}");
+            }
+            
+            // 3. 주변 인물 정보
+            var nearbyInfo = GetNearbyActorsInfo();
+            if (!string.IsNullOrEmpty(nearbyInfo))
+            {
+                situationInfo.Add($"주변 인물: {nearbyInfo}");
+            }
+            
+            // 4. 현재 위치 정보
+            var locationInfo = GetCurrentLocationInfo();
+            if (!string.IsNullOrEmpty(locationInfo))
+            {
+                situationInfo.Add($"현재 위치: {locationInfo}");
+            }
+            
+            // 상황 정보가 있으면 system 메시지로 추가
+            if (situationInfo.Count > 0)
+            {
+                string fullSituationInfo = string.Join("\n", situationInfo);
+                AddSystemMessage($"현재 상황 정보:\n{fullSituationInfo}");
+                Debug.Log($"[NPCActionAgent] 상황 정보 추가됨:\n{fullSituationInfo}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[NPCActionAgent] 상황 정보 추가 실패: {ex.Message}");
+        }
+    }
+    
+    /// <summary>
+    /// 현재 시간 정보를 반환합니다.
+    /// </summary>
+    private string GetCurrentTimeInfo()
+    {
+        try
+        {
+            var timeService = Services.Get<ITimeService>();
+            if (timeService != null)
+            {
+                            var currentTime = timeService.CurrentTime;
+            var dayOfWeek = GetDayOfWeekString(currentTime.GetDayOfWeek());
+                return $"{currentTime.year}년 {currentTime.month}월 {currentTime.day}일 {dayOfWeek} {currentTime.hour:00}:{currentTime.minute:00}";
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[NPCActionAgent] 시간 정보 가져오기 실패: {ex.Message}");
+        }
+        return null;
+    }
+    
+    /// <summary>
+    /// 요일을 한글로 반환합니다.
+    /// </summary>
+    private string GetDayOfWeekString(DayOfWeek dayOfWeek)
+    {
+        return dayOfWeek switch
+        {
+            DayOfWeek.Monday => "월요일",
+            DayOfWeek.Tuesday => "화요일",
+            DayOfWeek.Wednesday => "수요일",
+            DayOfWeek.Thursday => "목요일",
+            DayOfWeek.Friday => "금요일",
+            DayOfWeek.Saturday => "토요일",
+            DayOfWeek.Sunday => "일요일",
+            _ => "알 수 없음"
+        };
+    }
+    
+    /// <summary>
+    /// NPC의 현재 상태 정보를 반환합니다.
+    /// </summary>
+    private string GetNPCStatusInfo()
+    {
+        if (owner is Actor actor)
+        {
+            var statusList = new List<string>();
+            
+            // 기본 상태 정보
+            if (actor.Hunger > 0) statusList.Add($"배고픔: {actor.Hunger}/100");
+            if (actor.Thirst > 0) statusList.Add($"갈증: {actor.Thirst}/100");
+            if (actor.Stamina > 0) statusList.Add($"체력: {actor.Stamina}/100");
+            if (actor.Sleepiness > 0) statusList.Add($"졸림: {actor.Sleepiness}/100");
+            if (actor.Stress > 0) statusList.Add($"스트레스: {actor.Stress}/100");
+            if (actor.MentalPleasure > 0) statusList.Add($"만족감: {actor.MentalPleasure}");
+            
+            // MainActor의 경우 추가 정보
+            if (actor is MainActor mainActor)
+            {
+                if (mainActor.IsSleeping) statusList.Add("상태: 수면 중");
+                if (mainActor.IsPerformingActivity) statusList.Add($"활동: {mainActor.CurrentActivity}");
+            }
+            
+            return statusList.Count > 0 ? string.Join(", ", statusList) : "정상";
+        }
+        return null;
+    }
+    
+    /// <summary>
+    /// 주변 Actor들의 정보를 반환합니다.
+    /// </summary>
+    private string GetNearbyActorsInfo()
+    {
+        var actorsInfo = new List<string>();
+        
+        try
+        {
+            if (owner is Actor actor)
+            {
+                // Sensor가 있는 경우 (MainActor 등)
+                if (actor is MainActor mainActor && mainActor.sensor != null)
+                {
+                    var interactableEntities = mainActor.sensor.GetInteractableEntities();
+                    foreach (var kvp in interactableEntities.actors)
+                    {
+                        var nearbyActor = kvp.Value;
+                        var actorStatus = GetActorBriefStatus(nearbyActor);
+                        actorsInfo.Add($"{kvp.Key}({actorStatus})");
+                    }
+                }
+                // NPC의 경우 직접 LocationService를 통해 주변 인물 찾기
+                else
+                {
+                    var locationService = Services.Get<ILocationService>();
+                    if (locationService != null)
+                    {
+                        var currentArea = locationService.GetArea(actor.curLocation);
+                        if (currentArea != null)
+                        {
+                            var actors = locationService.GetActor(currentArea, actor);
+                            foreach (var nearbyActor in actors)
+                            {
+                                if (nearbyActor != actor) // 자기 자신 제외
+                                {
+                                    var actorStatus = GetActorBriefStatus(nearbyActor);
+                                    actorsInfo.Add($"{nearbyActor.Name}({actorStatus})");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[NPCActionAgent] 주변 Actor 정보 가져오기 실패: {ex.Message}");
+        }
+        
+        return actorsInfo.Count > 0 ? string.Join(", ", actorsInfo) : "없음";
+    }
+    
+    /// <summary>
+    /// Actor의 간단한 상태를 반환합니다.
+    /// </summary>
+    private string GetActorBriefStatus(Actor actor)
+    {
+        if (actor == null) return "알 수 없음";
+        
+        var statusList = new List<string>();
+        
+        // MainActor의 경우 특별한 상태 표시
+        if (actor is MainActor mainActor)
+        {
+            if (mainActor.IsSleeping) statusList.Add("수면");
+            if (mainActor.IsPerformingActivity) statusList.Add("활동중");
+        }
+        
+        // 기본 상태 (중요한 것만)
+        if (actor.Sleepiness > 80) statusList.Add("매우졸림");
+        else if (actor.Sleepiness > 60) statusList.Add("졸림");
+        
+        if (actor.Hunger > 80) statusList.Add("매우배고픔");
+        else if (actor.Hunger > 60) statusList.Add("배고픔");
+        
+        if (actor.Stress > 80) statusList.Add("매우스트레스");
+        else if (actor.Stress > 60) statusList.Add("스트레스");
+        
+        return statusList.Count > 0 ? string.Join(",", statusList) : "정상";
+    }
+    
+    /// <summary>
+    /// 현재 위치 정보를 반환합니다.
+    /// </summary>
+    private string GetCurrentLocationInfo()
+    {
+        if (owner is Actor actor)
+        {
+            try
+            {
+                var locationService = Services.Get<ILocationService>();
+                if (locationService != null)
+                {
+                    var currentArea = locationService.GetArea(actor.curLocation);
+                    if (currentArea != null)
+                    {
+                        return currentArea.locationName;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[NPCActionAgent] 위치 정보 가져오기 실패: {ex.Message}");
+            }
+        }
+        return null;
+    }
+    
+    /// <summary>
+    /// 근무 상태 정보를 반환합니다.
+    /// </summary>
     
     /// <summary>
     /// 사용자 메시지를 대화 기록에 추가

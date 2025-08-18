@@ -159,6 +159,7 @@ public static class PromptLoader
         return npcRole switch
         {
             NPCRole.ConvenienceStoreClerk => "ConvenienceStoreClerk",
+            NPCRole.HospitalDoctor => "HospitalDoctor",
             _ => "Common"
         };
     }
