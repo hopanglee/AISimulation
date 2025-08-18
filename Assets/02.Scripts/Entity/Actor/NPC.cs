@@ -7,63 +7,9 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
-/// <summary>
-/// NPC의 역할을 정의하는 열거형
-/// </summary>
-public enum NPCRole
-{
-    ConvenienceStoreClerk,  // 편의점 직원
-    HospitalDoctor         // 병원 의사
-}
+// Types moved to separate files: NPCRole, ActionCategory, INPCAction
 
-/// <summary>
-/// 액션의 카테고리를 정의하는 열거형
-/// </summary>
-public enum ActionCategory
-{
-    Common,             // 공통 액션
-    ConvenienceStore,   // 편의점 전용
-    Hospital,           // 병원 전용
-    Restaurant,         // 레스토랑 전용 (미래 확장)
-    Bank               // 은행 전용 (미래 확장)
-}
-
-/// <summary>
-/// NPC 액션을 위한 인터페이스
-/// </summary>
-public interface INPCAction
-{
-    string ActionName { get; }
-    ActionCategory Category { get; }
-    string Description { get; }
-}
-
-/// <summary>
-/// 기본 NPC 액션들
-/// </summary>
-public struct NPCAction : INPCAction
-{
-    public string ActionName { get; private set; }
-    public ActionCategory Category { get; private set; }
-    public string Description { get; private set; }
-    
-    private NPCAction(string actionName, ActionCategory category, string description)
-    {
-        ActionName = actionName;
-        Category = category;
-        Description = description;
-    }
-    
-    // 기본 액션들
-    public static readonly NPCAction Wait = new("Wait", ActionCategory.Common, "대기");
-    public static readonly NPCAction Talk = new("Talk", ActionCategory.Common, "대화");
-    
-    public override string ToString() => ActionName;
-    public override bool Equals(object obj) => obj is NPCAction other && ActionName == other.ActionName;
-    public override int GetHashCode() => ActionName.GetHashCode();
-    public static bool operator ==(NPCAction left, NPCAction right) => left.Equals(right);
-    public static bool operator !=(NPCAction left, NPCAction right) => !left.Equals(right);
-}
+// NPCAction moved to NPC.Actions.cs
 
 /// <summary>
 /// NPC (Non-Player Character)의 기본 클래스
@@ -71,11 +17,10 @@ public struct NPCAction : INPCAction
 /// 메인 캐릭터와 달리 지능형 시스템(Brain/Sensor 등)은 갖지 않으며
 /// 기본적인 상호작용만 수행합니다.
 /// </summary>
-public abstract class NPC : Actor
+public abstract partial class NPC : Actor
 {
     [Header("NPC Settings")]
     [SerializeField] protected NPCRole npcRole; // NPC의 역할
-    [SerializeField] protected bool isWorking = true; // 현재 근무 중인지 여부
     [SerializeField] protected List<INPCAction> availableActions = new List<INPCAction>(); // 수행 가능한 액션들
     
     [Header("Action Handler System")]
@@ -176,15 +121,7 @@ public abstract class NPC : Actor
         Debug.Log($"[{Name}] NPC 초기화 완료 - 역할: {npcRole}, 액션 수: {availableActions.Count}");
     }
     
-    /// <summary>
-    /// 액션 핸들러들을 초기화 (하위 클래스에서 오버라이드)
-    /// </summary>
-    protected virtual void InitializeActionHandlers()
-    {
-        // 기본 액션 핸들러들 등록
-        RegisterActionHandler(NPCAction.Wait, HandleWait);
-        RegisterActionHandler(NPCAction.Talk, HandleTalk);
-    }
+    
     
     /// <summary>
     /// AI Agent 초기화
@@ -198,7 +135,7 @@ public abstract class NPC : Actor
         INPCAction[] actionsArray = availableActions.ToArray();
         
         // Agent 생성 (NPCRole도 전달)
-        actionAgent = new NPCActionAgent(category, actionsArray, npcRole);
+        actionAgent = new NPCActionAgent(this, category, actionsArray, npcRole);
         
         // 커스텀 메시지 변환 함수 설정
         actionAgent.CustomMessageConverter = CreateCustomMessageConverter();
@@ -219,234 +156,7 @@ public abstract class NPC : Actor
         };
     }
     
-    /// <summary>
-    /// 액션을 자연스러운 메시지로 변환하는 커스텀 함수를 생성
-    /// 각 하위 클래스에서 역할에 맞게 오버라이드할 수 있습니다
-    /// </summary>
-    /// <returns>커스텀 메시지 변환 함수</returns>
-    protected virtual System.Func<NPCActionDecision, string> CreateCustomMessageConverter()
-    {
-        return decision =>
-        {
-            if (decision == null || string.IsNullOrEmpty(decision.actionType))
-                return "";
-                
-            string currentTime = GetFormattedCurrentTime();
-            
-            switch (decision.actionType.ToLower())
-            {
-                case "talk":
-                    if (decision.parameters != null && decision.parameters.Length >= 2)
-                    {
-                        string message = decision.parameters[1]?.ToString() ?? "";
-                        if (!string.IsNullOrEmpty(message))
-                        {
-                            return $"[{currentTime}] \"{message}\"";
-                        }
-                    }
-                    return $"[{currentTime}] 말을 한다";
-                    
-                case "wait":
-                    return $"[{currentTime}] 기다린다";
-                    
-                default:
-                    return $"[{currentTime}] {decision.actionType}을 한다";
-            }
-        };
-    }
     
-    /// <summary>
-    /// 액션과 핸들러를 연결 (매개변수는 null 가능)
-    /// </summary>
-    protected void RegisterActionHandler(INPCAction action, Func<object[], Task> handler)
-    {
-        actionHandlers[action] = handler;
-        AddToAvailableActions(action);
-        Debug.Log($"[{Name}] 액션 핸들러 등록: {action.ActionName}");
-    }
-    
-    /// <summary>
-    /// availableActions에 액션 추가 (중복 방지)
-    /// </summary>
-    private void AddToAvailableActions(INPCAction action)
-    {
-        if (!availableActions.Any(a => a.ActionName == action.ActionName))
-        {
-            availableActions.Add(action);
-        }
-    }
-    
-    /// <summary>
-    /// 액션을 실행 (매개변수는 null 가능) - 외부 호출용
-    /// </summary>
-    public virtual async Task ExecuteAction(INPCAction action, params object[] parameters)
-    {
-        await ExecuteActionInternal(action, parameters);
-    }
-    
-    /// <summary>
-    /// 액션을 실행 (내부 구현) - 상태 관리 포함
-    /// </summary>
-    private async Task ExecuteActionInternal(INPCAction action, params object[] parameters)
-    {
-        if (!CanPerformAction(action))
-        {
-            Debug.LogWarning($"[{Name}] 실행할 수 없는 액션: {action.ActionName}");
-            return;
-        }
-        
-        if (actionHandlers.TryGetValue(action, out Func<object[], Task> handler))
-        {
-            // 액션 실행 상태 설정
-            currentAction = action;
-            isExecutingAction = true;
-            currentActionCancellation = new CancellationTokenSource();
-            
-            try
-            {
-                Debug.Log($"[{Name}] 액션 실행 시작: {action.ActionName}");
-                await handler.Invoke(parameters);
-                Debug.Log($"[{Name}] 액션 실행 완료: {action.ActionName}");
-            }
-            catch (OperationCanceledException)
-            {
-                Debug.Log($"[{Name}] 액션 중단됨: {action.ActionName}");
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"[{Name}] 액션 실행 실패: {action.ActionName} - {ex.Message}");
-            }
-            finally
-            {
-                // 액션 완료 시 시스템 메시지 추가
-                await LogActionCompletion(action, parameters);
-                
-                // 액션 완료 후 상태 정리
-                isExecutingAction = false;
-                currentAction = null;
-                currentActionCancellation?.Dispose();
-                currentActionCancellation = null;
-                
-                // 대기열에 있는 다음 액션 실행
-                await ProcessQueuedActions();
-            }
-        }
-        else
-        {
-            Debug.LogWarning($"[{Name}] 핸들러가 등록되지 않은 액션: {action.ActionName}");
-        }
-    }
-    
-    /// <summary>
-    /// 현재 액션을 중단
-    /// </summary>
-    private void CancelCurrentAction()
-    {
-        if (currentActionCancellation != null && !currentActionCancellation.Token.IsCancellationRequested)
-        {
-            currentActionCancellation.Cancel();
-        }
-    }
-    
-    /// <summary>
-    /// 액션을 대기열에 추가
-    /// </summary>
-    private void EnqueueAction(INPCAction action, object[] parameters)
-    {
-        actionQueue.Enqueue((action, parameters));
-        Debug.Log($"[{Name}] 액션 대기열에 추가: {action.ActionName} (대기열 크기: {actionQueue.Count})");
-    }
-    
-    /// <summary>
-    /// 대기열에 있는 액션들을 순차적으로 처리
-    /// </summary>
-    private async UniTask ProcessQueuedActions()
-    {
-        while (actionQueue.Count > 0 && !isExecutingAction)
-        {
-            var (action, parameters) = actionQueue.Dequeue();
-            Debug.Log($"[{Name}] 대기열에서 액션 실행: {action.ActionName}");
-            await ExecuteActionInternal(action, parameters);
-        }
-    }
-    
-    /// <summary>
-    /// 액션 완료를 AI Agent의 대화 기록에 로깅
-    /// </summary>
-    private async UniTask LogActionCompletion(INPCAction action, object[] parameters)
-    {
-        if (actionAgent == null || timeService == null)
-            return;
-            
-        try
-        {
-            // 현재 시간 가져오기
-            string currentTime = GetFormattedCurrentTime();
-            
-            // 액션별 완료 메시지 생성
-            string completionMessage = GenerateActionCompletionMessage(action, parameters, currentTime);
-            
-            if (!string.IsNullOrEmpty(completionMessage))
-            {
-                // AI Agent의 대화 기록에 시스템 메시지로 추가
-                actionAgent.AddSystemMessage(completionMessage);
-                Debug.Log($"[{Name}] 액션 완료 로깅: {completionMessage}");
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"[{Name}] 액션 완료 로깅 실패: {ex.Message}");
-        }
-        
-        await UniTask.Yield(); // 비동기 메서드이므로 yield 추가
-    }
-    
-    /// <summary>
-    /// 현재 시간을 포맷팅하여 반환
-    /// </summary>
-    protected string GetFormattedCurrentTime()
-    {
-        if (timeService == null)
-            return "[시간불명]";
-            
-        var currentTime = timeService.CurrentTime;
-        return $"[{currentTime.hour:00}:{currentTime.minute:00}]";
-    }
-    
-    /// <summary>
-    /// 액션별 완료 메시지 생성
-    /// </summary>
-    private string GenerateActionCompletionMessage(INPCAction action, object[] parameters, string timeStamp)
-    {
-        return action.ActionName switch
-        {
-            "Talk" => GenerateTalkCompletionMessage(parameters, timeStamp),
-            "Payment" => $"{timeStamp} [본인] : 결제 처리 완료했습니다.",
-            "Wait" => null, // Wait 액션은 로깅하지 않음
-            _ => $"{timeStamp} [본인] : {action.ActionName} 작업을 완료했습니다."
-        };
-    }
-    
-    /// <summary>
-    /// Talk 액션의 완료 메시지 생성
-    /// </summary>
-    private string GenerateTalkCompletionMessage(object[] parameters, string timeStamp)
-    {
-        if (parameters != null && parameters.Length >= 2)
-        {
-            // [target, message] 형태
-            string message = parameters[1] as string ?? "...";
-            return $"{timeStamp} [본인] : {message}";
-        }
-        else if (parameters != null && parameters.Length == 1)
-        {
-            // [message] 형태
-            string message = parameters[0] as string ?? "...";
-            return $"{timeStamp} [본인] : {message}";
-        }
-        
-        return $"{timeStamp} [본인] : 말했습니다.";
-    }
     
     /// <summary>
     /// AI Agent를 통해 이벤트에 대한 적절한 액션을 결정하고 실행
@@ -470,7 +180,17 @@ public abstract class NPC : Actor
             // 결정된 액션을 실제 INPCAction으로 변환
             INPCAction action = actionAgent.GetActionFromDecision(decision);
             
-            // 매개변수 가져오기
+            // Talk 액션의 경우 target_key를 활용한 처리
+            if (action.ActionName == "Talk")
+            {
+                await HandleTalkWithDecision(decision);
+                Debug.Log($"[{Name}] AI Agent 이벤트 처리 완료 - Talk 액션 (대상: {decision.target_key ?? "없음"})");
+                return;
+            }
+            
+
+            
+            // 다른 액션들은 기존 방식으로 처리
             object[] parameters = decision.GetParameters();
             
             // 우선순위에 따라 즉시 실행하거나 대기열에 추가
@@ -490,7 +210,7 @@ public abstract class NPC : Actor
     /// <summary>
     /// 액션의 우선순위를 판단하여 즉시 실행하거나 대기열에 추가
     /// </summary>
-    private async UniTask ProcessActionWithPriority(INPCAction newAction, object[] parameters)
+    protected async UniTask ProcessActionWithPriority(INPCAction newAction, object[] parameters)
     {
         if (!isExecutingAction || currentAction == null)
         {
@@ -595,166 +315,49 @@ public abstract class NPC : Actor
     /// <summary>
     /// Hear 이벤트를 AI Agent를 통해 처리
     /// </summary>
-    private async UniTask ProcessHearEventWithAgent(Actor from, string text)
-    {
-        try
-        {
-            // GPT 사용이 비활성화된 경우 처리 안함
-            if (!UseGPT)
-            {
-                Debug.Log($"[{Name}] GPT 비활성화됨 - Hear 이벤트 무시: [{from.Name}] {text}");
-                return;
-            }
-            
-            // 시간 정보 포함한 사용자 메시지 형식: "[시간] [발신자이름] : 대화내용"
-            string currentTime = GetFormattedCurrentTime();
-            string userMessage = $"{currentTime} [{from.Name}] : {text}";
-            
-            Debug.Log($"[{Name}] AI Agent로 Hear 이벤트 처리 시작: {userMessage}");
-            
-            // AI Agent에 사용자 메시지 추가 후 처리
-            actionAgent.AddUserMessage(userMessage);
-            await ProcessEventWithAgent();
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"[{Name}] Hear 이벤트 처리 실패: {ex.Message}");
-            
-            // 실패 시 기본 응답
-            await ExecuteAction(NPCAction.Talk, from.Name, "죄송합니다, 잘 못 들었습니다.");
-        }
-    }
+    
     
     /// <summary>
     /// Receive 이벤트를 AI Agent를 통해 처리
     /// </summary>
-    private async UniTask ProcessReceiveEventWithAgent(Actor from, Item item)
-    {
-        try
-        {
-            // GPT 사용이 비활성화된 경우 처리 안함
-            if (!UseGPT)
-            {
-                Debug.Log($"[{Name}] GPT 비활성화됨 - Receive 이벤트 무시: [{from.Name}] gave {item.Name}");
-                return;
-            }
-            
-            // 시간 정보 포함한 시스템 메시지 형식: "[시간] SYSTEM: [발신자이름] gave you [아이템이름]"
-            string currentTime = GetFormattedCurrentTime();
-            string systemMessage = $"[{currentTime}] SYSTEM: {from.Name} gave you {item.Name}";
-            
-            Debug.Log($"[{Name}] AI Agent로 Receive 이벤트 처리 시작: {systemMessage}");
-            
-            // AI Agent에 시스템 메시지 추가 후 처리
-            actionAgent.AddSystemMessage(systemMessage);
-            await ProcessEventWithAgent();
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"[{Name}] Receive 이벤트 처리 실패: {ex.Message}");
-            
-            // 실패 시 기본 응답
-            await ExecuteAction(NPCAction.Talk, from.Name, "감사합니다.");
-        }
-    }
+    
     
     /// <summary>
     /// Money Received 이벤트를 AI Agent를 통해 처리
     /// </summary>
-    private async UniTask ProcessMoneyReceivedEventWithAgent(Actor from, int amount)
-    {
-        try
-        {
-            // GPT 사용이 비활성화된 경우 처리 안함
-            if (!UseGPT)
-            {
-                Debug.Log($"[{Name}] GPT 비활성화됨 - Money Received 이벤트 무시: [{from.Name}] gave {amount}원");
-                return;
-            }
-            
-            // 시간 정보 포함한 시스템 메시지 형식: "[시간] SYSTEM: [발신자이름] gave you [금액]원"
-            string currentTime = GetFormattedCurrentTime();
-            string systemMessage = $"{currentTime} SYSTEM: {from.Name} gave you {amount}원 (총 보유: {Money}원)";
-            
-            Debug.Log($"[{Name}] AI Agent로 Money Received 이벤트 처리 시작: {systemMessage}");
-            
-            // AI Agent에 시스템 메시지 추가 후 처리
-            actionAgent.AddSystemMessage(systemMessage);
-            await ProcessEventWithAgent();
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"[{Name}] Money Received 이벤트 처리 실패: {ex.Message}");
-            
-            // 실패 시 기본 응답
-            await ExecuteAction(NPCAction.Talk, from.Name, "감사합니다.");
-        }
-    }
+    
     
     /// <summary>
     /// NPC가 특정 액션을 수행할 수 있는지 확인
     /// </summary>
-    public virtual bool CanPerformAction(INPCAction action)
-    {
-        return availableActions.Any(availableAction => availableAction.ActionName == action.ActionName);
-    }
+    
     
     #region 기본 액션 핸들러들
     
     /// <summary>
     /// 대기 액션 핸들러
     /// </summary>
-    protected virtual async Task HandleWait(object[] parameters)
-    {
-        ShowSpeech("잠시만요...");
-        await Task.Delay(1000); // 1초 대기
-    }
+    
     
     /// <summary>
-    /// 대화 액션 핸들러
+    /// 아이템 주기 액션 처리
     /// </summary>
-    protected virtual async Task HandleTalk(object[] parameters)
-    {
-        string targetName = null;
-        string message = "네, 말씀하세요."; // 기본 메시지
-        
-        // 매개변수 파싱
-        if (parameters != null && parameters.Length >= 2)
-        {
-            if (parameters[0] is string target)
-                targetName = target;
-            if (parameters[1] is string msg)
-                message = msg;
-        }
-        else if (parameters != null && parameters.Length == 1)
-        {
-            // 하위 호환성: 매개변수가 하나만 있으면 메시지로 처리
-            if (parameters[0] is string singleParam)
-                message = singleParam;
-        }
-        
-        // 대상 Actor 찾기
-        Actor targetActor = null;
-        if (!string.IsNullOrEmpty(targetName))
-        {
-            targetActor = FindActorByName(targetName);
-        }
-        
-        // Actor의 Talk 함수와 동일한 방식으로 대화 처리
-        if (targetActor != null)
-        {
-            Talk(targetActor, message);
-            Debug.Log($"[{Name}] {targetActor.Name}에게 말함: {message}");
-        }
-        else
-        {
-            // 대상을 찾지 못한 경우 혼잣말
-            ShowSpeech(message);
-            Debug.Log($"[{Name}] 혼잣말: {message}" + (targetName != null ? $" (대상 '{targetName}'을 찾을 수 없음)" : ""));
-        }
-        
-        await Task.Delay(500); // 0.5초 대기
-    }
+    /// <param name="parameters">매개변수 배열 - [대상이름]</param>
+    
+
+    /// <summary>
+    /// 대화 액션 처리
+    /// </summary>
+    /// <param name="parameters">매개변수 배열 - [대상이름, 메시지] 또는 [메시지]</param>
+    
+    
+    /// <summary>
+    /// NPCActionDecision을 기반으로 대화 액션 처리 (target_key 활용)
+    /// </summary>
+    /// <param name="decision">액션 결정</param>
+    
+    
+
     
     #endregion
     
@@ -763,29 +366,7 @@ public abstract class NPC : Actor
     /// <summary>
     /// 이름으로 Actor를 찾습니다.
     /// </summary>
-    private Actor FindActorByName(string actorName)
-    {
-        if (string.IsNullOrEmpty(actorName))
-            return null;
-
-        // LocationService를 통한 검색
-        var locationService = Services.Get<ILocationService>();
-        var currentArea = locationService.GetArea(curLocation);
-        if (currentArea != null)
-        {
-            var actors = locationService.GetActor(currentArea, this);
-            foreach (var foundActor in actors)
-            {
-                if (foundActor.Name == actorName || foundActor.name == actorName)
-                {
-                    return foundActor;
-                }
-            }
-        }
-
-        Debug.LogWarning($"[{Name}] Actor를 찾을 수 없음: {actorName}");
-        return null;
-    }
+    
     
     #endregion
     
@@ -833,6 +414,21 @@ public abstract class NPC : Actor
     }
     
     /// <summary>
+    /// 현재 상황 정보를 로그로 출력 (디버깅용)
+    /// </summary>
+    
+    
+    /// <summary>
+    /// 요일을 한글로 반환합니다.
+    /// </summary>
+    
+    
+    /// <summary>
+    /// Actor의 간단한 상태를 반환합니다.
+    /// </summary>
+    
+    
+    /// <summary>
     /// 액션 이름으로 INPCAction 찾기
     /// </summary>
     private INPCAction FindActionByName(string actionName)
@@ -845,33 +441,15 @@ public abstract class NPC : Actor
     /// <summary>
     /// NPC의 현재 상태 설명
     /// </summary>
-    public override string GetStatusDescription()
-    {
-        string baseStatus = base.GetStatusDescription();
-        string npcStatus = $"역할: {npcRole}, 근무: {(isWorking ? "중" : "아님")}";
-        
-        if (!string.IsNullOrEmpty(baseStatus))
-        {
-            return $"{baseStatus} | {npcStatus}";
-        }
-        
-        return npcStatus;
-    }
+    
     
     /// <summary>
     /// 근무 상태 변경
     /// </summary>
-    public virtual void SetWorkingStatus(bool working)
-    {
-        isWorking = working;
-        Debug.Log($"[{Name}] 근무 상태 변경: {(isWorking ? "근무 시작" : "근무 종료")}");
-    }
+    
     
     /// <summary>
     /// NPC가 현재 근무 중인지 확인
     /// </summary>
-    public bool IsWorking()
-    {
-        return isWorking;
-    }
+    
 }

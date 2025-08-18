@@ -10,6 +10,9 @@ public class NPCActionDecision
     [JsonProperty("actionType")]
     public string actionType;
     
+    [JsonProperty("target_key")]
+    public string target_key; // 주변 인물의 key (null 가능)
+    
     [JsonProperty("parameters")]
     public string[] parameters;
     
@@ -48,6 +51,7 @@ public class NPCActionDecision
     public override string ToString()
     {
         string paramsStr = parameters != null ? string.Join(", ", parameters) : "null";
-        return $"Action: {actionType}, Parameters: [{paramsStr}]";
+        string targetStr = !string.IsNullOrEmpty(target_key) ? $" -> {target_key}" : "";
+        return $"Action: {actionType}{targetStr}, Parameters: [{paramsStr}]";
     }
 }
