@@ -241,7 +241,7 @@ public abstract class Actor : Entity, ILocationAware
                 //             return;
                 //         }
                 //     }
-                    
+                //     
                 //     // Area에 도착한 경우
                 //     foreach (var area in curArea.connectedAreas)
                 //     {

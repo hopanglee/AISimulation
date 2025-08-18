@@ -7,7 +7,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
-// Types moved to separate files: NPCRole, ActionCategory, INPCAction
+// Types moved to separate files: NPCRole, INPCAction
 
 // NPCAction moved to NPC.Actions.cs
 
@@ -109,6 +109,8 @@ public abstract partial class NPC : Actor
         {
             ConvenienceStoreClerk => NPCRole.ConvenienceStoreClerk,
             HospitalDoctor => NPCRole.HospitalDoctor,
+            HospitalReceptionist => NPCRole.HospitalReceptionist,
+            CafeWorker => NPCRole.CafeWorker,
             _ => throw new System.NotImplementedException($"NPCRole이 정의되지 않은 타입: {GetType().Name}")
         };
         
@@ -128,35 +130,17 @@ public abstract partial class NPC : Actor
     /// </summary>
     protected virtual void InitializeAgent()
     {
-        // NPC 카테고리 결정
-        ActionCategory category = GetNPCCategory();
-        
         // 사용 가능한 액션 배열로 변환
         INPCAction[] actionsArray = availableActions.ToArray();
         
         // Agent 생성 (NPCRole도 전달)
-        actionAgent = new NPCActionAgent(this, category, actionsArray, npcRole);
+        actionAgent = new NPCActionAgent(this, actionsArray, npcRole);
         
         // 커스텀 메시지 변환 함수 설정
         actionAgent.CustomMessageConverter = CreateCustomMessageConverter();
         
-        Debug.Log($"[{Name}] AI Agent 초기화 완료 - 카테고리: {category}, 역할: {npcRole}");
+        Debug.Log($"[{Name}] AI Agent 초기화 완료 - 역할: {npcRole}");
     }
-    
-    /// <summary>
-    /// NPC의 카테고리를 반환 (하위 클래스에서 오버라이드 가능)
-    /// </summary>
-    protected virtual ActionCategory GetNPCCategory()
-    {
-        return npcRole switch
-        {
-            NPCRole.ConvenienceStoreClerk => ActionCategory.ConvenienceStore,
-            NPCRole.HospitalDoctor => ActionCategory.Hospital,
-            _ => ActionCategory.Common
-        };
-    }
-    
-    
     
     /// <summary>
     /// AI Agent를 통해 이벤트에 대한 적절한 액션을 결정하고 실행

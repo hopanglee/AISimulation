@@ -1,0 +1,4 @@
+**Wait**: Pause briefly
+- **Use when**: There is nothing urgent to do or while processing
+- **Parameters**: none
+- **Note**: Keeps delays short to maintain responsiveness at the front desk

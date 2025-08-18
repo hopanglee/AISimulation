@@ -66,7 +66,6 @@ public abstract partial class NPC
 		catch (Exception ex)
 		{
 			Debug.LogError($"[{Name}] Money Received 이벤트 처리 실패: {ex.Message}");
-			await ExecuteAction(NPCAction.Talk, from.Name, "감사합니다.");
 		}
 	}
 }

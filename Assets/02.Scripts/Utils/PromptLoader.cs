@@ -160,6 +160,8 @@ public static class PromptLoader
         {
             NPCRole.ConvenienceStoreClerk => "ConvenienceStoreClerk",
             NPCRole.HospitalDoctor => "HospitalDoctor",
+            NPCRole.HospitalReceptionist => "HospitalReceptionist",
+            NPCRole.CafeWorker => "CafeWorker",
             _ => "Common"
         };
     }

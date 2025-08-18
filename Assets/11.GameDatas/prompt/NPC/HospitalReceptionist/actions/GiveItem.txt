@@ -1,0 +1,5 @@
+**GiveItem**: Hand an item to someone
+- **Use when**: Passing forms, tickets, or documents to a patient or staff
+- **Parameters**: [target_name]
+- **Examples**:
+  - ["환자"]

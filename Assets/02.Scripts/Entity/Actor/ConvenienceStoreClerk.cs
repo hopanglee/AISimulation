@@ -9,13 +9,11 @@ using UnityEngine;
 public struct ConvenienceStoreAction : INPCAction
 {
     public string ActionName { get; private set; }
-    public ActionCategory Category { get; private set; }
     public string Description { get; private set; }
     
     private ConvenienceStoreAction(string actionName, string description)
     {
         ActionName = actionName;
-        Category = ActionCategory.ConvenienceStore;
         Description = description;
     }
     

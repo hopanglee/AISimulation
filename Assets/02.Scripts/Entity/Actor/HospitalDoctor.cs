@@ -11,6 +11,8 @@ using Cysharp.Threading.Tasks;
 [RequireComponent(typeof(Rigidbody))]
 public class HospitalDoctor : NPC
 {
+    [Title("References")]
+    [SerializeField] private HospitalReceptionist receptionist;
     
     /// <summary>
     /// 병원 의사 전용 액션들
@@ -18,18 +20,17 @@ public class HospitalDoctor : NPC
     public struct DoctorAction : INPCAction
     {
         public string ActionName { get; private set; }
-        public ActionCategory Category { get; private set; }
         public string Description { get; private set; }
         
         private DoctorAction(string actionName, string description)
         {
             ActionName = actionName;
-            Category = ActionCategory.Hospital;
             Description = description;
         }
         
         // 병원 의사 전용 액션들
         public static readonly DoctorAction Examine = new("Examine", "환자 진찰");
+        public static readonly DoctorAction NotifyReceptionist = new("NotifyReceptionist", "접수처 직원에게 전달");
         
         public override string ToString() => ActionName;
         public override bool Equals(object obj) => obj is DoctorAction other && ActionName == other.ActionName;
@@ -45,6 +46,20 @@ public class HospitalDoctor : NPC
     {
         // TODO: 구현 예정
         return "";
+    }
+
+    public void ReceiveMessage(Actor from, string text)
+    {
+        Debug.Log($"[{Name}] (메시지 수신) {from?.Name} ▶ {text}");
+        if (!UseGPT || actionAgent == null)
+        {
+            return;
+        }
+        string currentTime = GetFormattedCurrentTime();
+        string fromLabel = $"접수처 직원 {from?.Name}";
+        string systemMessage = $"[{currentTime}] SYSTEM: [{fromLabel}] ▶ {text}";
+        actionAgent.AddSystemMessage(systemMessage);
+        _ = ProcessEventWithAgent();
     }
 
     /// <summary>
@@ -151,11 +166,37 @@ public class HospitalDoctor : NPC
         base.InitializeActionHandlers();
         // 의사 전용 액션 등록
         RegisterActionHandler(DoctorAction.Examine, HandleExamine);
+        RegisterActionHandler(DoctorAction.NotifyReceptionist, HandleNotifyReceptionist);
         
         Debug.Log($"[{Name}] 병원 의사 액션 핸들러 초기화 완료");
         Debug.Log($"[{Name}] 사용 가능한 액션: {string.Join(", ", availableActions)}");
     }
     
+    /// <summary>
+    /// 접수처 직원에게 전달 액션 처리 (Talk 아님, 메시지 전달)
+    /// parameters: [message]
+    /// </summary>
+    protected virtual async Task HandleNotifyReceptionist(object[] parameters)
+    {
+        string message = "환자 안내를 요청합니다.";
+        if (parameters != null && parameters.Length >= 1 && !string.IsNullOrEmpty(parameters[0]?.ToString()))
+        {
+            message = parameters[0].ToString();
+        }
+
+        if (receptionist != null)
+        {
+            ShowSpeech(message);
+            receptionist.ReceiveMessage(this, message);
+        }
+        else
+        {
+            ShowSpeech(message);
+        }
+
+        await SimDelay.DelaySimMinutes(1);
+    }
+
     /// <summary>
     /// 병원 의사 전용 커스텀 메시지 변환 함수
     /// </summary>
@@ -189,6 +230,14 @@ public class HospitalDoctor : NPC
                         return $"[{currentTime}] {patientName}에게 {examineDetails}";
                     }
                     return $"[{currentTime}] {patientName}를 진찰한다";
+                }
+                case "notifyreceptionist":
+                {
+                    string notifyMsg = (decision.parameters != null && decision.parameters.Length >= 1 && !string.IsNullOrEmpty(decision.parameters[0]))
+                        ? decision.parameters[0]
+                        : "환자 안내를 요청한다";
+                    string targetName = receptionist != null ? receptionist.Name : "접수처 직원";
+                    return $"[{currentTime}] 접수처 직원 {targetName}에게 \"{notifyMsg}\" 전달";
                 }
                 default:
                     // 공통 액션은 기본 로직 사용

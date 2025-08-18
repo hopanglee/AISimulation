@@ -1,5 +1,7 @@
 public enum NPCRole
 {
 	ConvenienceStoreClerk,
-	HospitalDoctor
+	HospitalDoctor,
+	HospitalReceptionist,
+	CafeWorker
 }
