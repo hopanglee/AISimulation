@@ -11,7 +11,6 @@ using UnityEngine;
 /// </summary>
 public class NPCActionAgent : GPT
 {
-    private readonly ActionCategory npcCategory;
     private readonly INPCAction[] availableActions;
     private readonly Actor owner; // NPC 또는 MainActor 참조
     
@@ -24,13 +23,11 @@ public class NPCActionAgent : GPT
     /// NPCActionAgent 생성자
     /// </summary>
     /// <param name="owner">NPC 또는 MainActor 참조</param>
-    /// <param name="category">NPC의 카테고리</param>
     /// <param name="availableActions">사용 가능한 액션 목록</param>
     /// <param name="npcRole">NPC의 역할</param>
-    public NPCActionAgent(Actor owner, ActionCategory category, INPCAction[] availableActions, NPCRole npcRole) : base()
+    public NPCActionAgent(Actor owner, INPCAction[] availableActions, NPCRole npcRole) : base()
     {
         this.owner = owner;
-        this.npcCategory = category;
         this.availableActions = availableActions;
         
         // NPCRole별 System prompt 로드
@@ -51,7 +48,7 @@ public class NPCActionAgent : GPT
             )
         };
         
-        Debug.Log($"[NPCActionAgent] 생성됨 - 소유자: {owner?.Name}, 카테고리: {category}, 액션 수: {availableActions?.Length ?? 0}");
+        Debug.Log($"[NPCActionAgent] 생성됨 - 소유자: {owner?.Name}, 액션 수: {availableActions?.Length ?? 0}");
     }
     
     /// <summary>

@@ -9,19 +9,17 @@ using UnityEngine;
 public struct NPCAction : INPCAction
 {
 	public string ActionName { get; private set; }
-	public ActionCategory Category { get; private set; }
 	public string Description { get; private set; }
 
-	private NPCAction(string actionName, ActionCategory category, string description)
+	private NPCAction(string actionName, string description)
 	{
 		ActionName = actionName;
-		Category = category;
 		Description = description;
 	}
 
-	public static readonly NPCAction Wait = new("Wait", ActionCategory.Common, "대기");
-	public static readonly NPCAction Talk = new("Talk", ActionCategory.Common, "대화");
-	public static readonly NPCAction GiveItem = new("GiveItem", ActionCategory.Common, "아이템 주기");
+	public static readonly NPCAction Wait = new("Wait", "대기");
+	public static readonly NPCAction Talk = new("Talk", "대화");
+	public static readonly NPCAction GiveItem = new("GiveItem", "아이템 주기");
 
 	public override string ToString() => ActionName;
 	public override bool Equals(object obj) => obj is NPCAction other && ActionName == other.ActionName;

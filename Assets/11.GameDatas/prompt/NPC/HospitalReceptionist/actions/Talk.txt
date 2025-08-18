@@ -1,0 +1,6 @@
+**Talk**: Speak out or speak to a nearby target
+- **Use when**: Greeting, simple announcements, or answering questions
+- **Parameters**: [target_name, message] or [message]
+- **Examples**:
+  - ["환자", "접수 도와드리겠습니다"]
+  - ["잠시만 기다려 주세요"]
