@@ -3,5 +3,6 @@ public enum NPCRole
 	ConvenienceStoreClerk,
 	HospitalDoctor,
 	HospitalReceptionist,
-	CafeWorker
+	CafeWorker,
+	HostClubWorker
 }

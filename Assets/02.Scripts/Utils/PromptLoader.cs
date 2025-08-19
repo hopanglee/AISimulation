@@ -162,6 +162,7 @@ public static class PromptLoader
             NPCRole.HospitalDoctor => "HospitalDoctor",
             NPCRole.HospitalReceptionist => "HospitalReceptionist",
             NPCRole.CafeWorker => "CafeWorker",
+            NPCRole.HostClubWorker => "HostClubWorker",
             _ => "Common"
         };
     }
