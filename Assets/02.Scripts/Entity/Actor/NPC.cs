@@ -111,6 +111,7 @@ public abstract partial class NPC : Actor
             HospitalDoctor => NPCRole.HospitalDoctor,
             HospitalReceptionist => NPCRole.HospitalReceptionist,
             CafeWorker => NPCRole.CafeWorker,
+            HostClubWorker => NPCRole.HostClubWorker,
             _ => throw new System.NotImplementedException($"NPCRole이 정의되지 않은 타입: {GetType().Name}")
         };
         
