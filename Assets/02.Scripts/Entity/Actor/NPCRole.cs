@@ -4,5 +4,6 @@ public enum NPCRole
 	HospitalDoctor,
 	HospitalReceptionist,
 	CafeWorker,
-	HostClubWorker
+	HostClubWorker,
+	IzakayaWorker
 }

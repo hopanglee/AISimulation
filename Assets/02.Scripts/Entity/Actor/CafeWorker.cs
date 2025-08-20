@@ -13,7 +13,8 @@ public class CafeWorker : NPC
     [Title("Cafe References")]
     [SerializeField] private DrinkDispenser beverageMachine;   // 음료 머신 (일반 음료)
     [SerializeField] private DrinkDispenser coffeeMachine;     // 커피 머신 (원두 사용)
-    [SerializeField] private ItemDispenser showcase;           // 쇼케이스 (빵)
+    [SerializeField] private ItemDispenser showcaseBig;        // 쇼케이스 (빅) - 특정 빵 세트
+    [SerializeField] private ItemDispenser showcaseSmall;      // 쇼케이스 (스몰) - 다른 빵 세트
     [SerializeField] private ItemDispenser storage;            // 창고 (CoffeeBag 배출)
 
     /// <summary>
@@ -113,21 +114,35 @@ public class CafeWorker : NPC
                     continue;
                 }
 
-                // 3) 빵
-                if (showcase != null && showcase.HasItemKey(key))
+                // 3) 빵 (쇼케이스 big/small 각각 확인)
+                if (showcaseBig != null && showcaseBig.HasItemKey(key))
                 {
-                    await MoveToEntity(showcase, 1);
-
-                    var bread = showcase.GetItem(key);
+                    await MoveToEntity(showcaseBig, 1);
+                    var bread = showcaseBig.GetItem(key);
                     if (bread is Item breadItem)
                     {
                         PickUp(breadItem);
-                        ShowSpeech($"{key} 가져왔습니다.");
+                        ShowSpeech($"{key} 가져왔습니다. (big)");
                         await SimDelay.DelaySimMinutes(1);
                         continue;
                     }
+                    ShowSpeech($"{key} 가져오기 실패 (big)");
+                    await SimDelay.DelaySimMinutes(1);
+                    continue;
+                }
 
-                    ShowSpeech($"{key} 가져오기 실패");
+                if (showcaseSmall != null && showcaseSmall.HasItemKey(key))
+                {
+                    await MoveToEntity(showcaseSmall, 1);
+                    var bread = showcaseSmall.GetItem(key);
+                    if (bread is Item breadItem)
+                    {
+                        PickUp(breadItem);
+                        ShowSpeech($"{key} 가져왔습니다. (small)");
+                        await SimDelay.DelaySimMinutes(1);
+                        continue;
+                    }
+                    ShowSpeech($"{key} 가져오기 실패 (small)");
                     await SimDelay.DelaySimMinutes(1);
                     continue;
                 }
