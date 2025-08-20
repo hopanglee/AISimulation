@@ -112,6 +112,7 @@ public abstract partial class NPC : Actor
             HospitalReceptionist => NPCRole.HospitalReceptionist,
             CafeWorker => NPCRole.CafeWorker,
             HostClubWorker => NPCRole.HostClubWorker,
+            IzakayaWorker => NPCRole.IzakayaWorker,
             _ => throw new System.NotImplementedException($"NPCRole이 정의되지 않은 타입: {GetType().Name}")
         };
         
@@ -362,10 +363,63 @@ public abstract partial class NPC : Actor
     /// </summary>
     private IEnumerable<string> GetAvailableActionNames()
     {
-        if (availableActions == null || availableActions.Count == 0)
-            return new[] { "Wait", "Talk" }; // 기본값
-            
-        return availableActions.Select(action => action.ActionName);
+        // 런타임에 초기화된 경우 그 목록 사용
+        if (availableActions != null && availableActions.Count > 0)
+        {
+            return availableActions.Select(action => action.ActionName);
+        }
+
+        // 에디터(비플레이)에서 Awake가 실행되지 않아 비어있을 수 있으므로
+        // 기본 액션과 역할별 전용 액션을 리플렉션으로 수집하여 노출
+        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        // 기본 액션 (NPCAction의 public static 필드)
+        CollectActionNamesFromType(typeof(NPCAction), names);
+
+        // 파생 타입 내 선언된 전용 액션 (중첩 타입의 public static INPCAction 필드)
+        CollectActionNamesFromNestedTypes(GetType(), names);
+
+        // 아무 것도 못 찾으면 최소 기본값 노출
+        if (names.Count == 0)
+        {
+            names.Add("Wait");
+            names.Add("Talk");
+        }
+
+        return names;
+    }
+
+    private static void CollectActionNamesFromType(Type type, HashSet<string> names)
+    {
+        try
+        {
+            var fields = type.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            foreach (var f in fields)
+            {
+                if (typeof(INPCAction).IsAssignableFrom(f.FieldType))
+                {
+                    var value = f.GetValue(null) as INPCAction;
+                    if (value != null && !string.IsNullOrEmpty(value.ActionName))
+                    {
+                        names.Add(value.ActionName);
+                    }
+                }
+            }
+        }
+        catch { }
+    }
+
+    private static void CollectActionNamesFromNestedTypes(Type hostType, HashSet<string> names)
+    {
+        try
+        {
+            var nestedTypes = hostType.GetNestedTypes(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+            foreach (var nt in nestedTypes)
+            {
+                CollectActionNamesFromType(nt, names);
+            }
+        }
+        catch { }
     }
     
     /// <summary>

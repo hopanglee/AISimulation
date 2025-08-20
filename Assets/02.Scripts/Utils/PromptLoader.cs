@@ -163,6 +163,7 @@ public static class PromptLoader
             NPCRole.HospitalReceptionist => "HospitalReceptionist",
             NPCRole.CafeWorker => "CafeWorker",
             NPCRole.HostClubWorker => "HostClubWorker",
+            NPCRole.IzakayaWorker => "IzakayaWorker",
             _ => "Common"
         };
     }

@@ -1,0 +1,5 @@
+**Move**: key에 해당하는 위치로 이동한다.
+- parameters: ["location_key"]
+- 예시: ["Kitchen"], ["Counter"], ["Table_3"]
+- 제약: 존재하는 위치 key만 사용한다. 불명확하면 Wait로 넘어간다.
+
