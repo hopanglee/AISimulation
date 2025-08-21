@@ -15,7 +15,7 @@ public class IzakayaWorker : NPC
 {
     [Title("Izakaya Settings")]
     [InfoBox("Cook으로 만들 수 있는 요리 prefab을 key와 함께 등록하세요. key는 에이전트가 사용할 문자열입니다.")]
-    [SerializeField] private SerializableDictionary<string, Item> cookablePrefabs = new();
+    [SerializeField] private SerializableDictionary<string, FoodBlock> cookablePrefabs = new();
 
     [SerializeField, Min(0)] private int cookSimMinutes = 10; // 분 단위 조리 시간 (시뮬레이션 분)
 
@@ -128,17 +128,17 @@ public class IzakayaWorker : NPC
             // 프리팹 인스턴스화
             var prefab = cookablePrefabs[dishKey];
             Vector3 spawnPos = kitchenTransform != null ? kitchenTransform.position : transform.position;
-            Item cookedItem = Instantiate(prefab, spawnPos, Quaternion.identity);
+            FoodBlock cookedFood = Instantiate(prefab, spawnPos, Quaternion.identity);
 
-            // 아이템 이름 유지/세팅
-            cookedItem.Name = prefab.Name;
+            // 이름 유지
+            cookedFood.Name = prefab.Name;
 
             // 손(우선) 또는 인벤토리에 보관 시도
-            bool picked = PickUp(cookedItem);
+            bool picked = PickUp(cookedFood);
             if (!picked)
             {
                 // 손과 인벤토리가 가득한 경우, 현재 위치에 내려놓기
-                cookedItem.curLocation = curLocation;
+                cookedFood.curLocation = curLocation;
                 ShowSpeech($"손과 인벤토리가 가득합니다. {dishKey}를 자리에 두었습니다.");
                 await SimDelay.DelaySimMinutes(1, token);
                 return;

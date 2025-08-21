@@ -199,6 +199,43 @@ public abstract class InventoryBox : Prop
 
     public override string Interact(Actor actor)
     {
-        throw new System.NotImplementedException();
+        if (actor == null)
+        {
+            return "상호작용할 대상이 없습니다.";
+        }
+
+        // actor의 손에 아이템이 있는지 확인
+        if (actor.HandItem != null)
+        {
+            Item handItem = actor.HandItem;
+            
+            // 손에서 아이템 제거
+            actor.HandItem = null;
+            
+            // 인벤토리에 아이템 추가 (AddItem 사용)
+            if (AddItem(handItem))
+            {
+                return $"{handItem.Name}을(를) {GetType().Name}에 보관했습니다.";
+            }
+            else
+            {
+                // 실패한 경우 아이템을 다시 손에 돌려줌
+                actor.HandItem = handItem;
+                return $"{GetType().Name}이(가) 가득 차서 {handItem.Name}을(를) 보관할 수 없습니다.";
+            }
+        }
+        else
+        {
+            // 손에 아이템이 없는 경우 현재 보관된 아이템 정보 표시
+            if (items.Count == 0)
+            {
+                return $"{GetType().Name}이(가) 비어있습니다.";
+            }
+            else
+            {
+                string itemList = string.Join(", ", items.ConvertAll(item => item.Name));
+                return $"{GetType().Name}에 보관된 아이템: {itemList}";
+            }
+        }
     }
 }

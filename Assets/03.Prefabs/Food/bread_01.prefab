@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8309452717251320688}
   - component: {fileID: 6104044842121932730}
   - component: {fileID: 5021750330798832031}
-  - component: {fileID: -4312939360426014895}
+  - component: {fileID: 5924292438115094349}
   m_Layer: 11
   m_Name: bread_01
   m_TagString: Untagged
@@ -110,7 +110,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -5846105067408303410, guid: 49e76ad0e2e8e2047869b942be24ec6c, type: 3}
---- !u!114 &-4312939360426014895
+--- !u!114 &5924292438115094349
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -119,13 +119,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 5743514497555107439}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f17cb6c3050185044b5fbf40477d21e0, type: 3}
+  m_Script: {fileID: 11500000, guid: db56ad67f18578246acb6ff06bee3f86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
-  _isHideChild: 0
-  _name: Corn Bread
+  _isHideChild: 1
+  _name: Cream Bread
   _currentStatusDescription: 
   Description: 
-  Nutrition: 10

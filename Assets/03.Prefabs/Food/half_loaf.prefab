@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3835296296997234313}
   - component: {fileID: 1359316194606502467}
   - component: {fileID: 5117852046014446189}
-  - component: {fileID: 3818424599101659106}
+  - component: {fileID: 6599131749774081148}
   m_Layer: 11
   m_Name: half_loaf
   m_TagString: Untagged
@@ -110,7 +110,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -2733420665773086440, guid: e0b85b8b569f6ed46ab2e570a93c1fb4, type: 3}
---- !u!114 &3818424599101659106
+--- !u!114 &6599131749774081148
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -119,13 +119,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 710933844871312278}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f17cb6c3050185044b5fbf40477d21e0, type: 3}
+  m_Script: {fileID: 11500000, guid: db56ad67f18578246acb6ff06bee3f86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
-  _isHideChild: 0
-  _name: Half Baguette
+  _isHideChild: 1
+  _name: Half Loaf
   _currentStatusDescription: 
   Description: 
-  Nutrition: 10

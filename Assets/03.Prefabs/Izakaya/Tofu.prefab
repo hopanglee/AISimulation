@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4397058854999327225}
   - component: {fileID: 1936982089126147379}
   - component: {fileID: -1922131790698616788}
-  - component: {fileID: 5313321922958594337}
+  - component: {fileID: 1279684548061771}
   m_Layer: 11
   m_Name: Tofu
   m_TagString: Untagged
@@ -111,7 +111,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -9155765063624641048, guid: 4df9970c22ea69d44affe6f74660d8d6, type: 3}
---- !u!114 &5313321922958594337
+--- !u!114 &1279684548061771
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -120,7 +120,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 135519767603172582}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f17cb6c3050185044b5fbf40477d21e0, type: 3}
+  m_Script: {fileID: 11500000, guid: 1b0ffdf5cb1709044b3f4a8d82016c77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
@@ -129,4 +129,7 @@ MonoBehaviour:
   _name: Tofu
   _currentStatusDescription: 
   Description: 
-  Nutrition: 10
+  toMovePos: {fileID: 0}
+  hungerValue: 10
+  currentAmount: 100
+  consumePerInteract: 10

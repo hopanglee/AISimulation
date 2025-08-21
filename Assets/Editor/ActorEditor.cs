@@ -15,18 +15,13 @@ public class ActorEditor : OdinEditor
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Movable Positions", EditorStyles.boldLabel);
 
-        // toMovable에 저장된 각 위치에 대해 버튼 생성
-        if (actor != null)
+        // actor의 sensor가 null이 아니고 movable positions가 있을 때
+        if (actor != null && actor.sensor != null)
         {
-            // actor의 toMovable 필드가 null이 아니고 요소가 있을 때
-            var movableField = typeof(Actor).GetField(
-                "toMovable",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance
-            );
-            var toMovable = movableField.GetValue(actor) as SerializableDictionary<string, Vector3>;
-            if (toMovable != null && toMovable.Count > 0)
+            var movablePositions = actor.sensor.GetMovablePositions();
+            if (movablePositions != null && movablePositions.Count > 0)
             {
-                foreach (var kvp in toMovable)
+                foreach (var kvp in movablePositions)
                 {
                     if (GUILayout.Button($"Move To: {kvp.Key}"))
                     {
@@ -37,9 +32,15 @@ public class ActorEditor : OdinEditor
             else
             {
                 EditorGUILayout.LabelField(
-                    "No movable positions. Please run 'Update Movable Positions'."
+                    "No movable positions. Please run 'Update Lookable Entities'."
                 );
             }
+        }
+        else if (actor != null)
+        {
+            EditorGUILayout.LabelField(
+                "Sensor not found. Please ensure Actor has a Sensor component."
+            );
         }
     }
 }

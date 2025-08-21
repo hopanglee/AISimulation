@@ -253,6 +253,7 @@ public class Brain
             
             // 주변 엔티티 정보
             var lookable = thinkingActor.sensor.GetLookableEntities();
+            var collectible = thinkingActor.sensor.GetCollectibleEntities();
             var interactable = thinkingActor.sensor.GetInteractableEntities();
             var movable = thinkingActor.sensor.GetMovablePositions();
 
@@ -260,6 +261,15 @@ public class Brain
             {
                 sb.AppendLine("\n=== Lookable Entities ===");
                 foreach (var entity in lookable)
+                {
+                    sb.AppendLine($"- {entity.Key}: {entity.Value.GetStatusDescription()}");
+                }
+            }
+
+            if (collectible.Count > 0)
+            {
+                sb.AppendLine("\n=== Collectible Entities ===");
+                foreach (var entity in collectible)
                 {
                     sb.AppendLine($"- {entity.Key}: {entity.Value.GetStatusDescription()}");
                 }

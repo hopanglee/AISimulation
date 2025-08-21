@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 [RequireComponent(typeof(MoveController))]
-public abstract class Actor : Entity, ILocationAware
+public abstract class Actor : Entity, ILocationAware, IInteractable
 {
     // Brain과 Sensor는 ThinkingActor로 이동
     #region Component
@@ -14,37 +15,35 @@ public abstract class Actor : Entity, ILocationAware
     #region Variable
     // Money와 iPhone은 ThinkingActor로 이동
 
-    [ShowInInspector, ReadOnly]
-    private SerializableDictionary<string, Entity> lookable = new();
+    // 모든 Actor가 공통 사용하도록 Sensor를 기본 제공
+    [Header("Perception (Shared)")]
+    public Sensor sensor;
 
     [ShowInInspector, ReadOnly]
-    private Sensor.EntityDictionary interactable = new();
-
-    [ShowInInspector, ReadOnly]
-    private SerializableDictionary<string, Vector3> toMovable = new();
+    private SerializableDictionary<string, Entity> lookable = new(); // 모든 엔티티들 (거리 제한 없음)
 
     #region Status
     [Header("AI Control")]
     [InfoBox("GPT를 비활성화하면 AI Agent를 사용하지 않습니다. 모든 Actor(NPC, MainActor 등)에 적용됩니다.", InfoMessageType.Info)]
     [SerializeField] protected bool useGPT = true;
-    
+
     /// <summary>
     /// GPT 사용 여부를 반환하는 프로퍼티
     /// </summary>
     public bool UseGPT => useGPT;
-    
+
     [Header("Financial System")]
     [SerializeField] protected int money = 0;
-    
+
     /// <summary>
     /// Actor가 소유한 돈
     /// </summary>
-    public int Money 
-    { 
-        get => money; 
+    public int Money
+    {
+        get => money;
         set => money = Mathf.Max(0, value); // 음수 방지
     }
-    
+
     [Header("Physical Needs (0 ~ 100)")]
     [Range(0, 100)]
     public int Hunger; // 배고픔
@@ -105,40 +104,48 @@ public abstract class Actor : Entity, ILocationAware
     {
         base.Awake();
         moveController = GetComponent<MoveController>();
+        // 공통 센서 초기화 (MainActor/NPC 공용)
+        sensor = new Sensor(this);
     }
 
     // OnEnable과 OnDisable은 ThinkingActor로 이동
 
     // Update Function들은 ThinkingActor로 이동
 
-    public bool PickUp(Item item)
+    public bool PickUp(ICollectible collectible)
     {
-        if (HandItem == null)
+        // 현재 인벤토리 시스템은 Item만 저장 가능
+        if (collectible is Item item)
         {
-            HandItem = item;
-            HandItem.curLocation = Hand;
-            item.transform.localPosition = new(0, 0, 0);
-            return true;
-        }
+            if (HandItem == null)
+            {
+                HandItem = item;
+                HandItem.curLocation = Hand;
+                item.transform.localPosition = new(0, 0, 0);
+                return true;
+            }
 
-        if (_inventoryItems[0] == null)
-        {
-            InvenItemSet(0, HandItem);
-            HandItem = item;
-            HandItem.curLocation = Hand;
-            item.transform.localPosition = new(0, 0, 0);
-            return true;
-        }
+            if (_inventoryItems[0] == null)
+            {
+                InvenItemSet(0, HandItem);
+                HandItem = item;
+                HandItem.curLocation = Hand;
+                item.transform.localPosition = new(0, 0, 0);
+                return true;
+            }
 
-        if (_inventoryItems[1] == null)
-        {
-            InvenItemSet(1, HandItem);
-            HandItem = item;
-            HandItem.curLocation = Hand;
-            item.transform.localPosition = new(0, 0, 0);
-            return true;
+            if (_inventoryItems[1] == null)
+            {
+                InvenItemSet(1, HandItem);
+                HandItem = item;
+                HandItem.curLocation = Hand;
+                item.transform.localPosition = new(0, 0, 0);
+                return true;
+            }
+            return false;
         }
-
+        // ICollectible이지만 Item이 아닌 경우(예: FoodBlock)는 현재 인벤토리 구조상 보관 불가
+        Debug.LogWarning($"[{Name}] PickUp: 현재 시스템에서는 Item만 손/인벤토리에 보관할 수 있습니다. ({collectible?.GetType().Name})");
         return false;
     }
 
@@ -173,20 +180,38 @@ public abstract class Actor : Entity, ILocationAware
         }
     }
 
-    public void Interact(string blockKey)
+    public void InteractWithBlock(string blockKey)
     {
-        // SimpleKey로 직접 검색
-        if (interactable.props.ContainsKey(blockKey))
+        // SimpleKey로 직접 검색 (센서에서 필터링)
+        var interactable = sensor?.GetInteractableEntities();
+        if (interactable != null && interactable.props.ContainsKey(blockKey))
         {
             interactable.props[blockKey].Interact(this);
             return;
         }
-        Debug.LogWarning($"[{Name}] Cannot interact with '{blockKey}'. Available props: {string.Join(", ", interactable.props.Keys)}, Available buildings: {string.Join(", ", interactable.buildings.Keys)}");
+        Debug.LogWarning($"[{Name}] Cannot interact with '{blockKey}'. Available props: {string.Join(", ", (interactable?.props.Keys ?? new List<string>()))}, Available buildings: {string.Join(", ", (interactable?.buildings.Keys ?? new List<string>()))}");
     }
+
+    /// <summary>
+    /// IInteractable 인터페이스 구현: 다른 Actor와의 상호작용
+    /// </summary>
+    public virtual string Interact(Actor actor)
+    {
+        if (actor == null)
+        {
+            return "상호작용할 대상이 없습니다.";
+        }
+
+        // 기본적으로는 대화만 가능
+        return $"안녕하세요, {actor.Name}님!";
+    }
+
+
 
     public void Give(string actorKey)
     {
-        if (HandItem != null && interactable.actors.ContainsKey(actorKey))
+        var interactable = sensor?.GetInteractableEntities();
+        if (HandItem != null && interactable != null && interactable.actors.ContainsKey(actorKey))
         {
             var target = interactable.actors[actorKey];
 
@@ -218,7 +243,8 @@ public abstract class Actor : Entity, ILocationAware
 
     public void Move(string locationKey)
     {
-        if (toMovable.ContainsKey(locationKey))
+        var toMovable = sensor?.GetMovablePositions();
+        if (toMovable != null && toMovable.ContainsKey(locationKey))
         {
             var targetPos = toMovable[locationKey];
             moveController.SetTarget(targetPos);
@@ -227,7 +253,7 @@ public abstract class Actor : Entity, ILocationAware
                 // // 도착한 위치로 curLocation 설정
                 // var locationService = Services.Get<ILocationService>();
                 // var curArea = locationService.GetArea(curLocation);
-                
+
                 // if (curArea != null)
                 // {
                 //     // Building에 도착한 경우
@@ -253,15 +279,64 @@ public abstract class Actor : Entity, ILocationAware
                 //         }
                 //     }
                 // }
-                
+
                 // Debug.Log($"[{Name}] {locationKey}에 도착했습니다.");
             };
             Debug.Log($"[{Name}] Moving to {locationKey} at position {targetPos}");
         }
         else
         {
-            Debug.LogWarning($"[{Name}] Cannot move to '{locationKey}'. Available locations: {string.Join(", ", toMovable.Keys)}");
+            Debug.LogWarning($"[{Name}] Cannot move to '{locationKey}'. Available locations: {string.Join(", ", (toMovable?.Keys ?? new List<string>()))}");
         }
+    }
+
+    // Perception update helpers (shared by all Actors)
+    protected void UpdateLookableEntity()
+    {
+        if (sensor == null) return;
+        sensor.UpdateLookableEntities();
+        var sensed = sensor.GetLookableEntities();
+        lookable = sensed ?? new SerializableDictionary<string, Entity>();
+    }
+
+
+    // Odin Inspector Buttons (visible on all Actor derivatives)
+    [PropertyOrder(1)]
+    [Button("Update Lookable Entities")]
+    private void Odin_UpdateLookableEntity()
+    {
+        UpdateLookableEntity();
+        // Lookable 업데이트 직후 이동 가능한 키 목록도 즉시 갱신하고 기본 선택값 지정
+        var mov = sensor?.GetMovablePositions();
+        if (mov != null && mov.Count > 0)
+        {
+            if (string.IsNullOrEmpty(selectedMovableKey) || !mov.ContainsKey(selectedMovableKey))
+            {
+                selectedMovableKey = mov.Keys.First();
+            }
+        }
+    }
+
+    [PropertyOrder(2)]
+    [LabelWidth(200)]
+    [Button("Move To (filtered Movable)")]
+    [ValueDropdown("GetMovableKeys")]
+    public string selectedMovableKey;
+
+    [PropertyOrder(3)]
+    [Button("Go!", ButtonSizes.Small)]
+    private void Odin_MoveToSelectedMovable()
+    {
+        if (!string.IsNullOrEmpty(selectedMovableKey))
+        {
+            Move(selectedMovableKey);
+        }
+    }
+
+    private IEnumerable<string> GetMovableKeys()
+    {
+        var mov = sensor?.GetMovablePositions();
+        return mov != null ? mov.Keys : new List<string>();
     }
 
     /// <summary>
@@ -281,7 +356,7 @@ public abstract class Actor : Entity, ILocationAware
         ShowSpeech(text);
         target.Hear(this, text);
     }
-    
+
     /// <summary>
     /// NPC인지 확인
     /// </summary>
@@ -376,7 +451,7 @@ public abstract class Actor : Entity, ILocationAware
         List<string> messages = new List<string>
         {
             "(테스트) 첫 번째 메시지입니다.",
-            "(테스트) 두 번째 메시지입니다.", 
+            "(테스트) 두 번째 메시지입니다.",
             "(테스트) 세 번째 메시지입니다."
         };
         ShowMultipleSpeech(messages);
@@ -402,9 +477,9 @@ public abstract class Actor : Entity, ILocationAware
     }
 
     #endregion
-    
+
     #region Financial System Methods
-    
+
     /// <summary>
     /// 다른 Actor에게 돈을 줍니다
     /// </summary>
@@ -418,27 +493,27 @@ public abstract class Actor : Entity, ILocationAware
             Debug.LogError($"[{Name}] GiveMoney: 대상이 null입니다.");
             return false;
         }
-        
+
         if (amount <= 0)
         {
             Debug.LogError($"[{Name}] GiveMoney: 잘못된 금액입니다. ({amount})");
             return false;
         }
-        
+
         if (Money < amount)
         {
             Debug.LogWarning($"[{Name}] GiveMoney: 돈이 부족합니다. 보유: {Money}, 필요: {amount}");
             return false;
         }
-        
+
         // 돈 이동
         Money -= amount;
         target.ReceiveMoney(this, amount);
-        
+
         Debug.Log($"[{Name}] {target.Name}에게 {amount}원을 줌. 남은 돈: {Money}");
         return true;
     }
-    
+
     /// <summary>
     /// 다른 Actor로부터 돈을 받습니다
     /// </summary>
@@ -451,14 +526,14 @@ public abstract class Actor : Entity, ILocationAware
             Debug.LogError($"[{Name}] ReceiveMoney: 잘못된 금액입니다. ({amount})");
             return;
         }
-        
+
         Money += amount;
         Debug.Log($"[{Name}] {from.Name}로부터 {amount}원을 받음. 총 돈: {Money}");
-        
+
         // 돈을 받았을 때의 반응 (NPC의 경우 AI Agent 처리)
         OnMoneyReceived(from, amount);
     }
-    
+
     /// <summary>
     /// 돈을 받았을 때 호출되는 가상 메서드 (하위 클래스에서 오버라이드 가능)
     /// </summary>
@@ -470,9 +545,9 @@ public abstract class Actor : Entity, ILocationAware
         // NPC 클래스에서 오버라이드하여 AI Agent 처리 추가 가능
     }
     #endregion
-    
+
     #region AI Control Methods
-    
+
     /// <summary>
     /// GPT 사용 상태를 토글하는 메서드
     /// </summary>
@@ -482,7 +557,7 @@ public abstract class Actor : Entity, ILocationAware
         useGPT = !useGPT;
         Debug.Log($"[{Name}] GPT 사용: {(useGPT ? "활성화" : "비활성화")}");
     }
-    
+
     /// <summary>
     /// GPT 사용 상태를 설정하는 메서드
     /// </summary>
@@ -492,7 +567,7 @@ public abstract class Actor : Entity, ILocationAware
         useGPT = enabled;
         Debug.Log($"[{Name}] GPT 사용: {(useGPT ? "활성화" : "비활성화")}");
     }
-    
+
     #endregion
 
 

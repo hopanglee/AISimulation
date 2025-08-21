@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2779507339119832270}
   - component: {fileID: 105338140885309444}
   - component: {fileID: 4070573718997839650}
-  - component: {fileID: 4362628311682230941}
+  - component: {fileID: 7766913275428806091}
   m_Layer: 11
   m_Name: croissant_cream
   m_TagString: Untagged
@@ -110,7 +110,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 5631148474240438782, guid: 16edcb243db43684787bce5b6cb861d7, type: 3}
---- !u!114 &4362628311682230941
+--- !u!114 &7766913275428806091
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -119,13 +119,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1906922646024190417}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f17cb6c3050185044b5fbf40477d21e0, type: 3}
+  m_Script: {fileID: 11500000, guid: db56ad67f18578246acb6ff06bee3f86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
-  _isHideChild: 0
+  _isHideChild: 1
   _name: Cream Croissant
   _currentStatusDescription: 
   Description: 
-  Nutrition: 10

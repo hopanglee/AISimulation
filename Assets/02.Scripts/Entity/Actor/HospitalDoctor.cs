@@ -267,13 +267,7 @@ public class HospitalDoctor : NPC
             // 결정된 액션을 실제 INPCAction으로 변환
             INPCAction action = actionAgent.GetActionFromDecision(decision);
             
-            // Talk 액션의 경우 target_key를 활용한 처리
-            if (action.ActionName == "Talk")
-            {
-                await HandleTalkWithDecision(decision);
-                Debug.Log($"[{Name}] AI Agent 이벤트 처리 완료 - Talk 액션 (대상: {decision.target_key ?? "없음"})");
-                return;
-            }
+            // Talk 액션은 일반적인 방식으로 처리 (HandleTalkWithDecision 제거됨)
             
             // Examine 액션의 경우 target_key를 활용한 처리 (HospitalDoctor 전용)
             if (action.ActionName == "Examine")

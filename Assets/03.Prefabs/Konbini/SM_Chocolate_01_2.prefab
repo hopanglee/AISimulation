@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1031281083}
   - component: {fileID: 1031281084}
   - component: {fileID: 1031281085}
-  - component: {fileID: -7486232340512328732}
+  - component: {fileID: 6059051935125510691}
   m_Layer: 11
   m_Name: SM_Chocolate_01_2
   m_TagString: Untagged
@@ -91,7 +91,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300008, guid: abc00000000014956127952155534491, type: 3}
---- !u!114 &-7486232340512328732
+--- !u!114 &6059051935125510691
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -100,16 +100,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1031281082}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f17cb6c3050185044b5fbf40477d21e0, type: 3}
+  m_Script: {fileID: 11500000, guid: db56ad67f18578246acb6ff06bee3f86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
-  _isHideChild: 0
+  _isHideChild: 1
   _name: 
   _currentStatusDescription: 
   Description: 
-  Nutrition: 10
 --- !u!1 &1031281086
 GameObject:
   m_ObjectHideFlags: 0

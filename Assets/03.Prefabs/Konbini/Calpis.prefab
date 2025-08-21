@@ -105,7 +105,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
-  _isHideChild: 0
+  _isHideChild: 1
   _name: Calpis
   _currentStatusDescription: 
   Description: 
