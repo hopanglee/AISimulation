@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 341686023298629205}
-  - component: {fileID: -926739386261982507}
+  - component: {fileID: 5234930158499942867}
   m_Layer: 11
   m_Name: Sushi
   m_TagString: Untagged
@@ -44,7 +44,7 @@ Transform:
   - {fileID: 3395414164460658232}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-926739386261982507
+--- !u!114 &5234930158499942867
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -53,7 +53,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7307255737014678231}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f17cb6c3050185044b5fbf40477d21e0, type: 3}
+  m_Script: {fileID: 11500000, guid: 1b0ffdf5cb1709044b3f4a8d82016c77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
@@ -62,7 +62,10 @@ MonoBehaviour:
   _name: Sushi
   _currentStatusDescription: 
   Description: 
-  Nutrition: 10
+  toMovePos: {fileID: 0}
+  hungerValue: 10
+  currentAmount: 100
+  consumePerInteract: 10
 --- !u!1001 &65964064332260187
 PrefabInstance:
   m_ObjectHideFlags: 0

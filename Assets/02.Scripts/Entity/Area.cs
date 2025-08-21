@@ -61,6 +61,10 @@ public class Area : MonoBehaviour, ILocation
     public List<Area> connectedAreas = new();
     public SerializableDictionary<Area, Transform> toMovePos = new(); // area : from, transform : target pos
 
+    [Header("Hierarchy")]
+    [Tooltip("이 Area의 하위 Area들을 수동으로 연결합니다. (Inspector에서 설정)")]
+    public List<Area> childAreas = new();
+
     public string LocationToString()
     {
         if (curLocation == null)

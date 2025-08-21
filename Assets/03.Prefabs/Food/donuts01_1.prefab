@@ -101,7 +101,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
-  _isHideChild: 0
-  Name: 
+  _isHideChild: 1
+  _name: Suger Cream Donut
+  _currentStatusDescription: 
   Description: 
-  Nutrition: 10

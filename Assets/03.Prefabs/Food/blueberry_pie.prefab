@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7334614435984098630}
   - component: {fileID: 4768537614180954508}
   - component: {fileID: 8583715253524459816}
-  - component: {fileID: 2360822739635212190}
+  - component: {fileID: 5290910299828079628}
   m_Layer: 11
   m_Name: blueberry_pie
   m_TagString: Untagged
@@ -110,7 +110,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 7705562059110279538, guid: d876b443ede263544aaea1874a65dfd4, type: 3}
---- !u!114 &2360822739635212190
+--- !u!114 &5290910299828079628
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -119,13 +119,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 6426007480412115033}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f17cb6c3050185044b5fbf40477d21e0, type: 3}
+  m_Script: {fileID: 11500000, guid: db56ad67f18578246acb6ff06bee3f86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
-  _isHideChild: 0
+  _isHideChild: 1
   _name: Blueberry Pie
   _currentStatusDescription: 
   Description: 
-  Nutrition: 10

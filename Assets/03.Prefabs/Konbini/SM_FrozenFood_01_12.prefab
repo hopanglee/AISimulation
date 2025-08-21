@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1031359461}
   - component: {fileID: 1031359462}
   - component: {fileID: 1031359463}
-  - component: {fileID: 7168976433880516123}
+  - component: {fileID: 4288656572959732441}
   m_Layer: 11
   m_Name: SM_FrozenFood_01_12
   m_TagString: Untagged
@@ -91,7 +91,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300008, guid: abc00000000009072740470640983152, type: 3}
---- !u!114 &7168976433880516123
+--- !u!114 &4288656572959732441
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -100,16 +100,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1031359460}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f17cb6c3050185044b5fbf40477d21e0, type: 3}
+  m_Script: {fileID: 11500000, guid: db56ad67f18578246acb6ff06bee3f86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
-  _isHideChild: 0
+  _isHideChild: 1
   _name: 
   _currentStatusDescription: 
   Description: 
-  Nutrition: 10
 --- !u!1 &1031359464
 GameObject:
   m_ObjectHideFlags: 0

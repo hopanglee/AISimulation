@@ -18,8 +18,9 @@ public struct NPCAction : INPCAction
 	}
 
 	public static readonly NPCAction Wait = new("Wait", "대기");
-	public static readonly NPCAction Talk = new("Talk", "대화");
-	public static readonly NPCAction GiveItem = new("GiveItem", "아이템 주기");
+	public static readonly NPCAction GiveItem = new("GiveItem", "손에 있는 아이템을 다른 캐릭터에게 주기");
+	public static readonly NPCAction Talk = new("Talk", "대화하기");
+	public static readonly NPCAction PutDown = new("PutDown", "손에 있는 아이템을 특정 위치에 내려놓기");
 
 	public override string ToString() => ActionName;
 	public override bool Equals(object obj) => obj is NPCAction other && ActionName == other.ActionName;
@@ -35,6 +36,7 @@ public abstract partial class NPC
 		RegisterActionHandler(NPCAction.Wait, HandleWait);
 		RegisterActionHandler(NPCAction.Talk, HandleTalk);
 		RegisterActionHandler(NPCAction.GiveItem, HandleGiveItem);
+		RegisterActionHandler(NPCAction.PutDown, HandlePutDown);
 	}
 
 	protected void RegisterActionHandler(INPCAction action, Func<object[], Task> handler)
@@ -125,6 +127,114 @@ public abstract partial class NPC
 		await SimDelay.DelaySimMinutes(2, currentActionCancellation != null ? currentActionCancellation.Token : default);
 	}
 
+	protected virtual async Task HandlePutDown(object[] parameters)
+	{
+		if (HandItem == null)
+		{
+			ShowSpeech("손에 들고 있는 아이템이 없습니다.");
+			await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
+			return;
+		}
+
+		string targetKey = null;
+		if (parameters != null && parameters.Length > 0)
+		{
+			targetKey = parameters[0]?.ToString();
+		}
+
+		// targetKey가 제공되지 않으면 주변의 InventoryBox를 자동으로 찾기
+		if (string.IsNullOrEmpty(targetKey))
+		{
+			// Sensor를 통해 주변의 InventoryBox 찾기
+			var nearbyInventoryBoxes = FindNearbyInventoryBoxes();
+			if (nearbyInventoryBoxes.Count > 0)
+			{
+				// 가장 가까운 InventoryBox 선택
+				targetKey = nearbyInventoryBoxes[0].GetSimpleKey();
+			}
+		}
+
+		if (!string.IsNullOrEmpty(targetKey))
+		{
+			// InventoryBox 찾기
+			var inventoryBox = FindInventoryBoxByKey(targetKey);
+			if (inventoryBox != null)
+			{
+				// InventoryBox로 이동
+				await MoveToInventoryBox(inventoryBox);
+				
+				// 상호작용하여 아이템 놓기 (공통 함수 사용)
+				InteractWithBlock(targetKey);
+				
+				await SimDelay.DelaySimMinutes(2, currentActionCancellation != null ? currentActionCancellation.Token : default);
+			}
+			else
+			{
+				ShowSpeech($"{targetKey}를 찾을 수 없습니다.");
+				await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
+			}
+		}
+		else
+		{
+			ShowSpeech("주변에 물건을 놓을 수 있는 곳이 없습니다.");
+			await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
+		}
+	}
+
+	/// <summary>
+	/// 주변의 InventoryBox들을 찾습니다.
+	/// </summary>
+	private List<InventoryBox> FindNearbyInventoryBoxes()
+	{
+		var nearbyBoxes = new List<InventoryBox>();
+		
+		// Sensor를 통해 주변의 Props 찾기 (lookable 기반 필터)
+		var inter = sensor?.GetInteractableEntities();
+		if (inter?.props != null)
+		{
+			foreach (var prop in inter.props.Values)
+			{
+				if (prop is InventoryBox inventoryBox)
+				{
+					nearbyBoxes.Add(inventoryBox);
+				}
+			}
+		}
+		
+		return nearbyBoxes;
+	}
+
+	/// <summary>
+	/// 키로 InventoryBox를 찾습니다.
+	/// </summary>
+	private InventoryBox FindInventoryBoxByKey(string key)
+	{
+		// Sensor를 통해 Props에서 찾기
+		var inter = sensor?.GetInteractableEntities();
+		if (inter?.props != null && inter.props.ContainsKey(key))
+		{
+			var prop = inter.props[key];
+			if (prop is InventoryBox inventoryBox)
+			{
+				return inventoryBox;
+			}
+		}
+		
+		return null;
+	}
+
+	/// <summary>
+	/// InventoryBox로 이동합니다.
+	/// </summary>
+	private async Task MoveToInventoryBox(InventoryBox inventoryBox)
+	{
+		// InventoryBox의 위치로 이동
+		Move(inventoryBox.GetSimpleKey());
+		
+		// 이동 완료까지 대기 (간단한 지연)
+		await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
+	}
+
 	protected virtual async Task HandleTalk(object[] parameters)
 	{
 		string targetName = null;
@@ -140,30 +250,6 @@ public abstract partial class NPC
 		}
 		Actor targetActor = null;
 		if (!string.IsNullOrEmpty(targetName)) targetActor = FindActorByName(targetName);
-		if (targetActor != null)
-		{
-			Talk(targetActor, message);
-		}
-		else
-		{
-			ShowSpeech(message);
-		}
-		await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
-	}
-
-	protected virtual async Task HandleTalkWithDecision(NPCActionDecision decision)
-	{
-		string message = "네, 말씀하세요.";
-		Actor targetActor = null;
-		if (!string.IsNullOrEmpty(decision.target_key))
-		{
-			targetActor = FindActorByName(decision.target_key);
-		}
-		if (decision.parameters != null && decision.parameters.Length > 0)
-		{
-			if (decision.parameters.Length >= 1 && !string.IsNullOrEmpty(decision.parameters[0]))
-				message = decision.parameters[0];
-		}
 		if (targetActor != null)
 		{
 			Talk(targetActor, message);

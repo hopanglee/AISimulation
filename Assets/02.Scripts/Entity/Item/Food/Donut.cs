@@ -1,10 +1,10 @@
 using UnityEngine;
 
 [System.Serializable]
-public class Donut : Food
+public class Donut : FoodItem
 {
     public override string Get()
     {
-        throw new System.NotImplementedException();
+        return $"{Name} - 도넛";
     }
 }

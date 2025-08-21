@@ -143,6 +143,8 @@ public abstract partial class NPC : Actor
         
         Debug.Log($"[{Name}] AI Agent 초기화 완료 - 역할: {npcRole}");
     }
+
+    
     
     /// <summary>
     /// AI Agent를 통해 이벤트에 대한 적절한 액션을 결정하고 실행
@@ -160,19 +162,16 @@ public abstract partial class NPC : Actor
         {
             Debug.Log($"[{Name}] AI Agent로 이벤트 처리 시작");
             
+            // 액션 결정보다 먼저 주변 인지 갱신 (lookable만 업데이트)
+            UpdateLookableEntity();
+            
             // Agent를 통해 액션 결정
             NPCActionDecision decision = await actionAgent.DecideAction();
             
             // 결정된 액션을 실제 INPCAction으로 변환
             INPCAction action = actionAgent.GetActionFromDecision(decision);
             
-            // Talk 액션의 경우 target_key를 활용한 처리
-            if (action.ActionName == "Talk")
-            {
-                await HandleTalkWithDecision(decision);
-                Debug.Log($"[{Name}] AI Agent 이벤트 처리 완료 - Talk 액션 (대상: {decision.target_key ?? "없음"})");
-                return;
-            }
+            // Talk 액션은 일반적인 방식으로 처리 (HandleTalkWithDecision 제거됨)
             
 
             

@@ -15,7 +15,6 @@ public abstract class MainActor : Actor
 {
 	[Header("Thinking System")]
 	public Brain brain;
-	public Sensor sensor;
 	
 	[Header("Items")]
 	public iPhone iPhone;
@@ -110,7 +109,6 @@ public abstract class MainActor : Actor
 	{
 		base.Awake();
 		brain = new(this);
-		sensor = new(this);
 	}
 
 	protected override void OnEnable()
@@ -128,25 +126,7 @@ public abstract class MainActor : Actor
 	}
 
 	#region Update Function
-	// All Entities in same location
-	protected void UpdateLookableEntity()
-	{
-		sensor.UpdateLookableEntities();
-		var lookable = sensor.GetLookableEntities();
-	}
-
-	// the entites, near the actor in same location
-	protected void UpdateInteractableEntity()
-	{
-		sensor.UpdateInteractableEntities();
-		var interactable = sensor.GetInteractableEntities();
-	}
-
-	protected void UpdateMovablePos()
-	{
-		sensor.UpdateMovablePositions();
-		var toMovable = sensor.GetMovablePositions();
-	}
+	// 메서드들은 Actor로 이동하여 공용화됨
 	#endregion
 
 	#region Sleep System
@@ -439,23 +419,7 @@ public abstract class MainActor : Actor
 	#endregion
 	
 	#region Odin Inspector Buttons
-	[Button("Update Lookable Entities")]
-	private void Odin_UpdateLookableEntity()
-	{
-		UpdateLookableEntity();
-	}
-
-	[Button("Update Interactable Entities")]
-	private void Odin_UpdateInteractableEntity()
-	{
-		UpdateInteractableEntity();
-	}
-
-	[Button("Update Movable Positions")]
-	private void Odin_UpdateMovablePos()
-	{
-		UpdateMovablePos();
-	}
+	// 버튼들은 Actor로 이동하여 공용화됨
 	#endregion
 }
 

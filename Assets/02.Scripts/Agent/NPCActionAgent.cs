@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using OpenAI.Chat;
 using UnityEngine;
+using Agent.Tools; // 도구 관련 클래스들을 사용하기 위해 추가
 
 /// <summary>
 /// NPC 액션 결정을 위한 GPT Agent
@@ -13,6 +14,7 @@ public class NPCActionAgent : GPT
 {
     private readonly INPCAction[] availableActions;
     private readonly Actor owner; // NPC 또는 MainActor 참조
+    private IToolExecutor toolExecutor; // 도구 실행자 추가
     
     /// <summary>
     /// 액션을 자연스러운 메시지로 변환하는 커스텀 함수
@@ -29,12 +31,13 @@ public class NPCActionAgent : GPT
     {
         this.owner = owner;
         this.availableActions = availableActions;
+        this.toolExecutor = new ActorToolExecutor(owner); // 도구 실행자 초기화
         
         // NPCRole별 System prompt 로드
         string systemPrompt = PromptLoader.LoadNPCRoleSystemPrompt(npcRole, availableActions);
         messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
         
-        // Options 초기화 - JSON 스키마 포맷 설정
+        // Options 초기화 - JSON 스키마 포맷 설정 (최초 1회)
         options = new ChatCompletionOptions
         {
             ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
@@ -47,6 +50,9 @@ public class NPCActionAgent : GPT
                 jsonSchemaIsStrict: true
             )
         };
+        
+        // 도구 추가 - ItemManagement 도구 세트 추가
+        ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.ItemManagement);
         
         Debug.Log($"[NPCActionAgent] 생성됨 - 소유자: {owner?.Name}, 액션 수: {availableActions?.Length ?? 0}");
     }
@@ -98,35 +104,11 @@ public class NPCActionAgent : GPT
         
         try
         {
-            // Actor의 sensor를 통해 주변 인물 정보 가져오기
-            if (owner is Actor actor)
+            // 모든 Actor가 Sensor를 보유하므로 Sensor 기반으로만 수집
+            if (owner?.sensor != null)
             {
-                // Sensor가 있는 경우 (MainActor 등)
-                if (actor is MainActor mainActor && mainActor.sensor != null)
-                {
-                    var interactableEntities = mainActor.sensor.GetInteractableEntities();
-                    keys.AddRange(interactableEntities.actors.Keys);
-                }
-                // NPC의 경우 직접 LocationService를 통해 주변 인물 찾기
-                else
-                {
-                    var locationService = Services.Get<ILocationService>();
-                    if (locationService != null)
-                    {
-                        var currentArea = locationService.GetArea(actor.curLocation);
-                        if (currentArea != null)
-                        {
-                            var actors = locationService.GetActor(currentArea, actor);
-                            foreach (var nearbyActor in actors)
-                            {
-                                if (nearbyActor != actor) // 자기 자신 제외
-                                {
-                                    keys.Add(nearbyActor.Name);
-                                }
-                            }
-                        }
-                    }
-                }
+                var interactableEntities = owner.sensor.GetInteractableEntities();
+                keys.AddRange(interactableEntities.actors.Keys);
             }
         }
         catch (Exception ex)
@@ -147,6 +129,15 @@ public class NPCActionAgent : GPT
     {
         try
         {
+            // 최신 인지 스냅샷 반영 (NPC에서 선행 호출하지만 안전망으로 한 번 더 처리)
+            if (owner?.sensor != null)
+            {
+                owner.sensor.UpdateLookableEntities();
+            }
+
+            // 최신 스냅샷으로 ResponseFormat의 target_key enum 갱신
+            UpdateResponseFormatSchema();
+
             // 현재 상황 정보를 system 메시지로 자동 추가
             AddCurrentSituationInfo();
             
@@ -322,38 +313,16 @@ public class NPCActionAgent : GPT
         
         try
         {
-            if (owner is Actor actor)
+            if (owner != null)
             {
-                // Sensor가 있는 경우 (MainActor 등)
-                if (actor is MainActor mainActor && mainActor.sensor != null)
+                if (owner.sensor != null)
                 {
-                    var interactableEntities = mainActor.sensor.GetInteractableEntities();
+                    var interactableEntities = owner.sensor.GetInteractableEntities();
                     foreach (var kvp in interactableEntities.actors)
                     {
                         var nearbyActor = kvp.Value;
                         var actorStatus = GetActorBriefStatus(nearbyActor);
                         actorsInfo.Add($"{kvp.Key}({actorStatus})");
-                    }
-                }
-                // NPC의 경우 직접 LocationService를 통해 주변 인물 찾기
-                else
-                {
-                    var locationService = Services.Get<ILocationService>();
-                    if (locationService != null)
-                    {
-                        var currentArea = locationService.GetArea(actor.curLocation);
-                        if (currentArea != null)
-                        {
-                            var actors = locationService.GetActor(currentArea, actor);
-                            foreach (var nearbyActor in actors)
-                            {
-                                if (nearbyActor != actor) // 자기 자신 제외
-                                {
-                                    var actorStatus = GetActorBriefStatus(nearbyActor);
-                                    actorsInfo.Add($"{nearbyActor.Name}({actorStatus})");
-                                }
-                            }
-                        }
                     }
                 }
             }
@@ -364,6 +333,29 @@ public class NPCActionAgent : GPT
         }
         
         return actorsInfo.Count > 0 ? string.Join(", ", actorsInfo) : "없음";
+    }
+
+    /// <summary>
+    /// 최신 주변 스냅샷을 반영해 ResponseFormat의 target_key enum을 갱신합니다.
+    /// </summary>
+    private void UpdateResponseFormatSchema()
+    {
+        try
+        {
+            options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
+                jsonSchemaFormatName: "npc_action_decision",
+                jsonSchema: BinaryData.FromBytes(
+                    System.Text.Encoding.UTF8.GetBytes(
+                        CreateJsonSchema()
+                    )
+                ),
+                jsonSchemaIsStrict: true
+            );
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[NPCActionAgent] ResponseFormat 갱신 실패: {ex.Message}");
+        }
     }
     
     /// <summary>
@@ -444,8 +436,16 @@ public class NPCActionAgent : GPT
     /// </summary>
     protected override void ExecuteToolCall(ChatToolCall toolCall)
     {
-        // NPC Agent는 현재 Tool을 사용하지 않음
-        Debug.LogWarning($"[NPCActionAgent] Tool call received but not implemented: {toolCall.FunctionName}");
+        if (toolExecutor != null)
+        {
+            string result = toolExecutor.ExecuteTool(toolCall);
+            messages.Add(new ToolChatMessage(toolCall.Id, result));
+            Debug.Log($"[NPCActionAgent] Tool 실행 완료: {toolCall.FunctionName} - 결과: {result}");
+        }
+        else
+        {
+            Debug.LogWarning($"[NPCActionAgent] Tool executor가 없어서 도구를 실행할 수 없습니다: {toolCall.FunctionName}");
+        }
     }
     
     /// <summary>

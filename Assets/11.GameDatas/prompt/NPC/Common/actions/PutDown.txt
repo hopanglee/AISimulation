@@ -1,0 +1,55 @@
+# PutDown Action - Common NPC Role
+
+## Action Name
+PutDown
+
+## Description
+손에 들고 있는 아이템을 특정 위치나 표면에 내려놓습니다. 책상, 선반, 바닥 등에 아이템을 놓을 수 있습니다.
+
+## Usage
+PutDown 액션은 NPC가 손에 들고 있는 아이템을 주변의 적절한 위치에 내려놓을 때 사용합니다. target_key로 특정 위치를 지정하거나, parameters로 추가 정보를 제공할 수 있습니다.
+
+## Category
+Item Management
+
+## Parameters
+- **target_key**: 아이템을 놓을 위치나 표면의 키 (예: 'table', 'shelf', 'counter') - 선택사항
+- **parameters[0]**: 추가 위치 정보나 특별한 지시사항 - 선택사항
+
+## Examples
+
+### Example 1: 책상에 커피 놓기
+- **target_key**: "table"
+- **parameters**: null
+- **결과**: "커피를 table에 내려놓는다"
+
+### Example 2: 현재 위치에 아이템 놓기
+- **target_key**: null
+- **parameters**: null
+- **결과**: "커피를 현재 위치에 내려놓는다"
+
+### Example 3: 선반에 책 놓기
+- **target_key**: "shelf"
+- **parameters**: ["top"]
+- **결과**: "책을 shelf에 내려놓는다"
+
+## Requirements
+- NPC가 손에 아이템을 들고 있어야 함 (HandItem != null)
+- target_key가 유효한 위치 키여야 함 (존재하는 table, shelf 등)
+- 해당 위치에 접근 가능해야 함
+
+## When to Use
+- 손에 들고 있는 아이템을 더 이상 필요하지 않을 때
+- 아이템을 정리하거나 보관할 때
+- 다른 작업을 위해 손을 비워야 할 때
+- 아이템을 특정 위치에 배치해야 할 때
+
+## Related Actions
+- PickUp - 아이템을 집어들기
+- GiveItem - 다른 캐릭터에게 아이템 주기
+- Move - 특정 위치로 이동하기
+
+## Notes
+- 이 액션은 모든 Common NPC 역할에서 사용 가능합니다
+- target_key가 제공되지 않으면 주변의 InventoryBox를 자동으로 찾습니다
+- 아이템을 놓은 후에는 손이 비워집니다

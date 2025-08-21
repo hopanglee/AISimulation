@@ -39,6 +39,10 @@ public class SimulationController : MonoBehaviour
     [SerializeField]
     private Button focusKamiyaButton;
 
+    [Header("AI Settings")]
+    [SerializeField]
+    private Toggle globalGPTToggle; // 모든 Actor의 GPT 사용 여부 토글
+
     [Header("Settings")]
     [SerializeField]
     private bool autoStartOnPlay = false;
@@ -131,6 +135,12 @@ public class SimulationController : MonoBehaviour
 
         if (focusKamiyaButton != null)
             focusKamiyaButton.onClick.AddListener(FocusOnKamiya);
+
+        // GPT 글로벌 토글 연결
+        if (globalGPTToggle != null)
+        {
+            globalGPTToggle.onValueChanged.AddListener(SetGlobalGPTUsage);
+        }
     }
 
     private void Update()
@@ -355,5 +365,29 @@ public class SimulationController : MonoBehaviour
 
         if (focusKamiyaButton != null)
             focusKamiyaButton.onClick.RemoveListener(FocusOnKamiya);
+
+        if (globalGPTToggle != null)
+            globalGPTToggle.onValueChanged.RemoveListener(SetGlobalGPTUsage);
+    }
+
+    /// <summary>
+    /// 씬 내 모든 Actor의 GPT 사용 여부를 토글 값에 맞게 설정
+    /// </summary>
+    /// <param name="enabled">true면 GPT 사용, false면 비사용</param>
+    private void SetGlobalGPTUsage(bool enabled)
+    {
+        var actors = Object.FindObjectsByType<Actor>(FindObjectsSortMode.None);
+        Debug.Log($"[SimulationController] Found {actors.Length} actors in scene");
+        
+        foreach (var actor in actors)
+        {
+            if (actor != null)
+            {
+                Debug.Log($"[SimulationController] Setting GPT usage for {actor.Name} ({actor.GetType().Name}): {enabled}");
+                actor.SetGPTUsage(enabled);
+                Debug.Log($"[SimulationController] {actor.Name} GPT usage is now: {actor.UseGPT}");
+            }
+        }
+        Debug.Log($"[SimulationController] Set global GPT usage: {(enabled ? "ENABLED" : "DISABLED")} for {actors.Length} actors");
     }
 }

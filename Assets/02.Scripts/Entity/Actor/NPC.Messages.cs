@@ -57,6 +57,27 @@ public abstract partial class NPC
 				return $"[{currentTime}] {itemName}을 준다";
 			}
 
+			case "putdown":
+			{
+				string itemName = HandItem?.Name ?? "아이템";
+				string locationName = null;
+
+				if (!string.IsNullOrEmpty(decision?.target_key))
+				{
+					locationName = decision.target_key;
+				}
+				else if (decision?.parameters != null && decision.parameters.Length >= 1)
+				{
+					locationName = decision.parameters[0]?.ToString();
+				}
+
+				if (!string.IsNullOrEmpty(locationName))
+				{
+					return $"[{currentTime}] {itemName}을 {locationName}에 내려놓는다";
+				}
+				return $"[{currentTime}] {itemName}을 현재 위치에 내려놓는다";
+			}
+
 			default:
 				return $"[{currentTime}] {decision.actionType}을 한다";
 		}

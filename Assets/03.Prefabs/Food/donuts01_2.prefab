@@ -11,13 +11,14 @@ GameObject:
   - component: {fileID: 4009487268920156}
   - component: {fileID: 33226276883707344}
   - component: {fileID: 23639169065703446}
+  - component: {fileID: 144675208753382564}
   m_Layer: 11
   m_Name: donuts01_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4009487268920156
 Transform:
   m_ObjectHideFlags: 0
@@ -86,3 +87,21 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &144675208753382564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1300349595232182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db56ad67f18578246acb6ff06bee3f86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 0}
+  _preposition: 
+  _isHideChild: 1
+  _name: Blue Cream Donut
+  _currentStatusDescription: 
+  Description: 

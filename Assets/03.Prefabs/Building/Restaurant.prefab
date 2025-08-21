@@ -1025,6 +1025,7 @@ MonoBehaviour:
   toMovePos:
     keys: []
     values: []
+  childAreas: []
 --- !u!1 &1055122390291440627
 GameObject:
   m_ObjectHideFlags: 0
@@ -4573,7 +4574,7 @@ GameObject:
   m_Layer: 0
   m_Name: Kitchen
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 4422084297763085224, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -7365,6 +7366,7 @@ MonoBehaviour:
   toMovePos:
     keys: []
     values: []
+  childAreas: []
 --- !u!1 &8956912190583880332
 GameObject:
   m_ObjectHideFlags: 0

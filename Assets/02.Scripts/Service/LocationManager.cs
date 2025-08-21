@@ -23,6 +23,11 @@ public interface ILocationService : IService
     public void Remove(ILocation key, Entity value);
 
     /// <summary>
+    /// 지정한 Area를 curLocation으로 갖는 하위 Area 목록을 반환합니다.
+    /// </summary>
+    public List<Area> GetChildAreas(Area parent);
+
+    /// <summary>
     /// 전체 월드의 Area 정보를 반환 (Static Tool)
     /// </summary>
     public string GetWorldAreaInfo();
@@ -251,6 +256,36 @@ public class LocationService : ILocationService
             else
                 Debug.LogError($"Wrong key {key.locationName}");
         }
+    }
+
+    public List<Area> GetChildAreas(Area parent)
+    {
+        var result = new List<Area>();
+        if (parent == null) return result;
+
+        // 1) Inspector로 연결된 childAreas 우선 사용
+        if (parent.childAreas != null && parent.childAreas.Count > 0)
+        {
+            foreach (var child in parent.childAreas)
+            {
+                if (child != null && !child.IsHideChild)
+                {
+                    result.Add(child);
+                }
+            }
+        }
+        return result;
+
+        // // 2) 백업: curLocation 체인을 통해 직접 자식 탐색 (hide 제외)
+        // var allAreas = UnityEngine.Object.FindObjectsByType<Area>(FindObjectsSortMode.None);
+        // foreach (var area in allAreas)
+        // {
+        //     if (area != null && !area.IsHideChild && area.curLocation == parent)
+        //     {
+        //         result.Add(area);
+        //     }
+        // }
+        // return result;
     }
 
     /// <summary>

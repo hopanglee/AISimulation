@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3253579413408361884}
   - component: {fileID: 775743338944551254}
   - component: {fileID: 4812623388912346473}
-  - component: {fileID: 9136907232495084651}
+  - component: {fileID: 1816396147844965772}
   m_Layer: 11
   m_Name: basket_berries
   m_TagString: Untagged
@@ -110,7 +110,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 9145550471899996634, guid: 1cda6f628f58c4f418288c3be71e6286, type: 3}
---- !u!114 &9136907232495084651
+--- !u!114 &1816396147844965772
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -119,13 +119,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1279868938997856387}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f17cb6c3050185044b5fbf40477d21e0, type: 3}
+  m_Script: {fileID: 11500000, guid: db56ad67f18578246acb6ff06bee3f86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
-  _isHideChild: 0
-  _name: Blueberry Bread
+  _isHideChild: 1
+  _name: Blueberry Basket
   _currentStatusDescription: 
   Description: 
-  Nutrition: 10
