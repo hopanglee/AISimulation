@@ -16,14 +16,10 @@ namespace Agent
 
         private readonly string systemPrompt;
         private readonly List<string> objectList;
-        private readonly string personality;
-        private readonly string memorySummary;
 
-        public UseObjectParameterAgent(List<string> objectList, string personality, string memorySummary, GPT gpt)
+        public UseObjectParameterAgent(List<string> objectList, GPT gpt)
         {
             this.objectList = objectList;
-            this.personality = personality;
-            this.memorySummary = memorySummary;
             systemPrompt = PromptLoader.LoadPrompt("UseObjectParameterAgentPrompt.txt", "You are a UseObject parameter generator.");
             this.options = new ChatCompletionOptions
             {

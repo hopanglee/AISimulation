@@ -98,18 +98,18 @@ namespace Agent
             {
                 agent.SetActor(actor);
                 return agent;
-            }
+            }           
             return new Dictionary<ActionType, ParameterAgentBase>
             {
                 { ActionType.MoveToArea, SetActor(new MoveToAreaParameterAgent(new List<string>(), gpt)) },
                 { ActionType.MoveToEntity, SetActor(new MoveToEntityParameterAgent(new List<string>(), gpt)) },
                 { ActionType.SpeakToCharacter, SetActor(new TalkParameterAgent(new List<string>(), gpt)) },
-                { ActionType.UseObject, SetActor(new UseObjectParameterAgent(new List<string>(), "", "", gpt)) },
-                { ActionType.PickUpItem, SetActor(new PickUpItemParameterAgent(new List<string>(), "", "", gpt)) },
+                { ActionType.UseObject, SetActor(new UseObjectParameterAgent(new List<string>(), gpt)) },
+                { ActionType.PickUpItem, SetActor(new PickUpItemParameterAgent(new List<string>(), gpt)) },
                 { ActionType.InteractWithObject, SetActor(new InteractWithObjectParameterAgent(new List<string>(), gpt)) },
-                { ActionType.GiveMoney, SetActor(new GiveMoneyParameterAgent(new List<string>(), "", "", gpt)) },
-                { ActionType.GiveItem, SetActor(new GiveItemParameterAgent(new List<string>(), "", "", gpt)) },
-
+                { ActionType.PutDown, SetActor(new PutDownParameterAgent(new List<string>(), gpt)) }, 
+                { ActionType.GiveMoney, SetActor(new GiveMoneyParameterAgent(new List<string>(), gpt)) },
+                { ActionType.GiveItem, SetActor(new GiveItemParameterAgent(new List<string>(), gpt)) },
                 { ActionType.Wait, SetActor(new WaitParameterAgent(gpt)) },
                 { ActionType.PerformActivity, SetActor(new PerformActivityParameterAgent(new List<string>(), gpt)) },
             };

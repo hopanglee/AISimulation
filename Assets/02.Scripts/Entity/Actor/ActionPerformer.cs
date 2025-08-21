@@ -126,6 +126,11 @@ public class ActionPerformer
         );
 
         actionExecutor.RegisterHandler(
+            ActionType.PutDown,
+            async (parameters) => await HandlePutDown(parameters, currentToken)
+        );
+
+        actionExecutor.RegisterHandler(
             ActionType.GiveMoney,
             async (parameters) => await HandleGiveMoney(parameters, currentToken)
         );
@@ -493,8 +498,6 @@ public class ActionPerformer
         await SimDelay.DelaySimMinutes(2);
     }
 
-    
-
     /// <summary>
     /// 대기하는 액션을 처리합니다.
     /// </summary>
@@ -718,5 +721,39 @@ public class ActionPerformer
 
         Debug.LogWarning($"[{actor.Name}] 아이템을 찾을 수 없음: {itemName}");
         return null;
+    }
+
+    /// <summary>
+    /// PutDown 액션을 처리합니다.
+    /// </summary>
+    private async UniTask HandlePutDown(Dictionary<string, object> parameters, CancellationToken token)
+    {
+        try
+        {
+            if (actor.HandItem == null)
+            {
+                Debug.LogWarning($"[{actor.Name}] PutDown: 손에 아이템이 없습니다.");
+                return;
+            }
+
+            if (!parameters.TryGetValue("target_key", out var targetKeyObj) || targetKeyObj == null)
+            {
+                Debug.LogWarning($"[{actor.Name}] PutDown: target_key가 제공되지 않았습니다.");
+                return;
+            }
+
+            string targetKey = targetKeyObj.ToString();
+            Debug.Log($"[{actor.Name}] PutDown: {actor.HandItem.Name}을(를) {targetKey}에 내려놓으려고 합니다.");
+
+            // target_key는 현재 위치 내에서의 특정 표면이나 위치를 의미
+            // 이동 없이 현재 위치에 아이템을 내려놓기
+            actor.PutDown(null);
+            await SimDelay.DelaySimMinutes(1);
+            Debug.Log($"[{actor.Name}] PutDown 완료: {actor.HandItem?.Name ?? "아이템"}을(를) {targetKey}에 내려놓았습니다.");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[{actor.Name}] HandlePutDown 오류: {ex.Message}");
+        }
     }
 }

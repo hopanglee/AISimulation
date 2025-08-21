@@ -16,14 +16,10 @@ namespace Agent
 
         private readonly string systemPrompt;
         private readonly List<string> characterList;
-        private readonly string personality;
-        private readonly string memorySummary;
 
-        public GiveMoneyParameterAgent(List<string> characterList, string personality, string memorySummary, GPT gpt)
+        public GiveMoneyParameterAgent(List<string> characterList, GPT gpt)
         {
             this.characterList = characterList;
-            this.personality = personality;
-            this.memorySummary = memorySummary;
             
             // 프롬프트 로드
             systemPrompt = PromptLoader.LoadPrompt("GiveMoneyParameterAgentPrompt.txt", "You are a GiveMoney parameter generator.");
@@ -86,7 +82,7 @@ namespace Agent
 
         private string BuildUserMessage(CommonContext context)
         {
-            return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableCharacters: {string.Join(", ", characterList)}\nPersonality: {personality}\nMemorySummary: {memorySummary}";//\nCurrentMoney: {actor.Money}
+            return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableCharacters: {string.Join(", ", characterList)}";//\nCurrentMoney: {actor.Money}
         }
     }
 } 

@@ -18,7 +18,7 @@ public enum ActionType
     UseObject,
     PickUpItem,
     InteractWithObject,
-
+    PutDown, // 아이템을 특정 위치에 내려놓기
     GiveMoney,
     GiveItem,
     //ObserveEnvironment,

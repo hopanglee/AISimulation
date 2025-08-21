@@ -127,6 +127,7 @@ namespace Agent
                 availableActions.Add(ActionType.UseObject);
                 availableActions.Add(ActionType.PickUpItem);
                 availableActions.Add(ActionType.InteractWithObject);
+                availableActions.Add(ActionType.PutDown); // 아이템을 특정 위치에 내려놓기
                 availableActions.Add(ActionType.GiveMoney);
                 availableActions.Add(ActionType.GiveItem);
 
@@ -161,6 +162,12 @@ namespace Agent
                         availableActions.Remove(ActionType.UseObject);
                         availableActions.Remove(ActionType.PickUpItem);
                         availableActions.Remove(ActionType.InteractWithObject);
+                    }
+                    
+                    // 손에 아이템이 없으면 PutDown 제한
+                    if (thinkingActor.HandItem == null)
+                    {
+                        availableActions.Remove(ActionType.PutDown);
                     }
                     
                     if (interactable.actors.Count == 0)

@@ -19,14 +19,11 @@ namespace Agent
 
         private readonly string systemPrompt;
         private readonly List<string> characterList;
-        private readonly string personality;
-        private readonly string memorySummary;
 
-        public GiveItemParameterAgent(List<string> characterList, string personality, string memorySummary, GPT gpt)
+
+        public GiveItemParameterAgent(List<string> characterList, GPT gpt)
         {
             this.characterList = characterList;
-            this.personality = personality;
-            this.memorySummary = memorySummary;
             
             // 프롬프트 로드
             systemPrompt = PromptLoader.LoadPrompt("GiveItemParameterAgentPrompt.txt", "You are a GiveItem parameter generator.");
@@ -92,7 +89,7 @@ namespace Agent
             var handItem = actor.HandItem?.Name ?? "Empty";
             var inventoryItems = actor.InventoryItems.Where(item => item != null).Select(item => item.Name).ToList();
             
-            return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableCharacters: {string.Join(", ", characterList)}\nPersonality: {personality}\nMemorySummary: {memorySummary}\nHandItem: {handItem}\nInventoryItems: {string.Join(", ", inventoryItems)}";
+            return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableCharacters: {string.Join(", ", characterList)}\nHandItem: {handItem}\nInventoryItems: {string.Join(", ", inventoryItems)}";
         }
     }
 } 
