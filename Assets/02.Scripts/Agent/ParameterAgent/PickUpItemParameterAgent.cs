@@ -16,14 +16,10 @@ namespace Agent
 
         private readonly string systemPrompt;
         private readonly List<string> itemList;
-        private readonly string personality;
-        private readonly string memorySummary;
 
-        public PickUpItemParameterAgent(List<string> itemList, string personality, string memorySummary, GPT gpt)
+        public PickUpItemParameterAgent(List<string> itemList, GPT gpt)
         {
             this.itemList = itemList;
-            this.personality = personality;
-            this.memorySummary = memorySummary;
             systemPrompt = PromptLoader.LoadPrompt("PickUpItemParameterAgentPrompt.txt", "You are a PickUpItem parameter generator.");
             this.options = new ChatCompletionOptions
             {
