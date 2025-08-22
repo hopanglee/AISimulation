@@ -6,6 +6,7 @@ using OpenAI.Chat;
 using System;
 using UnityEngine;
 using Agent.Tools;
+using System.Threading;
 
 namespace Agent
 {
@@ -68,6 +69,24 @@ namespace Agent
             ToolManager.AddToolSetToOptions(options, toolSet);
         }
 
+        /// <summary>
+        /// 최신 주변 상황을 반영해 ResponseFormat을 동적으로 갱신하는 가상 메서드
+        /// 하위 클래스에서 오버라이드하여 구현
+        /// </summary>
+        protected virtual void UpdateResponseFormatSchema()
+        {
+            // 기본 구현은 아무것도 하지 않음
+            // 하위 클래스에서 필요한 경우 오버라이드
+        }
+
+        /// <summary>
+        /// GPT에 물어보기 전에 responseformat을 동적으로 갱신하는 헬퍼 메서드
+        /// </summary>
+        protected void UpdateResponseFormatBeforeGPT()
+        {
+            UpdateResponseFormatSchema();
+        }
+
 
     }
 
@@ -104,13 +123,13 @@ namespace Agent
                 { ActionType.MoveToArea, SetActor(new MoveToAreaParameterAgent(new List<string>(), gpt)) },
                 { ActionType.MoveToEntity, SetActor(new MoveToEntityParameterAgent(new List<string>(), gpt)) },
                 { ActionType.SpeakToCharacter, SetActor(new TalkParameterAgent(new List<string>(), gpt)) },
-                { ActionType.UseObject, SetActor(new UseObjectParameterAgent(new List<string>(), gpt)) },
+                //{ ActionType.UseObject, SetActor(new UseObjectParameterAgent(gpt)) },
                 { ActionType.PickUpItem, SetActor(new PickUpItemParameterAgent(new List<string>(), gpt)) },
                 { ActionType.InteractWithObject, SetActor(new InteractWithObjectParameterAgent(new List<string>(), gpt)) },
                 { ActionType.PutDown, SetActor(new PutDownParameterAgent(new List<string>(), gpt)) }, 
                 { ActionType.GiveMoney, SetActor(new GiveMoneyParameterAgent(new List<string>(), gpt)) },
                 { ActionType.GiveItem, SetActor(new GiveItemParameterAgent(new List<string>(), gpt)) },
-                { ActionType.Wait, SetActor(new WaitParameterAgent(gpt)) },
+                //{ ActionType.Wait, SetActor(new WaitParameterAgent(gpt)) },
                 { ActionType.PerformActivity, SetActor(new PerformActivityParameterAgent(new List<string>(), gpt)) },
             };
         }

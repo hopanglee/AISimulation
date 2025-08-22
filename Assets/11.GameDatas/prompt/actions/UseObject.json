@@ -1,16 +1,9 @@
 {
   "name": "UseObject",
   "displayName": "Use Object",
-  "description": "Use or operate an object in the simulation world.",
-  "usage": "Use this action when you want to interact with an object to perform a specific function.",
-  "parameters": [
-    {
-      "name": "object_name",
-      "type": "string",
-      "description": "The name of the object to use",
-      "required": true
-    }
-  ],
+  "description": "Use or operate the item currently held in the Actor's Hand.",
+  "usage": "Use this action when you want to use the item you are currently holding for its intended purpose.",
+  "parameters": [],
   "examples": [
     "Using a phone to make a call",
     "Using a computer to check emails",
@@ -18,14 +11,14 @@
     "Using furniture to sit or rest"
   ],
   "requirements": [
-    "Object must be nearby and interactable",
-    "Object must be included in the available interactable entities"
+    "Actor must have an item in their Hand",
+    "The held item must be usable (implements IUsable interface)"
   ],
   "whenToUse": [
-    "Need to perform a task with an object",
-    "Want to operate a device or appliance",
-    "Need to use furniture for its intended purpose",
-    "Want to interact with interactive objects"
+    "Need to perform a task with the item you're holding",
+    "Want to operate a device or appliance you're carrying",
+    "Need to use furniture or tool for its intended purpose",
+    "Want to interact with the item in your hand"
   ],
   "category": "interaction"
 } 

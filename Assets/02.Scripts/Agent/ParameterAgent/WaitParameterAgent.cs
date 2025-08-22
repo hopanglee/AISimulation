@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using OpenAI.Chat;
 using System;
+using System.Threading;
 
 namespace Agent
 {
@@ -37,18 +38,14 @@ namespace Agent
             return response;
         }
 
-        public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
+        public override UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
-            await GenerateParametersAsync(new CommonContext
-            {
-                Reasoning = request.Reasoning,
-                Intention = request.Intention
-            });
-            return new ActParameterResult
+            // Wait는 파라미터가 필요없는 액션이므로 빈 결과 반환
+            return UniTask.FromResult(new ActParameterResult
             {
                 ActType = request.ActType,
                 Parameters = new Dictionary<string, object>()
-            };
+            });
         }
 
         private string BuildUserMessage(CommonContext context)

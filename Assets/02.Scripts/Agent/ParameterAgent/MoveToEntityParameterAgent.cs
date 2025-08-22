@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using OpenAI.Chat;
 using Newtonsoft.Json;
 using System;
+using System.Linq;
+using UnityEngine;
+using System.Threading;
 
 namespace Agent
 {
@@ -57,12 +60,15 @@ namespace Agent
 
         public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
+            UpdateResponseFormatBeforeGPT();
+            
             var param = await GenerateParametersAsync(new CommonContext
             {
                 Reasoning = request.Reasoning,
                 Intention = request.Intention,
                 PreviousFeedback = request.PreviousFeedback
             });
+            
             return new ActParameterResult
             {
                 ActType = request.ActType,
@@ -71,6 +77,52 @@ namespace Agent
                     { "entity_name", param.entity_name }
                 }
             };
+        }
+
+        protected override void UpdateResponseFormatSchema()
+        {
+            try
+            {
+                var dynamicEntities = GetCurrentEntityNames();
+                options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
+                    jsonSchemaFormatName: "move_to_entity_parameter",
+                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
+                        $@"{{
+                            ""type"": ""object"",
+                            ""additionalProperties"": false,
+                            ""properties"": {{
+                                ""entity_name"": {{
+                                    ""type"": ""string"",
+                                    ""enum"": {JsonConvert.SerializeObject(dynamicEntities)},
+                                    ""description"": ""One of the available entities to move to""
+                                }}
+                            }},
+                            ""required"": [""entity_name""]
+                        }}"
+                    )),
+                    jsonSchemaIsStrict: true
+                );
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[MoveToEntityParameterAgent] ResponseFormat 갱신 실패: {ex.Message}");
+            }
+        }
+
+        private List<string> GetCurrentEntityNames()
+        {
+            try
+            {
+                if (actor?.sensor != null)
+                {
+                    return actor.sensor.GetMovableEntities();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[MoveToEntityParameterAgent] 주변 엔티티 목록 가져오기 실패: {ex.Message}");
+            }
+            return new List<string>();
         }
 
         private string BuildUserMessage(CommonContext context)

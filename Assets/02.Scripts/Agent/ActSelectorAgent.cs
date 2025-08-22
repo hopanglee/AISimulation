@@ -97,6 +97,9 @@ namespace Agent
         /// <returns>ActSelectionResult</returns>
         public async UniTask<ActSelectionResult> SelectActAsync(string situation)
         {
+            // GPT에 물어보기 전에 responseformat 동적 갱신
+            UpdateResponseFormatSchema();
+            
             string userMessage = situation;
             
             // 현재 사용 가능한 액션 정보 추가
@@ -109,6 +112,48 @@ namespace Agent
         
             Debug.Log($"[ActSelectorAgent] Act: {response.ActType}, Reason: {response.Reasoning}, Intention: {response.Intention}");
             return response;
+        }
+
+        /// <summary>
+        /// 최신 주변 상황을 반영해 ResponseFormat을 동적으로 갱신합니다.
+        /// </summary>
+        private void UpdateResponseFormatSchema()
+        {
+            try
+            {
+                options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
+                    jsonSchemaFormatName: "act_selection_result",
+                    jsonSchema: BinaryData.FromBytes(
+                        System.Text.Encoding.UTF8.GetBytes(
+                            $@"{{
+                                ""type"": ""object"",
+                                ""additionalProperties"": false,
+                                ""properties"": {{
+                                    ""act_type"": {{
+                                        ""type"": ""string"",
+                                        ""enum"": [ {string.Join(", ", GetCurrentAvailableActions().Select(a => $"\"{a}\""))} ],
+                                        ""description"": ""Type of action to perform""
+                                    }},
+                                    ""reasoning"": {{
+                                        ""type"": ""string"",
+                                        ""description"": ""Reason for selecting this action""
+                                    }},
+                                    ""intention"": {{
+                                        ""type"": ""string"",
+                                        ""description"": ""What the agent intends to achieve with this action""
+                                    }}
+                                }},
+                                ""required"": [""act_type"", ""reasoning"", ""intention""]
+                            }}"
+                        )
+                    ),
+                    jsonSchemaIsStrict: true
+                );
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[ActSelectorAgent] ResponseFormat 갱신 실패: {ex.Message}");
+            }
         }
 
         /// <summary>

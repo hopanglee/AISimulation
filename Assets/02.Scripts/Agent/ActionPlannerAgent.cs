@@ -158,6 +158,9 @@ public class ActionPlannerAgent : GPT
     /// </summary>
     public async UniTask<ActionPlan> CreateActionPlanAsync(DetailedPlannerAgent.DetailedPlan detailedPlan, GameTime tomorrow)
     {
+        // GPT에 물어보기 전에 responseformat 동적 갱신
+        UpdateResponseFormatSchema();
+        
         string prompt = GenerateActionPlanPrompt(detailedPlan, tomorrow);
         messages.Add(new UserChatMessage(prompt));
 
@@ -169,6 +172,67 @@ public class ActionPlannerAgent : GPT
         Debug.Log($"[ActionPlannerAgent] 구체적 행동: {response.SpecificActions.Count}개");
         
         return response;
+    }
+
+    /// <summary>
+    /// 최신 주변 상황을 반영해 ResponseFormat을 동적으로 갱신합니다.
+    /// </summary>
+    private void UpdateResponseFormatSchema()
+    {
+        try
+        {
+            options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
+                jsonSchemaFormatName: "action_plan",
+                jsonSchema: BinaryData.FromBytes(
+                    Encoding.UTF8.GetBytes(
+                        $@"{{
+                            ""type"": ""object"",
+                            ""additionalProperties"": false,
+                            ""properties"": {{
+                                ""summary"": {{
+                                    ""type"": ""string"",
+                                    ""description"": ""Brief summary of the action plan""
+                                }},
+                                ""mood"": {{
+                                    ""type"": ""string"",
+                                    ""description"": ""Expected mood for tomorrow""
+                                }},
+                                ""specific_actions"": {{
+                                    ""type"": ""array"",
+                                    ""items"": {{
+                                        ""type"": ""object"",
+                                        ""additionalProperties"": false,
+                                        ""properties"": {{
+                                            ""action_name"": {{ ""type"": ""string"" }},
+                                            ""description"": {{ ""type"": ""string"" }},
+                                            ""start_time"": {{ ""type"": ""string"", ""pattern"": ""^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"" }},
+                                            ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 5, ""maximum"": 120 }},
+                                            ""parameters"": {{
+                                                ""type"": ""object"",
+                                                ""description"": ""Parameters for the action (e.g., target location, object name)"",
+                                                ""additionalProperties"": false
+                                            }},
+                                            ""location"": {{ ""type"": ""string"" }},
+                                            ""parent_activity"": {{ ""type"": ""string"" }},
+                                            ""parent_high_level_task"": {{ ""type"": ""string"" }},
+                                            ""status"": {{ ""type"": ""string"", ""enum"": [""pending"", ""in_progress"", ""completed""] }}
+                                        }},
+                                        ""required"": [""action_name"", ""description"", ""start_time"", ""duration_minutes"", ""location"", ""parent_activity"", ""parent_high_level_task"", ""status""]
+                                    }},
+                                    ""description"": ""List of specific actions for tomorrow""
+                                }}
+                            }},
+                            ""required"": [""summary"", ""mood"", ""specific_actions""]
+                        }}"
+                    )
+                ),
+                jsonSchemaIsStrict: true
+            );
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[ActionPlannerAgent] ResponseFormat 갱신 실패: {ex.Message}");
+        }
     }
 
     /// <summary>

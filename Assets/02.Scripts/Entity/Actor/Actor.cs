@@ -176,7 +176,14 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     {
         if (HandItem != null)
         {
-            HandItem.Use(this, variable);
+            if (HandItem is IUsable usable)
+            {
+                usable.Use(this, variable);
+            }
+            else
+            {
+                Debug.LogWarning($"[{Name}] {HandItem.Name}은(는) 사용할 수 없는 아이템입니다.");
+            }
         }
     }
 

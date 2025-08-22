@@ -1,15 +1,19 @@
 using UnityEngine;
 
 [System.Serializable]
-public class Umbrella : Item
+public class Umbrella : Item, IUsable
 {
     public override string Get()
     {
         return "우산";
     }
 
-    public override string Use(Actor actor, object variable)
+    /// <summary>
+    /// IUsable 인터페이스 구현
+    /// </summary>
+    public string Use(Actor actor, object variable)
     {
-        return "우산을 사용했습니다.";
+        // 우산 사용 시 비나 햇빛으로부터 보호
+        return $"{actor.Name}이(가) 우산을 펼쳤습니다.";
     }
 }

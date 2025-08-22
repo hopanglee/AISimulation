@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public abstract class Drink : Item
+public abstract class Drink : Item, IUsable
 {
     // The amount of hunger recovered by drinking (range: 0–100)
     [Range(0, 100)]
@@ -10,11 +10,6 @@ public abstract class Drink : Item
     // The amount of thirst recovered by drinking (range: 0–100)
     [Range(0, 100)]
     public int ThirstRecovery = 20;
-
-    public override string Use(Actor actor, object variable)
-    {
-        return Eat(actor);
-    }
 
     /// <summary>
     /// Virtual Eat method: Consumes the beverage, increasing the actor's hunger and thirst values by HungerRecovery and ThirstRecovery respectively.
@@ -30,5 +25,13 @@ public abstract class Drink : Item
             actor.Thirst = 100;
 
         return $"{actor.Name} drank {this.Name} and restored {HungerRecovery} hunger points and {ThirstRecovery} thirst points.";
+    }
+
+    /// <summary>
+    /// IUsable 인터페이스 구현
+    /// </summary>
+    public string Use(Actor actor, object variable)
+    {
+        return Eat(actor);
     }
 }

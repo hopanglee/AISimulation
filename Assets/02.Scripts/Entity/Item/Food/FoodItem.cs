@@ -1,13 +1,8 @@
 using UnityEngine;
 
 [System.Serializable]
-public abstract class FoodItem : Item
+public abstract class FoodItem : Item, IUsable
 {
-    public override string Use(Actor actor, object variable)
-    {
-        return Eat(actor);
-    }
-
     /// <summary>
     /// Virtual Eat method: consumes the food, increasing the actor's hunger satisfaction.
     /// </summary>
@@ -26,5 +21,13 @@ public abstract class FoodItem : Item
     public override string Get()
     {
         return $"{Name} - 음식";
+    }
+
+    /// <summary>
+    /// IUsable 인터페이스 구현
+    /// </summary>
+    public string Use(Actor actor, object variable)
+    {
+        return Eat(actor);
     }
 }

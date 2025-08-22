@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BodyWash : Item
+public class BodyWash : Item, IUsable
 {
     [Header("Body Wash Properties")]
     public string brand = "Generic";
@@ -45,7 +45,20 @@ public class BodyWash : Item
         return remainingVolume <= volume * 0.2f; // 20% 이하일 때
     }
     
-    public override string Use(Actor actor, object variable)
+    public override string ToString()
+    {
+        return $"바디워시 - {brand} ({remainingVolume}ml 남음)";
+    }
+    
+    public override string Get()
+    {
+        return $"바디워시 - {brand}";
+    }
+
+    /// <summary>
+    /// IUsable 인터페이스 구현
+    /// </summary>
+    public string Use(Actor actor, object variable)
     {
         if (remainingVolume <= 0)
         {
@@ -78,15 +91,5 @@ public class BodyWash : Item
         {
             return "바디워시를 사용할 수 없습니다.";
         }
-    }
-    
-    public override string ToString()
-    {
-        return $"바디워시 - {brand} ({remainingVolume}ml 남음)";
-    }
-    
-    public override string Get()
-    {
-        return $"바디워시 - {brand}";
     }
 }

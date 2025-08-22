@@ -1,43 +1,26 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using OpenAI.Chat;
-using Newtonsoft.Json;
 using System;
+using System.Threading;
 
 namespace Agent
 {
     public class UseObjectParameterAgent : ParameterAgentBase
     {
-        public class UseObjectParameter
-        {
-            [JsonProperty("object_name")]
-            public string ObjectName { get; set; }
-        }
+        public class UseObjectParameter { }
 
         private readonly string systemPrompt;
-        private readonly List<string> objectList;
 
-        public UseObjectParameterAgent(List<string> objectList, GPT gpt)
+        public UseObjectParameterAgent(GPT gpt)
         {
-            this.objectList = objectList;
             systemPrompt = PromptLoader.LoadPrompt("UseObjectParameterAgentPrompt.txt", "You are a UseObject parameter generator.");
             this.options = new ChatCompletionOptions
             {
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                     jsonSchemaFormatName: "use_object_parameter",
                     jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
-                            ""type"": ""object"",
-                            ""additionalProperties"": false,
-                            ""properties"": {{
-                                ""object_name"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": {JsonConvert.SerializeObject(objectList)},
-                                    ""description"": ""One of the available objects to use""
-                                }}
-                            }},
-                            ""required"": [""object_name""]
-                        }}"
+                        "{ \"type\": \"object\", \"properties\": { }, \"required\": [ ], \"additionalProperties\": true }"
                     )),
                     jsonSchemaIsStrict: true
                 )
@@ -55,36 +38,19 @@ namespace Agent
             return response;
         }
 
-        public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
+        public override UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
-            var param = await GenerateParametersAsync(new CommonContext
-            {
-                Reasoning = request.Reasoning,
-                Intention = request.Intention,
-                PreviousFeedback = request.PreviousFeedback
-            });
-            return new ActParameterResult
+            // UseObject는 파라미터가 필요없는 액션이므로 빈 결과 반환
+            return UniTask.FromResult(new ActParameterResult
             {
                 ActType = request.ActType,
-                Parameters = new Dictionary<string, object>
-                {
-                    { "object_name", param.ObjectName }
-                }
-            };
+                Parameters = new Dictionary<string, object>()
+            });
         }
 
         private string BuildUserMessage(CommonContext context)
         {
-            var message = $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableObjects: {string.Join(", ", objectList)}";
-            
-            // 피드백이 있으면 추가
-            if (!string.IsNullOrEmpty(context.PreviousFeedback))
-            {
-                message += $"\n\nPrevious Action Feedback: {context.PreviousFeedback}";
-                message += "\n\nPlease consider this feedback when making your selection. Choose a different object if the previous one was not usable.";
-            }
-            
-            return message;
+            return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}";
         }
     }
 } 

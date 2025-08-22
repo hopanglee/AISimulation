@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Towel : Item
+public class Towel : Item, IUsable
 {
     [Header("Towel Properties")]
     public string material = "Cotton";
@@ -41,7 +41,15 @@ public class Towel : Item
         }
     }
     
-    public override string Use(Actor actor, object variable)
+    public override string Get()
+    {
+        return $"수건 - {material}";
+    }
+
+    /// <summary>
+    /// IUsable 인터페이스 구현
+    /// </summary>
+    public string Use(Actor actor, object variable)
     {
         if (!isClean)
         {
@@ -61,15 +69,5 @@ public class Towel : Item
         {
             return "수건을 사용할 수 없습니다.";
         }
-    }
-    
-    public override string ToString()
-    {
-        return $"수건 - {material}";
-    }
-    
-    public override string Get()
-    {
-        return $"수건 - {material}";
     }
 }

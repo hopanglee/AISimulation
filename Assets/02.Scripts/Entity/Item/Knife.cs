@@ -1,14 +1,17 @@
 using UnityEngine;
 
 [System.Serializable]
-public class Knife : Item
+public class Knife : Item, IUsable
 {
     public override string Get()
     {
-        throw new System.NotImplementedException();
+        return "칼";
     }
 
-    public override string Use(Actor actor, object variable)
+    /// <summary>
+    /// IUsable 인터페이스 구현
+    /// </summary>
+    public string Use(Actor actor, object variable)
     {
         if (variable is Entity target)
         {
@@ -26,10 +29,10 @@ public class Knife : Item
             }
             else
             {
-                return "The target type cannot be used.";
+                return "대상 타입을 사용할 수 없습니다.";
             }
         }
-        return "Invalid input value.";
+        return "잘못된 입력값입니다.";
     }
 
     private string Kill(Actor actor, Actor target)
@@ -37,24 +40,21 @@ public class Knife : Item
         target.Death();
         if (actor == target)
         {
-            return "They stabbed themselves and committed suicide.";
+            return "자신을 찔러 자살했습니다.";
         }
         else
         {
-            // Example kill logic
-            return $"Slashed {target.Name} to death with a knife.";
+            return $"칼로 {target.Name}을(를) 죽였습니다.";
         }
     }
 
     private string Cut(Item item)
     {
-        // Example logic for cutting an item
-        return $"Cut the {item.Name} with a knife.";
+        return $"칼로 {item.Name}을(를) 자릅니다.";
     }
 
     private string Cut(Block block)
     {
-        // Example logic for cutting a block
-        return $"Cut the {block.Name} with a knife.";
+        return $"칼로 {block.Name}을(를) 자릅니다.";
     }
 }
