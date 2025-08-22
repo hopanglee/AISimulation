@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using OpenAI.Chat;
 using Newtonsoft.Json;
 using System;
+using UnityEngine;
+using System.Linq;
+using System.Threading;
 
 namespace Agent
 {
@@ -64,12 +67,15 @@ namespace Agent
 
         public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
+            UpdateResponseFormatBeforeGPT();
+            
             var param = await GenerateParametersAsync(new CommonContext
             {
                 Reasoning = request.Reasoning,
                 Intention = request.Intention,
                 PreviousFeedback = request.PreviousFeedback
             });
+            
             return new ActParameterResult
             {
                 ActType = request.ActType,
@@ -79,6 +85,78 @@ namespace Agent
                     { "message", param.Message }
                 }
             };
+        }
+
+        /// <summary>
+        /// 최신 주변 상황을 반영해 ResponseFormat을 동적으로 갱신합니다.
+        /// </summary>
+        protected override void UpdateResponseFormatSchema()
+        {
+            try
+            {
+                // 현재 사용 가능한 캐릭터 목록을 동적으로 가져와서 enum 업데이트
+                var currentCharacterList = GetCurrentAvailableCharacters();
+                
+                options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
+                    jsonSchemaFormatName: "talk_parameter",
+                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
+                        $@"{{
+                            ""type"": ""object"",
+                            ""additionalProperties"": false,
+                            ""properties"": {{
+                                ""CharacterName"": {{
+                                    ""type"": ""string"",
+                                    ""enum"": {Newtonsoft.Json.JsonConvert.SerializeObject(currentCharacterList)},
+                                    ""description"": ""One of the available characters to talk to""
+                                }},
+                                ""Message"": {{
+                                    ""type"": ""string"",
+                                    ""description"": ""Message to say to the character""
+                                }}
+                            }},
+                            ""required"": [""CharacterName"", ""Message""]
+                        }}"
+                    )),
+                    jsonSchemaIsStrict: true
+                );
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[TalkParameterAgent] ResponseFormat 갱신 실패: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 현재 사용 가능한 캐릭터 목록을 동적으로 가져옵니다.
+        /// </summary>
+        private List<string> GetCurrentAvailableCharacters()
+        {
+            try
+            {
+                if (actor?.sensor != null)
+                {
+                    // Actor의 sensor를 통해 현재 주변 Actor들만 가져와서 목록 업데이트
+                    var lookableEntities = actor.sensor.GetLookableEntities();
+                    var actorKeys = new List<string>();
+                    
+                    foreach (var kv in lookableEntities)
+                    {
+                        if (kv.Value is Actor)
+                        {
+                            actorKeys.Add(kv.Key);
+                        }
+                    }
+                    
+                    return actorKeys.Distinct().ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[TalkParameterAgent] 주변 캐릭터 목록 가져오기 실패: {ex.Message}");
+            }
+            
+            // 실패 시 빈 목록 반환
+            return new List<string>();
         }
 
         private string BuildUserMessage(CommonContext context)

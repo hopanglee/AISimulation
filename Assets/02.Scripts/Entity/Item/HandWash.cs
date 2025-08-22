@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class HandWash : Item
+public class HandWash : Item, IUsable
 {
     [Header("Hand Wash Settings")]
     public string brand = "일반";
@@ -41,14 +41,17 @@ public class HandWash : Item
         return $"손 세정제 - {brand} ({status}{wetStatus})";
     }
     
-    public override string Use(Actor actor, object variable)
-    {
-        UseHandWash();
-        return "손을 씻었습니다.";
-    }
-    
     public override string ToString()
     {
         return Get();
+    }
+
+    /// <summary>
+    /// IUsable 인터페이스 구현
+    /// </summary>
+    public string Use(Actor actor, object variable)
+    {
+        UseHandWash();
+        return "손을 씻었습니다.";
     }
 }

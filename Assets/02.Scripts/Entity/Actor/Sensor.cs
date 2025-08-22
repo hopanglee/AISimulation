@@ -190,6 +190,7 @@ public class Sensor
         if (lookable == null || lookable.Count == 0)
             UpdateLookableEntities();
 
+        // 1. 기존 lookable 엔티티들의 위치 추가
         foreach (var kv in lookable)
         {
             if (kv.Value is Prop prop)
@@ -217,6 +218,43 @@ public class Sensor
             }
         }
 
+        // 2. 현재 위치에서 연결된 Area들의 위치 추가
+        try
+        {
+            var locationManager = Services.Get<ILocationService>();
+            var curArea = locationManager.GetArea(owner.curLocation);
+            
+            if (curArea != null && curArea is Area area)
+            {
+                foreach (var connectedArea in area.connectedAreas)
+                {
+                    if (connectedArea != null && !string.IsNullOrEmpty(connectedArea.locationName))
+                    {
+                        // 연결된 Area의 이동 가능한 위치 추가
+                        if (connectedArea.toMovePos != null && connectedArea.toMovePos.Count > 0)
+                        {
+                            foreach (var kv in connectedArea.toMovePos)
+                            {
+                                if (kv.Key != null && kv.Value != null)
+                                {
+                                    result.Add(connectedArea.locationName, kv.Value.position);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // toMovePos가 없으면 Area 자체의 위치 사용
+                            result.Add(connectedArea.locationName, connectedArea.transform.position);
+                        }
+                    }
+                }
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogWarning($"[Sensor] 연결된 Area 위치 가져오기 실패: {ex.Message}");
+        }
+
         return result;
     }
 
@@ -226,6 +264,59 @@ public class Sensor
     public void SetInteractionRange(float range)
     {
         interactionRange = range;
+    }
+
+    /// <summary>
+    /// 이동 가능한 Area들만 반환 (현재 위치에서 연결된 Area들)
+    /// </summary>
+    public List<string> GetMovableAreas()
+    {
+        var result = new List<string>();
+        if (lookable == null || lookable.Count == 0)
+            UpdateLookableEntities();
+
+        try
+        {
+            var locationManager = Services.Get<ILocationService>();
+            var curArea = locationManager.GetArea(owner.curLocation);
+            
+            if (curArea != null && curArea is Area area)
+            {
+                // 현재 Area에서 연결된 Area들 추가
+                foreach (var connectedArea in area.connectedAreas)
+                {
+                    if (connectedArea != null && !string.IsNullOrEmpty(connectedArea.locationName))
+                    {
+                        result.Add(connectedArea.locationName);
+                    }
+                }
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogWarning($"[Sensor] 연결된 Area 목록 가져오기 실패: {ex.Message}");
+        }
+        
+        return result;
+    }
+
+    /// <summary>
+    /// 이동 가능한 Entity들만 반환 (Actor, Prop, Item 타입)
+    /// </summary>
+    public List<string> GetMovableEntities()
+    {
+        var result = new List<string>();
+        if (lookable == null || lookable.Count == 0)
+            UpdateLookableEntities();
+
+        foreach (var kv in lookable)
+        {
+            if (kv.Value is Actor || kv.Value is Prop || kv.Value is Item || kv.Value is Building)
+            {
+                result.Add(kv.Key);
+            }
+        }
+        return result;
     }
 
     /// <summary>

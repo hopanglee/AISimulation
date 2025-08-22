@@ -35,11 +35,12 @@ public class Brain
     private ActSelectorAgent actSelectorAgent;
     private Dictionary<ActionType, ParameterAgentBase> parameterAgents;
     private GPT gpt;
-
+    
     // --- Refactored Components ---
     private DayPlanner dayPlanner;
     private Thinker thinker;
     private ActionPerformer actionPerformer;
+    private UseActionManager useActionManager; // Use Action 전용 매니저 추가
     
     /// <summary>
     /// Thinker 컴포넌트에 대한 외부 접근을 위한 프로퍼티
@@ -66,6 +67,7 @@ public class Brain
         dayPlanner = new DayPlanner(actor);
         thinker = new Thinker(actor, this);
         actionPerformer = new ActionPerformer(actor);
+        useActionManager = new UseActionManager(actor);
     }
 
     /// <summary>
@@ -178,6 +180,19 @@ public class Brain
     /// </summary>
     private async UniTask<ActParameterResult> GenerateActionParameters(ActSelectorAgent.ActSelectionResult selection)
     {
+        // Use Action은 UseActionManager를 통해 처리
+        if (selection.ActType == ActionType.UseObject)
+        {
+            var request = new ActParameterRequest
+            {
+                Reasoning = selection.Reasoning,
+                Intention = selection.Intention,
+                ActType = selection.ActType
+            };
+            return await useActionManager.ExecuteUseActionAsync(request);
+        }
+        
+        // 다른 액션들은 기존 ParameterAgent를 통해 처리
         if (parameterAgents.TryGetValue(selection.ActType, out var parameterAgent))
         {
             var request = new ActParameterRequest
@@ -190,7 +205,8 @@ public class Brain
         }
         else
         {
-            Debug.LogWarning($"[{actor.Name}] 파라미터 에이전트를 찾을 수 없음: {selection.ActType}");
+            // Wait, Use 등 매개변수가 필요 없는 액션들
+            Debug.Log($"[{actor.Name}] {selection.ActType} 액션은 매개변수가 필요 없음 - 바로 실행");
             return new ActParameterResult
             {
                 ActType = selection.ActType,

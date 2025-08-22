@@ -1,0 +1,196 @@
+using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
+using OpenAI.Chat;
+using System;
+using UnityEngine;
+using Newtonsoft.Json;
+using System.Linq;
+using System.Threading;
+
+namespace Agent
+{
+    public class iPhoneUseAgent : ParameterAgentBase
+    {
+        public class iPhoneUseParameter
+        {
+            [JsonProperty("command")]
+            public string Command { get; set; } // "chat", "read", "continue"
+            
+            [JsonProperty("target_actor")]
+            public string TargetActor { get; set; }
+            
+            [JsonProperty("message")]
+            public string Message { get; set; } // chat 명령어일 때만 사용
+            
+            [JsonProperty("message_count")]
+            public int MessageCount { get; set; } // read/continue 명령어일 때만 사용
+        }
+
+        private readonly string systemPrompt;
+
+        public iPhoneUseAgent(GPT gpt)
+        {
+            systemPrompt = PromptLoader.LoadPrompt("iPhoneUseAgentPrompt.txt", "You are an iPhone use parameter generator.");
+            this.options = new ChatCompletionOptions
+            {
+                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
+                    jsonSchemaFormatName: "iphone_use_parameter",
+                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
+                        $@"{{
+                            ""type"": ""object"",
+                            ""additionalProperties"": false,
+                            ""properties"": {{
+                                ""Command"": {{
+                                    ""type"": ""string"",
+                                    ""enum"": [""chat"", ""read"", ""continue""],
+                                    ""description"": ""The command to execute on iPhone""
+                                }},
+                                ""TargetActor"": {{
+                                    ""type"": ""string"",
+                                    ""description"": ""Target actor name for the command""
+                                }},
+                                ""Message"": {{
+                                    ""type"": ""string"",
+                                    ""description"": ""Message to send (only for chat command)""
+                                }},
+                                ""MessageCount"": {{
+                                    ""type"": ""integer"",
+                                    ""description"": ""Number of messages to read (only for read/continue commands)""
+                                }}
+                            }},
+                            ""required"": [""Command"", ""TargetActor""]
+                        }}"
+                    )),
+                    jsonSchemaIsStrict: true
+                )
+            };
+        }
+
+        public async UniTask<iPhoneUseParameter> GenerateParametersAsync(CommonContext context)
+        {
+            var messages = new List<ChatMessage>
+            {
+                new SystemChatMessage(systemPrompt),
+                new UserChatMessage(BuildUserMessage(context))
+            };
+            var response = await SendGPTAsync<iPhoneUseParameter>(messages, options);
+            return response;
+        }
+
+        public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
+        {
+            UpdateResponseFormatBeforeGPT();
+            
+            var param = await GenerateParametersAsync(new CommonContext
+            {
+                Reasoning = request.Reasoning,
+                Intention = request.Intention,
+                PreviousFeedback = request.PreviousFeedback
+            });
+            
+            return new ActParameterResult
+            {
+                ActType = request.ActType,
+                Parameters = new Dictionary<string, object>
+                {
+                    { "command", param.Command },
+                    { "target_actor", param.TargetActor },
+                    { "message", param.Message ?? "" },
+                    { "message_count", param.MessageCount }
+                }
+            };
+        }
+
+        /// <summary>
+        /// 최신 주변 상황을 반영해 ResponseFormat을 동적으로 갱신합니다.
+        /// </summary>
+        protected override void UpdateResponseFormatSchema()
+        {
+            try
+            {
+                // 현재 사용 가능한 Actor 목록을 동적으로 가져와서 TargetActor enum 업데이트
+                var currentActorList = GetCurrentAvailableActors();
+                
+                options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
+                    jsonSchemaFormatName: "iphone_use_parameter",
+                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
+                        $@"{{
+                            ""type"": ""object"",
+                            ""additionalProperties"": false,
+                            ""properties"": {{
+                                ""Command"": {{
+                                    ""type"": ""string"",
+                                    ""enum"": [""chat"", ""read"", ""continue""],
+                                    ""description"": ""The command to execute on iPhone""
+                                }},
+                                ""TargetActor"": {{
+                                    ""type"": ""string"",
+                                    ""enum"": {Newtonsoft.Json.JsonConvert.SerializeObject(currentActorList)},
+                                    ""description"": ""Target actor name for the command""
+                                }},
+                                ""Message"": {{
+                                    ""type"": ""string"",
+                                    ""description"": ""Message to send (only for chat command)""
+                                }},
+                                ""MessageCount"": {{
+                                    ""type"": ""integer"",
+                                    ""description"": ""Number of messages to read (only for read/continue commands)""
+                                }}
+                            }},
+                            ""required"": [""Command"", ""TargetActor""]
+                        }}"
+                    )),
+                    jsonSchemaIsStrict: true
+                );
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[iPhoneUseAgent] ResponseFormat 갱신 실패: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 현재 사용 가능한 Actor 목록을 동적으로 가져옵니다.
+        /// </summary>
+        private List<string> GetCurrentAvailableActors()
+        {
+            try
+            {
+                if (actor?.sensor != null)
+                {
+                    var lookableEntities = actor.sensor.GetLookableEntities();
+                    var actorNames = new List<string>();
+                    
+                    foreach (var kv in lookableEntities)
+                    {
+                        if (kv.Value is Actor targetActor && targetActor != actor)
+                        {
+                            actorNames.Add(targetActor.Name);
+                        }
+                    }
+                    
+                    return actorNames.Distinct().ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[iPhoneUseAgent] 주변 Actor 목록 가져오기 실패: {ex.Message}");
+            }
+            
+            return new List<string>();
+        }
+
+        private string BuildUserMessage(CommonContext context)
+        {
+            var message = $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}";
+            
+            if (!string.IsNullOrEmpty(context.PreviousFeedback))
+            {
+                message += $"\n\nPrevious Action Feedback: {context.PreviousFeedback}";
+                message += "\n\nPlease consider this feedback when making your selection.";
+            }
+            
+            return message;
+        }
+    }
+}

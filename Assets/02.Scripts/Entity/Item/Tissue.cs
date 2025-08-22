@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Tissue : Item
+public class Tissue : Item, IUsable
 {
     [Header("Tissue Properties")]
     // 부드러움 (0.0 ~ 1.0)
@@ -31,7 +31,15 @@ public class Tissue : Item
         return usage * 100f;
     }
     
-    public override string Use(Actor actor, object variable)
+    public override string Get()
+    {
+        return "티슈";
+    }
+
+    /// <summary>
+    /// IUsable 인터페이스 구현
+    /// </summary>
+    public string Use(Actor actor, object variable)
     {
         float amount = 1.0f;
         if (variable is float amt)
@@ -45,15 +53,5 @@ public class Tissue : Item
         }
         
         return $"티슈를 사용했습니다. 사용도: {GetUsagePercent():F0}%";
-    }
-    
-    public override string ToString()
-    {
-        return $"티슈 (부드러움 {softness:F1}, 사용도 {GetUsagePercent():F0}%)";
-    }
-    
-    public override string Get()
-    {
-        return "티슈";
     }
 }

@@ -3,7 +3,7 @@ using System.Text;
 using UnityEngine;
 
 [System.Serializable]
-public class iPhone : Item
+public class iPhone : Item, IUsable
 {
     // Stores conversation history for each chat partner (key: Actor.Name)
     protected Dictionary<string, List<ChatMessage>> chatHistory = new();
@@ -42,7 +42,7 @@ public class iPhone : Item
     /// - Read: ["Read", target Actor, number of messages to read (int)]
     /// - Continue: ["Continue", target Actor, number of additional messages to read (int)]
     /// </summary>
-    public override string Use(Actor actor, object variable)
+    public string Use(Actor actor, object variable)
     {
         if (variable is object[] args && args.Length >= 3 && args[0] is string command)
         {

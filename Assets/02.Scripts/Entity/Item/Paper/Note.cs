@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class Note : Item
+public class Note : Item, IUsable
 {
     [SerializeField]
     private int maxPageNum = 100;
@@ -11,41 +11,54 @@ public class Note : Item
     [SerializeField]
     private SerializableDictionary<int, Paper> pages = new();
 
-    public override string Use(Actor actor, object variable)
+    public override string Get()
     {
-        if (variable is object[] args && args.Length > 0 && args[0] is Paper.PaperAction action)
+        return "노트";
+    }
+
+    /// <summary>
+    /// IUsable 인터페이스 구현
+    /// </summary>
+    public string Use(Actor actor, object parameters)
+    {
+        // parameters가 Dictionary<string, object>인 경우 action을 추출
+        if (parameters is Dictionary<string, object> dict)
         {
-            if (args.Length > 1 && args[1] is int pageNum)
+            if (dict.TryGetValue("action", out var actionObj) && actionObj is string action)
             {
-                switch (action)
+                switch (action.ToLower())
                 {
-                    case Paper.PaperAction.Write:
-                        if (args.Length > 2 && args[2] is string writeText)
+                    case "write":
+                        if (dict.TryGetValue("page", out var pageObj) && pageObj is int pageNum &&
+                            dict.TryGetValue("text", out var textObj) && textObj is string text)
                         {
-                            return Write(pageNum, writeText);
+                            return Write(pageNum, text);
                         }
-                        return "Invalid input value.";
-
-                    case Paper.PaperAction.Rewrite:
-                        if (
-                            args.Length > 3
-                            && args[2] is int lineNum
-                            && args[3] is string rewriteText
-                        )
+                        return "페이지 번호와 텍스트가 필요합니다.";
+                    case "read":
+                        if (dict.TryGetValue("page", out var readPageObj) && readPageObj is int readPageNum)
                         {
-                            return Rewrite(pageNum, lineNum, rewriteText);
+                            return Read(readPageNum);
                         }
-                        return "Invalid input value.";
-
-                    case Paper.PaperAction.Read:
-                        return Read(pageNum);
-
+                        return "페이지 번호가 필요합니다.";
+                    case "rewrite":
+                        if (dict.TryGetValue("page", out var rewritePageObj) && rewritePageObj is int rewritePageNum &&
+                            dict.TryGetValue("line", out var lineObj) && lineObj is int lineNum &&
+                            dict.TryGetValue("text", out var rewriteTextObj) && rewriteTextObj is string rewriteText)
+                        {
+                            return Rewrite(rewritePageNum, lineNum, rewriteText);
+                        }
+                        return "페이지 번호, 줄 번호, 텍스트가 필요합니다.";
+                    case "erase":
+                        return "노트 내용을 지웠습니다.";
                     default:
-                        return "Unknown action.";
+                        return "알 수 없는 액션입니다.";
                 }
             }
         }
-        return "Invalid input value.";
+        
+        // 기본 사용 (기존 Use 메서드 호출)
+        return Use(actor, parameters);
     }
 
     public string Read(int pageNum)
@@ -83,10 +96,5 @@ public class Note : Item
             return pages[pageNum].Rewrite(lineNum, text);
         }
         return "The page does not exist.";
-    }
-
-    public override string Get()
-    {
-        throw new NotImplementedException();
     }
 }

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using OpenAI.Chat;
 using Newtonsoft.Json;
 using System;
+using System.Linq;
+using UnityEngine;
+using System.Threading;
 
 namespace Agent
 {
@@ -64,11 +67,15 @@ namespace Agent
 
         public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
+            UpdateResponseFormatBeforeGPT();
+            
             var param = await GenerateParametersAsync(new CommonContext
             {
                 Reasoning = request.Reasoning,
-                Intention = request.Intention
+                Intention = request.Intention,
+                PreviousFeedback = request.PreviousFeedback
             });
+            
             return new ActParameterResult
             {
                 ActType = request.ActType,
@@ -78,6 +85,59 @@ namespace Agent
                     { "amount", param.amount }
                 }
             };
+        }
+
+        protected override void UpdateResponseFormatSchema()
+        {
+            try
+            {
+                var dynamicCharacters = GetCurrentNearbyCharacterNames();
+                options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
+                    jsonSchemaFormatName: "give_money_parameter",
+                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
+                        $@"{{
+                            ""type"": ""object"",
+                            ""additionalProperties"": false,
+                            ""properties"": {{
+                                ""target_character"": {{
+                                    ""type"": ""string"",
+                                    ""enum"": {JsonConvert.SerializeObject(dynamicCharacters)},
+                                    ""description"": ""The name of the character to give money to""
+                                }},
+                                ""amount"": {{
+                                    ""type"": ""integer"",
+                                    ""minimum"": 1,
+                                    ""description"": ""The amount of money to give""
+                                }}
+                            }},
+                            ""required"": [""target_character"", ""amount""]
+                        }}"
+                    )),
+                    jsonSchemaIsStrict: true
+                );
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[GiveMoneyParameterAgent] ResponseFormat 갱신 실패: {ex.Message}");
+            }
+        }
+
+        private List<string> GetCurrentNearbyCharacterNames()
+        {
+            try
+            {
+                if (actor?.sensor != null)
+                {
+                    var inter = actor.sensor.GetInteractableEntities();
+                    var names = inter.actors.Keys.ToList();
+                    return names.Distinct().ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[GiveMoneyParameterAgent] 주변 캐릭터 목록 가져오기 실패: {ex.Message}");
+            }
+            return new List<string>();
         }
 
         private string BuildUserMessage(CommonContext context)

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using OpenAI.Chat;
 using Newtonsoft.Json;
 using System;
+using System.Linq;
+using UnityEngine;
+using System.Threading;
 
 namespace Agent
 {
@@ -57,11 +60,15 @@ namespace Agent
 
         public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
+            UpdateResponseFormatBeforeGPT();
+            
             var param = await GenerateParametersAsync(new CommonContext
             {
                 Reasoning = request.Reasoning,
-                Intention = request.Intention
+                Intention = request.Intention,
+                PreviousFeedback = request.PreviousFeedback
             });
+            
             return new ActParameterResult
             {
                 ActType = request.ActType,
@@ -70,6 +77,52 @@ namespace Agent
                     { "area_name", param.area_name }
                 }
             };
+        }
+
+        protected override void UpdateResponseFormatSchema()
+        {
+            try
+            {
+                var dynamicAreas = GetCurrentMovableAreaKeys();
+                options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
+                    jsonSchemaFormatName: "move_to_area_parameter",
+                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
+                        $@"{{
+                            ""type"": ""object"",
+                            ""additionalProperties"": false,
+                            ""properties"": {{
+                                ""area_name"": {{
+                                    ""type"": ""string"",
+                                    ""enum"": {JsonConvert.SerializeObject(dynamicAreas)},
+                                    ""description"": ""One of the available locations to move to (Areas or Buildings)""
+                                }}
+                            }},
+                            ""required"": [""area_name""]
+                        }}"
+                    )),
+                    jsonSchemaIsStrict: true
+                );
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[MoveToAreaParameterAgent] ResponseFormat 갱신 실패: {ex.Message}");
+            }
+        }
+
+        private List<string> GetCurrentMovableAreaKeys()
+        {
+            try
+            {
+                if (actor?.sensor != null)
+                {
+                    return actor.sensor.GetMovableAreas();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[MoveToAreaParameterAgent] 이동 가능한 위치 목록 가져오기 실패: {ex.Message}");
+            }
+            return new List<string>();
         }
 
         private string BuildUserMessage(CommonContext context)

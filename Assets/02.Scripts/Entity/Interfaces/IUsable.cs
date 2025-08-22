@@ -11,3 +11,4 @@ public interface IUsable
     /// <returns>사용 결과 메시지</returns>
     string Use(Actor actor, object variable);
 }
+
