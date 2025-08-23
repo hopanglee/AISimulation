@@ -166,7 +166,7 @@ public abstract partial class NPC
 			await MoveToInventoryBox(targetInventoryBox);
 			
 			// 상호작용하여 아이템 놓기 (공통 함수 사용)
-			InteractWithInteractable(targetInventoryBox);
+			await InteractWithInteractable(targetInventoryBox);
 			
 			await SimDelay.DelaySimMinutes(2, currentActionCancellation != null ? currentActionCancellation.Token : default);
 		}

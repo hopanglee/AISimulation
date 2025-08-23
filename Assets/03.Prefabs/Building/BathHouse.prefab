@@ -124,6 +124,7 @@ MonoBehaviour:
     values:
     - {fileID: 4413270179326365304}
     - {fileID: 8959306700248976501}
+  childAreas: []
 --- !u!1 &28210513586033365
 GameObject:
   m_ObjectHideFlags: 0
@@ -585,6 +586,7 @@ MonoBehaviour:
     values:
     - {fileID: 1689930530261925281}
     - {fileID: 8145984273860826748}
+  childAreas: []
 --- !u!1 &764037633261025584
 GameObject:
   m_ObjectHideFlags: 0
@@ -937,6 +939,7 @@ MonoBehaviour:
     values:
     - {fileID: 7781160445935548056}
     - {fileID: 2345589637594959562}
+  childAreas: []
 --- !u!1 &1238443311764291963
 GameObject:
   m_ObjectHideFlags: 0
@@ -3642,6 +3645,7 @@ MonoBehaviour:
     - {fileID: 3963049094771640954}
     values:
     - {fileID: 8046389689860812191}
+  childAreas: []
 --- !u!1 &3653454377430902867
 GameObject:
   m_ObjectHideFlags: 0
@@ -3705,6 +3709,7 @@ MonoBehaviour:
     values:
     - {fileID: 5040960392447463163}
     - {fileID: 7709585748605111258}
+  childAreas: []
 --- !u!1 &3670688855895813873
 GameObject:
   m_ObjectHideFlags: 0
@@ -4115,6 +4120,7 @@ MonoBehaviour:
     values:
     - {fileID: 4810216590378398691}
     - {fileID: 7387859131564737038}
+  childAreas: []
 --- !u!1 &3928084123180950231
 GameObject:
   m_ObjectHideFlags: 0
@@ -5035,6 +5041,7 @@ MonoBehaviour:
     - {fileID: 2133606054693151362}
     values:
     - {fileID: 3543407954909861431}
+  childAreas: []
 --- !u!1 &4798405268339082780
 GameObject:
   m_ObjectHideFlags: 0
@@ -8727,6 +8734,7 @@ MonoBehaviour:
   toMovePos:
     keys: []
     values: []
+  childAreas: []
 --- !u!1 &8714416064919775866
 GameObject:
   m_ObjectHideFlags: 0
@@ -11006,8 +11014,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &355305217999545794 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -11749,8 +11755,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &524359049994464978 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -12101,8 +12105,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &603296620636410226
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12778,6 +12780,7 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 4558555968134246878, guid: abc00000000006626485251670986175, type: 3}
     - {fileID: 5774155040705822292, guid: abc00000000006626485251670986175, type: 3}
+    - {fileID: 1072652354052731409, guid: abc00000000006626485251670986175, type: 3}
     m_RemovedGameObjects:
     - {fileID: 1238676831556229748, guid: abc00000000006626485251670986175, type: 3}
     m_AddedGameObjects:
@@ -13282,8 +13285,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &853838135808842346
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13412,8 +13413,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &853838134824312426 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -13833,8 +13832,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &1019705885031886742 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -14989,8 +14986,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &1343007868551257194
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15238,8 +15233,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &1391846099944070926
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15789,8 +15782,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &1681304440703449660
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17998,8 +17989,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &2237002457901241506
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18639,8 +18628,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &2368654661535201500
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20513,8 +20500,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &2908679926083322572
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21317,8 +21302,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &3011243826745570945 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -21762,8 +21745,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &3048349298473781006 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -24558,8 +24539,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &3888759048166642269
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24688,8 +24667,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &3888759047553078877 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -24934,8 +24911,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &4012006146666286195
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26593,8 +26568,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &4284816532943609126 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -27157,8 +27130,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &4391415636284565802
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27499,8 +27470,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &4434698252387458313 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -28699,8 +28668,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &4719443318975763852 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -28839,8 +28806,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &4765414135183049951
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -29075,8 +29040,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &4772303473188082958 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -29720,8 +29683,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &4937606222114106799 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -29860,8 +29821,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &4978578912296312681
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30906,8 +30865,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &5270201715062362816
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -31134,8 +31091,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &5271399528293631651 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -31756,8 +31711,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &5568797154551429306
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32388,8 +32341,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &5743192113729863508 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -32967,8 +32918,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &6100557236862658389 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -33294,8 +33243,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &6234583044374447300 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -33719,7 +33666,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7086497173953940360, guid: abc00000000004510409350908070486, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -33862,8 +33810,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &6373087200098042391
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -34017,6 +33963,7 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 4558555968134246878, guid: abc00000000006626485251670986175, type: 3}
     - {fileID: 5774155040705822292, guid: abc00000000006626485251670986175, type: 3}
+    - {fileID: 1072652354052731409, guid: abc00000000006626485251670986175, type: 3}
     m_RemovedGameObjects:
     - {fileID: 1238676831556229748, guid: abc00000000006626485251670986175, type: 3}
     m_AddedGameObjects:
@@ -34158,8 +34105,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &6409368559907230780 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030997012, guid: abc00000000010515603088278883623, type: 3}
@@ -34925,8 +34870,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &6590584811538611561 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -35065,8 +35008,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &6624557424808228011
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -35885,7 +35826,8 @@ PrefabInstance:
       propertyPath: 'sitPositions.Array.data[4]'
       value: 
       objectReference: {fileID: 9075693393728906387}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7086497173953940360, guid: abc00000000004510409350908070486, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -37414,8 +37356,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &7061476396453004892 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -38268,8 +38208,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &7226079564198878965
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -38615,8 +38553,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &7334718749743486335
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -39289,8 +39225,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &7437865124514850943 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030997012, guid: abc00000000010515603088278883623, type: 3}
@@ -40425,8 +40359,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &7845941993769307236
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -40666,8 +40598,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &7877968389016992406
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -41257,8 +41187,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &7926222863478118064 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -41699,8 +41627,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &8020405010782130757
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -42140,8 +42066,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &8149417404347546806
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -43572,8 +43496,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!1001 &8550014347250326102
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -44415,8 +44337,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &8684608901144285773 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030997012, guid: abc00000000010515603088278883623, type: 3}
@@ -46366,8 +46286,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &9195555942919492899 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}
@@ -46615,8 +46533,6 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: Generic
-  volume: 500
-  remainingVolume: 500
 --- !u!4 &9222637563082259691 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996992, guid: abc00000000003482005524535963647, type: 3}

@@ -1,16 +1,18 @@
 using UnityEngine;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 
-public abstract class Block : Entity, IInteractable
+/// <summary>
+/// 상호작용이 가능한 Block들의 기본 클래스
+/// </summary>
+public abstract class InteractableProp : Prop, IInteractable
 {
-    public string Description;
-    public Transform toMovePos; // Move함수로 이동했을 때 도착하는 곳
-
-    public abstract string Interact(Actor actor);
+    public abstract UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Actor의 HandItem을 먼저 체크한 후 상호작용을 시도합니다.
     /// </summary>
-    public virtual string TryInteract(Actor actor)
+    public virtual async UniTask<string> TryInteract(Actor actor, CancellationToken cancellationToken = default)
     {
         if (actor == null)
         {
@@ -27,8 +29,8 @@ public abstract class Block : Entity, IInteractable
                 return $"{actor.HandItem.Name}이(가) {GetType().Name}과의 상호작용을 중단시켰습니다.";
             }
         }
-
+        
         // 기존 Interact 로직 실행
-        return Interact(actor);
+        return await Interact(actor, cancellationToken);
     }
 }

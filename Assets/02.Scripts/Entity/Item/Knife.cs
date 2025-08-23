@@ -25,9 +25,4 @@ public class Knife : Item
     {
         return $"칼로 {item.Name}을(를) 자릅니다.";
     }
-
-    public string Cut(Block block)
-    {
-        return $"칼로 {block.Name}을(를) 자릅니다.";
-    }
 }

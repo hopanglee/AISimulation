@@ -12,6 +12,12 @@ public abstract class FoodItem : Item, IUsable
         if (actor.Hunger > 100)
             actor.Hunger = 100;
 
+        // 음식을 먹었으면 오브젝트 삭제
+        if (gameObject != null)
+        {
+            Destroy(gameObject);
+        }
+
         return $"{actor.Name} consumed {this.Name} and satisfied hunger.";
     }
 

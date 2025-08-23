@@ -1,6 +1,8 @@
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class ShowerHead : Prop
+public class ShowerHead : InteractableProp
 {
     [Header("Shower Settings")]
     public bool isOn = false;
@@ -51,8 +53,9 @@ public class ShowerHead : Prop
         return $"샤워기가 켜져있습니다. 온도: {waterTemperature:F1}°C, 압력: {waterPressure:F1}";
     }
     
-    public override string Interact(Actor actor)
+    public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
+        await SimDelay.DelaySimMinutes(1, cancellationToken);
         if (isOn)
         {
             TurnOff();
@@ -61,7 +64,13 @@ public class ShowerHead : Prop
         else
         {
             TurnOn();
-            return $"샤워기를 켭니다. 온도: {waterTemperature:F1}°C";
+            // 샤워를 하면 청결도 증가
+            if (actor.Cleanliness < 100)
+            {
+                int cleanlinessIncrease = Mathf.RoundToInt(waterPressure * 10); // 압력에 따라 청결도 증가량 결정
+                actor.Cleanliness = Mathf.Min(100, actor.Cleanliness + cleanlinessIncrease);
+            }
+            return $"샤워기를 켭니다. 온도: {waterTemperature:F1}°C, 청결도가 증가합니다.";
         }
     }
 }

@@ -185,6 +185,16 @@ public struct GameTime
         minutes += (year - 2024) * 365 * 24 * 60; // 평균 365일로 계산
         return minutes;
     }
+    
+    /// <summary>
+    /// 다른 GameTime과의 차이를 분 단위로 계산
+    /// </summary>
+    public int GetMinutesSince(GameTime other)
+    {
+        long currentMinutes = this.ToMinutes();
+        long otherMinutes = other.ToMinutes();
+        return (int)(currentMinutes - otherMinutes);
+    }
 
     /// <summary>
     /// 분 단위에서 GameTime으로 변환

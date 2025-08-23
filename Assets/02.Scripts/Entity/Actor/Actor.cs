@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -54,7 +55,9 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     [Range(0, 100)]
     public int Stamina; // 피로 혹은 신체적 지침
 
-    [Header("Mental State")]
+    [Range(0, 100)]
+    public int Cleanliness = 100; // 청결도
+
     // 정신적 쾌락: 0 이상의 값 (예, 만족감, 즐거움)
     public int MentalPleasure;
 
@@ -171,7 +174,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
     #region Agent Selectable Fucntion
 
-    public void InteractWithInteractable(IInteractable interactable)
+    public async UniTask InteractWithInteractable(IInteractable interactable)
     {
         if (interactable == null)
         {
@@ -179,15 +182,16 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             return;
         }
 
-        // 직접 TryInteract 호출
-        interactable.TryInteract(this);
+        // 직접 TryInteract 호출 (비동기)
+        await interactable.TryInteract(this);
     }
 
     /// <summary>
     /// IInteractable 인터페이스 구현: 다른 Actor와의 상호작용
     /// </summary>
-    public virtual string Interact(Actor actor)
+    public virtual async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
+        await SimDelay.DelaySimMinutes(1, cancellationToken);
         if (actor == null)
         {
             return "상호작용할 대상이 없습니다.";
@@ -196,11 +200,11 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         // 기본적으로는 대화만 가능
         return $"안녕하세요, {actor.Name}님!";
     }
-    
+
     /// <summary>
     /// Actor의 HandItem을 먼저 체크한 후 상호작용을 시도합니다.
     /// </summary>
-    public virtual string TryInteract(Actor actor)
+    public virtual async UniTask<string> TryInteract(Actor actor, CancellationToken cancellationToken = default)
     {
         if (actor == null)
         {
@@ -218,8 +222,11 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             }
         }
 
+        // 기본적으로 1분 지연 (SimDelay(1))
+        await SimDelay.DelaySimMinutes(1, cancellationToken);
+
         // 기존 Interact 로직 실행
-        return Interact(actor);
+        return await Interact(actor, cancellationToken);
     }
 
 

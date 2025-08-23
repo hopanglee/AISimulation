@@ -139,6 +139,9 @@ public class Brain
             // ActSelectorAgent를 통해 행동 선택 (Tool을 통해 동적으로 액션 정보 제공)
             var selection = await actSelectorAgent.SelectActAsync(situationDescription);
             
+            // ActSelectResult를 ActorManager에 저장
+            Services.Get<IActorService>().StoreActResult(actor, selection);
+            
             // 선택된 행동에 대한 파라미터 생성
             var paramResult = await GenerateActionParameters(selection);
             

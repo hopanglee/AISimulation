@@ -1,4 +1,6 @@
 using System.Linq;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class DrinkDispenser : ItemDispenser
@@ -70,8 +72,9 @@ public class DrinkDispenser : ItemDispenser
         return $"음료 디스펜서 - {beanStatus}";
     }
     
-    public override string Interact(Actor actor)
+    public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
+        await SimDelay.DelaySimMinutes(1, cancellationToken);
         if (!hasBeans)
         {
             return "원두가 부족합니다. 보충해주세요.";

@@ -1,9 +1,11 @@
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
 /// Block으로 만들어진 Food - Interact만 가능하고 Use는 불가능
 /// </summary>
-public abstract class FoodBlock : Block, ICollectible
+public abstract class FoodBlock : Item, IInteractable
 {
     [Header("Food Properties")]
     public int hungerValue = 10; // 배고픔 해결량
@@ -17,8 +19,9 @@ public abstract class FoodBlock : Block, ICollectible
     /// <summary>
     /// Block의 Interact 구현 - 음식을 먹기
     /// </summary>
-    public override string Interact(Actor actor)
+    public virtual async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
+        await SimDelay.DelaySimMinutes(1, cancellationToken);
         if (actor == null)
         {
             return "상호작용할 대상이 없습니다.";
@@ -45,6 +48,11 @@ public abstract class FoodBlock : Block, ICollectible
         if (currentAmount <= 0)
         {
             result += " 이제 그릇이 비어있습니다.";
+            // 음식을 다 먹었으면 오브젝트 삭제
+            if (gameObject != null)
+            {
+                Destroy(gameObject);
+            }
         }
         else
         {
@@ -70,5 +78,30 @@ public abstract class FoodBlock : Block, ICollectible
         currentAmount += amount;
         if (currentAmount > 100)
             currentAmount = 100;
+    }
+    
+    /// <summary>
+    /// Actor의 HandItem을 먼저 체크한 후 상호작용을 시도합니다.
+    /// </summary>
+    public virtual async UniTask<string> TryInteract(Actor actor, CancellationToken cancellationToken = default)
+    {
+        if (actor == null)
+        {
+            return "상호작용할 대상이 없습니다.";
+        }
+
+        // HandItem이 있는 경우 InteractWithInteractable 체크
+        if (actor.HandItem != null)
+        {
+            bool shouldContinue = actor.HandItem.InteractWithInteractable(actor, this);
+            if (!shouldContinue)
+            {
+                // HandItem이 상호작용을 중단시킴
+                return $"{actor.HandItem.Name}이(가) {GetType().Name}과의 상호작용을 중단시켰습니다.";
+            }
+        }
+        
+        // 기존 Interact 로직 실행
+        return await Interact(actor, cancellationToken);
     }
 }

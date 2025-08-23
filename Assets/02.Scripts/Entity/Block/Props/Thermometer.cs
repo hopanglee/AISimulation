@@ -100,19 +100,6 @@ public class Thermometer : Prop
         return $"{mountType} 온도계 - {GetTemperatureString()}";
     }
     
-    public override string Interact(Actor actor)
-    {
-        if (!isWorking)
-        {
-            return "온도계가 작동하지 않습니다.";
-        }
-        
-        string tempInfo = GetTemperatureString();
-        string mountInfo = isWallMounted ? "벽에 고정되어 있습니다." : "이동 가능합니다.";
-        
-        return $"현재 온도: {tempInfo}\n{mountInfo}";
-    }
-    
     public string GetDetailedInfo()
     {
         if (!isWorking)

@@ -12,6 +12,11 @@ public class Alcohol : Drink
     
     public override string Eat(Actor actor)
     {
+        // 음료를 마셨으면 오브젝트 삭제
+        if (gameObject != null)
+        {
+            Destroy(gameObject);
+        }
         
         string alcoholDescription = $"(도수: {alcoholContent}%)";
         

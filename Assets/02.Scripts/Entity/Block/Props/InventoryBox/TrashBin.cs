@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class TrashBin : InventoryBox
@@ -82,19 +84,44 @@ public class TrashBin : InventoryBox
     {
         if (items.Count > 0)
         {
-            return $"쓰레기통에 {items.Count}개의 아이템이 있습니다.";
+            string itemList = string.Join(", ", items.ConvertAll(item => item.Name));
+            return $"쓰레기통에 {items.Count}개의 아이템이 있습니다: {itemList}";
         }
         
         return "쓰레기통이 비어있습니다.";
     }
     
-    public override string Interact(Actor actor)
+    public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
-        if (items.Count == 0)
+        await SimDelay.DelaySimMinutes(1, cancellationToken);
+        // 손에 아이템이 있는 경우: 쓰레기통에 아이템 버리기
+        if (actor.HandItem != null)
         {
-            return "쓰레기통이 비어있습니다.";
+            if (isFull)
+            {
+                return "쓰레기통이 가득 찼습니다.";
+            }
+            
+            // 아이템 이름 저장 (나중에 사용하기 위해)
+            string itemName = actor.HandItem.Name;
+            
+            // 아이템을 쓰레기통에 추가
+            AddItem(actor.HandItem);
+            
+            // Actor의 손에서 아이템 제거
+            actor.HandItem = null;
+            
+            return $"{actor.Name}이(가) {itemName}을(를) 쓰레기통에 버렸습니다.";
         }
-        
-        return $"쓰레기통에 {items.Count}개의 아이템이 있습니다. 아이템을 추가하거나 비울 수 있습니다.";
+        // 빈손인 경우: 쓰레기통 상태 확인
+        else
+        {
+            if (items.Count == 0)
+            {
+                return "쓰레기통이 비어있습니다.";
+            }
+            
+            return $"쓰레기통에 {items.Count}개의 아이템이 있습니다. 아이템을 추가하거나 비울 수 있습니다.";
+        }
     }
 }
