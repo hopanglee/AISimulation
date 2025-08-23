@@ -80,6 +80,23 @@ namespace Agent.ActionHandlers
                     {
                         var prop = interactableEntities.props[objectName];
                         Debug.Log($"[{actor.Name}] {prop.Name}와 상호작용");
+                        
+                        // 실제 상호작용 실행
+                        if (prop is IInteractable interactable)
+                        {
+                            try
+                            {
+                                // TryInteract를 await으로 기다림
+                                string result = await interactable.TryInteract(actor, token);
+                                Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
+                                return;
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                Debug.Log($"[{actor.Name}] 상호작용이 취소되었습니다.");
+                                return;
+                            }
+                        }
                     }
                     else
                     {
@@ -91,7 +108,9 @@ namespace Agent.ActionHandlers
                     Debug.LogWarning($"[{actor.Name}] sensor 기능을 사용할 수 없습니다.");
                 }
             }
-            await SimDelay.DelaySimMinutes(5);
+            
+            // 기본적으로 1분 지연 (SimDelay(1))
+            await SimDelay.DelaySimMinutes(1, token);
         }
 
         /// <summary>

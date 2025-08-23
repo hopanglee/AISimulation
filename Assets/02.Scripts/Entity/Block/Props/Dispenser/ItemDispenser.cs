@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 [System.Serializable]
@@ -12,7 +14,7 @@ public class DispenserEntry
     public Entity prefab;
 }
 
-public class ItemDispenser : Prop
+public class ItemDispenser : InteractableProp
 {
     [Header("Item Dispenser Settings")]
     [Tooltip("요청 가능한 아이템 키와 프리팹 매핑 목록")]
@@ -52,8 +54,9 @@ public class ItemDispenser : Prop
         return $"요청 시 무제한 공급 가능: {keys}";
     }
 
-    public override string Interact(Actor actor)
+    public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
+        await SimDelay.DelaySimMinutes(1, cancellationToken);
         if (supplies == null || supplies.Count == 0)
         {
             return "현재 제공 가능한 아이템이 없습니다.";

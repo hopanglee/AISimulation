@@ -1,6 +1,8 @@
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class Television : Prop
+public class Television : InteractableProp
 {
     [Header("TV Settings")]
     public bool isOn = false;
@@ -92,8 +94,9 @@ public class Television : Prop
         return status;
     }
     
-    public override string Interact(Actor actor)
+    public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
+        await SimDelay.DelaySimMinutes(1, cancellationToken);
         if (isOn)
         {
             TurnOff();

@@ -1,6 +1,8 @@
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class Sink : Prop
+public class Sink : InteractableProp
 {
     [Header("Sink Settings")]
     public bool isWaterRunning = false;
@@ -62,8 +64,9 @@ public class Sink : Prop
         return "세면대가 깨끗합니다.";
     }
     
-    public override string Interact(Actor actor)
+    public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
+        await SimDelay.DelaySimMinutes(1, cancellationToken);
         if (!isClean)
         {
             Clean();
@@ -78,7 +81,27 @@ public class Sink : Prop
         else
         {
             TurnOnWater();
-            return $"물을 켭니다. 온도: {waterTemperature:F1}°C";
+            
+            // 세수와 손 씻기를 동시에 처리
+            int totalCleanlinessIncrease = 0;
+            
+            // 세수: 기본 청결도 증가
+            if (actor.Cleanliness < 100)
+            {
+                int faceCleanliness = 15;
+                actor.Cleanliness = Mathf.Min(100, actor.Cleanliness + faceCleanliness);
+                totalCleanlinessIncrease += faceCleanliness;
+            }
+            
+            // 손 씻기: 추가 청결도 증가
+            if (actor.Cleanliness < 100)
+            {
+                int handsCleanliness = 20;
+                actor.Cleanliness = Mathf.Min(100, actor.Cleanliness + handsCleanliness);
+                totalCleanlinessIncrease += handsCleanliness;
+            }
+            
+            return $"물을 켭니다. 온도: {waterTemperature:F1}°C, 세수와 손 씻기로 청결도가 {totalCleanlinessIncrease}만큼 증가합니다.";
         }
     }
 }

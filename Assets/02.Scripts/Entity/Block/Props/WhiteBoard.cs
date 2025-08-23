@@ -1,6 +1,8 @@
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class WhiteBoard : Prop
+public class WhiteBoard : InteractableProp
 {
     [Header("White Board Settings")]
     public bool isClean = true;
@@ -18,8 +20,9 @@ public class WhiteBoard : Prop
         }
     }
     
-    public override string Interact(Actor actor)
+    public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
+        await SimDelay.DelaySimMinutes(1, cancellationToken);
         return "화이트보드와 상호작용할 수 있습니다.";
     }
 }

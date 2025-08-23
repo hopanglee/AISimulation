@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public abstract class InventoryBox : Prop
+public abstract class InventoryBox : InteractableProp
 {
     public int maxItems;
     public List<Entity> items;
@@ -120,6 +122,25 @@ public abstract class InventoryBox : Prop
         }
     }
     
+    /// <summary>
+    /// 특정 아이템을 인벤토리에서 제거
+    /// </summary>
+    public virtual bool RemoveItem(Entity item)
+    {
+        if (item == null || !items.Contains(item))
+        {
+            return false;
+        }
+        
+        // items 리스트에서 제거
+        items.Remove(item);
+        
+        // 위치에서도 제거
+        RemoveItemFromPosition(item);
+        
+        return true;
+    }
+    
     // 기본 구현을 제공하는 virtual 메서드들
     public virtual bool AddItem(Entity item)
     {
@@ -197,8 +218,9 @@ public abstract class InventoryBox : Prop
         throw new System.NotImplementedException();
     }
 
-    public override string Interact(Actor actor)
+    public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
+        await SimDelay.DelaySimMinutes(1, cancellationToken);
         if (actor == null)
         {
             return "상호작용할 대상이 없습니다.";

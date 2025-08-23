@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1031305305}
   - component: {fileID: 1031305306}
   - component: {fileID: 1031305307}
-  - component: {fileID: -7447533321976443094}
   m_Layer: 11
   m_Name: SM_Tissuebox_01_2
   m_TagString: Untagged
@@ -91,27 +90,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300008, guid: abc00000000015115323955387821863, type: 3}
---- !u!114 &-7447533321976443094
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1031305304}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2eed54f66d6c19140a94158420f45e7e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _curLocation: {fileID: 0}
-  _preposition: 
-  _isHideChild: 0
-  _name: 
-  _currentStatusDescription: 
-  Description: 
-  toMovePos: {fileID: 0}
-  remainingTissues: 50
-  maxTissues: 50
 --- !u!1 &1031305308
 GameObject:
   m_ObjectHideFlags: 0

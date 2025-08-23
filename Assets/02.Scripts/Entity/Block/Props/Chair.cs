@@ -1,6 +1,8 @@
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class Chair : Prop
+public class Chair : SitableProp
 {
     [Header("Chair Settings")]
     public bool isComfortable = true;
@@ -23,9 +25,9 @@ public class Chair : Prop
         }
     }
     
-    public bool TrySit(Actor actor)
+    public override bool TrySit(Actor actor)
     {
-        if (seatedActor != null)
+        if (!CanSit(actor))
         {
             return false;
         }
@@ -33,35 +35,33 @@ public class Chair : Prop
         return SitAtPosition(actor);
     }
     
-    public bool SitAtPosition(Actor actor)
+    private bool SitAtPosition(Actor actor)
     {
-        if (seatedActor != null)
-        {
-            return false;
-        }
-        
         seatedActor = actor;
         
         // 액터를 앉는 위치로 이동
         if (sitPosition != null)
         {
-            actor.transform.position = sitPosition.position;
+            MoveActorToSitPosition(actor, sitPosition.position);
         }
         
         return true;
     }
     
-    public void StandUp()
+    public override void StandUp(Actor actor)
     {
-        seatedActor = null;
+        if (IsActorSeated(actor))
+        {
+            seatedActor = null;
+        }
     }
     
-    public bool IsActorSeated(Actor actor)
+    public override bool IsActorSeated(Actor actor)
     {
         return seatedActor == actor;
     }
     
-    public bool IsOccupied()
+    public override bool IsOccupied()
     {
         return seatedActor != null;
     }
@@ -76,11 +76,12 @@ public class Chair : Prop
         return isComfortable ? "편안한 의자입니다." : "의자입니다.";
     }
     
-    public override string Interact(Actor actor)
+    public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
+        await SimDelay.DelaySimMinutes(1, cancellationToken);
         if (IsActorSeated(actor))
         {
-            StandUp();
+            StandUp(actor);
             return "의자에서 일어났습니다.";
         }
         

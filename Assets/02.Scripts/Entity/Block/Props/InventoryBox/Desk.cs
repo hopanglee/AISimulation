@@ -1,22 +1,14 @@
-using System.Collections.Generic;
 using System.Threading;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Agent;
 
-public class Shelf : InventoryBox
+public class Desk : InventoryBox
 {
-    
-    // 기본 AddItem과 GetItem 구현을 사용하므로 override 불필요
-    
     public override string Get()
     {
-        if (items.Count == 0)
-        {
-            return "선반이 비어있습니다.";
-        }
-        
-        return $"선반에 {items.Count}개의 아이템이 있습니다.";
+        return $"{Name} 입니다.";
     }
     
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
@@ -44,18 +36,18 @@ public class Shelf : InventoryBox
             
             // ActorManager에서 SelectAct에서 생성된 원본 reasoning과 intention을 가져옴
             var actResult = Services.Get<IActorService>().GetActResult(actor);
-            string reasoning = $"선반과 상호작용하여 아이템을 관리합니다. 현재 아이템 수: {items.Count}, 최대: {maxItems}";
-            string intention = "선반에 아이템을 추가하거나 선반에서 아이템을 가져옵니다.";
+            string reasoning = $"책상과 상호작용하여 아이템을 관리합니다. 현재 아이템 수: {items.Count}, 최대: {maxItems}";
+            string intention = "책상에 아이템을 추가하거나 책상에서 아이템을 가져옵니다.";
             
             if (actResult != null)
             {
                 reasoning = actResult.Reasoning;
                 intention = actResult.Intention;
-                Debug.Log($"[Shelf] ActorManager에서 가져온 원본 값 - Reasoning: {reasoning}, Intention: {intention}");
+                Debug.Log($"[Desk] ActorManager에서 가져온 원본 값 - Reasoning: {reasoning}, Intention: {intention}");
             }
             else
             {
-                Debug.LogWarning($"[Shelf] ActorManager에서 {actor.Name}의 ActSelectResult를 찾을 수 없습니다. 기본값 사용");
+                Debug.LogWarning($"[Desk] ActorManager에서 {actor.Name}의 ActSelectResult를 찾을 수 없습니다. 기본값 사용");
             }
             
             var context = new ParameterAgentBase.CommonContext
@@ -99,7 +91,7 @@ public class Shelf : InventoryBox
         }
         catch (System.Exception ex)
         {
-            Debug.LogWarning($"[Shelf] InventoryBoxAgent 실행 실패: {ex.Message}");
+            Debug.LogWarning($"[Desk] InventoryBoxAgent 실행 실패: {ex.Message}");
                          // 에이전트 실패 시 기본 로직으로 폴백
              return ExecuteFallbackInteraction(actor);
         }
@@ -114,12 +106,7 @@ public class Shelf : InventoryBox
         
         if (items.Count >= maxItems)
         {
-            return "선반이 가득 찼습니다.";
-        }
-        
-        if (itemPlacementPositions == null || items.Count >= itemPlacementPositions.Count)
-        {
-            return "사용 가능한 위치가 없습니다.";
+            return "책상이 가득 찼습니다.";
         }
         
         var addedItems = new List<string>();
@@ -176,7 +163,7 @@ public class Shelf : InventoryBox
         string result = "";
         if (addedItems.Count > 0)
         {
-            result += $"{actor.Name}이(가) {string.Join(", ", addedItems)}을(를) 선반에 올렸습니다. ";
+            result += $"{actor.Name}이(가) {string.Join(", ", addedItems)}을(를) 책상에 올렸습니다. ";
         }
         
         if (failedItems.Count > 0)
@@ -199,7 +186,7 @@ public class Shelf : InventoryBox
         
         foreach (string itemName in itemNames)
         {
-            // 선반에서 아이템 제거
+            // 책상에서 아이템 제거
             var itemToRemove = items.Find(item => item.Name == itemName);
             if (itemToRemove == null)
             {
@@ -217,7 +204,7 @@ public class Shelf : InventoryBox
             }
             else
             {
-                // PickUp 실패 시 아이템을 다시 선반에 넣기
+                // PickUp 실패 시 아이템을 다시 책상에 넣기
                 AddItem(itemToRemove);
                 failedItems.Add(itemName);
             }
@@ -226,7 +213,7 @@ public class Shelf : InventoryBox
         string result = "";
         if (removedItems.Count > 0)
         {
-            result += $"{actor.Name}이(가) 선반에서 {string.Join(", ", removedItems)}을(를) 가져왔습니다. ";
+            result += $"{actor.Name}이(가) 책상에서 {string.Join(", ", removedItems)}을(를) 가져왔습니다. ";
         }
         
         if (failedItems.Count > 0)
@@ -240,17 +227,7 @@ public class Shelf : InventoryBox
     private string ExecuteFallbackInteraction(Actor actor)
     {
         // 기본 로직
-        if (items.Count >= maxItems)
-        {
-            return "선반이 가득 찼습니다.";
-        }
-        
-        if (itemPlacementPositions == null || items.Count >= itemPlacementPositions.Count)
-        {
-            return "사용 가능한 위치가 없습니다.";
-        }
-        
-        return $"선반에 아이템을 놓을 수 있습니다. 현재 {items.Count}개, 최대 {itemPlacementPositions.Count}개";
+        return $"{Name}과 상호작용할 수 있습니다.";
     }
     
     private List<string> GetAvailableItems(Actor actor)

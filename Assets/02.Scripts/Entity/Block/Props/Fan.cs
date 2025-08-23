@@ -1,6 +1,8 @@
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class Fan : Prop
+public class Fan : InteractableProp
 {
     public enum FanSpeed
     {
@@ -86,8 +88,9 @@ public class Fan : Prop
         }
     }
     
-    public override string Interact(Actor actor)
+    public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
+        await SimDelay.DelaySimMinutes(1, cancellationToken);
         if (currentSpeed == FanSpeed.Off)
         {
             TurnOn();

@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class Bench : Prop
+public class Bench : SitableProp
 {
     [Header("Bench Settings")]
     public int maxOccupants = 4;
-    public float sitHeight = 0.5f;
 
     [Header("Sit Positions (Editor Assigned)")]
     public Transform[] sitPositions;
@@ -31,8 +32,13 @@ public class Bench : Prop
         seatedActors = new Actor[maxOccupants];
     }
 
-    public bool TrySit(Actor actor)
+    public override bool TrySit(Actor actor)
     {
+        if (!CanSit(actor))
+        {
+            return false;
+        }
+        
         int availablePosition = GetAvailablePosition();
         if (availablePosition == -1)
         {
@@ -56,7 +62,7 @@ public class Bench : Prop
         return -1;
     }
 
-    public bool SitAtPosition(Actor actor, int position)
+    private bool SitAtPosition(Actor actor, int position)
     {
         if (sitPositions == null) return false;
         if (position < 0 || position >= sitPositions.Length) return false;
@@ -66,13 +72,13 @@ public class Bench : Prop
 
         if (sitPositions[position] != null)
         {
-            actor.transform.position = sitPositions[position].position;
+            MoveActorToSitPosition(actor, sitPositions[position].position);
         }
 
         return true;
     }
 
-    public void StandUp(Actor actor)
+    public override void StandUp(Actor actor)
     {
         for (int i = 0; i < seatedActors.Length; i++)
         {
@@ -98,6 +104,25 @@ public class Bench : Prop
         }
         return count;
     }
+    
+    public override bool IsActorSeated(Actor actor)
+    {
+        if (seatedActors == null) return false;
+        
+        for (int i = 0; i < seatedActors.Length; i++)
+        {
+            if (seatedActors[i] == actor)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public override bool IsOccupied()
+    {
+        return GetOccupantCount() > 0;
+    }
 
     public override string Get()
     {
@@ -110,8 +135,9 @@ public class Bench : Prop
         return $"벤치에 {count}명이 앉아있습니다.";
     }
 
-    public override string Interact(Actor actor)
+    public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
+        await SimDelay.DelaySimMinutes(1, cancellationToken);
         // 이미 앉아있는지 확인
         for (int i = 0; i < seatedActors.Length; i++)
         {

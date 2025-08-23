@@ -24,6 +24,12 @@ public abstract class Drink : Item, IUsable
         if (actor.Thirst > 100)
             actor.Thirst = 100;
 
+        // 음료를 마셨으면 오브젝트 삭제
+        if (gameObject != null)
+        {
+            Destroy(gameObject);
+        }
+
         return $"{actor.Name} drank {this.Name} and restored {HungerRecovery} hunger points and {ThirstRecovery} thirst points.";
     }
 

@@ -25,6 +25,13 @@ public abstract class MainActor : Actor
 	public int WakeUpHour => wakeUpHour;
 	public int wakeUpMinute = 0;
 	private bool hasAwokenToday = false;
+	
+	[Header("Cleanliness Decay System")]
+	[SerializeField, Tooltip("청결도가 감소하는 간격 (분)")]
+	private int cleanlinessDecayIntervalMinutes = 30; // 30분마다
+	[SerializeField, Tooltip("한 번에 감소하는 청결도")]
+	private int cleanlinessDecayAmount = 3;
+	private GameTime lastCleanlinessDecayTime;
 
 	[SerializeField, Range(0, 23)]
 	private int sleepHour = 22; // 취침 시간
@@ -365,6 +372,36 @@ public abstract class MainActor : Actor
 		if (currentTime.hour == 0 && currentTime.minute == 0)
 		{
 			hasAwokenToday = false;
+		}
+		
+		// 청결도 감소 처리 (시뮬레이션 시간 기준)
+		UpdateCleanlinessDecay(currentTime);
+	}
+	
+	/// <summary>
+	/// 시뮬레이션 시간 기준으로 청결도 감소 처리
+	/// </summary>
+	private void UpdateCleanlinessDecay(GameTime currentTime)
+	{
+		// lastCleanlinessDecayTime이 초기화되지 않았으면 현재 시간으로 설정
+		if (lastCleanlinessDecayTime == null)
+		{
+			lastCleanlinessDecayTime = currentTime;
+			return;
+		}
+		
+		// 현재 시간과 마지막 감소 시간의 차이를 분 단위로 계산
+		int minutesDiff = currentTime.GetMinutesSince(lastCleanlinessDecayTime);
+		
+		// 설정된 간격만큼 시간이 지났으면 청결도 감소
+		if (minutesDiff >= cleanlinessDecayIntervalMinutes)
+		{
+			if (Cleanliness > 0)
+			{
+				Cleanliness = Mathf.Max(0, Cleanliness - cleanlinessDecayAmount);
+				Debug.Log($"[{Name}] 청결도 감소: {Cleanliness + cleanlinessDecayAmount} → {Cleanliness} (감소량: {cleanlinessDecayAmount})");
+			}
+			lastCleanlinessDecayTime = currentTime;
 		}
 	}
 
