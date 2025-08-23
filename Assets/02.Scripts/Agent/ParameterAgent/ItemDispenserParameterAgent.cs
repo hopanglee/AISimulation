@@ -1,0 +1,211 @@
+using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
+using Agent;
+using OpenAI.Chat;
+using System;
+using UnityEngine;
+using Agent.Tools;
+using System.Threading;
+
+namespace Agent
+{
+    /// <summary>
+    /// ItemDispenser와 상호작용할 때 어떤 아이템을 생성할지 결정하는 ParameterAgent
+    /// </summary>
+    public class ItemDispenserParameterAgent : ParameterAgentBase
+    {
+        public class ItemDispenserParameter
+        {
+            [JsonProperty("selected_item_key")]
+            public string SelectedItemKey { get; set; }
+        }
+
+        private readonly string systemPrompt;
+        private readonly List<string> availableItemKeys;
+
+        public ItemDispenserParameterAgent(List<string> availableItemKeys, GPT gpt)
+        {
+            this.availableItemKeys = availableItemKeys ?? new List<string>();
+            systemPrompt = PromptLoader.LoadPrompt("ItemDispenserParameterAgentPrompt.txt", "You are an ItemDispenser parameter generator.");
+            
+            // 초기 enum 설정
+            var itemNames = availableItemKeys.Count > 0 ? availableItemKeys : new List<string> {};
+            
+            this.options = new ChatCompletionOptions
+            {
+                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
+                    jsonSchemaFormatName: "item_dispenser_parameter",
+                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
+                        $@"{{
+                            ""type"": ""object"",
+                            ""additionalProperties"": false,
+                            ""properties"": {{
+                                ""selected_item_key"": {{
+                                    ""type"": ""string"",
+                                    ""enum"": {JsonConvert.SerializeObject(itemNames)},
+                                    ""description"": ""The key of the selected item to generate""
+                                }}
+                            }},
+                            ""required"": [""selected_item_key""]
+                        }}"
+                    )),
+                    jsonSchemaIsStrict: true
+                )
+            };
+        }
+
+        /// <summary>
+        /// ActParameterRequest를 받아서 ItemDispenser 파라미터를 생성합니다.
+        /// </summary>
+        public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
+        {
+            try
+            {
+                // Actor 설정
+                if (actor == null)
+                {
+                    Debug.LogError("[ItemDispenserParameterAgent] Actor가 설정되지 않았습니다.");
+                    return CreateDefaultResult(request.ActType);
+                }
+
+                // 사용자 메시지 생성
+                var userMessage = BuildUserMessage(request);
+                messages.Add(new UserChatMessage(userMessage));
+
+                // GPT API 호출
+                var response = await SendGPTAsync<ItemDispenserParameter>(messages, options);
+
+                if (response != null)
+                {
+                    // 응답 검증
+                    if (string.IsNullOrEmpty(response.SelectedItemKey))
+                    {
+                        Debug.LogWarning("[ItemDispenserParameterAgent] 선택된 아이템 키가 비어있습니다.");
+                        return CreateDefaultResult(request.ActType);
+                    }
+
+                    // 결과 생성
+                    var result = new ActParameterResult
+                    {
+                        ActType = request.ActType,
+                        Parameters = new Dictionary<string, object>
+                        {
+                            { "selected_item_key", response.SelectedItemKey },
+                        }
+                    };
+
+                    Debug.Log($"[ItemDispenserParameterAgent] {actor.Name}의 아이템 선택: {response.SelectedItemKey}");
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[ItemDispenserParameterAgent] 파라미터 생성 실패: {ex.Message}");
+            }
+
+            return CreateDefaultResult(request.ActType);
+        }
+
+        /// <summary>
+        /// CommonContext를 받아서 ItemDispenser 파라미터를 생성합니다.
+        /// </summary>
+        public async UniTask<ActParameterResult> GenerateParametersAsync(CommonContext context)
+        {
+            var request = new ActParameterRequest
+            {
+                ActType = ActionType.InteractWithObject,
+                Reasoning = context.Reasoning,
+                Intention = context.Intention
+            };
+
+            return await GenerateParametersAsync(request);
+        }
+
+        /// <summary>
+        /// 사용자 메시지를 생성합니다.
+        /// </summary>
+        private string BuildUserMessage(ActParameterRequest request)
+        {
+            var message = new System.Text.StringBuilder();
+            
+            message.AppendLine($"## Actor Information");
+            message.AppendLine($"- Name: {actor.Name}");
+            message.AppendLine($"- Item in hand: {(actor.HandItem != null ? actor.HandItem.Name : "None")}");
+            message.AppendLine($"- Inventory status: {GetInventoryStatus()}");
+            message.AppendLine();
+
+            message.AppendLine($"## Current Situation");
+            message.AppendLine($"- Action reason: {request.Reasoning}");
+            message.AppendLine($"- Action intention: {request.Intention}");
+            message.AppendLine();
+
+            message.AppendLine($"## Available Item List");
+            var availableItems = GetAvailableItems();
+            if (availableItems.Count > 0)
+            {
+                foreach (var item in availableItems)
+                {
+                    message.AppendLine($"- {item}");
+                }
+            }
+            else
+            {
+                message.AppendLine("- No available items.");
+            }
+            message.AppendLine();
+
+            message.AppendLine("Based on the above information, please select the most appropriate item.");
+            message.AppendLine("You must select only from the provided item key list.");
+
+            return message.ToString();
+        }
+
+        /// <summary>
+        /// Actor의 인벤토리 상태를 문자열로 반환합니다.
+        /// </summary>
+        private string GetInventoryStatus()
+        {
+            if (actor.InventoryItems == null || actor.InventoryItems.Length == 0)
+            {
+                return "No inventory";
+            }
+
+            var occupiedSlots = 0;
+            var totalSlots = actor.InventoryItems.Length;
+
+            for (int i = 0; i < actor.InventoryItems.Length; i++)
+            {
+                if (actor.InventoryItems[i] != null)
+                {
+                    occupiedSlots++;
+                }
+            }
+
+            return $"{occupiedSlots}/{totalSlots} slots occupied";
+        }
+
+        /// <summary>
+        /// 현재 사용 가능한 아이템 목록을 가져옵니다.
+        /// </summary>
+        private List<string> GetAvailableItems()
+        {
+            return availableItemKeys ?? new List<string>();
+        }
+
+        /// <summary>
+        /// 기본 결과를 생성합니다.
+        /// </summary>
+        private ActParameterResult CreateDefaultResult(ActionType actType)
+        {
+            return new ActParameterResult
+            {
+                ActType = actType,
+                Parameters = new Dictionary<string, object>
+                {
+                    { "selected_item_key", "" },
+                }
+            };
+        }
+    }
+}

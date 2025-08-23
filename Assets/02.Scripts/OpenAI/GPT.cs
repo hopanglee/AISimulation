@@ -206,154 +206,194 @@ public class GPT
         bool requiresAction;
         string finalResponse = "";
 
-        do
+        // GPT API 호출 시작 - 시뮬레이션 시간 자동 정지
+        var timeService = Services.Get<ITimeService>();
+        if (timeService != null)
         {
-            requiresAction = false;
-            ChatCompletion completion = await client.CompleteChatAsync(messages, options);
+            timeService.StartAPICall();
+            Debug.Log($"[GPT][{actorName}] API 호출 시작 - 시뮬레이션 시간 정지됨");
+        }
 
-            switch (completion.FinishReason)
+        try
+        {
+            do
             {
-                case ChatFinishReason.Stop:
+                requiresAction = false;
+                ChatCompletion completion = await client.CompleteChatAsync(messages, options);
+
+                switch (completion.FinishReason)
                 {
-                    messages.Add(new AssistantChatMessage(completion));
-                    string responseText = completion.Content[0].Text;
-                    finalResponse = responseText;
-                    Debug.Log($"GPT Response: {responseText}");
-
-                    if (typeof(T) == typeof(string))
+                    case ChatFinishReason.Stop:
                     {
-                        await SaveConversationLogAsync(messages, responseText);
-                        return (T)(object)responseText;
-                    }
-
-                    try
-                    {
-                        Debug.Log($"[GPT][PARSE] Raw response before parse: {responseText}");
-                        var result = JsonConvert.DeserializeObject<T>(responseText);
-                        await SaveConversationLogAsync(messages, responseText);
-                        return result;
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.LogError($"[GPT][PARSE ERROR] Raw response: {responseText}");
-                        Debug.LogError($"JSON Deserialization Error: {ex.Message}");
-                        await SaveConversationLogAsync(messages, $"ERROR: {ex.Message}");
-                        throw new InvalidOperationException(
-                            $"Failed to parse GPT response into {typeof(T)}"
-                        );
-                    }
-                }
-
-                case ChatFinishReason.ToolCalls:
-                    {
-                        // First, add the assistant message with tool calls to the conversation history.
                         messages.Add(new AssistantChatMessage(completion));
+                        string responseText = completion.Content[0].Text;
+                        finalResponse = responseText;
+                        Debug.Log($"GPT Response: {responseText}");
 
-                        // Then, add a new tool message for each tool call that is resolved.
-                        foreach (ChatToolCall toolCall in completion.ToolCalls)
+                        if (typeof(T) == typeof(string))
                         {
-                            Debug.Log($"ToolCalls : {toolCall.FunctionName}");
-                            ExecuteToolCall(toolCall);
+                            await SaveConversationLogAsync(messages, responseText);
+                            return (T)(object)responseText;
+                        }
+
+                        try
+                        {
+                            Debug.Log($"[GPT][PARSE] Raw response before parse: {responseText}");
+                            var result = JsonConvert.DeserializeObject<T>(responseText);
+                            await SaveConversationLogAsync(messages, responseText);
+                            return result;
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogError($"[GPT][PARSE ERROR] Raw response: {responseText}");
+                            Debug.LogError($"JSON Deserialization Error: {ex.Message}");
+                            await SaveConversationLogAsync(messages, $"ERROR: {ex.Message}");
+                            throw new InvalidOperationException(
+                                $"Failed to parse GPT response into {typeof(T)}"
+                            );
                         }
                     }
 
-                    requiresAction = true;
-                    break;
+                    case ChatFinishReason.ToolCalls:
+                        {
+                            // First, add the assistant message with tool calls to the conversation history.
+                            messages.Add(new AssistantChatMessage(completion));
 
-                case ChatFinishReason.Length:
-                    await SaveConversationLogAsync(messages, "ERROR: Response truncated due to length limit");
-                    throw new NotImplementedException(
-                        "Incomplete model output due to MaxTokens parameter or token limit exceeded."
-                    );
+                            // Then, add a new tool message for each tool call that is resolved.
+                            foreach (ChatToolCall toolCall in completion.ToolCalls)
+                            {
+                                Debug.Log($"ToolCalls : {toolCall.FunctionName}");
+                                ExecuteToolCall(toolCall);
+                            }
+                        }
 
-                case ChatFinishReason.ContentFilter:
-                    await SaveConversationLogAsync(messages, "ERROR: Content filtered");
-                    throw new NotImplementedException(
-                        "Omitted content due to a content filter flag."
-                    );
+                        requiresAction = true;
+                        break;
 
-                case ChatFinishReason.FunctionCall:
-                    await SaveConversationLogAsync(messages, "ERROR: Function call not supported");
-                    throw new NotImplementedException("Deprecated in favor of tool calls.");
+                    case ChatFinishReason.Length:
+                        await SaveConversationLogAsync(messages, "ERROR: Response truncated due to length limit");
+                        throw new NotImplementedException(
+                            "Incomplete model output due to MaxTokens parameter or token limit exceeded."
+                        );
 
-                default:
-                    await SaveConversationLogAsync(messages, $"ERROR: Unknown finish reason - {completion.FinishReason}");
-                    throw new NotImplementedException(completion.FinishReason.ToString());
+                    case ChatFinishReason.ContentFilter:
+                        await SaveConversationLogAsync(messages, "ERROR: Content filtered");
+                        throw new NotImplementedException(
+                            "Omitted content due to a content filter flag."
+                        );
+
+                    case ChatFinishReason.FunctionCall:
+                        await SaveConversationLogAsync(messages, "ERROR: Function call not supported");
+                        throw new NotImplementedException("Deprecated in favor of tool calls.");
+
+                    default:
+                        await SaveConversationLogAsync(messages, $"ERROR: Unknown finish reason - {completion.FinishReason}");
+                        throw new NotImplementedException(completion.FinishReason.ToString());
+                }
+            } while (requiresAction);
+
+            return default;
+        }
+        finally
+        {
+            // GPT API 호출 종료 - 시뮬레이션 시간 자동 재개
+            if (timeService != null)
+            {
+                timeService.EndAPICall();
+                Debug.Log($"[GPT][{actorName}] API 호출 종료 - 시뮬레이션 시간 재개됨");
             }
-        } while (requiresAction);
-
-        return default;
+        }
     }
 
     public T SendGPT<T>(List<ChatMessage> messages, ChatCompletionOptions options)
     {
         bool requiresAction;
 
-        do
+        // GPT API 호출 시작 - 시뮬레이션 시간 자동 정지
+        var timeService = Services.Get<ITimeService>();
+        if (timeService != null)
         {
-            requiresAction = false;
-            ChatCompletion completion = client.CompleteChat(messages, options);
+            timeService.StartAPICall();
+            Debug.Log($"[GPT][{actorName}] API 호출 시작 (동기) - 시뮬레이션 시간 정지됨");
+        }
 
-            switch (completion.FinishReason)
+        try
+        {
+            do
             {
-                case ChatFinishReason.Stop:
+                requiresAction = false;
+                ChatCompletion completion = client.CompleteChat(messages, options);
+
+                switch (completion.FinishReason)
                 {
-                    messages.Add(new AssistantChatMessage(completion));
-                    string responseText = completion.Content[0].Text;
-                    Debug.Log($"GPT Response: {responseText}");
-
-                    if (typeof(T) == typeof(string))
+                    case ChatFinishReason.Stop:
                     {
-                        return (T)(object)responseText;
-                    }
-
-                    try
-                    {
-                        return JsonConvert.DeserializeObject<T>(responseText);
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.LogError($"JSON Deserialization Error: {ex.Message}");
-                        throw new InvalidOperationException(
-                            $"Failed to parse GPT response into {typeof(T)}"
-                        );
-                    }
-                }
-
-                case ChatFinishReason.ToolCalls:
-                    {
-                        // First, add the assistant message with tool calls to the conversation history.
                         messages.Add(new AssistantChatMessage(completion));
+                        string responseText = completion.Content[0].Text;
+                        Debug.Log($"GPT Response: {responseText}");
 
-                        // Then, add a new tool message for each tool call that is resolved.
-                        foreach (ChatToolCall toolCall in completion.ToolCalls)
+                        if (typeof(T) == typeof(string))
                         {
-                            ExecuteToolCall(toolCall);
+                            return (T)(object)responseText;
+                        }
+
+                        try
+                        {
+                            return JsonConvert.DeserializeObject<T>(responseText);
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogError($"JSON Deserialization Error: {ex.Message}");
+                            throw new InvalidOperationException(
+                                $"Failed to parse GPT response into {typeof(T)}"
+                            );
                         }
                     }
 
-                    requiresAction = true;
-                    break;
+                    case ChatFinishReason.ToolCalls:
+                        {
+                            // First, add the assistant message with tool calls to the conversation history.
+                            messages.Add(new AssistantChatMessage(completion));
 
-                case ChatFinishReason.Length:
-                    throw new NotImplementedException(
-                        "Incomplete model output due to MaxTokens parameter or token limit exceeded."
-                    );
+                            // Then, add a new tool message for each tool call that is resolved.
+                            foreach (ChatToolCall toolCall in completion.ToolCalls)
+                            {
+                                ExecuteToolCall(toolCall);
+                            }
+                        }
 
-                case ChatFinishReason.ContentFilter:
-                    throw new NotImplementedException(
-                        "Omitted content due to a content filter flag."
-                    );
+                        requiresAction = true;
+                        break;
 
-                case ChatFinishReason.FunctionCall:
-                    throw new NotImplementedException("Deprecated in favor of tool calls.");
+                    case ChatFinishReason.Length:
+                        throw new NotImplementedException(
+                            "Incomplete model output due to MaxTokens parameter or token limit exceeded."
+                        );
 
-                default:
-                    throw new NotImplementedException(completion.FinishReason.ToString());
+                    case ChatFinishReason.ContentFilter:
+                        throw new NotImplementedException(
+                            "Omitted content due to a content filter flag."
+                        );
+
+                    case ChatFinishReason.FunctionCall:
+                        throw new NotImplementedException("Deprecated in favor of tool calls.");
+
+                    default:
+                        throw new NotImplementedException(completion.FinishReason.ToString());
+                }
+            } while (requiresAction);
+
+            return default;
+        }
+        finally
+        {
+            // GPT API 호출 종료 - 시뮬레이션 시간 자동 재개
+            if (timeService != null)
+            {
+                timeService.EndAPICall();
+                Debug.Log($"[GPT][{actorName}] API 호출 종료 (동기) - 시뮬레이션 시간 재개됨");
             }
-        } while (requiresAction);
-
-        return default;
+        }
     }
 
     protected virtual void ExecuteToolCall(ChatToolCall toolCall)

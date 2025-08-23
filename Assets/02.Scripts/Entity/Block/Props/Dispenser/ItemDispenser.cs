@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using Agent;
 
 [System.Serializable]
 public class DispenserEntry
@@ -57,10 +58,108 @@ public class ItemDispenser : InteractableProp
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
         await SimDelay.DelaySimMinutes(1, cancellationToken);
+        
         if (supplies == null || supplies.Count == 0)
         {
             return "현재 제공 가능한 아이템이 없습니다.";
         }
-        return "아이템 키를 지정해 요청하면 즉시 제공합니다.";
+
+        try
+        {
+            // 현재 사용 가능한 아이템 키 목록 생성
+            var availableItemKeys = supplies
+                .Where(s => s != null && s.prefab != null)
+                .Select(s => s.itemKey)
+                .ToList();
+
+            if (availableItemKeys.Count == 0)
+            {
+                return "사용 가능한 아이템이 없습니다.";
+            }
+
+            // ItemDispenserParameterAgent를 사용하여 지능적인 아이템 선택
+            var agent = new ItemDispenserParameterAgent(availableItemKeys, new GPT());
+            agent.SetActor(actor);
+
+            // ActorManager에서 원본 reasoning과 intention 가져오기
+            var actorManager = Services.Get<IActorService>();
+            string reasoning = "ItemDispenser에서 아이템을 선택하여 생성하려고 합니다.";
+            string intention = "현재 상황에 적합한 아이템을 선택하여 사용하려고 합니다.";
+            
+            if (actorManager != null)
+            {
+                var actResult = actorManager.GetActResult(actor);
+                if (actResult != null)
+                {
+                    reasoning = actResult.Reasoning;
+                    intention = actResult.Intention;
+                }
+            }
+
+            // Agent로부터 파라미터 생성
+            var context = new ParameterAgentBase.CommonContext
+            {
+                Reasoning = reasoning,
+                Intention = intention
+            };
+
+            var paramResult = await agent.GenerateParametersAsync(context);
+
+            if (paramResult != null && paramResult.Parameters.TryGetValue("selected_item_key", out var selectedItemKeyObj))
+            {
+                string selectedItemKey = selectedItemKeyObj?.ToString();
+                
+                if (!string.IsNullOrEmpty(selectedItemKey) && HasItemKey(selectedItemKey))
+                {
+                    // 선택된 아이템 생성
+                    var createdItem = GetItem(selectedItemKey);
+                    if (createdItem != null)
+                    {
+                        // PickUp 함수를 사용하여 아이템을 Actor에게 제공
+                        if (createdItem is Item item)
+                        {
+                            if (actor.PickUp(item))
+                            {
+                                return $"{selectedItemKey}을(를) 생성하여 {actor.Name}에게 제공했습니다.";
+                            }
+                            else
+                            {
+                                // PickUp 실패 시 아이템 제거
+                                Destroy(item.gameObject);
+                                return $"{selectedItemKey}을(를) 생성했지만, {actor.Name}의 손과 인벤토리가 모두 가득 착니다. 아이템을 내려놓고 다시 시도해주세요.";
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    return $"선택된 아이템 '{selectedItemKey}'을(를) 생성할 수 없습니다.";
+                }
+            }
+
+            // Agent가 실패한 경우 기본 로직 사용
+            string fallbackItemKey = availableItemKeys[0];
+            var fallbackItem = GetItem(fallbackItemKey);
+            if (fallbackItem != null && fallbackItem is Item fallbackItemAsItem)
+            {
+                if (actor.PickUp(fallbackItemAsItem))
+                {
+                    return $"{fallbackItemKey}을(를) 생성하여 {actor.Name}에게 제공했습니다. (기본 선택)";
+                }
+                else
+                {
+                    // PickUp 실패 시 아이템 제거
+                    Destroy(fallbackItemAsItem.gameObject);
+                    return $"{fallbackItemKey}을(를) 생성했지만, {actor.Name}의 손과 인벤토리가 모두 가득 착니다. (기본 선택)";
+                }
+            }
+
+            return "아이템 생성에 실패했습니다.";
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[ItemDispenser] Interact 중 오류 발생: {ex.Message}");
+            return "아이템 생성 중 오류가 발생했습니다.";
+        }
     }
 }

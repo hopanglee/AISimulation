@@ -77,7 +77,7 @@ public class Plate : InventoryBox
             );
             agent.SetActor(actor);
             
-                                     // ActorManager에서 SelectAct에서 생성된 원본 reasoning과 intention을 가져옴
+            // ActorManager에서 SelectAct에서 생성된 원본 reasoning과 intention을 가져옴
             var actResult = Services.Get<IActorService>().GetActResult(actor);
              string reasoning = "접시와 상호작용하여 아이템을 관리합니다.";
              string intention = "접시에 아이템을 추가하거나 접시에서 아이템을 가져옵니다.";
