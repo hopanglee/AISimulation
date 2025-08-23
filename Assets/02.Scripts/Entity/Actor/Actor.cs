@@ -170,33 +170,17 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     }
 
     #region Agent Selectable Fucntion
-    // GiveMoney는 ThinkingActor로 이동
 
-    public void Use(object variable)
+    public void InteractWithInteractable(IInteractable interactable)
     {
-        if (HandItem != null)
+        if (interactable == null)
         {
-            if (HandItem is IUsable usable)
-            {
-                usable.Use(this, variable);
-            }
-            else
-            {
-                Debug.LogWarning($"[{Name}] {HandItem.Name}은(는) 사용할 수 없는 아이템입니다.");
-            }
-        }
-    }
-
-    public void InteractWithBlock(string blockKey)
-    {
-        // SimpleKey로 직접 검색 (센서에서 필터링)
-        var interactable = sensor?.GetInteractableEntities();
-        if (interactable != null && interactable.props.ContainsKey(blockKey))
-        {
-            interactable.props[blockKey].Interact(this);
+            Debug.LogWarning($"[{Name}] Cannot interact with null interactable.");
             return;
         }
-        Debug.LogWarning($"[{Name}] Cannot interact with '{blockKey}'. Available props: {string.Join(", ", (interactable?.props.Keys ?? new List<string>()))}, Available buildings: {string.Join(", ", (interactable?.buildings.Keys ?? new List<string>()))}");
+
+        // 직접 TryInteract 호출
+        interactable.TryInteract(this);
     }
 
     /// <summary>
@@ -211,6 +195,31 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
         // 기본적으로는 대화만 가능
         return $"안녕하세요, {actor.Name}님!";
+    }
+    
+    /// <summary>
+    /// Actor의 HandItem을 먼저 체크한 후 상호작용을 시도합니다.
+    /// </summary>
+    public virtual string TryInteract(Actor actor)
+    {
+        if (actor == null)
+        {
+            return "상호작용할 대상이 없습니다.";
+        }
+
+        // HandItem이 있는 경우 InteractWithInteractable 체크
+        if (HandItem != null)
+        {
+            bool shouldContinue = HandItem.InteractWithInteractable(actor, this);
+            if (!shouldContinue)
+            {
+                // HandItem이 상호작용을 중단시킴
+                return $"{HandItem.Name}이(가) {GetType().Name}과의 상호작용을 중단시켰습니다.";
+            }
+        }
+
+        // 기존 Interact 로직 실행
+        return Interact(actor);
     }
 
 

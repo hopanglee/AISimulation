@@ -142,41 +142,40 @@ public abstract partial class NPC
 			targetKey = parameters[0]?.ToString();
 		}
 
-		// targetKey가 제공되지 않으면 주변의 InventoryBox를 자동으로 찾기
-		if (string.IsNullOrEmpty(targetKey))
-		{
-			// Sensor를 통해 주변의 InventoryBox 찾기
-			var nearbyInventoryBoxes = FindNearbyInventoryBoxes();
-			if (nearbyInventoryBoxes.Count > 0)
-			{
-				// 가장 가까운 InventoryBox 선택
-				targetKey = nearbyInventoryBoxes[0].GetSimpleKey();
-			}
-		}
-
+		// InventoryBox 찾기 (targetKey가 제공되면 해당 키로, 아니면 주변에서 자동으로)
+		InventoryBox targetInventoryBox = null;
+		
 		if (!string.IsNullOrEmpty(targetKey))
 		{
-			// InventoryBox 찾기
-			var inventoryBox = FindInventoryBoxByKey(targetKey);
-			if (inventoryBox != null)
-			{
-				// InventoryBox로 이동
-				await MoveToInventoryBox(inventoryBox);
-				
-				// 상호작용하여 아이템 놓기 (공통 함수 사용)
-				InteractWithBlock(targetKey);
-				
-				await SimDelay.DelaySimMinutes(2, currentActionCancellation != null ? currentActionCancellation.Token : default);
-			}
-			else
-			{
-				ShowSpeech($"{targetKey}를 찾을 수 없습니다.");
-				await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
-			}
+			// 특정 키로 InventoryBox 찾기
+			targetInventoryBox = FindInventoryBoxByKey(targetKey);
 		}
 		else
 		{
-			ShowSpeech("주변에 물건을 놓을 수 있는 곳이 없습니다.");
+			// 주변의 InventoryBox 자동 찾기
+			var nearbyInventoryBoxes = FindNearbyInventoryBoxes();
+			if (nearbyInventoryBoxes.Count > 0)
+			{
+				targetInventoryBox = nearbyInventoryBoxes[0];
+			}
+		}
+
+		if (targetInventoryBox != null)
+		{
+			// InventoryBox로 이동
+			await MoveToInventoryBox(targetInventoryBox);
+			
+			// 상호작용하여 아이템 놓기 (공통 함수 사용)
+			InteractWithInteractable(targetInventoryBox);
+			
+			await SimDelay.DelaySimMinutes(2, currentActionCancellation != null ? currentActionCancellation.Token : default);
+		}
+		else
+		{
+			string errorMessage = !string.IsNullOrEmpty(targetKey) 
+				? $"{targetKey}를 찾을 수 없습니다." 
+				: "주변에 물건을 놓을 수 있는 곳이 없습니다.";
+			ShowSpeech(errorMessage);
 			await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
 		}
 	}
