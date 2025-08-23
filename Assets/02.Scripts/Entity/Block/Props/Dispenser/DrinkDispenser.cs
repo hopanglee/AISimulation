@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using Agent;
 
 public class DrinkDispenser : ItemDispenser
 {
@@ -75,11 +76,151 @@ public class DrinkDispenser : ItemDispenser
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
         await SimDelay.DelaySimMinutes(1, cancellationToken);
+
         if (!hasBeans)
         {
             return "원두가 부족합니다. 보충해주세요.";
         }
         
-        return "음료를 선택할 수 있습니다.";
+        if (supplies == null || supplies.Count == 0)
+        {
+            return "현재 제공 가능한 음료가 없습니다.";
+        }
+
+        try
+        {
+            // 현재 사용 가능한 음료 키 목록 생성
+            var availableDrinkKeys = supplies
+                .Where(s => s != null && s.prefab != null)
+                .Select(s => s.itemKey)
+                .ToList();
+
+            if (availableDrinkKeys.Count == 0)
+            {
+                return "사용 가능한 음료가 없습니다.";
+            }
+
+            // ItemDispenserParameterAgent를 사용하여 지능적인 음료 선택
+            var agent = new ItemDispenserParameterAgent(availableDrinkKeys, new GPT());
+            agent.SetActor(actor);
+
+            // ActorManager에서 원본 reasoning과 intention 가져오기
+            var actorManager = Services.Get<IActorService>();
+            string reasoning = "DrinkDispenser에서 음료를 선택하여 생성하려고 합니다.";
+            string intention = "현재 상황에 적합한 음료를 선택하여 마시려고 합니다.";
+            
+            if (actorManager != null)
+            {
+                var actResult = actorManager.GetActResult(actor);
+                if (actResult != null)
+                {
+                    reasoning = actResult.Reasoning;
+                    intention = actResult.Intention;
+                }
+            }
+
+            // Agent로부터 파라미터 생성
+            var context = new ParameterAgentBase.CommonContext
+            {
+                Reasoning = reasoning,
+                Intention = intention
+            };
+
+            var paramResult = await agent.GenerateParametersAsync(context);
+
+            if (paramResult != null && paramResult.Parameters.TryGetValue("selected_item_key", out var selectedDrinkKeyObj))
+            {
+                string selectedDrinkKey = selectedDrinkKeyObj?.ToString();
+                
+                if (!string.IsNullOrEmpty(selectedDrinkKey) && HasItemKey(selectedDrinkKey))
+                {
+                    // 선택된 음료 생성
+                    Entity createdDrink = null;
+                    
+                    // 커피인지 음료인지 확인하여 적절한 메서드 사용
+                    if (IsCoffeeType(selectedDrinkKey))
+                    {
+                        createdDrink = GetCoffee(selectedDrinkKey);
+                    }
+                    else
+                    {
+                        createdDrink = GetBeverage(selectedDrinkKey);
+                    }
+                    
+                    if (createdDrink != null)
+                    {
+                        // PickUp 함수를 사용하여 음료를 Actor에게 제공
+                        if (createdDrink is Item item)
+                        {
+                            if (actor.PickUp(item))
+                            {
+                                string drinkType = IsCoffeeType(selectedDrinkKey) ? "커피" : "음료";
+                                return $"{selectedDrinkKey} {drinkType}을(를) 생성하여 {actor.Name}에게 제공했습니다. (원두: {beanLevel:F0}%)";
+                            }
+                            else
+                            {
+                                // PickUp 실패 시 아이템 제거
+                                Destroy(item.gameObject);
+                                return $"{selectedDrinkKey}을(를) 생성했지만, {actor.Name}의 손과 인벤토리가 모두 가득 착니다. 아이템을 내려놓고 다시 시도해주세요.";
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    return $"선택된 음료 '{selectedDrinkKey}'을(를) 생성할 수 없습니다.";
+                }
+            }
+
+            // Agent가 실패한 경우 기본 로직 사용
+            string fallbackDrinkKey = availableDrinkKeys[0];
+            Entity fallbackDrink = null;
+            
+            if (IsCoffeeType(fallbackDrinkKey))
+            {
+                fallbackDrink = GetCoffee(fallbackDrinkKey);
+            }
+            else
+            {
+                fallbackDrink = GetBeverage(fallbackDrinkKey);
+            }
+            
+            if (fallbackDrink != null && fallbackDrink is Item fallbackDrinkAsItem)
+            {
+                if (actor.PickUp(fallbackDrinkAsItem))
+                {
+                    string drinkType = IsCoffeeType(fallbackDrinkKey) ? "커피" : "음료";
+                    return $"{fallbackDrinkKey} {drinkType}을(를) 생성하여 {actor.Name}에게 제공했습니다. (기본 선택, 원두: {beanLevel:F0}%)";
+                }
+                else
+                {
+                    // PickUp 실패 시 아이템 제거
+                    Destroy(fallbackDrinkAsItem.gameObject);
+                    return $"{fallbackDrinkKey}을(를) 생성했지만, {actor.Name}의 손과 인벤토리가 모두 가득 착니다. (기본 선택)";
+                }
+            }
+
+            return "음료 생성에 실패했습니다.";
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[DrinkDispenser] Interact 중 오류 발생: {ex.Message}");
+            return "음료 생성 중 오류가 발생했습니다.";
+        }
+    }
+    
+    /// <summary>
+    /// 주어진 음료 키가 커피 타입인지 확인합니다.
+    /// </summary>
+    private bool IsCoffeeType(string drinkKey)
+    {
+        // 해당 키의 prefab에서 직접 Coffee 컴포넌트가 있는지 확인
+        var entry = supplies.FirstOrDefault(e => e != null && e.prefab != null && e.itemKey == drinkKey);
+        if (entry?.prefab != null)
+        {
+            // prefab에서 Coffee 컴포넌트 확인
+            return entry.prefab.GetComponent<Coffee>() != null;
+        }
+        return false;
     }
 }
