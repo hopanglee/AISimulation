@@ -238,4 +238,6 @@ public abstract class InventoryBox : Prop
             }
         }
     }
+    
+
 }

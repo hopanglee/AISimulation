@@ -9,4 +9,11 @@ public interface IInteractable
     /// <param name="actor">상호작용하는 Actor</param>
     /// <returns>상호작용 결과 메시지</returns>
     string Interact(Actor actor);
+    
+    /// <summary>
+    /// Actor의 HandItem을 먼저 체크한 후 상호작용을 시도합니다.
+    /// </summary>
+    /// <param name="actor">상호작용하는 Actor</param>
+    /// <returns>상호작용 결과 메시지</returns>
+    string TryInteract(Actor actor);
 }
