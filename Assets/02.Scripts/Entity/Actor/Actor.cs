@@ -197,8 +197,24 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             return "상호작용할 대상이 없습니다.";
         }
 
-        // 기본적으로는 대화만 가능
-        return $"안녕하세요, {actor.Name}님!";
+        // Actor 간의 자연스러운 상호작용 표현
+        string interactionMessage = GetInteractionMessage(actor);
+        
+        // 상호작용 결과를 로그에 기록
+        Debug.Log($"[{Name}] {actor.Name}과(와) 상호작용: {interactionMessage}");
+        
+        return interactionMessage;
+    }
+    
+    /// <summary>
+    /// Actor 간의 상호작용 메시지를 생성합니다.
+    /// </summary>
+    private string GetInteractionMessage(Actor targetActor)
+    {
+        // HandItem이 있으면 "HandItem으로", 없으면 "손으로"
+        string tool = HandItem != null ? $"{HandItem.Name}으로" : "손으로";
+        
+        return $"{targetActor.Name}이(가) {Name}의 어깨를 {tool} 툭툭쳤다.";
     }
 
     /// <summary>
