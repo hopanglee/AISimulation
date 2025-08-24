@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -185,13 +186,13 @@ public abstract class InventoryBox : InteractableProp
             return null;
         }
         
-        // itemKey로 아이템 찾기 (GetSimpleKey 사용)
+        // itemKey로 아이템 찾기 (Name 사용)
         Entity foundItem = null;
         int itemIndex = -1;
         
         for (int i = 0; i < items.Count; i++)
         {
-            if (items[i].GetSimpleKey() == itemKey)
+            if (items[i].Name == itemKey)
             {
                 foundItem = items[i];
                 itemIndex = i;
@@ -218,6 +219,247 @@ public abstract class InventoryBox : InteractableProp
         throw new System.NotImplementedException();
     }
 
+    /// <summary>
+    /// 단일 아이템 Add/Remove 상호작용 처리
+    /// </summary>
+    protected async UniTask<string> ProcessSmartInventoryBoxInteraction(Actor actor, CancellationToken cancellationToken)
+    {
+        try
+        {
+            // InventoryBoxAgent 생성 및 파라미터 생성
+            var agent = new Agent.InventoryBoxParameterAgent(
+                GetAvailableItems(actor), 
+                GetBoxItems(), 
+                new GPT()
+            );
+            agent.SetActor(actor);
+            
+            // ActorManager에서 SelectAct에서 생성된 원본 reasoning과 intention을 가져옴
+            var actResult = Services.Get<IActorService>().GetActResult(actor);
+            string reasoning = $"{GetType().Name}과 상호작용하여 아이템을 관리합니다. 현재 아이템 수: {items.Count}, 최대: {maxItems}";
+            string intention = $"{GetType().Name}에 아이템을 추가하거나 {GetType().Name}에서 아이템을 가져옵니다.";
+            
+            if (actResult != null)
+            {
+                reasoning = actResult.Reasoning;
+                intention = actResult.Intention;
+                Debug.Log($"[{GetType().Name}] ActorManager에서 가져온 원본 값 - Reasoning: {reasoning}, Intention: {intention}");
+            }
+            else
+            {
+                Debug.LogWarning($"[{GetType().Name}] ActorManager에서 {actor.Name}의 ActSelectResult를 찾을 수 없습니다. 기본값 사용");
+            }
+            
+            var context = new Agent.ParameterAgentBase.CommonContext
+            {
+                Reasoning = reasoning,
+                Intention = intention,
+                PreviousFeedback = ""
+            };
+            
+            var parameters = await agent.GenerateParametersAsync(context);
+            
+            // 단일 아이템 처리
+            string addResult = "";
+            string removeResult = "";
+            
+            // Actor와 InventoryBox의 빈공간 비교하여 순서 결정
+            var actorEmptySlots = actor.InventoryItems?.Count(x => x == null) ?? 0;
+            var boxEmptySlots = maxItems - items.Count;
+            
+            Debug.Log($"[{GetType().Name}] 빈공간 비교 - Actor: {actorEmptySlots}, Box: {boxEmptySlots}");
+            
+            // 빈공간 비교로 순서 결정
+            bool removeFirst = boxEmptySlots < actorEmptySlots;
+            Debug.Log($"[{GetType().Name}] {(removeFirst ? "Remove를 먼저 하는" : "Add를 먼저 하는")} 순서로 실행합니다.");
+            
+            if (removeFirst)
+            {
+                // Remove를 먼저 실행
+                if (!string.IsNullOrEmpty(parameters.RemoveItemName) && items.Count > 0)
+                {
+                    removeResult = ExecuteSingleRemoveAction(actor, parameters.RemoveItemName);
+                }
+                
+                // 그 다음 Add 실행
+                if (!string.IsNullOrEmpty(parameters.AddItemName) && items.Count < maxItems)
+                {
+                    addResult = ExecuteSingleAddAction(actor, parameters.AddItemName);
+                }
+            }
+            else
+            {
+                // Add를 먼저 실행
+                if (!string.IsNullOrEmpty(parameters.AddItemName) && items.Count < maxItems)
+                {
+                    addResult = ExecuteSingleAddAction(actor, parameters.AddItemName);
+                }
+                
+                // 그 다음 Remove 실행
+                if (!string.IsNullOrEmpty(parameters.RemoveItemName) && items.Count > 0)
+                {
+                    removeResult = ExecuteSingleRemoveAction(actor, parameters.RemoveItemName);
+                }
+            }
+            
+            // 결과 조합
+            if (!string.IsNullOrEmpty(addResult) && !string.IsNullOrEmpty(removeResult))
+            {
+                return $"{addResult} {removeResult}";
+            }
+            else if (!string.IsNullOrEmpty(addResult))
+            {
+                return addResult;
+            }
+            else if (!string.IsNullOrEmpty(removeResult))
+            {
+                return removeResult;
+            }
+            
+            return "상호작용이 완료되었습니다.";
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogWarning($"[{GetType().Name}] InventoryBoxAgent 실행 실패: {ex.Message}");
+            // 에이전트 실패 시 기본 로직으로 폴백
+            return ExecuteFallbackInteraction(actor);
+        }
+    }
+    
+    /// <summary>
+    /// 단일 아이템 추가 액션 (하위 클래스에서 오버라이드 가능)
+    /// </summary>
+    protected virtual string ExecuteSingleAddAction(Actor actor, string itemName)
+    {
+        if (string.IsNullOrEmpty(itemName))
+        {
+            return "";
+        }
+        
+        if (items.Count >= maxItems)
+        {
+            return "";
+        }
+        
+        bool itemFound = false;
+        
+        // 1. 손에 있는 아이템 확인
+        if (actor.HandItem != null && actor.HandItem.Name == itemName)
+        {
+            if (items.Count >= maxItems)
+            {
+                return "";
+            }
+            
+            AddItem(actor.HandItem);
+            actor.HandItem = null;
+            itemFound = true;
+        }
+        // 2. 인벤토리에서 아이템 찾기
+        else if (actor.InventoryItems != null)
+        {
+            for (int i = 0; i < actor.InventoryItems.Length; i++)
+            {
+                if (actor.InventoryItems[i] != null && actor.InventoryItems[i].Name == itemName)
+                {
+                    if (items.Count >= maxItems)
+                    {
+                        return "";
+                    }
+                    
+                    var itemToAdd = actor.InventoryItems[i];
+                    AddItem(itemToAdd);
+                    // 배열에서 아이템 제거 (null로 설정)
+                    actor.InventoryItems[i] = null;
+                    itemFound = true;
+                    break;
+                }
+            }
+        }
+        
+        if (itemFound)
+        {
+            return $"{actor.Name}이(가) {itemName}을(를) {GetType().Name}에 넣었습니다.";
+        }
+        
+        return "";
+    }
+    
+    /// <summary>
+    /// 단일 아이템 제거 액션 (하위 클래스에서 오버라이드 가능)
+    /// </summary>
+    protected virtual string ExecuteSingleRemoveAction(Actor actor, string itemName)
+    {
+        if (string.IsNullOrEmpty(itemName))
+        {
+            return "";
+        }
+        
+        // Box에서 아이템 제거
+        var itemToRemove = items.Find(item => item.Name == itemName);
+        if (itemToRemove == null)
+        {
+            return "";
+        }
+        
+        // 아이템을 제거하고 actor의 PickUp 함수 사용
+        RemoveItem(itemToRemove);
+        bool pickupSuccess = actor.PickUp(itemToRemove as ICollectible);
+        
+        if (pickupSuccess)
+        {
+            return $"{actor.Name}이(가) {GetType().Name}에서 {itemName}을(를) 가져왔습니다.";
+        }
+        else
+        {
+            // PickUp 실패 시 아이템을 다시 Box에 넣기
+            AddItem(itemToRemove);
+            return "";
+        }
+    }
+    
+    /// <summary>
+    /// 폴백 상호작용 (하위 클래스에서 오버라이드 가능)
+    /// </summary>
+    protected virtual string ExecuteFallbackInteraction(Actor actor)
+    {
+        return $"{GetType().Name}과 상호작용할 수 있습니다.";
+    }
+    
+    /// <summary>
+    /// Actor가 사용 가능한 아이템 목록 반환
+    /// </summary>
+    protected virtual List<string> GetAvailableItems(Actor actor)
+    {
+        var availableItems = new List<string>();
+        
+        if (actor.HandItem != null)
+        {
+            availableItems.Add(actor.HandItem.Name);
+        }
+        
+        if (actor.InventoryItems != null)
+        {
+            foreach (var item in actor.InventoryItems)
+            {
+                if (item != null)
+                {
+                    availableItems.Add(item.Name);
+                }
+            }
+        }
+        
+        return availableItems;
+    }
+    
+    /// <summary>
+    /// Box에 있는 아이템 목록 반환
+    /// </summary>
+    protected virtual List<string> GetBoxItems()
+    {
+        return items.ConvertAll(item => item.Name);
+    }
+    
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
         await SimDelay.DelaySimMinutes(1, cancellationToken);
@@ -226,7 +468,7 @@ public abstract class InventoryBox : InteractableProp
             return "상호작용할 대상이 없습니다.";
         }
 
-        // actor의 손에 아이템이 있는지 확인
+        // 기본 상호작용 로직 (하위 클래스에서 오버라이드 가능)
         if (actor.HandItem != null)
         {
             Item handItem = actor.HandItem;

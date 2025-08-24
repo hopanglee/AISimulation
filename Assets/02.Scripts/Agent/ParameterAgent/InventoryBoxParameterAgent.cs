@@ -13,11 +13,11 @@ namespace Agent
     {
         public class InventoryBoxParameter
         {
-            [JsonProperty("add_item_names")]
-            public List<string> AddItemNames { get; set; }
+            [JsonProperty("add_item_name")]
+            public string AddItemName { get; set; }
 
-            [JsonProperty("remove_item_names")]
-            public List<string> RemoveItemNames { get; set; }
+            [JsonProperty("remove_item_name")]
+            public string RemoveItemName { get; set; }
         }
 
         private readonly string systemPrompt;
@@ -43,24 +43,18 @@ namespace Agent
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""add_item_names"": {{
-                                    ""type"": ""array"",
-                                    ""items"": {{
-                                        ""type"": ""string"",
-                                        ""enum"": {JsonConvert.SerializeObject(availableItemNames)}
-                                    }},
-                                    ""description"": ""Array of item names to add to the box (must be from actor's available items)""
+                                ""add_item_name"": {{
+                                    ""type"": ""string"",
+                                    ""enum"": {JsonConvert.SerializeObject(availableItemNames)},
+                                    ""description"": ""Name of item to add to the box (must be from actor's available items)""
                                 }},
-                                ""remove_item_names"": {{
-                                    ""type"": ""array"",
-                                    ""items"": {{
-                                        ""type"": ""string"",
-                                        ""enum"": {JsonConvert.SerializeObject(boxItemNames)}
-                                    }},
-                                    ""description"": ""Array of item names to remove from the box (must be from box's current items)""
+                                ""remove_item_name"": {{
+                                    ""type"": ""string"",
+                                    ""enum"": {JsonConvert.SerializeObject(boxItemNames)},
+                                    ""description"": ""Name of item to remove from the box (must be from box's current items)""
                                 }}
                             }},
-                            ""required"": [""add_item_names"", ""remove_item_names""]
+                            ""required"": [""add_item_name"", ""remove_item_name""]
                         }}"
                     )),
                     jsonSchemaIsStrict: true
@@ -95,8 +89,8 @@ namespace Agent
                 ActType = request.ActType,
                 Parameters = new Dictionary<string, object>
                 {
-                    { "add_item_names", param.AddItemNames },
-                    { "remove_item_names", param.RemoveItemNames }
+                    { "add_item_name", param.AddItemName },
+                    { "remove_item_name", param.RemoveItemName }
                 }
             };
         }
@@ -126,24 +120,18 @@ namespace Agent
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""add_item_names"": {{
-                                    ""type"": ""array"",
-                                    ""items"": {{
-                                        ""type"": ""string"",
-                                        ""enum"": {JsonConvert.SerializeObject(currentAvailableItems)}
-                                    }},
-                                    ""description"": ""Array of item names to add to the box (must be from actor's available items)""
+                                ""add_item_name"": {{
+                                    ""type"": ""string"",
+                                    ""enum"": {JsonConvert.SerializeObject(currentAvailableItems)},
+                                    ""description"": ""Name of item to add to the box (must be from actor's available items)""
                                 }},
-                                ""remove_item_names"": {{
-                                    ""type"": ""array"",
-                                    ""items"": {{
-                                        ""type"": ""string"",
-                                        ""enum"": {JsonConvert.SerializeObject(currentBoxItems)}
-                                    }},
-                                    ""description"": ""Array of item names to remove from the box (must be from box's current items)""
+                                ""remove_item_name"": {{
+                                    ""type"": ""string"",
+                                    ""enum"": {JsonConvert.SerializeObject(currentBoxItems)},
+                                    ""description"": ""Name of item to remove from the box (must be from box's current items)""
                                 }}
                             }},
-                            ""required"": [""add_item_names"", ""remove_item_names""]
+                            ""required"": [""add_item_name"", ""remove_item_name""]
                         }}"
                     )),
                     jsonSchemaIsStrict: true
