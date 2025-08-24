@@ -338,7 +338,6 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         lookable = sensed ?? new SerializableDictionary<string, Entity>();
     }
 
-
     // Odin Inspector Buttons (visible on all Actor derivatives)
     [PropertyOrder(1)]
     [Button("Update Lookable Entities")]
