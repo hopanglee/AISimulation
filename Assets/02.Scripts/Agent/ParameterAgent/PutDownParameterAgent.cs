@@ -19,6 +19,12 @@ public class PutDownParameterAgent : ParameterAgentBase
     {
         this.locationList = locationList ?? new List<string>();
         
+        // "null" 옵션 추가 (현재 위치에 놓기)
+        if (!this.locationList.Contains("null"))
+        {
+            this.locationList.Add("null");
+        }
+        
         // ResponseFormat 설정
         this.options = new ChatCompletionOptions
         {
@@ -31,7 +37,7 @@ public class PutDownParameterAgent : ParameterAgentBase
                         ""properties"": {{
                             ""target_key"": {{
                                 ""type"": ""string"",
-                                ""enum"": {Newtonsoft.Json.JsonConvert.SerializeObject(locationList)},
+                                ""enum"": {Newtonsoft.Json.JsonConvert.SerializeObject(this.locationList)},
                                 ""description"": ""The location key to put the item down on""
                             }},
                             ""parameters"": {{

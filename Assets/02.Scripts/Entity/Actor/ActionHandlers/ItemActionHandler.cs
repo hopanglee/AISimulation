@@ -71,9 +71,11 @@ namespace Agent.ActionHandlers
                 string targetKey = targetKeyObj.ToString();
                 Debug.Log($"[{actor.Name}] PutDown: {actor.HandItem.Name}을(를) {targetKey}에 내려놓으려고 합니다.");
 
-                // target_key는 현재 위치 내에서의 특정 표면이나 위치를 의미
-                // 이동 없이 현재 위치에 아이템을 내려놓기
-                actor.PutDown(null);
+                // target_key를 사용하여 실제 ILocation 객체 찾기
+                ILocation targetLocation = FindLocationByKey(targetKey);
+                
+                // 실제 ILocation 객체를 사용하여 PutDown 호출
+                actor.PutDown(targetLocation);
                 await SimDelay.DelaySimMinutes(1);
                 Debug.Log($"[{actor.Name}] PutDown 완료: {actor.HandItem?.Name ?? "아이템"}을(를) {targetKey}에 내려놓았습니다.");
             }
@@ -81,6 +83,64 @@ namespace Agent.ActionHandlers
             {
                 Debug.LogError($"[{actor.Name}] HandlePutDown 오류: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// target_key를 사용하여 실제 ILocation 객체를 찾습니다.
+        /// </summary>
+        private ILocation FindLocationByKey(string targetKey)
+        {
+            try
+            {
+                if (actor?.sensor != null)
+                {
+                    var interactableEntities = actor.sensor.GetInteractableEntities();
+                    
+                    // Props에서 찾기
+                    foreach (var prop in interactableEntities.props.Values)
+                    {
+                        if (prop != null && prop.GetSimpleKey() == targetKey)
+                        {
+                            if (prop is ILocation location)
+                            {
+                                return location;
+                            }
+                        }
+                    }
+                    
+                    // Buildings에서 찾기
+                    foreach (var building in interactableEntities.buildings.Values)
+                    {
+                        if (building != null && building.GetSimpleKey() == targetKey)
+                        {
+                            if (building is ILocation location)
+                            {
+                                return location;
+                            }
+                        }
+                    }
+                    
+                    // Items에서 찾기 (특별한 경우)
+                    foreach (var item in interactableEntities.items.Values)
+                    {
+                        if (item != null && item.GetSimpleKey() == targetKey)
+                        {
+                            if (item is ILocation location)
+                            {
+                                return location;
+                            }
+                        }
+                    }
+                    
+                    Debug.LogWarning($"[{actor.Name}] target_key '{targetKey}'에 해당하는 ILocation을 찾을 수 없습니다.");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[{actor.Name}] FindLocationByKey 오류: {ex.Message}");
+            }
+            
+            return null;
         }
 
         /// <summary>
