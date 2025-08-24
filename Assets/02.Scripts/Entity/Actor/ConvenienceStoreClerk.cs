@@ -45,13 +45,10 @@ public class ConvenienceStoreClerk : NPC
     public class PriceItem
     {
         [TableColumnWidth(200)]
-        public string itemKey; // 아이템 키 (예: "apple", "coffee")
+        public string itemName; // 아이템 이름 (예: "apple", "coffee")
         
         [TableColumnWidth(100)]
         public int price; // 가격
-        
-        [TableColumnWidth(200)]
-        public string itemName; // 아이템 이름 (예: "사과", "커피")
     }
     
     /// <summary>
@@ -90,42 +87,34 @@ public class ConvenienceStoreClerk : NPC
                 return;
             }
             
-            string itemKey = parameters[0]?.ToString();
-            if (string.IsNullOrEmpty(itemKey))
+            string itemName = parameters[0]?.ToString();
+            if (string.IsNullOrEmpty(itemName))
             {
-                Debug.LogWarning($"[{Name}] 결제 처리 실패: 아이템 키가 없습니다.");
+                Debug.LogWarning($"[{Name}] 결제 처리 실패: 아이템 이름이 없습니다.");
                 ShowSpeech("결제할 아이템을 알려주세요.");
                 return;
             }
             
             // 가격표에서 아이템 찾기
-            PriceItem priceItem = FindPriceItem(itemKey);
+            PriceItem priceItem = FindPriceItem(itemName);
             if (priceItem == null)
             {
-                Debug.LogWarning($"[{Name}] 결제 처리 실패: '{itemKey}' 아이템을 찾을 수 없습니다.");
-                ShowSpeech($"죄송합니다. '{itemKey}' 아이템은 판매하지 않습니다.");
+                Debug.LogWarning($"[{Name}] 결제 처리 실패: '{itemName}' 아이템을 찾을 수 없습니다.");
+                ShowSpeech($"죄송합니다. '{itemName}' 아이템은 판매하지 않습니다.");
                 return;
             }
             
-            // 편의점 점원의 돈이 충분한지 확인
-            if (Money < priceItem.price)
-            {
-                Debug.LogWarning($"[{Name}] 결제 처리 실패: 돈이 부족합니다. 현재: {Money}원, 필요: {priceItem.price}원");
-                ShowSpeech($"죄송합니다. 현재 돈이 부족합니다.");
-                return;
-            }
-            
-            Debug.Log($"[{Name}] 결제 처리 시작 - 아이템: {priceItem.itemName} ({itemKey}), 가격: {priceItem.price}원");
+            Debug.Log($"[{Name}] 결제 처리 시작 - 아이템: {priceItem.itemName}, 가격: {priceItem.price}원");
             ShowSpeech($"{priceItem.itemName} {priceItem.price}원 결제를 도와드리겠습니다.");
             
             // 결제 처리 시뮬레이션
             await SimDelay.DelaySimMinutes(2);
             
-            // 결제 성공 시 편의점 점원의 돈 차감 및 수익 추가
-            Money -= priceItem.price;
-            totalRevenue += priceItem.price;
+            // 결제 성공 시 편의점 운영자금 증가 및 수익 추가
+            Money += priceItem.price;        // 편의점 운영자금 증가 (고객이 돈을 지불)
+            totalRevenue += priceItem.price; // 수익 추가
             
-            string paymentReport = $"편의점 직원 {Name}이 {priceItem.itemName}({itemKey}) {priceItem.price}원 결제를 처리했습니다. 현재 돈: {Money}원, 총 수익: {totalRevenue}원";
+            string paymentReport = $"편의점 직원 {Name}이 {priceItem.itemName} {priceItem.price}원 결제를 처리했습니다. 현재 운영자금: {Money}원, 총 수익: {totalRevenue}원";
             Debug.Log($"[{Name}] 결제 완료: {paymentReport}");
             
             ShowSpeech("결제가 완료되었습니다. 감사합니다!");
@@ -134,7 +123,7 @@ public class ConvenienceStoreClerk : NPC
             if (actionAgent != null)
             {
                 string currentTime = GetFormattedCurrentTime();
-                string systemMessage = $"[{currentTime}] [SYSTEM] 결제 완료 - {priceItem.itemName} {priceItem.price}원, 현재 돈: {Money}원, 총 수익: {totalRevenue}원";
+                string systemMessage = $"[{currentTime}] [SYSTEM] 결제 완료 - {priceItem.itemName} {priceItem.price}원, 현재 운영자금: {Money}원, 총 수익: {totalRevenue}원";
                 actionAgent.AddSystemMessage(systemMessage);
                 Debug.Log($"[{Name}] AI Agent에 결제 완료 메시지 추가: {systemMessage}");
             }
@@ -148,9 +137,9 @@ public class ConvenienceStoreClerk : NPC
     /// <summary>
     /// 가격표에서 아이템을 찾습니다.
     /// </summary>
-    private PriceItem FindPriceItem(string itemKey)
+    private PriceItem FindPriceItem(string itemName)
     {
-        return priceList.Find(item => item.itemKey.Equals(itemKey, StringComparison.OrdinalIgnoreCase));
+        return priceList.Find(item => item.itemName.Equals(itemName, StringComparison.OrdinalIgnoreCase));
     }
     
     /// <summary>
@@ -164,9 +153,9 @@ public class ConvenienceStoreClerk : NPC
     /// <summary>
     /// 특정 아이템의 가격을 가져옵니다.
     /// </summary>
-    public int GetItemPrice(string itemKey)
+    public int GetItemPrice(string itemName)
     {
-        PriceItem item = FindPriceItem(itemKey);
+        PriceItem item = FindPriceItem(itemName);
         return item?.price ?? 0;
     }
     
@@ -198,8 +187,8 @@ public class ConvenienceStoreClerk : NPC
                 case "payment":
                     if (decision.parameters != null && decision.parameters.Length >= 1)
                     {
-                        string itemKey = decision.parameters[0]?.ToString() ?? "아이템";
-                        return $"{currentTime} 편의점 직원 {Name}이 {itemKey} 결제를 처리한다";
+                        string itemName = decision.parameters[0]?.ToString() ?? "아이템";
+                        return $"{currentTime} 편의점 직원 {Name}이 {itemName} 결제를 처리한다";
                     }
                     return $"{currentTime} 결제를 처리한다";
 
