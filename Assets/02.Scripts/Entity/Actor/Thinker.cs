@@ -89,10 +89,18 @@ public class Thinker
     /// 외부 이벤트가 발생했을 때 호출됩니다.
     /// 현재 실행 중인 Think/Act 루프를 취소하고 새로운 루프를 시작합니다.
     /// </summary>
-    public void OnExternalEvent()
+    public async void OnExternalEventAsync()
     {
-        Debug.Log($"[{actor.Name}] 외부 이벤트 발생 - Think/Act 루프 재시작");
-        _ = StartThinkAndActLoop();
+        
+        try
+        {
+            Debug.Log($"[{actor.Name}] 외부 이벤트 발생 - Think/Act 루프 재시작");
+            await StartThinkAndActLoop();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[{actor.Name}] Think/Act 루프 재시작 실패: {ex.Message}");
+        }
     }
 
     /// <summary>
