@@ -101,7 +101,7 @@ public class Brain
     /// </summary>
     public void OnExternalEvent()
     {
-        thinker.OnExternalEvent();
+        thinker.OnExternalEventAsync();
     }
 
     /// <summary>
