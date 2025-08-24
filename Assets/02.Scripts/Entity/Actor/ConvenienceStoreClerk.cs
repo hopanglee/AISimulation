@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 /// <summary>
 /// 편의점 직원 전용 액션들
@@ -30,19 +31,35 @@ public struct ConvenienceStoreAction : INPCAction
 /// <summary>
 /// 편의점 직원 NPC
 /// 물건 판매, 가격 안내, 재고 관리 등의 역할을 담당
-/// TODO: 사용자 지시에 따라 재설계 예정
 /// </summary>
 public class ConvenienceStoreClerk : NPC
 {
-    // TODO: 편의점 직원 특화 기능 구현 예정
+    [Header("편의점 직원 특화 기능")]
+    [SerializeField, TableList]
+    private List<PriceItem> priceList = new List<PriceItem>();
+    
+    [SerializeField, ReadOnly]
+    private int totalRevenue = 0; // 총 수익
+    
+    [System.Serializable]
+    public class PriceItem
+    {
+        [TableColumnWidth(200)]
+        public string itemKey; // 아이템 키 (예: "apple", "coffee")
+        
+        [TableColumnWidth(100)]
+        public int price; // 가격
+        
+        [TableColumnWidth(200)]
+        public string itemName; // 아이템 이름 (예: "사과", "커피")
+    }
     
     /// <summary>
     /// NPC 정보 반환
     /// </summary>
     public override string Get()
     {
-        // TODO: 구현 예정
-        return "";
+        return $"편의점 직원 {Name} (총 수익: {totalRevenue}원)";
     }
     
     /// <summary>
@@ -66,27 +83,49 @@ public class ConvenienceStoreClerk : NPC
     {
         try
         {
-            string customerName = "고객";
-            string amount = "금액";
-            
-            // 매개변수가 있으면 사용
-            if (parameters != null && parameters.Length > 0)
+            if (parameters == null || parameters.Length == 0)
             {
-                if (parameters.Length >= 1 && !string.IsNullOrEmpty(parameters[0]?.ToString()))
-                    customerName = parameters[0].ToString();
-                    
-                if (parameters.Length >= 2 && !string.IsNullOrEmpty(parameters[1]?.ToString()))
-                    amount = parameters[1].ToString();
+                Debug.LogWarning($"[{Name}] 결제 처리 실패: 매개변수가 없습니다.");
+                ShowSpeech("결제할 아이템을 알려주세요.");
+                return;
             }
             
-            Debug.Log($"[{Name}] 결제 처리 시작 - 고객: {customerName}, 금액: {amount}원");
+            string itemKey = parameters[0]?.ToString();
+            if (string.IsNullOrEmpty(itemKey))
+            {
+                Debug.LogWarning($"[{Name}] 결제 처리 실패: 아이템 키가 없습니다.");
+                ShowSpeech("결제할 아이템을 알려주세요.");
+                return;
+            }
             
-            ShowSpeech($"{amount}원 결제를 도와드리겠습니다.");
+            // 가격표에서 아이템 찾기
+            PriceItem priceItem = FindPriceItem(itemKey);
+            if (priceItem == null)
+            {
+                Debug.LogWarning($"[{Name}] 결제 처리 실패: '{itemKey}' 아이템을 찾을 수 없습니다.");
+                ShowSpeech($"죄송합니다. '{itemKey}' 아이템은 판매하지 않습니다.");
+                return;
+            }
+            
+            // 편의점 점원의 돈이 충분한지 확인
+            if (Money < priceItem.price)
+            {
+                Debug.LogWarning($"[{Name}] 결제 처리 실패: 돈이 부족합니다. 현재: {Money}원, 필요: {priceItem.price}원");
+                ShowSpeech($"죄송합니다. 현재 돈이 부족합니다.");
+                return;
+            }
+            
+            Debug.Log($"[{Name}] 결제 처리 시작 - 아이템: {priceItem.itemName} ({itemKey}), 가격: {priceItem.price}원");
+            ShowSpeech($"{priceItem.itemName} {priceItem.price}원 결제를 도와드리겠습니다.");
             
             // 결제 처리 시뮬레이션
             await SimDelay.DelaySimMinutes(2);
             
-            string paymentReport = $"편의점 직원 {Name}이 {customerName}로부터 {amount}원 결제를 처리했습니다";
+            // 결제 성공 시 편의점 점원의 돈 차감 및 수익 추가
+            Money -= priceItem.price;
+            totalRevenue += priceItem.price;
+            
+            string paymentReport = $"편의점 직원 {Name}이 {priceItem.itemName}({itemKey}) {priceItem.price}원 결제를 처리했습니다. 현재 돈: {Money}원, 총 수익: {totalRevenue}원";
             Debug.Log($"[{Name}] 결제 완료: {paymentReport}");
             
             ShowSpeech("결제가 완료되었습니다. 감사합니다!");
@@ -95,7 +134,7 @@ public class ConvenienceStoreClerk : NPC
             if (actionAgent != null)
             {
                 string currentTime = GetFormattedCurrentTime();
-                string systemMessage = $"[{currentTime}] [SYSTEM] 결제 완료";
+                string systemMessage = $"[{currentTime}] [SYSTEM] 결제 완료 - {priceItem.itemName} {priceItem.price}원, 현재 돈: {Money}원, 총 수익: {totalRevenue}원";
                 actionAgent.AddSystemMessage(systemMessage);
                 Debug.Log($"[{Name}] AI Agent에 결제 완료 메시지 추가: {systemMessage}");
             }
@@ -104,6 +143,39 @@ public class ConvenienceStoreClerk : NPC
         {
             Debug.LogError($"[{Name}] 결제 처리 중 오류 발생: {ex.Message}");
         }
+    }
+    
+    /// <summary>
+    /// 가격표에서 아이템을 찾습니다.
+    /// </summary>
+    private PriceItem FindPriceItem(string itemKey)
+    {
+        return priceList.Find(item => item.itemKey.Equals(itemKey, StringComparison.OrdinalIgnoreCase));
+    }
+    
+    /// <summary>
+    /// 가격표를 가져옵니다.
+    /// </summary>
+    public List<PriceItem> GetPriceList()
+    {
+        return new List<PriceItem>(priceList);
+    }
+    
+    /// <summary>
+    /// 특정 아이템의 가격을 가져옵니다.
+    /// </summary>
+    public int GetItemPrice(string itemKey)
+    {
+        PriceItem item = FindPriceItem(itemKey);
+        return item?.price ?? 0;
+    }
+    
+    /// <summary>
+    /// 총 수익을 가져옵니다.
+    /// </summary>
+    public int GetTotalRevenue()
+    {
+        return totalRevenue;
     }
     
     #endregion
@@ -126,10 +198,8 @@ public class ConvenienceStoreClerk : NPC
                 case "payment":
                     if (decision.parameters != null && decision.parameters.Length >= 1)
                     {
-                        string customerName = decision.parameters.Length >= 1 ? decision.parameters[0]?.ToString() ?? "고객" : "고객";
-                        string amount = decision.parameters.Length >= 2 ? decision.parameters[1]?.ToString() ?? "금액" : "금액";
-
-                        return $"{currentTime} 편의점 직원 {Name}이 {customerName}로부터 {amount}원 결제를 처리한다";
+                        string itemKey = decision.parameters[0]?.ToString() ?? "아이템";
+                        return $"{currentTime} 편의점 직원 {Name}이 {itemKey} 결제를 처리한다";
                     }
                     return $"{currentTime} 결제를 처리한다";
 
