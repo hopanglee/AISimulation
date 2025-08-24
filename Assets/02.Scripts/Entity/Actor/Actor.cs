@@ -267,17 +267,68 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         {
             if (location != null) // Put down there
             {
-                HandItem.curLocation = location;
-                HandItem.transform.localPosition = new(0, 0, 0);
-                HandItem = null;
+                // location이 InventoryBox인 경우 AddItem 호출
+                if (location is InventoryBox inventoryBox)
+                {
+                    if (inventoryBox.AddItem(HandItem))
+                    {
+                        // AddItem 성공 시 HandItem 초기화
+                        HandItem = null;
+                        Debug.Log($"[{Name}] {HandItem?.Name ?? "아이템"}을(를) {inventoryBox.name}에 성공적으로 추가했습니다.");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[{Name}] {HandItem?.Name ?? "아이템"}을(를) {inventoryBox.name}에 추가하는데 실패했습니다.");
+                    }
+                }
+                else
+                {
+                    // 일반적인 위치에 내려놓기
+                    HandItem.curLocation = location;
+                    HandItem.transform.localPosition = new(0, 0.2f, 0);
+                    HandItem = null;
+                }
             }
-            else // Put down here
+            else // Put down here (현재 위치에 놓기)
             {
                 HandItem.curLocation = curLocation;
-                HandItem.transform.localPosition = new(0, 0, 0);
+                
+                // 현재 위치에서 y축을 바닥에 닿도록 조정
+                Vector3 currentPosition = transform.position;
+                float groundY = GetGroundYPosition(currentPosition);
+                HandItem.transform.position = new Vector3(currentPosition.x, groundY, currentPosition.z);
+                
                 HandItem = null;
             }
         }
+    }
+
+    /// <summary>
+    /// 현재 위치에서 바닥의 y축 위치를 찾습니다.
+    /// </summary>
+    private float GetGroundYPosition(Vector3 currentPosition)
+    {
+        // Raycast를 사용하여 바닥 찾기
+        RaycastHit hit;
+        Vector3 rayStart = currentPosition + Vector3.up * 0.2f; // 현재 위치에서 위로 0.2유닛
+        Vector3 rayDirection = Vector3.down;
+        
+        // LayerMask 설정: Floor, Item, Prop 등 바닥이 될 수 있는 레이어들
+        // Actor가 속한 레이어는 제외 (본인을 바닥으로 인식하지 않도록)
+        int layerMask = LayerMask.GetMask("Default", "Floor", "Prop");
+        
+        // Actor가 속한 레이어를 제외
+        // int actorLayer = gameObject.layer;
+        // layerMask &= ~(1 << actorLayer);
+        
+        if (Physics.Raycast(rayStart, rayDirection, out hit, 10f, layerMask))
+        {
+            // 바닥을 찾았으면 hit.point.y + 약간의 오프셋 반환
+            return hit.point.y + 0.1f; // 바닥에서 0.1유닛 위
+        }
+        
+        // Raycast 실패 시 기본값 사용 (현재 위치에서 0.2f 아래)
+        return 0.25f;
     }
 
     public void Move(string locationKey)
