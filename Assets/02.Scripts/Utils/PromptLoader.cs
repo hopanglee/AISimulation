@@ -141,8 +141,23 @@ public static class PromptLoader
         string roleFolder = GetNPCRoleFolder(npcRole);
         string promptPath = $"NPC/{roleFolder}/system_prompt.txt";
         
-        // 기본 시스템 프롬프트 로드
-        string basePrompt = LoadPrompt(promptPath, GetDefaultNPCPrompt(npcRole));
+        // 역할별 시스템 프롬프트 우선 시도, 없으면 Common/system_prompt.txt 시도
+        string fullRolePath = Path.Combine(PROMPT_BASE_PATH, promptPath);
+        string fullCommonPath = Path.Combine(PROMPT_BASE_PATH, "NPC/Common/system_prompt.txt");
+        string basePrompt;
+        if (File.Exists(fullRolePath))
+        {
+            basePrompt = File.ReadAllText(fullRolePath);
+        }
+        else if (File.Exists(fullCommonPath))
+        {
+            basePrompt = File.ReadAllText(fullCommonPath);
+        }
+        else
+        {
+            basePrompt = GetDefaultNPCPrompt(npcRole);
+            Debug.LogWarning($"프롬프트 파일을 찾을 수 없습니다: {fullRolePath} 또는 {fullCommonPath}. 기본 시스템 프롬프트를 사용합니다.");
+        }
         
         // 사용 가능한 액션들의 설명 로드
         string actionsDescription = LoadAvailableActionsDescription(npcRole, availableActions);
@@ -179,10 +194,46 @@ public static class PromptLoader
         string roleFolder = GetNPCRoleFolder(npcRole);
         var actionDescriptions = new List<string>();
 
+        // 공통 액션 목록 (Common에서 관리)
+        var commonActions = new HashSet<string> { "Wait", "Talk", "PutDown", "GiveItem" };
+
         foreach (var action in availableActions)
         {
-            string actionPath = $"NPC/{roleFolder}/actions/{action.ActionName}.txt";
-            string description = LoadPrompt(actionPath, $"**{action.ActionName}**: {action.Description}");
+            string description = null;
+            
+            if (commonActions.Contains(action.ActionName))
+            {
+                // 공통 액션: Common 폴더에서 찾기
+                string commonActionRel = $"NPC/Common/actions/{action.ActionName}.txt";
+                string commonActionFull = Path.Combine(PROMPT_BASE_PATH, commonActionRel);
+                
+                if (File.Exists(commonActionFull))
+                {
+                    description = File.ReadAllText(commonActionFull);
+                }
+                else
+                {
+                    Debug.LogWarning($"공통 액션 프롬프트 파일을 찾을 수 없습니다: {commonActionFull}");
+                    description = $"**{action.ActionName}**: {action.Description}";
+                }
+            }
+            else
+            {
+                // 전용 액션: 역할별 폴더에서만 찾기
+                string roleActionRel = $"NPC/{roleFolder}/actions/{action.ActionName}.txt";
+                string roleActionFull = Path.Combine(PROMPT_BASE_PATH, roleActionRel);
+                
+                if (File.Exists(roleActionFull))
+                {
+                    description = File.ReadAllText(roleActionFull);
+                }
+                else
+                {
+                    Debug.LogWarning($"전용 액션 프롬프트 파일을 찾을 수 없습니다: {roleActionFull}");
+                    description = $"**{action.ActionName}**: {action.Description}";
+                }
+            }
+
             actionDescriptions.Add(description);
         }
 

@@ -1,9 +1,0 @@
-**Payment**: Process patient payment for medical services and medications
-- Use when: Patient wants to pay for medical services, medication costs, handling medical billing
-- Parameters: itemKey (string) - The key of the service/item to process payment for (e.g., "consultation", "medication", "examination")
-- Example: 
-  - Patient wants to pay for consultation: Payment with "consultation"
-  - Patient wants to pay for medication: Payment with "medication"
-  - Patient wants to pay for examination: Payment with "examination"
-  - The system will automatically look up the price from the price list and process the payment
-  - Payment success will add the service price to the hospital's total revenue

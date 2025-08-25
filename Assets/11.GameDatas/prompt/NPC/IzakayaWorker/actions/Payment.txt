@@ -1,9 +1,8 @@
-**Payment**: Process customer payment for food and drinks
-- Use when: Customer wants to pay for food/drinks, checkout process, handling money transactions
-- Parameters: itemKey (string) - The key of the item to process payment for (e.g., "sake", "yakitori", "ramen")
+**Payment**: Process customer payment for specific items
+- Use when: Customer wants to buy something, checkout process, handling money transactions
+- Parameters: itemKey (string) - The key of the item to process payment for (e.g., "apple", "coffee")
 - Example: 
-  - Customer wants to pay for sake: Payment with "sake"
-  - Customer wants to pay for yakitori: Payment with "yakitori"
-  - Customer wants to pay for ramen: Payment with "ramen"
+  - Customer wants to buy an apple: Payment with "apple"
+  - Customer wants to buy coffee: Payment with "coffee"
   - The system will automatically look up the price from the price list and process the payment
-  - Payment success will add the item price to the izakaya's total revenue
+  - Payment success will add the item price to the clerk's total revenue

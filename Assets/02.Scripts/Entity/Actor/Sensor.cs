@@ -407,6 +407,37 @@ public class Sensor
     }
 
     /// <summary>
+    /// Lookable로 있는 모든 Entity의 Get() 함수를 호출하여 string list를 반환합니다.
+    /// </summary>
+    /// <returns>모든 lookable Entity들의 Get() 결과를 담은 string list</returns>
+    public List<string> GetLookableEntityDescriptions()
+    {
+        var result = new List<string>();
+        if (lookable == null || lookable.Count == 0)
+            UpdateLookableEntities();
+
+        foreach (var kv in lookable)
+        {
+            if (kv.Value != null)
+            {
+                try
+                {
+                    string description = kv.Value.Get();
+                    if (!string.IsNullOrEmpty(description))
+                    {
+                        result.Add(description);
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning($"[Sensor] Entity {kv.Key}의 Get() 함수 호출 중 오류 발생: {ex.Message}");
+                }
+            }
+        }
+        return result;
+    }
+
+    /// <summary>
     /// 특정 엔티티가 상호작용 가능한지 확인
     /// </summary>
     public bool IsInteractable(Entity entity)
