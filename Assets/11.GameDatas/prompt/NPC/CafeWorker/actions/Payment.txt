@@ -1,0 +1,9 @@
+**Payment**: Process customer payment for coffee and food items
+- Use when: Customer wants to pay for coffee/food, checkout process, handling cafe billing
+- Parameters: itemKey (string) - The key of the menu item to process payment for (e.g., "americano", "latte", "croissant")
+- Example: 
+  - Customer wants to pay for americano: Payment with "americano"
+  - Customer wants to pay for latte: Payment with "latte"
+  - Customer wants to pay for croissant: Payment with "croissant"
+  - The system will automatically look up the price from the price list and process the payment
+  - Payment success will add the menu price to the cafe's total revenue

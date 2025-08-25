@@ -21,6 +21,7 @@ public enum ActionType
     PutDown, // 아이템을 특정 위치에 내려놓기
     GiveMoney,
     GiveItem,
+    RemoveClothing, // 옷 벗기
     //ObserveEnvironment,
     Wait,
     PerformActivity

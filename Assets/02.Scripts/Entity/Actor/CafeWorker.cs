@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using Sirenix.OdinInspector;
@@ -17,6 +19,23 @@ public class CafeWorker : NPC
     [SerializeField] private ItemDispenser showcaseSmall;      // 쇼케이스 (스몰) - 다른 빵 세트
     [SerializeField] private ItemDispenser storage;            // 창고 (CoffeeBag 배출)
 
+    [Title("Payment Settings")]
+    [SerializeField, TableList]
+    private List<PriceItem> priceList = new List<PriceItem>();
+    
+    [SerializeField, ReadOnly]
+    private int totalRevenue = 0; // 총 수익
+    
+    [System.Serializable]
+    public class PriceItem
+    {
+        [TableColumnWidth(200)]
+        public string itemName; // 아이템 이름 (예: "americano", "latte", "croissant")
+        
+        [TableColumnWidth(100)]
+        public int price; // 가격
+    }
+
     /// <summary>
     /// 카페 전용 액션
     /// </summary>
@@ -32,6 +51,7 @@ public class CafeWorker : NPC
         }
 
         public static readonly CafeAction PrepareMenu = new("PrepareMenu", "여러 메뉴를 순서대로 준비");
+        public static readonly CafeAction Payment = new("Payment", "커피 및 음식 결제 처리");
 
         public override string ToString() => ActionName;
         public override bool Equals(object obj) => obj is CafeAction other && ActionName == other.ActionName;
@@ -49,6 +69,7 @@ public class CafeWorker : NPC
     {
         base.InitializeActionHandlers();
         RegisterActionHandler(CafeAction.PrepareMenu, HandlePrepareMenu);
+        RegisterActionHandler(CafeAction.Payment, HandlePayment);
     }
 
     private async Task HandlePrepareMenu(object[] parameters)
@@ -205,6 +226,100 @@ public class CafeWorker : NPC
         }
     }
 
+    /// <summary>
+    /// 결제 처리 액션 핸들러
+    /// </summary>
+    protected virtual async Task HandlePayment(object[] parameters)
+    {
+        try
+        {
+            if (parameters == null || parameters.Length == 0)
+            {
+                Debug.LogWarning($"[{Name}] 결제 처리 실패: 매개변수가 없습니다.");
+                ShowSpeech("결제할 메뉴를 알려주세요.");
+                return;
+            }
+            
+            string itemName = parameters[0]?.ToString();
+            if (string.IsNullOrEmpty(itemName))
+            {
+                Debug.LogWarning($"[{Name}] 결제 처리 실패: 메뉴 이름이 없습니다.");
+                ShowSpeech("결제할 메뉴를 알려주세요.");
+                return;
+            }
+            
+            // 가격표에서 메뉴 찾기
+            PriceItem priceItem = FindPriceItem(itemName);
+            if (priceItem == null)
+            {
+                Debug.LogWarning($"[{Name}] 결제 처리 실패: '{itemName}' 메뉴를 찾을 수 없습니다.");
+                ShowSpeech($"죄송합니다. '{itemName}' 메뉴는 판매하지 않습니다.");
+                return;
+            }
+            
+            Debug.Log($"[{Name}] 결제 처리 시작 - 메뉴: {priceItem.itemName}, 가격: {priceItem.price}원");
+            ShowSpeech($"{priceItem.itemName} {priceItem.price}원 결제를 도와드리겠습니다.");
+            
+            // 결제 처리 시뮬레이션
+            await SimDelay.DelaySimMinutes(2);
+            
+            // 결제 성공 시 카페 운영자금 증가 및 수익 추가
+            Money += priceItem.price;        // 카페 운영자금 증가 (고객이 돈을 지불)
+            totalRevenue += priceItem.price; // 수익 추가
+            
+            string paymentReport = $"카페 직원 {Name}이 {priceItem.itemName} {priceItem.price}원 결제를 처리했습니다. 현재 운영자금: {Money}원, 총 수익: {totalRevenue}원";
+            Debug.Log($"[{Name}] 결제 완료: {paymentReport}");
+            
+            ShowSpeech("결제가 완료되었습니다. 감사합니다!");
+            
+            // AI Agent에 결제 완료 메시지 추가
+            if (actionAgent != null)
+            {
+                string currentTime = GetFormattedCurrentTime();
+                string systemMessage = $"[{currentTime}] [SYSTEM] 결제 완료 - {priceItem.itemName} {priceItem.price}원, 현재 운영자금: {Money}원, 총 수익: {totalRevenue}원";
+                actionAgent.AddSystemMessage(systemMessage);
+                Debug.Log($"[{Name}] AI Agent에 결제 완료 메시지 추가: {systemMessage}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[{Name}] 결제 처리 중 오류 발생: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// 가격표에서 메뉴를 찾습니다.
+    /// </summary>
+    private PriceItem FindPriceItem(string itemName)
+    {
+        return priceList.Find(item => item.itemName.Equals(itemName, StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>
+    /// 가격표를 가져옵니다.
+    /// </summary>
+    public List<PriceItem> GetPriceList()
+    {
+        return new List<PriceItem>(priceList);
+    }
+
+    /// <summary>
+    /// 특정 메뉴의 가격을 가져옵니다.
+    /// </summary>
+    public int GetItemPrice(string itemName)
+    {
+        PriceItem item = FindPriceItem(itemName);
+        return item?.price ?? 0;
+    }
+
+    /// <summary>
+    /// 총 수익을 가져옵니다.
+    /// </summary>
+    public int GetTotalRevenue()
+    {
+        return totalRevenue;
+    }
+
     protected override System.Func<NPCActionDecision, string> CreateCustomMessageConverter()
     {
         return decision =>
@@ -222,6 +337,13 @@ public class CafeWorker : NPC
                         return $"[{currentTime}] 메뉴({joined})를 준비한다";
                     }
                     return $"[{currentTime}] 메뉴를 준비한다";
+                case "payment":
+                    if (decision.parameters != null && decision.parameters.Length >= 1)
+                    {
+                        string itemName = decision.parameters[0]?.ToString() ?? "메뉴";
+                        return $"[{currentTime}] 카페 직원 {Name}이 {itemName} 결제를 처리한다";
+                    }
+                    return $"[{currentTime}] 결제를 처리한다";
                 default:
                     return ConvertDecisionToMessage(decision, currentTime);
             }

@@ -3986,6 +3986,11 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
+  isClean: 1
+  isOccupied: 0
+  hungerReduction: 5
+  thirstReduction: 3
+  cleanlinessReduction: 2
 --- !u!4 &4500466670097559964 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4400879514714215353, guid: 3beca05464a420849888124ca0309078, type: 3}
@@ -50348,12 +50353,12 @@ MonoBehaviour:
   Description: 
   toMovePos: {fileID: 4939089539691640050}
   supplies:
-  - itemKey: Blueberry Bread
-    prefab: {fileID: 9136907232495084651, guid: 1760e5dd21d57c143916f7f03f33f523, type: 3}
-  - itemKey: Strawberry Bread
-    prefab: {fileID: 1230684842923494722, guid: cab7f27e164888446bedc3fc363fd292, type: 3}
+  - itemKey: Blueberry Basket
+    prefab: {fileID: 1816396147844965772, guid: 1760e5dd21d57c143916f7f03f33f523, type: 3}
+  - itemKey: Strawberry Basket
+    prefab: {fileID: 2918201843330029742, guid: cab7f27e164888446bedc3fc363fd292, type: 3}
   - itemKey: Blueberry Pie
-    prefab: {fileID: 2360822739635212190, guid: b43f46a3677bd5f419883a44b15e30a0, type: 3}
+    prefab: {fileID: 5290910299828079628, guid: b43f46a3677bd5f419883a44b15e30a0, type: 3}
 --- !u!1 &8874871375951800552 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1530192254985767403, guid: a789a804b7b06bf4198296526f721d27, type: 3}
@@ -50380,15 +50385,15 @@ MonoBehaviour:
   toMovePos: {fileID: 7149293229181246106}
   supplies:
   - itemKey: Corn Bread
-    prefab: {fileID: -4312939360426014895, guid: 1a01a1d47e963eb48a3e255ce5237779, type: 3}
+    prefab: {fileID: 5924292438115094349, guid: 1a01a1d47e963eb48a3e255ce5237779, type: 3}
   - itemKey: Chocolate Bread
-    prefab: {fileID: 7832604329697978307, guid: fe1543b6db0975d4b88d5622d69fb018, type: 3}
+    prefab: {fileID: 2872772186068201093, guid: fe1543b6db0975d4b88d5622d69fb018, type: 3}
   - itemKey: Cream Croissant
-    prefab: {fileID: 4362628311682230941, guid: 20d28ae462d850f4082339f3c15ee176, type: 3}
+    prefab: {fileID: 7766913275428806091, guid: 20d28ae462d850f4082339f3c15ee176, type: 3}
   - itemKey: Pistachios Croissant
-    prefab: {fileID: 7532437056489631916, guid: 1241452170f2d274597a73f18176b034, type: 3}
+    prefab: {fileID: 2898853363207598516, guid: 1241452170f2d274597a73f18176b034, type: 3}
   - itemKey: Half Baguette
-    prefab: {fileID: 3818424599101659106, guid: a4a682ca76e75434986c551afd14b240, type: 3}
+    prefab: {fileID: 6599131749774081148, guid: a4a682ca76e75434986c551afd14b240, type: 3}
 --- !u!1001 &7958900889352841041
 PrefabInstance:
   m_ObjectHideFlags: 0

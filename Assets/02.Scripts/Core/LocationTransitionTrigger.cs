@@ -65,8 +65,13 @@ public class LocationTransitionTrigger : MonoBehaviour
 
         if (trigger == null)
             return;
+        var prevArea = Services.Get<ILocationService>().GetArea(trigger.curLocation);
+        var nextLoc = GetEnterRoom();
+        trigger.SetCurrentRoom(nextLoc);
+        var nextArea = Services.Get<ILocationService>().GetArea(nextLoc);
 
-        trigger.SetCurrentRoom(GetEnterRoom());
+        // 영역 변경 이벤트 통지 (서비스가 대상 배우들에게 전달 처리)
+        Services.Get<IExternalEventService>().NotifyActorAreaChanged(trigger, prevArea, nextArea);
     }
 
     public ILocation GetEnterRoom()

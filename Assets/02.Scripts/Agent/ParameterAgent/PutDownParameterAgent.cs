@@ -13,6 +13,7 @@ using System.Threading;
 public class PutDownParameterAgent : ParameterAgentBase
 {
     private readonly List<string> locationList;
+    private readonly string systemPrompt;
 
     public PutDownParameterAgent(List<string> locationList, GPT gpt)
         : base()
@@ -24,6 +25,9 @@ public class PutDownParameterAgent : ParameterAgentBase
         {
             this.locationList.Add("null");
         }
+        
+        // 프롬프트 파일에서 시스템 프롬프트 로드
+        systemPrompt = PromptLoader.LoadPrompt("PutDownParameterAgentPrompt.txt", "");
         
         // ResponseFormat 설정
         this.options = new ChatCompletionOptions
@@ -60,7 +64,7 @@ public class PutDownParameterAgent : ParameterAgentBase
     {
         var messages = new List<ChatMessage>
         {
-            new SystemChatMessage(GetSystemPrompt()),
+            new SystemChatMessage(systemPrompt),
             new UserChatMessage($"PutDown 액션을 위한 파라미터를 추출해주세요. Reasoning: {context.Reasoning}, Intention: {context.Intention}")
         };
 
@@ -192,31 +196,6 @@ public class PutDownParameterAgent : ParameterAgentBase
         return new List<string> { "null" };
     }
 
-    private string GetSystemPrompt()
-    {
-        var prompt = $@"당신은 MainActor의 PutDown 액션을 위한 파라미터 추출 에이전트입니다.
-
-PutDown 액션은 손에 있는 아이템을 특정 위치에 내려놓는 액션입니다.
-
-사용 가능한 위치 목록: {string.Join(", ", locationList)}
-
-응답 형식:
-{{
-  ""target_key"": ""아이템을 내려놓을 위치의 키"",
-  ""parameters"": [""추가 파라미터들""]
-}}
-
-파라미터 설명:
-- target_key: 아이템을 내려놓을 위치의 키 (위치 목록에서 선택)
-- parameters: 아이템을 놓을 구체적인 위치나 표면에 대한 추가 정보
-
-주의사항:
-- target_key는 반드시 제공되어야 합니다
-- parameters는 선택사항이지만, 구체적인 위치 정보가 있다면 포함해야 합니다
-- 손에 아이템이 있어야 PutDown 액션이 가능합니다";
-
-        return prompt;
-    }
 }
 
 /// <summary>

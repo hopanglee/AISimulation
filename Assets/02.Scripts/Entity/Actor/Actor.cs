@@ -98,6 +98,18 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     }
     public Inven Inven;
 
+    /// <summary>
+    /// Actor가 현재 착용하고 있는 옷들
+    /// </summary>
+    [Header("Clothing System")]
+    [SerializeField] private Clothing _wornTop;
+    [SerializeField] private Clothing _wornBottom;
+    [SerializeField] private Clothing _wornOuterwear;
+    
+    public Clothing WornTop => _wornTop;
+    public Clothing WornBottom => _wornBottom;
+    public Clothing WornOuterwear => _wornOuterwear;
+
     // Event History는 ThinkingActor로 이동
     #endregion
 
@@ -303,6 +315,223 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         }
     }
 
+    #region Clothing System
+
+    /// <summary>
+    /// 옷을 입습니다 (기존 옷이 있으면 교체)
+    /// </summary>
+    /// <param name="clothing">입을 옷</param>
+    /// <returns>착용 성공 여부</returns>
+    public bool WearClothing(Clothing clothing)
+    {
+        if (clothing == null)
+        {
+            Debug.LogWarning($"[{Name}] WearClothing: 옷이 null입니다.");
+            return false;
+        }
+
+        Clothing oldClothing = null;
+
+        switch (clothing.ClothingType)
+        {
+            case ClothingType.Top:
+                oldClothing = _wornTop;
+                _wornTop = clothing;
+                break;
+                
+            case ClothingType.Bottom:
+                oldClothing = _wornBottom;
+                _wornBottom = clothing;
+                break;
+                
+            case ClothingType.Outerwear:
+                oldClothing = _wornOuterwear;
+                _wornOuterwear = clothing;
+                break;
+                
+            default:
+                Debug.LogWarning($"[{Name}] 지원하지 않는 옷 타입입니다: {clothing.ClothingType}");
+                return false;
+        }
+
+        // 기존 옷이 있었다면 손으로 이동
+        if (oldClothing != null)
+        {
+            // 기존 옷을 손으로 이동
+            HandItem = oldClothing;
+            oldClothing.curLocation = Hand;
+            oldClothing.transform.localPosition = new Vector3(0, 0, 0);
+            
+            Debug.Log($"[{Name}] {clothing.Name}을(를) 착용하고, 기존 {oldClothing.Name}을(를) 손에 들었습니다.");
+        }
+        else
+        {
+            Debug.Log($"[{Name}] {clothing.Name}을(를) 착용했습니다.");
+        }
+        
+        return true;
+    }
+
+    /// <summary>
+    /// ClothingType으로 옷을 벗습니다
+    /// </summary>
+    /// <param name="clothingType">벗을 옷의 타입</param>
+    /// <returns>해제된 옷</returns>
+    public Clothing RemoveClothingByType(ClothingType clothingType)
+    {
+        Clothing clothingToRemove = null;
+        
+        switch (clothingType)
+        {
+            case ClothingType.Top:
+                clothingToRemove = _wornTop;
+                _wornTop = null;
+                break;
+            case ClothingType.Bottom:
+                clothingToRemove = _wornBottom;
+                _wornBottom = null;
+                break;
+            case ClothingType.Outerwear:
+                clothingToRemove = _wornOuterwear;
+                _wornOuterwear = null;
+                break;
+        }
+
+        if (clothingToRemove != null)
+        {
+            // 공통 로직으로 옷 처리
+            ProcessRemovedClothing(clothingToRemove);
+        }
+
+        return clothingToRemove;
+    }
+
+    /// <summary>
+    /// 옷을 벗습니다 (손 → 인벤토리 → 바닥 순서로 처리)
+    /// </summary>
+    /// <param name="clothing">벗을 옷</param>
+    /// <returns>해제 성공 여부</returns>
+    public bool RemoveClothing(Clothing clothing)
+    {
+        if (clothing == null)
+        {
+            Debug.LogWarning($"[{Name}] RemoveClothing: 옷이 null입니다.");
+            return false;
+        }
+
+        bool isWearing = false;
+        
+        switch (clothing.ClothingType)
+        {
+            case ClothingType.Top:
+                if (_wornTop == clothing)
+                {
+                    _wornTop = null;
+                    isWearing = true;
+                }
+                break;
+                
+            case ClothingType.Bottom:
+                if (_wornBottom == clothing)
+                {
+                    _wornBottom = null;
+                    isWearing = true;
+                }
+                break;
+                
+            case ClothingType.Outerwear:
+                if (_wornOuterwear == clothing)
+                {
+                    _wornOuterwear = null;
+                    isWearing = true;
+                }
+                break;
+        }
+
+        if (isWearing)
+        {
+            // 공통 로직으로 옷 처리
+            ProcessRemovedClothing(clothing);
+            return true;
+        }
+        else
+        {
+            Debug.LogWarning($"[{Name}] 착용하지 않은 옷입니다: {clothing.Name}");
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// 현재 착용 중인 옷의 상태를 반환합니다
+    /// </summary>
+    public string GetClothingStatus()
+    {
+        var status = new System.Text.StringBuilder();
+        status.AppendLine($"[{Name}] 착용 중인 옷:");
+        
+        if (_wornTop != null)
+            status.AppendLine($"  상의: {_wornTop.Name}");
+        else
+            status.AppendLine("  상의: 없음");
+            
+        if (_wornBottom != null)
+            status.AppendLine($"  하의: {_wornBottom.Name}");
+        else
+            status.AppendLine("  하의: 없음");
+            
+        if (_wornOuterwear != null)
+            status.AppendLine($"  외투: {_wornOuterwear.Name}");
+        else
+            status.AppendLine("  외투: 없음");
+            
+        return status.ToString();
+    }
+
+    /// <summary>
+    /// 벗은 옷을 손 → 인벤토리 → 바닥 순서로 처리하는 공통 로직
+    /// </summary>
+    /// <param name="clothing">처리할 옷</param>
+    private void ProcessRemovedClothing(Clothing clothing)
+    {
+        if (HandItem == null)
+        {
+            // 손이 비어있으면 손에 들기
+            HandItem = clothing;
+            clothing.curLocation = Hand;
+            clothing.transform.localPosition = new Vector3(0, 0, 0);
+            Debug.Log($"[{Name}] {clothing.Name}을(를) 벗어서 손에 들었습니다.");
+        }
+        else
+        {
+            // 인벤토리에서 빈 슬롯 찾기
+            bool inventoryFull = true;
+            for (int i = 0; i < _inventoryItems.Length; i++)
+            {
+                if (_inventoryItems[i] == null)
+                {
+                    // 빈 슬롯을 찾았으면 거기에 넣기
+                    _inventoryItems[i] = clothing;
+                    clothing.curLocation = Inven;
+                    Debug.Log($"[{Name}] {clothing.Name}을(를) 벗어서 인벤토리 슬롯 {i + 1}에 넣었습니다.");
+                    inventoryFull = false;
+                    break;
+                }
+            }
+            
+            // 인벤토리가 가득 찬 경우 바닥에 놓기
+            if (inventoryFull)
+            {
+                clothing.curLocation = curLocation;
+                Vector3 currentPosition = transform.position;
+                float groundY = GetGroundYPosition(currentPosition);
+                clothing.transform.position = new Vector3(currentPosition.x, groundY, currentPosition.z);
+                Debug.Log($"[{Name}] {clothing.Name}을(를) 벗어서 바닥에 놓았습니다. (손과 인벤토리가 가득 참)");
+            }
+        }
+    }
+
+    #endregion
+
     /// <summary>
     /// 현재 위치에서 바닥의 y축 위치를 찾습니다.
     /// </summary>
@@ -390,43 +619,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     }
 
     // Odin Inspector Buttons (visible on all Actor derivatives)
-    [PropertyOrder(1)]
-    [Button("Update Lookable Entities")]
-    private void Odin_UpdateLookableEntity()
-    {
-        UpdateLookableEntity();
-        // Lookable 업데이트 직후 이동 가능한 키 목록도 즉시 갱신하고 기본 선택값 지정
-        var mov = sensor?.GetMovablePositions();
-        if (mov != null && mov.Count > 0)
-        {
-            if (string.IsNullOrEmpty(selectedMovableKey) || !mov.ContainsKey(selectedMovableKey))
-            {
-                selectedMovableKey = mov.Keys.First();
-            }
-        }
-    }
 
-    [PropertyOrder(2)]
-    [LabelWidth(200)]
-    [Button("Move To (filtered Movable)")]
-    [ValueDropdown("GetMovableKeys")]
-    public string selectedMovableKey;
-
-    [PropertyOrder(3)]
-    [Button("Go!", ButtonSizes.Small)]
-    private void Odin_MoveToSelectedMovable()
-    {
-        if (!string.IsNullOrEmpty(selectedMovableKey))
-        {
-            Move(selectedMovableKey);
-        }
-    }
-
-    private IEnumerable<string> GetMovableKeys()
-    {
-        var mov = sensor?.GetMovablePositions();
-        return mov != null ? mov.Keys : new List<string>();
-    }
 
     /// <summary>
     /// Vector3 위치로 직접 이동
@@ -528,12 +721,6 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
     #region Speech Bubble Test Buttons
 
-    [Button("Test Single Speech")]
-    private void TestSingleSpeech()
-    {
-        ShowSpeech("(테스트) 안녕하세요! 이것은 단일 말풍선 테스트입니다.");
-    }
-
     [Button("Test Multiple Speech")]
     private void TestMultipleSpeech()
     {
@@ -544,19 +731,6 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             "(테스트) 세 번째 메시지입니다."
         };
         ShowMultipleSpeech(messages);
-    }
-
-    [Button("Test Continuous Speech")]
-    private void TestContinuousSpeech()
-    {
-        List<string> messages = new List<string>
-        {
-            "안녕하세요!",
-            "오늘 날씨가 정말 좋네요.",
-            "같이 산책하실래요?",
-            "정말 즐거운 하루입니다!"
-        };
-        ShowMultipleSpeech(messages, 2f); // 각 메시지 2초씩 표시
     }
 
     [Button("Clear All Speech")]
@@ -636,16 +810,6 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     #endregion
 
     #region AI Control Methods
-
-    /// <summary>
-    /// GPT 사용 상태를 토글하는 메서드
-    /// </summary>
-    [Button("Toggle GPT Usage")]
-    public void ToggleGPTUsage()
-    {
-        useGPT = !useGPT;
-        Debug.Log($"[{Name}] GPT 사용: {(useGPT ? "활성화" : "비활성화")}");
-    }
 
     /// <summary>
     /// GPT 사용 상태를 설정하는 메서드

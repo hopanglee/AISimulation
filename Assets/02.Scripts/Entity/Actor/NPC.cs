@@ -59,21 +59,6 @@ public abstract partial class NPC : Actor
     }
     
     [FoldoutGroup("Manual Action Testing")]
-    [TextArea(3, 5)]
-    [SerializeField] private string debugEventDescription = "Test event from inspector";
-    
-    [FoldoutGroup("Manual Action Testing")]
-    [Button("Send Debug Event (with GPT)")]
-    private void SendDebugEvent()
-    {
-        if (Application.isPlaying && actionAgent != null)
-        {
-            actionAgent.AddUserMessage(debugEventDescription);
-            _ = ProcessEventWithAgent();
-        }
-    }
-    
-    [FoldoutGroup("Manual Action Testing")]
     [Button("Clear Agent Messages")]
     private void ClearAgentMessages()
     {
@@ -404,6 +389,7 @@ public abstract partial class NPC : Actor
                     }
                 }
             }
+
         }
         catch { }
     }
@@ -491,3 +477,4 @@ public abstract partial class NPC : Actor
     /// </summary>
     
 }
+
