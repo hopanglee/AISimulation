@@ -78,7 +78,7 @@ public abstract class MainActor : Actor
 	[SerializeField] private ActionType debugActionType = ActionType.Wait;
 	
 	[FoldoutGroup("Manual Think Act Control")]
-	[SerializeField] private string[] debugActionParameters = new string[0];
+	[SerializeField] private SerializableDictionary<string, string> debugActionParameters = new();
 	
 	[FoldoutGroup("Manual Think Act Control")]
 	[Button("Execute Manual Action")]
@@ -428,11 +428,11 @@ public abstract class MainActor : Actor
 				return;
 			}
 			
-			// string 배열을 Dictionary로 변환 (간단한 매개변수 처리)
+			// SerializableDictionary를 Dictionary<string, object>로 변환
 			var parameters = new Dictionary<string, object>();
-			for (int i = 0; i < debugActionParameters.Length; i++)
+			foreach (var kvp in debugActionParameters)
 			{
-				parameters[$"param{i}"] = debugActionParameters[i];
+				parameters[kvp.Key] = kvp.Value;
 			}
 			
 			// ActParameterResult 생성
@@ -442,7 +442,7 @@ public abstract class MainActor : Actor
 				Parameters = parameters
 			};
 			
-			Debug.Log($"[{Name}] 수동 액션 실행: {debugActionType} with parameters: [{string.Join(", ", debugActionParameters)}]");
+			Debug.Log($"[{Name}] 수동 액션 실행: {debugActionType} with parameters: [{string.Join(", ", debugActionParameters.Select(kvp => $"{kvp.Key}={kvp.Value}"))}]");
 			
 			// Brain을 통해 액션 실행
 			await brain.Act(paramResult, System.Threading.CancellationToken.None);

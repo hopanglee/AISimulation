@@ -187,6 +187,7 @@ MonoBehaviour:
     - {fileID: 2953825334226901736}
     values:
     - {fileID: 8427367992563883061}
+  childAreas: []
 --- !u!1 &288826133412520435
 GameObject:
   m_ObjectHideFlags: 0
@@ -2669,6 +2670,7 @@ MonoBehaviour:
   toMovePos:
     keys: []
     values: []
+  childAreas: []
 --- !u!1 &3316411966943290398
 GameObject:
   m_ObjectHideFlags: 0
@@ -4810,17 +4812,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 5772822258759144811}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e43d73b83ee35a942b01d9ee26396290, type: 3}
+  m_Script: {fileID: 11500000, guid: 7bae6addc4712cb48a9e97c85fe7f8a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 4896022348185773601}
   _preposition: on
   _isHideChild: 0
-  _name: Doctor's Desk
+  _name: Desk
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 0}
-  maxItems: 0
+  maxItems: 2
   items: []
   itemPlacementPositions:
   - {fileID: 6588157239308499821}
@@ -7153,6 +7155,7 @@ MonoBehaviour:
     - {fileID: 2953825334226901736}
     values:
     - {fileID: 7112166307889826287}
+  childAreas: []
 --- !u!1 &8632923450980670901
 GameObject:
   m_ObjectHideFlags: 0
@@ -7250,6 +7253,7 @@ MonoBehaviour:
     - {fileID: 2953825334226901736}
     values:
     - {fileID: 6770265537034345554}
+  childAreas: []
 --- !u!1 &8705824909128863200
 GameObject:
   m_ObjectHideFlags: 0
@@ -7772,6 +7776,7 @@ MonoBehaviour:
     - {fileID: 6433780564031066056}
     - {fileID: 2026530039765348992}
     - {fileID: 3552723858755166376}
+  childAreas: []
 --- !u!1 &9158751845172783608
 GameObject:
   m_ObjectHideFlags: 0
@@ -8413,7 +8418,6 @@ MonoBehaviour:
   Description: 
   toMovePos: {fileID: 0}
   maxOccupants: 4
-  sitHeight: 0.5
   sitPositions:
   - {fileID: 7603721708578333597}
   - {fileID: 2987016861044026042}
@@ -8517,7 +8521,6 @@ MonoBehaviour:
   Description: 
   toMovePos: {fileID: 0}
   maxOccupants: 4
-  sitHeight: 0.5
   sitPositions:
   - {fileID: 5336243768700908618}
   - {fileID: 5528949947093898775}
@@ -9488,7 +9491,6 @@ MonoBehaviour:
   Description: 
   toMovePos: {fileID: 0}
   maxOccupants: 4
-  sitHeight: 0.5
   sitPositions:
   - {fileID: 4489527447263155372}
   - {fileID: 338491294088216007}
@@ -12250,7 +12252,6 @@ MonoBehaviour:
   Description: 
   toMovePos: {fileID: 0}
   maxOccupants: 4
-  sitHeight: 0.5
   sitPositions:
   - {fileID: 4074232101212478255}
   - {fileID: 6588711651924147255}
@@ -15844,7 +15845,6 @@ MonoBehaviour:
   Description: 
   toMovePos: {fileID: 0}
   maxOccupants: 4
-  sitHeight: 0.5
   sitPositions:
   - {fileID: 7555090168144972499}
   - {fileID: 6436873926574932496}
