@@ -179,6 +179,7 @@ MonoBehaviour:
     - {fileID: 8110250858044063117}
     values:
     - {fileID: 581856896801245248}
+  childAreas: []
 --- !u!1 &167021471891785050
 GameObject:
   m_ObjectHideFlags: 0
@@ -1212,6 +1213,37 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!1 &1135833755302895660
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6951535062731810788}
+  m_Layer: 6
+  m_Name: Seat pos
+  m_TagString: Untagged
+  m_Icon: {fileID: 4422084297763085224, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6951535062731810788
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1135833755302895660}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.439, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4673078749071095755}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1200166805839364716
 GameObject:
   m_ObjectHideFlags: 0
@@ -1273,6 +1305,7 @@ MonoBehaviour:
     values:
     - {fileID: 1841757744062946632}
     - {fileID: 406949116292463979}
+  childAreas: []
 --- !u!1 &1230217195465794683
 GameObject:
   m_ObjectHideFlags: 0
@@ -1483,6 +1516,7 @@ MonoBehaviour:
     - {fileID: 5532513386286755346}
     values:
     - {fileID: 5397730395190133661}
+  childAreas: []
 --- !u!1 &1531907554325947423
 GameObject:
   m_ObjectHideFlags: 0
@@ -1849,6 +1883,7 @@ MonoBehaviour:
     - {fileID: 5532513386286755346}
     values:
     - {fileID: 7404632352652187797}
+  childAreas: []
 --- !u!1 &2097893975108711741
 GameObject:
   m_ObjectHideFlags: 0
@@ -3548,6 +3583,7 @@ MonoBehaviour:
     - {fileID: 5532513386286755346}
     values:
     - {fileID: 7850497948261608642}
+  childAreas: []
 --- !u!1 &4044036094189480348
 GameObject:
   m_ObjectHideFlags: 0
@@ -3697,6 +3733,37 @@ Transform:
   m_Children:
   - {fileID: 671634989495406913}
   m_Father: {fileID: 8384302536847240831}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4130778365840729918
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5008572683708592581}
+  m_Layer: 6
+  m_Name: Seat pos
+  m_TagString: Untagged
+  m_Icon: {fileID: 4422084297763085224, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5008572683708592581
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4130778365840729918}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.439, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8420966775952307562}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4215702235240249264
 GameObject:
@@ -3918,6 +3985,7 @@ MonoBehaviour:
     - {fileID: 1577500462751125610}
     - {fileID: 5181816904731973298}
     - {fileID: 6711985247224896407}
+  childAreas: []
 --- !u!1 &4420462604948075307
 GameObject:
   m_ObjectHideFlags: 0
@@ -8158,6 +8226,7 @@ MonoBehaviour:
   toMovePos:
     keys: []
     values: []
+  childAreas: []
 --- !u!1 &8758165955414649490
 GameObject:
   m_ObjectHideFlags: 0
@@ -9580,11 +9649,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 5301720456392187889}
   _preposition: 
-  _isHideChild: 0
-  _name: 
+  _isHideChild: 1
+  _name: Donut
   _currentStatusDescription: 
   Description: 
-  Nutrition: 10
 --- !u!1001 &715498996882203356
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9851,9 +9919,6 @@ MonoBehaviour:
   items: []
   itemPlacementPositions: []
   useSimplePlacement: 1
-  isOpen: 0
-  temperature: 4
-  isWorking: 1
 --- !u!1001 &739856931464276767
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10869,11 +10934,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 5301720456392187889}
   _preposition: 
-  _isHideChild: 0
-  _name: 
+  _isHideChild: 1
+  _name: Donut
   _currentStatusDescription: 
   Description: 
-  Nutrition: 10
 --- !u!4 &1335099351501685692 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: bc8c37d37bf158844b5dd9a5f29a33f1, type: 3}
@@ -14988,6 +15052,11 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 934641233982087729}
+  isClean: 1
+  isOccupied: 0
+  hungerReduction: 5
+  thirstReduction: 3
+  cleanlinessReduction: 2
 --- !u!1001 &3606749282614764889
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16757,9 +16826,42 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 82f700583a1d23c40b356093a5f472ca, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 400000, guid: e178e8136625b044b88ca3c44768f5db, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6951535062731810788}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: e178e8136625b044b88ca3c44768f5db, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2167722877588500307}
   m_SourcePrefab: {fileID: 100100000, guid: e178e8136625b044b88ca3c44768f5db, type: 3}
+--- !u!1 &4673078749070666731 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: e178e8136625b044b88ca3c44768f5db, type: 3}
+  m_PrefabInstance: {fileID: 4673078749070699851}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2167722877588500307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4673078749070666731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07c503f3c0ec8aa41b2f6dbe1d4146f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 7845839950389305091}
+  _preposition: on
+  _isHideChild: 1
+  _name: Chair
+  _currentStatusDescription: 
+  Description: 
+  toMovePos: {fileID: 0}
+  isComfortable: 1
+  sitPosition: {fileID: 6951535062731810788}
+  seatedActor: {fileID: 0}
 --- !u!4 &4673078749071095755 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: e178e8136625b044b88ca3c44768f5db, type: 3}
@@ -18302,11 +18404,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 5301720456392187889}
   _preposition: 
-  _isHideChild: 0
-  _name: 
+  _isHideChild: 1
+  _name: Donut
   _currentStatusDescription: 
   Description: 
-  Nutrition: 10
 --- !u!4 &5547572218082690704 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 5f0694814036e7041b0f671238e91aa5, type: 3}
@@ -23511,8 +23612,6 @@ MonoBehaviour:
   - {fileID: 3099994898696923288}
   - {fileID: 8908236171559003029}
   useSimplePlacement: 0
-  isClean: 1
-  isBroken: 0
 --- !u!4 &8384302536847240831 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4485306607717930, guid: 1188a1f846b83b242a210a05a72accf4, type: 3}
@@ -23576,14 +23675,47 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 82f700583a1d23c40b356093a5f472ca, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 400000, guid: e178e8136625b044b88ca3c44768f5db, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5008572683708592581}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: e178e8136625b044b88ca3c44768f5db, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4874692899487598732}
   m_SourcePrefab: {fileID: 100100000, guid: e178e8136625b044b88ca3c44768f5db, type: 3}
 --- !u!4 &8420966775952307562 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: e178e8136625b044b88ca3c44768f5db, type: 3}
   m_PrefabInstance: {fileID: 8420966775952699370}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8420966775952730442 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: e178e8136625b044b88ca3c44768f5db, type: 3}
+  m_PrefabInstance: {fileID: 8420966775952699370}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4874692899487598732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8420966775952730442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07c503f3c0ec8aa41b2f6dbe1d4146f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 7845839950389305091}
+  _preposition: on
+  _isHideChild: 0
+  _name: Chair
+  _currentStatusDescription: 
+  Description: 
+  toMovePos: {fileID: 0}
+  isComfortable: 1
+  sitPosition: {fileID: 5008572683708592581}
+  seatedActor: {fileID: 0}
 --- !u!1001 &8427226480661362257
 PrefabInstance:
   m_ObjectHideFlags: 0
