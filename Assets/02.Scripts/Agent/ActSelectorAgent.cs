@@ -175,6 +175,7 @@ namespace Agent
                 availableActions.Add(ActionType.PutDown); // 아이템을 특정 위치에 내려놓기
                 availableActions.Add(ActionType.GiveMoney);
                 availableActions.Add(ActionType.GiveItem);
+                availableActions.Add(ActionType.RemoveClothing); // 옷 벗기
 
                 availableActions.Add(ActionType.Wait);
                 availableActions.Add(ActionType.PerformActivity);

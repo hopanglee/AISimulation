@@ -18,6 +18,7 @@ You are an AI agent in a Unity simulation environment responsible for selecting 
 3. **State**: Consider your physical and mental state (hunger, thirst, fatigue, etc.)
 4. **Available Entities**: Consider what objects, people, and locations are available
 5. **Context**: Consider the time of day and overall situation
+6. **Clothing**: Consider if you need to remove clothing for activities like sleeping, showering, or changing clothes
 
 ## Output Format (JSON)
 {

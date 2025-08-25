@@ -29,6 +29,7 @@ public class ActionPerformer
     private readonly UseActionHandler useHandler;
     private readonly InteractionActionHandler interactionHandler;
     private readonly ItemActionHandler itemHandler;
+    private readonly ClothingActionHandler clothingHandler;
     private CancellationToken currentToken;
 
     public ActionPerformer(Actor actor)
@@ -41,6 +42,7 @@ public class ActionPerformer
         this.useHandler = new UseActionHandler(actor);
         this.interactionHandler = new InteractionActionHandler(actor);
         this.itemHandler = new ItemActionHandler(actor);
+        this.clothingHandler = new ClothingActionHandler(actor);
         
         RegisterActionHandlers();
     }
@@ -71,6 +73,9 @@ public class ActionPerformer
                 {
                     Debug.Log($"[{actor.Name}] 피드백: {result.Feedback}");
                 }
+                
+                // 액션 완료를 ExternalEventService에 알림
+                Services.Get<IExternalEventService>().NotifyActionCompleted(actor, action.ActionType);
             }
             else
             {
@@ -162,6 +167,12 @@ public class ActionPerformer
         actionExecutor.RegisterHandler(
             ActionType.GiveItem,
             async (parameters) => await itemHandler.HandleGiveItem(parameters, currentToken)
+        );
+
+        // Clothing handlers
+        actionExecutor.RegisterHandler(
+            ActionType.RemoveClothing,
+            async (parameters) => await clothingHandler.HandleRemoveClothing(parameters, currentToken)
         );
     }
 }

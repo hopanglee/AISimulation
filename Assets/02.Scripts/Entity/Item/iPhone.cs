@@ -120,7 +120,11 @@ public class iPhone : Item, IUsable
 
             // Update the target iPhone's notifications: set flag to true and add a new notification message
             targetIPhone.chatNotification = true;
-            targetIPhone.notifications.Add($"New message from {actor.Name} at {time}");
+            string notificationMessage = $"New message from {actor.Name} at {time}";
+            targetIPhone.notifications.Add(notificationMessage);
+            
+            // ExternalEventService에 iPhone 알림 발생을 알림
+            Services.Get<IExternalEventService>().NotifyiPhoneNotification(target, notificationMessage);
 
             return $"Message sent to {target.Name}.";
         }

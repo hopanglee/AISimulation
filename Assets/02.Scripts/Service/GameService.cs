@@ -107,6 +107,12 @@ public class GameService : MonoBehaviour, IGameService
             Debug.Log($"[GameService] UpdateTime: {Time.deltaTime}");
             timeService.UpdateTime(Time.deltaTime);
         }
+        
+        // ExternalEventService 업데이트 (지역 변화 확인)
+        if (isSimulationRunning)
+        {
+            Services.Get<IExternalEventService>().Update();
+        }
     }
 
     public UniTask StartSimulation()
@@ -149,6 +155,8 @@ public class GameService : MonoBehaviour, IGameService
 
         // 시뮬레이션 시작
         isSimulationRunning = true;
+
+        // ExternalEventService는 BootStrapper에서 초기화됨
 
         // 시간 이벤트 구독
         timeService.SubscribeToTimeEvent(OnTimeChanged);

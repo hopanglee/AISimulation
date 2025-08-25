@@ -129,6 +129,7 @@ namespace Agent
                 { ActionType.PutDown, SetActor(new PutDownParameterAgent(new List<string>(), gpt)) }, 
                 { ActionType.GiveMoney, SetActor(new GiveMoneyParameterAgent(new List<string>(), gpt)) },
                 { ActionType.GiveItem, SetActor(new GiveItemParameterAgent(new List<string>(), gpt)) },
+                { ActionType.RemoveClothing, SetActor(new RemoveClothingParameterAgent(actor)) },
                 //{ ActionType.Wait, SetActor(new WaitParameterAgent(gpt)) },
                 { ActionType.PerformActivity, SetActor(new PerformActivityParameterAgent(new List<string>(), gpt)) },
             };

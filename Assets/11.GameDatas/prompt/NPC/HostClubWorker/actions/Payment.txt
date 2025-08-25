@@ -1,0 +1,9 @@
+**Payment**: Process customer payment for club services and drinks
+- Use when: Customer wants to pay for club services, drinks, handling club billing
+- Parameters: itemKey (string) - The key of the service/item to process payment for (e.g., "service", "drink", "entertainment")
+- Example: 
+  - Customer wants to pay for service: Payment with "service"
+  - Customer wants to pay for drink: Payment with "drink"
+  - Customer wants to pay for entertainment: Payment with "entertainment"
+  - The system will automatically look up the price from the price list and process the payment
+  - Payment success will add the service price to the host club's total revenue

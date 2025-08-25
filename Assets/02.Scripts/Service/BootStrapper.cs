@@ -16,18 +16,21 @@ public class BootStrapper : MonoBehaviour
         var pathfindingService = new PathfindingService();
         var timeService = new TimeManager();
         var actorManager = new ActorManager();
+        var externalEventService = new ExternalEventService();
 
         // 서비스 등록
         Services.Provide<ILocationService>(locationService);
         Services.Provide<IPathfindingService>(pathfindingService);
         Services.Provide<ITimeService>(timeService);
         Services.Provide<IActorService>(actorManager);
+        Services.Provide<IExternalEventService>(externalEventService);
 
         // 서비스 초기화
         await locationService.Initialize();
         await pathfindingService.Initialize();
         await timeService.Initialize();
         await actorManager.Initialize();
+        await externalEventService.Initialize();
         await gameService.Initialize();
 
         Debug.Log("[BootStrapper] All services initialized successfully");

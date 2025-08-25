@@ -234,8 +234,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
-  _isHideChild: 0
-  _name: 
+  _isHideChild: 1
+  _name: Americano
   _currentStatusDescription: 
   Description: 
   HungerRecovery: 5

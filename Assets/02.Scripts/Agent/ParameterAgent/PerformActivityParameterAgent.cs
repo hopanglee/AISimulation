@@ -23,7 +23,7 @@ namespace Agent
         public PerformActivityParameterAgent(List<string> activityList, GPT gpt)
         {
             this.activityList = activityList;
-            systemPrompt = "You are a PerformActivity parameter generator.";
+            systemPrompt = PromptLoader.LoadPrompt("PerformActivityParameterAgentPrompt.txt", "You are a PerformActivity parameter generator.");
             this.options = new ChatCompletionOptions
             {
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
