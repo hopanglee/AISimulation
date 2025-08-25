@@ -73,42 +73,7 @@ public abstract class MainActor : Actor
 	[SerializeField] private List<string> _eventHistory = new();
 	
 	[Header("Manual Think Act Control")]
-	[FoldoutGroup("Manual Think Act Control")]
-	[ValueDropdown("GetAvailableActionTypes")]
-	[SerializeField] private ActionType debugActionType = ActionType.Wait;
-	
-	[FoldoutGroup("Manual Think Act Control")]
-	[SerializeField] private SerializableDictionary<string, string> debugActionParameters = new();
-	
-	[FoldoutGroup("Manual Think Act Control")]
-	[Button("Execute Manual Action")]
-	private void ExecuteManualAction()
-	{
-		if (Application.isPlaying)
-		{
-			_ = ExecuteManualActionAsync();
-		}
-	}
-	
-	[FoldoutGroup("Manual Think Act Control")]
-	[Button("Start Think/Act Loop")]
-	private void StartThinkActLoop()
-	{
-		if (Application.isPlaying && brain != null)
-		{
-			brain.StartDayPlanAndThink();
-		}
-	}
-	
-	[FoldoutGroup("Manual Think Act Control")]
-	[Button("Stop Think/Act Loop")]
-	private void StopThinkActLoop()
-	{
-		if (Application.isPlaying && brain?.Thinker != null)
-		{
-			brain.Thinker.StopThinkAndActLoop();
-		}
-	}
+	[SerializeField] private ManualActionController manualActionController = new();
 	
 	private ITimeService timeService;
 
@@ -116,6 +81,7 @@ public abstract class MainActor : Actor
 	{
 		base.Awake();
 		brain = new(this);
+		manualActionController.Initialize(this);
 	}
 
 	protected override void OnEnable()
@@ -125,6 +91,7 @@ public abstract class MainActor : Actor
 		if (timeService != null)
 			timeService.SubscribeToTimeEvent(OnSimulationTimeChanged);
 	}
+
 
 	private void OnDisable()
 	{
@@ -405,55 +372,7 @@ public abstract class MainActor : Actor
 		}
 	}
 
-	#region Manual Think/Act Debug Methods
-	
-	/// <summary>
-	/// Odin Inspector의 ValueDropdown을 위한 사용 가능한 액션 타입 목록
-	/// </summary>
-	private IEnumerable<ActionType> GetAvailableActionTypes()
-	{
-		return System.Enum.GetValues(typeof(ActionType)).Cast<ActionType>();
-	}
-	
-	/// <summary>
-	/// 수동 액션을 비동기로 실행
-	/// </summary>
-	private async UniTask ExecuteManualActionAsync()
-	{
-		try
-		{
-			if (brain == null)
-			{
-				Debug.LogError($"[{Name}] Brain이 초기화되지 않음");
-				return;
-			}
-			
-			// SerializableDictionary를 Dictionary<string, object>로 변환
-			var parameters = new Dictionary<string, object>();
-			foreach (var kvp in debugActionParameters)
-			{
-				parameters[kvp.Key] = kvp.Value;
-			}
-			
-			// ActParameterResult 생성
-			var paramResult = new ActParameterResult
-			{
-				ActType = debugActionType,
-				Parameters = parameters
-			};
-			
-			Debug.Log($"[{Name}] 수동 액션 실행: {debugActionType} with parameters: [{string.Join(", ", debugActionParameters.Select(kvp => $"{kvp.Key}={kvp.Value}"))}]");
-			
-			// Brain을 통해 액션 실행
-			await brain.Act(paramResult, System.Threading.CancellationToken.None);
-		}
-		catch (Exception ex)
-		{
-			Debug.LogError($"[{Name}] 수동 액션 실행 실패: {ex.Message}");
-		}
-	}
-	
-	#endregion
+
 	
 	#region Odin Inspector Buttons
 	// 버튼들은 Actor로 이동하여 공용화됨
