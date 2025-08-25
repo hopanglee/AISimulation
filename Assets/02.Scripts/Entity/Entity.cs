@@ -163,7 +163,7 @@ public abstract class Entity : MonoBehaviour, ILocation
         // {
             // 현재 위치의 이름만 사용 (계층 구조 무시)
             // 예: "Plate in Living Room"
-            return $"{Name} in {curLocation.locationName}";
+            return $"{Name} {curLocation.preposition} {curLocation.locationName}";
         // }
     }
 

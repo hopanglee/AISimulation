@@ -71,8 +71,8 @@ public class Sensor
     {
         foreach (Entity entity in entities)
         {
-            string key = GetUniqueKey(lookable, GetEntityBaseKey(entity));
-            lookable.Add(key, entity);
+            string baseKey = GetEntityBaseKey(entity);
+            AddEntityWithUniqueKey(lookable, baseKey, entity);
 
             if (entity.IsHideChild)
                 continue;
@@ -84,21 +84,118 @@ public class Sensor
     }
 
     /// <summary>
-    /// Entity에 대해 고유한 키를 생성합니다. 같은 SimpleKey가 있으면 뒤에 숫자를 붙입니다.
+    /// 엔티티를 고유 키로 추가합니다. 중복 시 기존 항목들을 재배치합니다.
+    /// 규칙:
+    /// - 중복이 전혀 없으면 baseKey 그대로 추가
+    /// - 중복이 있으면: 접미사 없는 키는 존재하지 않도록 하고, _1부터 순차 부여
     /// </summary>
-    private string GetUniqueKey(SerializableDictionary<string, Entity> dict, string baseKey)
+    private void AddEntityWithUniqueKey(SerializableDictionary<string, Entity> dict, string baseKey, Entity entity)
     {
-        string key = $"{baseKey}_1";  // 첫 번째부터 _1을 붙임
-        int counter = 2;  // 두 번째부터는 _2, _3...
+        // 이미 접미사들이 존재하는지 검사 (_1, _2, ...)
+        int maxSuffix = GetMaxExistingSuffix(dict, baseKey);
 
-        // 같은 키가 있으면 뒤에 숫자를 붙여서 고유하게 만듦
-        while (dict.ContainsKey(key))
+        if (dict.ContainsKey(baseKey))
         {
-            key = $"{baseKey}_{counter}";
-            counter++;
+            // 첫 중복 발생: 기존 base를 _1로 이동하고 새 엔티티는 _2부터
+            Entity existingEntity = dict[baseKey];
+            dict.Remove(baseKey);
+
+            string key1 = AddSuffixToEntityName(baseKey, 1, existingEntity);
+            dict.Add(key1, existingEntity);
+
+            string key2 = AddSuffixToEntityName(baseKey, 2, entity);
+            dict.Add(key2, entity);
+            return;
         }
 
-        return key;
+        if (maxSuffix >= 1)
+        {
+            // 이미 _1 이상이 존재 → 새 항목은 다음 인덱스로 추가, 접미사 없는 키는 사용 금지
+            int next = maxSuffix + 1;
+            string nextKey = AddSuffixToEntityName(baseKey, next, entity);
+            dict.Add(nextKey, entity);
+            return;
+        }
+
+        // 어떤 중복도 없으면 접미사 없이 추가
+        dict.Add(baseKey, entity);
+    }
+
+    /// <summary>
+    /// 현재 딕셔너리에 존재하는 baseKey의 최댓 접미사 번호(_n)를 반환합니다. 없으면 0.
+    /// </summary>
+    private int GetMaxExistingSuffix<T>(SerializableDictionary<string, T> dict, string baseKey)
+    {
+        int i = 1;
+        int max = 0;
+        while (true)
+        {
+            string candidate = AddSuffixToEntityName(baseKey, i);
+            if (dict.ContainsKey(candidate))
+            {
+                max = i;
+                i++;
+                continue;
+            }
+            break;
+        }
+        return max;
+    }
+
+    private int GetMaxExistingSuffix<T>(Dictionary<string, T> dict, string baseKey)
+    {
+        int i = 1;
+        int max = 0;
+        while (true)
+        {
+            string candidate = AddSuffixToEntityName(baseKey, i);
+            if (dict.ContainsKey(candidate))
+            {
+                max = i;
+                i++;
+                continue;
+            }
+            break;
+        }
+        return max;
+    }
+
+    /// <summary>
+    /// 엔티티 이름 바로 뒤에 접미사를 추가합니다. Entity의 curLocation.preposition을 우선 사용합니다.
+    /// 예: "donut in living room" -> "donut_1 in living room"
+    /// </summary>
+    private string AddSuffixToEntityName(string baseKey, int suffix, Entity entity = null)
+    {
+        // Entity의 curLocation.preposition을 사용하여 분리 (LocationToString 규칙과 일치)
+        string locationPreposition = entity?.curLocation?.preposition;
+        if (!string.IsNullOrEmpty(locationPreposition))
+        {
+            string separator = " " + locationPreposition + " ";
+            int index = baseKey.IndexOf(separator);
+            if (index >= 0)
+            {
+                string entityName = baseKey.Substring(0, index);
+                string locationPart = baseKey.Substring(index);
+                return entityName + "_" + suffix.ToString() + locationPart;
+            }
+        }
+        
+        // Entity가 없거나 preposition을 찾을 수 없으면 일반적인 전치사들로 시도
+        string[] commonSeparators = { " in ", " on ", " at ", " near ", " under ", " above " };
+        
+        foreach (string separator in commonSeparators)
+        {
+            int index = baseKey.IndexOf(separator);
+            if (index >= 0)
+            {
+                string entityName = baseKey.Substring(0, index);
+                string locationPart = baseKey.Substring(index);
+                return entityName + "_" + suffix.ToString() + locationPart;
+            }
+        }
+        
+        // 전치사를 찾을 수 없으면 끝에 붙임
+        return baseKey + "_" + suffix.ToString();
     }
 
     /// <summary>
@@ -220,38 +317,68 @@ public class Sensor
 
     /// <summary>
     /// Dictionary에 추가할 때 고유한 키를 생성합니다.
+    /// - 접미사들이 이미 존재하면 접미사 없는 키는 사용하지 않습니다.
     /// </summary>
     private string GetUniqueKey<T>(Dictionary<string, T> dict, string baseKey)
     {
-        string key = $"{baseKey}_1";  // 첫 번째부터 _1을 붙임
-        int counter = 2;  // 두 번째부터는 _2, _3...
+        // 접미사 존재 여부 확인
+        int maxSuffix = GetMaxExistingSuffix(dict, baseKey);
 
-        // 같은 키가 있으면 뒤에 숫자를 붙여서 고유하게 만듦
-        while (dict.ContainsKey(key))
+        if (dict.ContainsKey(baseKey))
         {
-            key = $"{baseKey}_{counter}";
-            counter++;
+            // base가 있다면 _1부터 비어있는 곳 찾기 (이 경우 호출자는 재배치를 하지 않으므로 다음 비어있는 곳 반환)
+            int i = 1;
+            string key;
+            do
+            {
+                key = AddSuffixToEntityName(baseKey, i);
+                i++;
+            } while (dict.ContainsKey(key));
+            return key;
         }
 
-        return key;
+        if (maxSuffix >= 1)
+        {
+            // 이미 _n들이 있다면 다음 인덱스를 사용 (접미사 없는 키 금지)
+            int next = maxSuffix + 1;
+            return AddSuffixToEntityName(baseKey, next);
+        }
+
+        // 아무 중복도 없으면 접미사 없이 사용
+        return baseKey;
     }
 
     /// <summary>
     /// SerializableDictionary에 추가할 때 고유한 키를 생성합니다.
+    /// - 접미사들이 이미 존재하면 접미사 없는 키는 사용하지 않습니다.
     /// </summary>
     private string GetUniqueKey<T>(SerializableDictionary<string, T> dict, string baseKey)
     {
-        string key = $"{baseKey}_1";  // 첫 번째부터 _1을 붙임
-        int counter = 2;  // 두 번째부터는 _2, _3...
+        // 접미사 존재 여부 확인
+        int maxSuffix = GetMaxExistingSuffix(dict, baseKey);
 
-        // 같은 키가 있으면 뒤에 숫자를 붙여서 고유하게 만듦
-        while (dict.ContainsKey(key))
+        if (dict.ContainsKey(baseKey))
         {
-            key = $"{baseKey}_{counter}";
-            counter++;
+            // base가 있다면 _1부터 비어있는 곳 찾기
+            int i = 1;
+            string key;
+            do
+            {
+                key = AddSuffixToEntityName(baseKey, i);
+                i++;
+            } while (dict.ContainsKey(key));
+            return key;
         }
 
-        return key;
+        if (maxSuffix >= 1)
+        {
+            // 이미 _n들이 있다면 다음 인덱스를 사용
+            int next = maxSuffix + 1;
+            return AddSuffixToEntityName(baseKey, next);
+        }
+
+        // 아무 중복도 없으면 접미사 없이 사용
+        return baseKey;
     }
 
     /// <summary>
