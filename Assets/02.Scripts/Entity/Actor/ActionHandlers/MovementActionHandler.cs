@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Agent;
@@ -22,56 +23,174 @@ namespace Agent.ActionHandlers
 
         /// <summary>
         /// 특정 영역이나 건물로 이동하는 액션을 처리합니다.
+        /// Entity 이름이 들어온 경우 자동으로 Entity로 이동 처리합니다.
         /// </summary>
         public async Task HandleMoveToArea(Dictionary<string, object> parameters, CancellationToken token = default)
         {
-            if (parameters.TryGetValue("area_name", out var areaNameObj) && areaNameObj is string areaName)
+            string targetValue = null;
+            
+            // target_area 파라미터 확인
+            if (parameters.TryGetValue("target_area", out var targetAreaObj) && targetAreaObj is string targetArea)
             {
-                Debug.Log($"[{actor.Name}] 영역/건물로 이동: {areaName}");
-
-                // 먼저 현재 Area에서 이동 가능한 위치들을 확인
-                if (actor is MainActor thinkingActor)
-                {
-                    var movablePositions = thinkingActor.sensor.GetMovablePositions();
-
-                    if (movablePositions.ContainsKey(areaName))
-                    {
-                        // 직접 이동 가능한 위치 (Area, Building, Prop 등)
-                        await ExecuteDirectMove(areaName, token);
-                    }
-                    else
-                    {
-                        // 경로찾기를 통한 이동 (연결된 Area로)
-                        await ExecutePathfindingMove(areaName, token);
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning($"[{actor.Name}] sensor 기능을 사용할 수 없습니다.");
-                }
+                targetValue = targetArea;
             }
+            // 호환성을 위해 area_name도 확인
+            else if (parameters.TryGetValue("area_name", out var areaNameObj) && areaNameObj is string areaName)
+            {
+                targetValue = areaName;
+            }
+            
+            if (string.IsNullOrEmpty(targetValue))
+            {
+                Debug.LogWarning($"[{actor.Name}] MoveToArea: target_area 파라미터가 없습니다.");
+                return;
+            }
+
+            // Entity 이름 형식인지 확인 ("Entity이름 in Area이름")
+            if (IsEntityName(targetValue))
+            {
+                Debug.Log($"[{actor.Name}] '{targetValue}'는 Entity 이름입니다. MoveToEntity로 자동 변환하여 처리합니다.");
+                
+                // Entity로 이동 처리
+                var entityParameters = new Dictionary<string, object> { { "target_entity", targetValue } };
+                await HandleMoveToEntity(entityParameters, token);
+                return;
+            }
+
+            Debug.Log($"[{actor.Name}] 영역/건물로 이동: {targetValue}");
+
+            // Area로 이동 처리
+            await ExecuteMoveToArea(targetValue, token);
         }
 
         /// <summary>
         /// 특정 엔티티로 이동하는 액션을 처리합니다.
+        /// Area 이름이 들어온 경우 자동으로 Area로 이동 처리합니다.
         /// </summary>
         public async Task HandleMoveToEntity(Dictionary<string, object> parameters, CancellationToken token = default)
         {
-            if (parameters.TryGetValue("entity_name", out var entityNameObj) && entityNameObj is string entityName)
+            string targetValue = null;
+            
+            // target_entity 파라미터 확인
+            if (parameters.TryGetValue("target_entity", out var targetEntityObj) && targetEntityObj is string targetEntity)
             {
-                Debug.Log($"[{actor.Name}] 엔티티로 이동: {entityName}");
+                targetValue = targetEntity;
+            }
+            // 호환성을 위해 entity_name도 확인
+            else if (parameters.TryGetValue("entity_name", out var entityNameObj) && entityNameObj is string entityName)
+            {
+                targetValue = entityName;
+            }
+            
+            if (string.IsNullOrEmpty(targetValue))
+            {
+                Debug.LogWarning($"[{actor.Name}] MoveToEntity: target_entity 파라미터가 없습니다.");
+                return;
+            }
 
-                // 엔티티의 위치를 찾아서 이동
-                var entity = EntityFinder.FindEntityByName(actor, entityName);
-                if (entity != null)
+            // Area 이름인지 확인
+            if (IsAreaName(targetValue))
+            {
+                Debug.Log($"[{actor.Name}] '{targetValue}'는 Area 이름입니다. MoveToArea로 자동 변환하여 처리합니다.");
+                
+                // Area로 이동 처리
+                await ExecuteMoveToArea(targetValue, token);
+                return;
+            }
+
+            Debug.Log($"[{actor.Name}] 엔티티로 이동: {targetValue}");
+
+            // 엔티티의 위치를 찾아서 이동
+            var entity = EntityFinder.FindEntityByName(actor, targetValue);
+            if (entity != null)
+            {
+                await ExecuteDirectMoveToPosition(entity.transform.position, targetValue, token);
+            }
+            else
+            {
+                Debug.LogWarning($"[{actor.Name}] 엔티티를 찾을 수 없음: {targetValue}");
+            }
+        }
+
+        /// <summary>
+        /// Area로 이동하는 실제 로직을 처리합니다.
+        /// </summary>
+        private async Task ExecuteMoveToArea(string areaName, CancellationToken token)
+        {
+            // 먼저 현재 Area에서 이동 가능한 위치들을 확인
+            if (actor.sensor != null)
+            {
+                var movableAreas = actor.sensor.GetMovableAreas();
+
+                if (movableAreas.Contains(areaName))
                 {
-                    await ExecuteDirectMoveToPosition(entity.transform.position, entityName, token);
+                    // 직접 이동 가능한 위치 (연결된 Area)
+                    await ExecuteDirectMove(areaName, token);
                 }
                 else
                 {
-                    Debug.LogWarning($"[{actor.Name}] 엔티티를 찾을 수 없음: {entityName}");
+                    // 경로찾기를 통한 이동 (연결된 Area로)
+                    await ExecutePathfindingMove(areaName, token);
                 }
             }
+            else
+            {
+                Debug.LogWarning($"[{actor.Name}] sensor 기능을 사용할 수 없습니다.");
+            }
+        }
+
+        /// <summary>
+        /// Entity 이름 형식인지 확인합니다. Sensor를 통해 실제 존재하는 Entity인지 검증합니다.
+        /// </summary>
+        private bool IsEntityName(string name)
+        {
+         
+            // Sensor를 통해 실제 Entity 존재 여부 확인
+            if (actor.sensor != null)
+            {
+                try
+                {                    
+                    // Movable entities에서 확인
+                    var movableEntities = actor.sensor.GetMovableEntities();
+                    if (movableEntities.Contains(name))
+                        return true;
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning($"[MovementActionHandler] Entity 검증 중 오류: {ex.Message}");
+                }
+            }
+            
+            // Sensor에서 찾을 수 없으면 false 반환
+            return false;
+        }
+
+        /// <summary>
+        /// Area 이름인지 확인합니다.
+        /// </summary>
+        private bool IsAreaName(string name)
+        {
+            // Entity 형식이 아니고, 일반적인 Area 이름 패턴인지 확인
+            if (IsEntityName(name))
+                return false;
+
+            // 기본 Area 이름들
+            var commonAreas = new[] { "Living Room", "Kitchen", "Bedroom", "Bathroom", "Dining Room", 
+                                    "Study Room", "Balcony", "Entrance", "Hallway" };
+            
+            // 대소문자 구분 없이 비교
+            if (commonAreas.Any(area => string.Equals(area, name, StringComparison.OrdinalIgnoreCase)))
+                return true;
+
+            // Sensor를 통해 실제 이동 가능한 Area인지 확인
+            if (actor.sensor != null)
+            {
+                var movableAreas = actor.sensor.GetMovableAreas();
+                return movableAreas.Contains(name);
+            }
+
+            // 확실하지 않으면 true 반환 (기본적으로 Area로 처리)
+            return true;
         }
 
         /// <summary>
@@ -121,11 +240,11 @@ namespace Agent.ActionHandlers
             if (path != null && path.Count > 0)
             {
                 var nextStep = path[0];
-                if (actor is MainActor thinkingActor)
+                if (actor.sensor != null)
                 {
-                    var movablePositions = thinkingActor.sensor.GetMovablePositions();
+                    var movableAreas = actor.sensor.GetMovableAreas();
 
-                    if (movablePositions.ContainsKey(nextStep))
+                    if (movableAreas.Contains(nextStep))
                     {
                         await ExecuteDirectMove(nextStep, token);
                         Debug.Log($"[{actor.Name}] {nextStep}로 이동 (목적지: {targetLocationKey})");

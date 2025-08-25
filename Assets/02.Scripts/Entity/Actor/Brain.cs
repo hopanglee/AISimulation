@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Agent;
 using Cysharp.Threading.Tasks;
@@ -46,6 +47,11 @@ public class Brain
     /// Thinker 컴포넌트에 대한 외부 접근을 위한 프로퍼티
     /// </summary>
     public Thinker Thinker => thinker;
+    
+    /// <summary>
+    /// UseActionManager에 대한 외부 접근을 위한 프로퍼티
+    /// </summary>
+    public UseActionManager UseActionManager => useActionManager;
 
     public Brain(Actor actor)
     {
@@ -183,6 +189,12 @@ public class Brain
     /// </summary>
     private async UniTask<ActParameterResult> GenerateActionParameters(ActSelectorAgent.ActSelectionResult selection)
     {
+        // UseGPT가 false이고 MainActor인 경우 Inspector 값 사용
+        if (!actor.UseGPT && actor is MainActor mainActor)
+        {
+            return GetParametersFromInspector(mainActor, selection.ActType);
+        }
+        
         // Use Action은 UseActionManager를 통해 처리
         if (selection.ActType == ActionType.UseObject)
         {
@@ -216,6 +228,53 @@ public class Brain
                 Parameters = new Dictionary<string, object>()
             };
         }
+    }
+    
+    /// <summary>
+    /// MainActor의 Inspector에서 파라미터를 가져옵니다.
+    /// </summary>
+    private ActParameterResult GetParametersFromInspector(MainActor mainActor, ActionType actionType)
+    {
+        // ManualActionController의 debugActionParameters에 접근
+        var manualController = GetManualActionController(mainActor);
+        if (manualController == null)
+        {
+            Debug.LogWarning($"[{mainActor.Name}] ManualActionController를 찾을 수 없음");
+            return new ActParameterResult
+            {
+                ActType = actionType,
+                Parameters = new Dictionary<string, object>()
+            };
+        }
+        
+        var parameters = GetInspectorParameters(manualController);
+        
+        Debug.Log($"[{mainActor.Name}] Inspector에서 파라미터 사용: {actionType} with parameters: [{string.Join(", ", parameters.Select(kvp => $"{kvp.Key}={kvp.Value}"))}]");
+        
+        return new ActParameterResult
+        {
+            ActType = actionType,
+            Parameters = parameters
+        };
+    }
+    
+    /// <summary>
+    /// MainActor에서 ManualActionController를 가져옵니다.
+    /// </summary>
+    private ManualActionController GetManualActionController(MainActor mainActor)
+    {
+        // Reflection을 사용하여 private field에 접근
+        var field = typeof(MainActor).GetField("manualActionController", 
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        return field?.GetValue(mainActor) as ManualActionController;
+    }
+    
+    /// <summary>
+    /// ManualActionController에서 파라미터를 가져옵니다.
+    /// </summary>
+    private Dictionary<string, object> GetInspectorParameters(ManualActionController controller)
+    {
+        return controller.GetCurrentParameters();
     }
 
     /// <summary>

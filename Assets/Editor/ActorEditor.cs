@@ -11,6 +11,7 @@ public class ActorEditor : OdinEditor
     private bool showCollectibleEntities = false;
     private bool showInteractableEntities = false;
     private bool showMovableEntities = false;
+    private bool showMovableAreas = false;
     
     public override void OnInspectorGUI()
     {
@@ -99,6 +100,20 @@ public class ActorEditor : OdinEditor
                 foreach (var entityKey in movableEntities)
                 {
                     EditorGUILayout.LabelField($"• {entityKey}");
+                }
+                EditorGUI.indentLevel--;
+            }
+            
+            // Movable Areas Dropdown
+            showMovableAreas = EditorGUILayout.Foldout(showMovableAreas, "Movable Areas");
+            if (showMovableAreas)
+            {
+                var movableAreas = actor.sensor.GetMovableAreas();
+                EditorGUI.indentLevel++;
+                EditorGUILayout.LabelField($"Count: {movableAreas.Count}");
+                foreach (var areaName in movableAreas)
+                {
+                    EditorGUILayout.LabelField($"• {areaName}");
                 }
                 EditorGUI.indentLevel--;
             }
