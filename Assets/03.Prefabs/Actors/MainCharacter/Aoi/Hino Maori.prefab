@@ -394,6 +394,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   desiredUIComparison: 8
   uiElementsToApplyTo: []
+--- !u!1 &8068268842101662216
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3377828621528780486}
+  m_Layer: 12
+  m_Name: Current Cloth
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3377828621528780486
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8068268842101662216}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4984824991769593144}
+  m_Father: {fileID: 529616869720991405}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &529616869720603757
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -474,6 +506,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 400064, guid: e367da6665e14a446be68ddcb33bbd9f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1475862396551287147}
+    - targetCorrespondingSourceObject: {fileID: 400064, guid: e367da6665e14a446be68ddcb33bbd9f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3377828621528780486}
     - targetCorrespondingSourceObject: {fileID: 400128, guid: e367da6665e14a446be68ddcb33bbd9f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5241862002153628986}
@@ -503,6 +538,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1430874977132286612}
   m_SourcePrefab: {fileID: 100100000, guid: e367da6665e14a446be68ddcb33bbd9f, type: 3}
+--- !u!137 &529616869709133773 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 13700000, guid: e367da6665e14a446be68ddcb33bbd9f, type: 3}
+  m_PrefabInstance: {fileID: 529616869720603757}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &529616869720701619 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100062, guid: e367da6665e14a446be68ddcb33bbd9f, type: 3}
@@ -679,16 +719,30 @@ MonoBehaviour:
   _isHideChild: 1
   _name: Hino Maori
   _currentStatusDescription: 
-  Money: 0
-  iPhone: {fileID: 0}
+  useGPT: 1
+  money: 0
   Hunger: 0
   Thirst: 0
   Stamina: 0
+  Cleanliness: 100
   MentalPleasure: 0
   Stress: 0
   Sleepiness: 0
+  _handItem: {fileID: 0}
+  Hand: {fileID: 3188549841946335990}
+  _inventoryItems: []
+  Inven: {fileID: 5897178151852487282}
+  _gender: 1
+  _currentOutfit: {fileID: 1021611682004653377}
+  _characterRenderer: {fileID: 529616869709133773}
+  _nakedFbx: {fileID: 100062, guid: 3d28587c9c9b93744b50b78b74f00ea0, type: 3}
+  _currentClothesRoot: {fileID: 3377828621528780486}
+  speechBubble: {fileID: 1596830519072762783}
+  iPhone: {fileID: 0}
   wakeUpHour: 6
   wakeUpMinute: 0
+  cleanlinessDecayIntervalMinutes: 30
+  cleanlinessDecayAmount: 3
   sleepHour: 22
   sleepinessThreshold: 80
   isSleeping: 0
@@ -708,11 +762,12 @@ MonoBehaviour:
   activityDescription: 
   activityStartTime: 0
   activityDuration: 0
-  _handItem: {fileID: 0}
-  Hand: {fileID: 3188549841946335990}
-  _inventoryItems: []
-  Inven: {fileID: 5897178151852487282}
-  speechBubble: {fileID: 1596830519072762783}
+  _eventHistory: []
+  manualActionController:
+    debugActionType: 11
+    debugActionParameters:
+      keys: []
+      values: []
 --- !u!114 &4887048522806061288
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -864,4 +919,85 @@ Transform:
 Transform:
   m_CorrespondingSourceObject: {fileID: 400128, guid: e367da6665e14a446be68ddcb33bbd9f, type: 3}
   m_PrefabInstance: {fileID: 529616869720603757}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &6947535489506563662
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3377828621528780486}
+    m_Modifications:
+    - target: {fileID: 2686183170270810998, guid: 328eedc47b8f28d4d8da4988da8e2ca1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686183170270810998, guid: 328eedc47b8f28d4d8da4988da8e2ca1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686183170270810998, guid: 328eedc47b8f28d4d8da4988da8e2ca1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686183170270810998, guid: 328eedc47b8f28d4d8da4988da8e2ca1, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686183170270810998, guid: 328eedc47b8f28d4d8da4988da8e2ca1, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686183170270810998, guid: 328eedc47b8f28d4d8da4988da8e2ca1, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686183170270810998, guid: 328eedc47b8f28d4d8da4988da8e2ca1, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686183170270810998, guid: 328eedc47b8f28d4d8da4988da8e2ca1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686183170270810998, guid: 328eedc47b8f28d4d8da4988da8e2ca1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686183170270810998, guid: 328eedc47b8f28d4d8da4988da8e2ca1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5812489950354716824, guid: 328eedc47b8f28d4d8da4988da8e2ca1, type: 3}
+      propertyPath: m_Name
+      value: Casualwear_Female
+      objectReference: {fileID: 0}
+    - target: {fileID: 5812489950354716824, guid: 328eedc47b8f28d4d8da4988da8e2ca1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946571712474350351, guid: 328eedc47b8f28d4d8da4988da8e2ca1, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 2859441548675609630}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 328eedc47b8f28d4d8da4988da8e2ca1, type: 3}
+--- !u!114 &1021611682004653377 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7946571712474350351, guid: 328eedc47b8f28d4d8da4988da8e2ca1, type: 3}
+  m_PrefabInstance: {fileID: 6947535489506563662}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62f0e0eec839d2a40ac2549dec202f19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &4984824991769593144 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2686183170270810998, guid: 328eedc47b8f28d4d8da4988da8e2ca1, type: 3}
+  m_PrefabInstance: {fileID: 6947535489506563662}
   m_PrefabAsset: {fileID: 0}

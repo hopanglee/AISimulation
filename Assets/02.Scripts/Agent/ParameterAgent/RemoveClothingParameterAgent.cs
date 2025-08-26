@@ -145,12 +145,11 @@ namespace Agent
         {
             var wornTypes = new List<string>();
             
-            if (actor.WornTop != null)
-                wornTypes.Add("Top");
-            if (actor.WornBottom != null)
-                wornTypes.Add("Bottom");
-            if (actor.WornOuterwear != null)
-                wornTypes.Add("Outerwear");
+            if (actor.CurrentOutfit != null)
+            {
+                // 현재 착용 중인 의상의 타입을 반환
+                wornTypes.Add(actor.CurrentOutfit.ClothingType.ToString());
+            }
             
             // 착용 중인 옷이 없으면 기본값 반환
             if (wornTypes.Count == 0)

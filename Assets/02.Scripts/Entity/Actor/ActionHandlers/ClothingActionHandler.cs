@@ -82,20 +82,7 @@ namespace Agent.ActionHandlers
         /// </summary>
         private Clothing RemoveClothingByType(ClothingType clothingType)
         {
-            Clothing clothingToRemove = null;
-            
-            switch (clothingType)
-            {
-                case ClothingType.Top:
-                    clothingToRemove = actor.WornTop;
-                    break;
-                case ClothingType.Bottom:
-                    clothingToRemove = actor.WornBottom;
-                    break;
-                case ClothingType.Outerwear:
-                    clothingToRemove = actor.WornOuterwear;
-                    break;
-            }
+            Clothing clothingToRemove = actor.CurrentOutfit;
 
             if (clothingToRemove != null)
             {
@@ -110,12 +97,8 @@ namespace Agent.ActionHandlers
         /// </summary>
         private Clothing FindWornClothingByName(string clothingName)
         {
-            if (actor.WornTop?.Name == clothingName)
-                return actor.WornTop;
-            if (actor.WornBottom?.Name == clothingName)
-                return actor.WornBottom;
-            if (actor.WornOuterwear?.Name == clothingName)
-                return actor.WornOuterwear;
+            if (actor.CurrentOutfit?.Name == clothingName)
+                return actor.CurrentOutfit;
             
             return null;
         }

@@ -1311,6 +1311,7 @@ MonoBehaviour:
   Hunger: 0
   Thirst: 0
   Stamina: 0
+  Cleanliness: 100
   MentalPleasure: 0
   Stress: 0
   Sleepiness: 0
@@ -1318,12 +1319,18 @@ MonoBehaviour:
   Hand: {fileID: 4536020286617292138}
   _inventoryItems: []
   Inven: {fileID: 224181246035588120}
+  _gender: 1
+  _currentOutfit: {fileID: 0}
+  _characterRenderer: {fileID: 0}
+  _nakedFbx: {fileID: 0}
+  _currentClothesRoot: {fileID: 0}
   speechBubble: {fileID: 8914655200179941274}
   npcRole: 2
   debugActionType: Wait
   debugParameters: []
-  debugEventDescription: Test event from inspector
   doctor: {fileID: 0}
+  priceList: []
+  totalRevenue: 0
 --- !u!1 &1000012882154864
 GameObject:
   m_ObjectHideFlags: 0

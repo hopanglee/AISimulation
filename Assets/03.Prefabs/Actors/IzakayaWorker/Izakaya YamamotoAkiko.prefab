@@ -1702,6 +1702,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 2772082442593338836}
   - {fileID: 4000011050677622}
   - {fileID: 4000011091065908}
   - {fileID: 4000010029471556}
@@ -1827,6 +1828,7 @@ MonoBehaviour:
   Hunger: 0
   Thirst: 0
   Stamina: 0
+  Cleanliness: 100
   MentalPleasure: 0
   Stress: 0
   Sleepiness: 0
@@ -1834,17 +1836,23 @@ MonoBehaviour:
   Hand: {fileID: 1357281830096214242}
   _inventoryItems: []
   Inven: {fileID: 6965968268006314481}
+  _gender: 1
+  _currentOutfit: {fileID: 0}
+  _characterRenderer: {fileID: 0}
+  _nakedFbx: {fileID: 0}
+  _currentClothesRoot: {fileID: 2772082442593338836}
   speechBubble: {fileID: 1895596596432848483}
   npcRole: 5
   debugActionType: Wait
   debugParameters: []
-  debugEventDescription: Test event from inspector
   cookablePrefabs:
     keys: []
     values: []
   cookSimMinutes: 10
   kitchenTransform: {fileID: 0}
   kitchenLocationKey: 
+  priceList: []
+  totalRevenue: 0
 --- !u!1 &1000013515901080
 GameObject:
   m_ObjectHideFlags: 0
@@ -2510,6 +2518,37 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 2.2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4000012515667650}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5761183966916289613
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2772082442593338836}
+  m_Layer: 0
+  m_Name: Current Clothes
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2772082442593338836
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5761183966916289613}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

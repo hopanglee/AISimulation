@@ -1995,6 +1995,7 @@ Transform:
   - {fileID: 2320317690525031257}
   - {fileID: 8166342409990199325}
   - {fileID: 733545974789429701}
+  - {fileID: 7072168808010795458}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &95000010224175586
@@ -2113,6 +2114,7 @@ MonoBehaviour:
   Hunger: 0
   Thirst: 0
   Stamina: 0
+  Cleanliness: 100
   MentalPleasure: 0
   Stress: 0
   Sleepiness: 0
@@ -2120,15 +2122,22 @@ MonoBehaviour:
   Hand: {fileID: 1265531445629036939}
   _inventoryItems: []
   Inven: {fileID: 4551748019286902639}
+  _gender: 1
+  _currentOutfit: {fileID: 0}
+  _characterRenderer: {fileID: 0}
+  _nakedFbx: {fileID: 0}
+  _currentClothesRoot: {fileID: 7072168808010795458}
   speechBubble: {fileID: 2075688360488219201}
   npcRole: 3
   debugActionType: Wait
   debugParameters: []
-  debugEventDescription: Test event from inspector
   beverageMachine: {fileID: 0}
   coffeeMachine: {fileID: 0}
-  showcase: {fileID: 0}
+  showcaseBig: {fileID: 0}
+  showcaseSmall: {fileID: 0}
   storage: {fileID: 0}
+  priceList: []
+  totalRevenue: 0
 --- !u!1 &168232169784166410
 GameObject:
   m_ObjectHideFlags: 0
@@ -2326,6 +2335,37 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 2.2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4000010119029616}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3745986426637553713
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7072168808010795458}
+  m_Layer: 0
+  m_Name: Current Clothes
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7072168808010795458
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3745986426637553713}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
