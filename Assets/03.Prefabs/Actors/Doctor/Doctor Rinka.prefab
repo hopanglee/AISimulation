@@ -1994,6 +1994,7 @@ Transform:
   - {fileID: 8990335142048533794}
   - {fileID: 5626217628511441810}
   - {fileID: 780684636804015553}
+  - {fileID: 4681005595667356022}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &95000012672483714
@@ -2139,6 +2140,7 @@ MonoBehaviour:
   Hunger: 0
   Thirst: 0
   Stamina: 0
+  Cleanliness: 100
   MentalPleasure: 0
   Stress: 0
   Sleepiness: 0
@@ -2146,11 +2148,15 @@ MonoBehaviour:
   Hand: {fileID: 4388770765705707105}
   _inventoryItems: []
   Inven: {fileID: 7441721718330265831}
+  _gender: 1
+  _currentOutfit: {fileID: 0}
+  _characterRenderer: {fileID: 0}
+  _nakedFbx: {fileID: 0}
+  _currentClothesRoot: {fileID: 4681005595667356022}
   speechBubble: {fileID: 3333399344308179449}
   npcRole: 1
   debugActionType: Wait
   debugParameters: []
-  debugEventDescription: Test event from inspector
   receptionist: {fileID: 0}
 --- !u!1 &1000014266759616
 GameObject:
@@ -2314,6 +2320,37 @@ MonoBehaviour:
   _isHideChild: 0
   _name: 
   _currentStatusDescription: 
+--- !u!1 &5641134621874948777
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4681005595667356022}
+  m_Layer: 0
+  m_Name: Current Clothes
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4681005595667356022
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5641134621874948777}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4000012615788652}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5677783456092059550
 GameObject:
   m_ObjectHideFlags: 0

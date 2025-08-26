@@ -99,16 +99,27 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     public Inven Inven;
 
     /// <summary>
-    /// Actor가 현재 착용하고 있는 옷들
+    /// Actor의 성별
+    /// </summary>
+    [Header("Actor Properties")]
+    [SerializeField] private Gender _gender;
+
+    /// <summary>
+    /// Actor가 현재 착용하고 있는 전체 의상 세트
     /// </summary>
     [Header("Clothing System")]
-    [SerializeField] private Clothing _wornTop;
-    [SerializeField] private Clothing _wornBottom;
-    [SerializeField] private Clothing _wornOuterwear;
-    
-    public Clothing WornTop => _wornTop;
-    public Clothing WornBottom => _wornBottom;
-    public Clothing WornOuterwear => _wornOuterwear;
+    [SerializeField] private Clothing _currentOutfit;
+
+    public Gender Gender => _gender;
+    public Clothing CurrentOutfit => _currentOutfit;
+
+    // FBX 교체 시스템
+    [Header("FBX Swapping System")]
+    [SerializeField] private SkinnedMeshRenderer _characterRenderer;
+    [SerializeField] private GameObject _nakedFbx; // 나체 FBX
+
+    [Header("Clothing Holders")]
+    [SerializeField] private Transform _currentClothesRoot; // 착용 중 의상 보관용 부모 트랜스폼
 
     // Event History는 ThinkingActor로 이동
     #endregion
@@ -121,6 +132,47 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         moveController = GetComponent<MoveController>();
         // 공통 센서 초기화 (MainActor/NPC 공용)
         sensor = new Sensor(this);
+
+        // 초기 의상/모델 적용은 MainActor에서만 처리
+        if (this is MainActor)
+        {
+            if (_currentOutfit != null)
+            {
+                if (ApplyOutfitFbx(_currentOutfit))
+                {
+                    // 착용 의상은 비활성화하고 보관 트랜스폼에 부착, 위치 등록
+                    SetItemVisibility(_currentOutfit, false);
+                    if(_currentOutfit.curLocation == null)
+                        _currentOutfit.curLocation = this;  
+                    if (_currentClothesRoot != null)
+                    {
+                        _currentOutfit.transform.SetParent(_currentClothesRoot, false);
+                        _currentOutfit.transform.localPosition = Vector3.zero;
+                        _currentOutfit.transform.localRotation = Quaternion.identity;
+                        _currentOutfit.transform.localScale = Vector3.one;
+                    }
+                }
+                else
+                {
+                    // 실패 시 나체 모델 적용
+                    ApplyNakedFbx();
+                }
+            }
+            else
+            {
+                ApplyNakedFbx();
+                // 착용 의상이 없으면 보관 트랜스폼의 자식 정리
+                ClearCurrentClothesRootChildren();
+            }
+        }
+        else
+        {
+            // NPC: currentOutfit이 없으면 기본 NPC 의상 객체를 자동 생성 (FBX 교체 없음)
+            if (_currentOutfit == null)
+            {
+                CreateDefaultNpcOutfit();
+            }
+        }
     }
 
     // OnEnable과 OnDisable은 ThinkingActor로 이동
@@ -179,8 +231,8 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     private void InvenItemSet(int index, Item item)
     {
         _inventoryItems[index] = item;
-        // Disable Mesh and Collider
-
+        // 인벤토리에 있는 아이템은 보이지 않게 처리
+        SetItemVisibility(item, false);
         item.curLocation = Inven;
     }
 
@@ -211,13 +263,13 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
         // Actor 간의 자연스러운 상호작용 표현
         string interactionMessage = GetInteractionMessage(actor);
-        
+
         // 상호작용 결과를 로그에 기록
         Debug.Log($"[{Name}] {actor.Name}과(와) 상호작용: {interactionMessage}");
-        
+
         return interactionMessage;
     }
-    
+
     /// <summary>
     /// Actor 간의 상호작용 메시지를 생성합니다.
     /// </summary>
@@ -225,7 +277,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     {
         // HandItem이 있으면 "HandItem으로", 없으면 "손으로"
         string tool = HandItem != null ? $"{HandItem.Name}으로" : "손으로";
-        
+
         return $"{targetActor.Name}이(가) {Name}의 어깨를 {tool} 툭툭쳤다.";
     }
 
@@ -304,12 +356,12 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             else // Put down here (현재 위치에 놓기)
             {
                 HandItem.curLocation = curLocation;
-                
+
                 // 현재 위치에서 y축을 바닥에 닿도록 조정
                 Vector3 currentPosition = transform.position;
                 float groundY = GetGroundYPosition(currentPosition);
                 HandItem.transform.position = new Vector3(currentPosition.x, groundY, currentPosition.z);
-                
+
                 HandItem = null;
             }
         }
@@ -318,172 +370,146 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     #region Clothing System
 
     /// <summary>
-    /// 옷을 입습니다 (기존 옷이 있으면 교체)
+    /// 전체 의상 세트를 입습니다 (기존 의상이 있으면 교체)
     /// </summary>
-    /// <param name="clothing">입을 옷</param>
+    /// <param name="clothing">입을 의상 세트</param>
     /// <returns>착용 성공 여부</returns>
     public bool WearClothing(Clothing clothing)
     {
         if (clothing == null)
         {
-            Debug.LogWarning($"[{Name}] WearClothing: 옷이 null입니다.");
+            Debug.LogWarning($"[{Name}] WearClothing: 의상이 null입니다.");
             return false;
         }
 
-        Clothing oldClothing = null;
-
-        switch (clothing.ClothingType)
+        // 성별 호환성 검사
+        if (!clothing.IsCompatibleWithActor(this))
         {
-            case ClothingType.Top:
-                oldClothing = _wornTop;
-                _wornTop = clothing;
-                break;
-                
-            case ClothingType.Bottom:
-                oldClothing = _wornBottom;
-                _wornBottom = clothing;
-                break;
-                
-            case ClothingType.Outerwear:
-                oldClothing = _wornOuterwear;
-                _wornOuterwear = clothing;
-                break;
-                
-            default:
-                Debug.LogWarning($"[{Name}] 지원하지 않는 옷 타입입니다: {clothing.ClothingType}");
-                return false;
+            Debug.LogWarning($"[{Name}] {clothing.Name}은(는) {Gender}에게 적합하지 않습니다.");
+            return false;
         }
 
-        // 기존 옷이 있었다면 손으로 이동
-        if (oldClothing != null)
+        Clothing oldClothing = _currentOutfit;
+        _currentOutfit = clothing;
+
+        // FBX 교체
+        if (ApplyOutfitFbx(clothing))
         {
-            // 기존 옷을 손으로 이동
-            HandItem = oldClothing;
-            oldClothing.curLocation = Hand;
-            oldClothing.transform.localPosition = new Vector3(0, 0, 0);
+            // 새로 착용한 의상 아이템을 보이지 않게 처리
+            SetItemVisibility(clothing, false);
             
-            Debug.Log($"[{Name}] {clothing.Name}을(를) 착용하고, 기존 {oldClothing.Name}을(를) 손에 들었습니다.");
+            // 착용된 의상의 위치를 Actor로 설정
+            clothing.curLocation = this;
+
+            // 현재 착용 의상 보관 오브젝트에 붙이기 (Inspector에서 지정)
+            if (_currentClothesRoot != null)
+            {
+                clothing.transform.SetParent(_currentClothesRoot, false);
+                clothing.transform.localPosition = Vector3.zero;
+                clothing.transform.localRotation = Quaternion.identity;
+                clothing.transform.localScale = Vector3.one;
+            }
+
+            // 기존 의상이 있었다면 손으로 이동
+            if (oldClothing != null)
+            {
+
+                // 공통 로직으로 의상 처리
+                ProcessRemovedClothing(oldClothing);
+
+
+                Debug.Log($"[{Name}] {clothing.Name}을(를) 착용하고, 기존 {oldClothing.Name}을(를) 손에 들었습니다.");
+            }
+            else
+            {
+                Debug.Log($"[{Name}] {clothing.Name}을(를) 착용했습니다.");
+            }
+
+            return true;
         }
         else
         {
-            Debug.Log($"[{Name}] {clothing.Name}을(를) 착용했습니다.");
+            // FBX 교체 실패 시 원래대로 복구
+            _currentOutfit = oldClothing;
+            Debug.LogWarning($"[{Name}] {clothing.Name} FBX 교체에 실패했습니다.");
+            return false;
         }
-        
-        return true;
     }
 
     /// <summary>
-    /// ClothingType으로 옷을 벗습니다
+    /// 현재 착용 중인 전체 의상을 벗습니다
     /// </summary>
-    /// <param name="clothingType">벗을 옷의 타입</param>
-    /// <returns>해제된 옷</returns>
+    /// <returns>해제된 의상</returns>
     public Clothing RemoveClothingByType(ClothingType clothingType)
     {
-        Clothing clothingToRemove = null;
-        
-        switch (clothingType)
-        {
-            case ClothingType.Top:
-                clothingToRemove = _wornTop;
-                _wornTop = null;
-                break;
-            case ClothingType.Bottom:
-                clothingToRemove = _wornBottom;
-                _wornBottom = null;
-                break;
-            case ClothingType.Outerwear:
-                clothingToRemove = _wornOuterwear;
-                _wornOuterwear = null;
-                break;
-        }
+        Clothing clothingToRemove = _currentOutfit;
+        _currentOutfit = null;
 
         if (clothingToRemove != null)
         {
-            // 공통 로직으로 옷 처리
+
+            // 공통 로직으로 의상 처리
             ProcessRemovedClothing(clothingToRemove);
+        }
+
+        // 나체 FBX 적용 (MainActor만)
+        if (this is MainActor)
+        {
+            ApplyNakedFbx();
         }
 
         return clothingToRemove;
     }
 
     /// <summary>
-    /// 옷을 벗습니다 (손 → 인벤토리 → 바닥 순서로 처리)
+    /// 현재 착용 중인 의상을 벗습니다 (손 → 인벤토리 → 바닥 순서로 처리)
     /// </summary>
-    /// <param name="clothing">벗을 옷</param>
+    /// <param name="clothing">벗을 의상</param>
     /// <returns>해제 성공 여부</returns>
     public bool RemoveClothing(Clothing clothing)
     {
         if (clothing == null)
         {
-            Debug.LogWarning($"[{Name}] RemoveClothing: 옷이 null입니다.");
+            Debug.LogWarning($"[{Name}] RemoveClothing: 의상이 null입니다.");
             return false;
         }
 
-        bool isWearing = false;
-        
-        switch (clothing.ClothingType)
+        // 현재 착용 중인 의상과 일치하는지 확인
+        if (_currentOutfit == clothing)
         {
-            case ClothingType.Top:
-                if (_wornTop == clothing)
-                {
-                    _wornTop = null;
-                    isWearing = true;
-                }
-                break;
-                
-            case ClothingType.Bottom:
-                if (_wornBottom == clothing)
-                {
-                    _wornBottom = null;
-                    isWearing = true;
-                }
-                break;
-                
-            case ClothingType.Outerwear:
-                if (_wornOuterwear == clothing)
-                {
-                    _wornOuterwear = null;
-                    isWearing = true;
-                }
-                break;
-        }
-
-        if (isWearing)
-        {
-            // 공통 로직으로 옷 처리
+            _currentOutfit = null;
+            
+            // 공통 로직으로 의상 처리
             ProcessRemovedClothing(clothing);
+
+            // 나체 FBX 적용 (MainActor만)
+            if (this is MainActor)
+            {
+                ApplyNakedFbx();
+            }
+
             return true;
         }
         else
         {
-            Debug.LogWarning($"[{Name}] 착용하지 않은 옷입니다: {clothing.Name}");
+            Debug.LogWarning($"[{Name}] 착용하지 않은 의상입니다: {clothing.Name}");
             return false;
         }
     }
 
     /// <summary>
-    /// 현재 착용 중인 옷의 상태를 반환합니다
+    /// 현재 착용 중인 의상의 상태를 반환합니다
     /// </summary>
     public string GetClothingStatus()
     {
         var status = new System.Text.StringBuilder();
-        status.AppendLine($"[{Name}] 착용 중인 옷:");
-        
-        if (_wornTop != null)
-            status.AppendLine($"  상의: {_wornTop.Name}");
+        status.AppendLine($"[{Name}] 착용 중인 의상:");
+
+        if (_currentOutfit != null)
+            status.AppendLine($"  전체 의상: {_currentOutfit.Name}");
         else
-            status.AppendLine("  상의: 없음");
-            
-        if (_wornBottom != null)
-            status.AppendLine($"  하의: {_wornBottom.Name}");
-        else
-            status.AppendLine("  하의: 없음");
-            
-        if (_wornOuterwear != null)
-            status.AppendLine($"  외투: {_wornOuterwear.Name}");
-        else
-            status.AppendLine("  외투: 없음");
-            
+            status.AppendLine("  전체 의상: 없음");
+
         return status.ToString();
     }
 
@@ -493,6 +519,8 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     /// <param name="clothing">처리할 옷</param>
     private void ProcessRemovedClothing(Clothing clothing)
     {
+        // 벗은 의상을 보이게 처리
+        SetItemVisibility(clothing, true);
         if (HandItem == null)
         {
             // 손이 비어있으면 손에 들기
@@ -517,7 +545,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                     break;
                 }
             }
-            
+
             // 인벤토리가 가득 찬 경우 바닥에 놓기
             if (inventoryFull)
             {
@@ -532,6 +560,150 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
     #endregion
 
+    #region FBX Swapping System
+
+    /// <summary>
+    /// 의상에 맞는 FBX를 적용합니다
+    /// </summary>
+    /// <param name="clothing">적용할 의상</param>
+    /// <returns>적용 성공 여부</returns>
+    private bool ApplyOutfitFbx(Clothing clothing)
+    {
+        if (clothing?.FbxFile == null)
+        {
+            Debug.LogWarning($"[{Name}] 의상 FBX가 없습니다.");
+            return false;
+        }
+
+        GameObject fbxPrefab = clothing.FbxFile;
+        if (fbxPrefab == null)
+        {
+            Debug.LogWarning($"[{Name}] FBX를 찾을 수 없습니다.");
+            return false;
+        }
+
+        // 기존 렌더러 교체
+        if (_characterRenderer != null)
+        {
+            // FBX의 자식들까지 포함하여 SkinnedMeshRenderer 검색
+            SkinnedMeshRenderer newRenderer = fbxPrefab.GetComponentInChildren<SkinnedMeshRenderer>(true);
+            if (newRenderer != null)
+            {
+                // 메시와 머티리얼만 교체 (본/루트본은 유지)
+                _characterRenderer.sharedMesh = newRenderer.sharedMesh;
+                _characterRenderer.sharedMaterials = newRenderer.sharedMaterials;
+                _characterRenderer.updateWhenOffscreen = true;
+                _characterRenderer.enabled = true;
+                
+                Debug.Log($"[{Name}] FBX 교체 완료: {fbxPrefab.name}");
+                return true;
+            }
+            else
+            {
+                Debug.LogWarning($"[{Name}] 선택한 FBX에서 SkinnedMeshRenderer를 찾을 수 없습니다: {fbxPrefab.name}");
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// 나체 FBX를 적용합니다
+    /// </summary>
+    private void ApplyNakedFbx()
+    {
+        Debug.Log($"[{Name}] ApplyNakedFbx 호출됨. _nakedFbx = {(_nakedFbx != null ? _nakedFbx.name : "null")}");
+        
+        if (_nakedFbx == null)
+        {
+            Debug.LogWarning($"[{Name}] 나체 FBX가 설정되지 않았습니다. Inspector에서 Naked FBX를 할당해주세요.");
+            return;
+        }
+
+        // FBX의 자식들까지 포함하여 SkinnedMeshRenderer 검색
+        SkinnedMeshRenderer nakedRenderer = _nakedFbx.GetComponentInChildren<SkinnedMeshRenderer>(true);
+        if (nakedRenderer != null && _characterRenderer != null)
+        {
+            // 메시와 머티리얼만 교체 (본/루트본은 유지)
+            _characterRenderer.sharedMesh = nakedRenderer.sharedMesh;
+            _characterRenderer.sharedMaterials = nakedRenderer.sharedMaterials;
+            _characterRenderer.updateWhenOffscreen = true;
+            _characterRenderer.enabled = true;
+
+            Debug.Log($"[{Name}] 나체 FBX 적용 완료: {_nakedFbx.name}");
+        }
+        else
+        {
+            Debug.LogError($"[{Name}] 나체 FBX 적용 실패. nakedRenderer={nakedRenderer != null}, _characterRenderer={_characterRenderer != null}");
+        }
+    }
+
+    #endregion
+
+    #region Item Visibility Management
+
+    private void ClearCurrentClothesRootChildren()
+    {
+        if (_currentClothesRoot == null || !Application.isPlaying) return;
+        for (int i = _currentClothesRoot.childCount - 1; i >= 0; i--)
+        {
+            var child = _currentClothesRoot.GetChild(i);
+            if (child == null) continue;
+            Destroy(child.gameObject);
+        }
+    }
+
+    private void CreateDefaultNpcOutfit()
+    {
+        if (_currentClothesRoot == null) return;
+        // 이미 자식이 있으면 스킵
+        if (_currentClothesRoot.childCount > 0) return;
+
+        // 런타임에서 간단한 Clothing 객체를 생성하여 보관
+        if (!Application.isPlaying) return;
+
+        var go = new GameObject("NPC_DefaultClothing");
+        // 먼저 비활성화하여 OnEnable 등록을 방지
+        go.SetActive(false);
+        // 컴포넌트 추가
+        var clothing = go.AddComponent<Clothing>();
+        // 부모 및 위치 설정
+        go.transform.SetParent(_currentClothesRoot, false);
+        // curLocation을 먼저 설정해 두고, 활성화하지 않음 (NPC는 숨김 유지)
+        clothing.curLocation = this;
+        // NPC 기본 의상 속성 설정
+        clothing.IsHideChild = true;
+        // private 필드 설정: clothingType, targetGender
+        var clothingTypeField = typeof(Clothing).GetField("clothingType", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        if (clothingTypeField != null)
+        {
+            clothingTypeField.SetValue(clothing, ClothingType.Casualwear);
+        }
+        var targetGenderField = typeof(Clothing).GetField("targetGender", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        if (targetGenderField != null)
+        {
+            targetGenderField.SetValue(clothing, this.Gender);
+        }
+        // 이름 동기화
+        clothing.Name = $"{ClothingType.Casualwear} Clothing";
+        _currentOutfit = clothing;
+    }
+
+    /// <summary>
+    /// 아이템의 가시성을 설정합니다
+    /// </summary>
+    /// <param name="item">가시성을 설정할 아이템</param>
+    /// <param name="visible">보이게 할지 여부</param>
+    private void SetItemVisibility(Item item, bool visible)
+    {
+        if (item == null) return;
+
+        // SetActive로 간단하게 처리
+        item.gameObject.SetActive(visible);
+    }
+
+    #endregion
+
     /// <summary>
     /// 현재 위치에서 바닥의 y축 위치를 찾습니다.
     /// </summary>
@@ -541,21 +713,21 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         RaycastHit hit;
         Vector3 rayStart = currentPosition + Vector3.up * 0.2f; // 현재 위치에서 위로 0.2유닛
         Vector3 rayDirection = Vector3.down;
-        
+
         // LayerMask 설정: Floor, Item, Prop 등 바닥이 될 수 있는 레이어들
         // Actor가 속한 레이어는 제외 (본인을 바닥으로 인식하지 않도록)
         int layerMask = LayerMask.GetMask("Default", "Floor", "Prop");
-        
+
         // Actor가 속한 레이어를 제외
         // int actorLayer = gameObject.layer;
         // layerMask &= ~(1 << actorLayer);
-        
+
         if (Physics.Raycast(rayStart, rayDirection, out hit, 10f, layerMask))
         {
             // 바닥을 찾았으면 hit.point.y + 약간의 오프셋 반환
             return hit.point.y + 0.1f; // 바닥에서 0.1유닛 위
         }
-        
+
         // Raycast 실패 시 기본값 사용 (현재 위치에서 0.2f 아래)
         return 0.25f;
     }

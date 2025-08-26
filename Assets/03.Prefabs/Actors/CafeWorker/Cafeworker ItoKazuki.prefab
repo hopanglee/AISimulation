@@ -1517,6 +1517,7 @@ Transform:
   - {fileID: 4273539392693882632}
   - {fileID: 1490653928123804662}
   - {fileID: 1581595537383947793}
+  - {fileID: 927871425452130468}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &95000012112278176
@@ -1635,6 +1636,7 @@ MonoBehaviour:
   Hunger: 0
   Thirst: 0
   Stamina: 0
+  Cleanliness: 100
   MentalPleasure: 0
   Stress: 0
   Sleepiness: 0
@@ -1642,15 +1644,22 @@ MonoBehaviour:
   Hand: {fileID: 6270561568830562137}
   _inventoryItems: []
   Inven: {fileID: 5260329915946252197}
+  _gender: 0
+  _currentOutfit: {fileID: 0}
+  _characterRenderer: {fileID: 0}
+  _nakedFbx: {fileID: 0}
+  _currentClothesRoot: {fileID: 927871425452130468}
   speechBubble: {fileID: 4316190380991321814}
   npcRole: 3
   debugActionType: Wait
   debugParameters: []
-  debugEventDescription: Test event from inspector
   beverageMachine: {fileID: 0}
   coffeeMachine: {fileID: 0}
-  showcase: {fileID: 0}
+  showcaseBig: {fileID: 0}
+  showcaseSmall: {fileID: 0}
   storage: {fileID: 0}
+  priceList: []
+  totalRevenue: 0
 --- !u!1 &1000013165858314
 GameObject:
   m_ObjectHideFlags: 0
@@ -2392,6 +2401,37 @@ MonoBehaviour:
   _isHideChild: 0
   _name: 
   _currentStatusDescription: 
+--- !u!1 &7183776067213193816
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 927871425452130468}
+  m_Layer: 0
+  m_Name: Current Clothes
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &927871425452130468
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7183776067213193816}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4000012009108142}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7466376859118511557
 GameObject:
   m_ObjectHideFlags: 0

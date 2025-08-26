@@ -1390,6 +1390,7 @@ Transform:
   - {fileID: 7115604026725762917}
   - {fileID: 8183651533678807569}
   - {fileID: 267984974217724302}
+  - {fileID: 7042078659824423835}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &9593768
@@ -1508,6 +1509,7 @@ MonoBehaviour:
   Hunger: 0
   Thirst: 0
   Stamina: 0
+  Cleanliness: 100
   MentalPleasure: 0
   Stress: 0
   Sleepiness: 0
@@ -1515,11 +1517,17 @@ MonoBehaviour:
   Hand: {fileID: 6084161877259313578}
   _inventoryItems: []
   Inven: {fileID: 2569731250843167694}
+  _gender: 1
+  _currentOutfit: {fileID: 0}
+  _characterRenderer: {fileID: 0}
+  _nakedFbx: {fileID: 0}
+  _currentClothesRoot: {fileID: 7042078659824423835}
   speechBubble: {fileID: 8340548244377742016}
   npcRole: 0
   debugActionType: Wait
   debugParameters: []
-  debugEventDescription: Test event from inspector
+  priceList: []
+  totalRevenue: 0
 --- !u!1 &173870
 GameObject:
   m_ObjectHideFlags: 0
@@ -2376,6 +2384,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   desiredUIComparison: 8
   uiElementsToApplyTo: []
+--- !u!1 &7209917896366994552
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7042078659824423835}
+  m_Layer: 0
+  m_Name: Current Clothes
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7042078659824423835
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7209917896366994552}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 486212}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8188413393856549062
 GameObject:
   m_ObjectHideFlags: 0

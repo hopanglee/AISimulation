@@ -241,6 +241,38 @@ MonoBehaviour:
   _isHideChild: 0
   _name: 
   _currentStatusDescription: 
+--- !u!1 &5901042254781943702
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3547917570129186019}
+  m_Layer: 12
+  m_Name: Current Cloth
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3547917570129186019
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5901042254781943702}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4772071385252309536}
+  m_Father: {fileID: 7779772188733534878}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6524767384375619818
 GameObject:
   m_ObjectHideFlags: 0
@@ -329,6 +361,7 @@ MonoBehaviour:
   spacingBetweenBubbles: 0.2
   defaultBgColor: {r: 1, g: 1, b: 1, a: 0.9}
   defaultTextColor: {r: 0, g: 0, b: 0, a: 1}
+  worldSpaceOverlayUI: {fileID: 0}
   canvas: {fileID: 5467076268061684189}
 --- !u!114 &1170522376352737733
 MonoBehaviour:
@@ -393,6 +426,87 @@ MonoBehaviour:
   _isHideChild: 1
   _name: 
   _currentStatusDescription: 
+--- !u!1001 &7457662983890205014
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3547917570129186019}
+    m_Modifications:
+    - target: {fileID: 2686183170270810998, guid: 9b07cfa0ab3ca0249ab6541638cf1e00, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686183170270810998, guid: 9b07cfa0ab3ca0249ab6541638cf1e00, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686183170270810998, guid: 9b07cfa0ab3ca0249ab6541638cf1e00, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686183170270810998, guid: 9b07cfa0ab3ca0249ab6541638cf1e00, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686183170270810998, guid: 9b07cfa0ab3ca0249ab6541638cf1e00, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686183170270810998, guid: 9b07cfa0ab3ca0249ab6541638cf1e00, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686183170270810998, guid: 9b07cfa0ab3ca0249ab6541638cf1e00, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686183170270810998, guid: 9b07cfa0ab3ca0249ab6541638cf1e00, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686183170270810998, guid: 9b07cfa0ab3ca0249ab6541638cf1e00, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686183170270810998, guid: 9b07cfa0ab3ca0249ab6541638cf1e00, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5812489950354716824, guid: 9b07cfa0ab3ca0249ab6541638cf1e00, type: 3}
+      propertyPath: m_Name
+      value: Casualwear_Male
+      objectReference: {fileID: 0}
+    - target: {fileID: 5812489950354716824, guid: 9b07cfa0ab3ca0249ab6541638cf1e00, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946571712474350351, guid: 9b07cfa0ab3ca0249ab6541638cf1e00, type: 3}
+      propertyPath: _curLocation
+      value: 
+      objectReference: {fileID: 665670643773935698}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9b07cfa0ab3ca0249ab6541638cf1e00, type: 3}
+--- !u!114 &664584573881514585 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7946571712474350351, guid: 9b07cfa0ab3ca0249ab6541638cf1e00, type: 3}
+  m_PrefabInstance: {fileID: 7457662983890205014}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62f0e0eec839d2a40ac2549dec202f19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &4772071385252309536 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2686183170270810998, guid: 9b07cfa0ab3ca0249ab6541638cf1e00, type: 3}
+  m_PrefabInstance: {fileID: 7457662983890205014}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7779772188733401478
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -461,6 +575,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 400152, guid: d082aa034b3e4764784b580951afbdf8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4173490541771704452}
+    - targetCorrespondingSourceObject: {fileID: 400152, guid: d082aa034b3e4764784b580951afbdf8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3547917570129186019}
     - targetCorrespondingSourceObject: {fileID: 400084, guid: d082aa034b3e4764784b580951afbdf8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1300025167587443603}
@@ -490,6 +607,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 3327088402826502711}
   m_SourcePrefab: {fileID: 100100000, guid: d082aa034b3e4764784b580951afbdf8, type: 3}
+--- !u!137 &7779772188721930790 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 13700000, guid: d082aa034b3e4764784b580951afbdf8, type: 3}
+  m_PrefabInstance: {fileID: 7779772188733401478}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &7779772188733435582 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100152, guid: d082aa034b3e4764784b580951afbdf8, type: 3}
@@ -655,16 +777,30 @@ MonoBehaviour:
   _isHideChild: 1
   _name: Kamiya Tooru
   _currentStatusDescription: 
-  Money: 0
-  iPhone: {fileID: 0}
+  useGPT: 1
+  money: 0
   Hunger: 0
   Thirst: 0
   Stamina: 0
+  Cleanliness: 100
   MentalPleasure: 0
   Stress: 0
   Sleepiness: 0
+  _handItem: {fileID: 0}
+  Hand: {fileID: 7389012008371068621}
+  _inventoryItems: []
+  Inven: {fileID: 7168338027665575570}
+  _gender: 0
+  _currentOutfit: {fileID: 664584573881514585}
+  _characterRenderer: {fileID: 7779772188721930790}
+  _nakedFbx: {fileID: 100152, guid: a6202f05c8110ee42b3c5422ec7913f2, type: 3}
+  _currentClothesRoot: {fileID: 3547917570129186019}
+  speechBubble: {fileID: 7651834906110035172}
+  iPhone: {fileID: 0}
   wakeUpHour: 6
   wakeUpMinute: 0
+  cleanlinessDecayIntervalMinutes: 30
+  cleanlinessDecayAmount: 3
   sleepHour: 22
   sleepinessThreshold: 80
   isSleeping: 0
@@ -684,11 +820,12 @@ MonoBehaviour:
   activityDescription: 
   activityStartTime: 0
   activityDuration: 0
-  _handItem: {fileID: 0}
-  Hand: {fileID: 7389012008371068621}
-  _inventoryItems: []
-  Inven: {fileID: 7168338027665575570}
-  speechBubble: {fileID: 7651834906110035172}
+  _eventHistory: []
+  manualActionController:
+    debugActionType: 11
+    debugActionParameters:
+      keys: []
+      values: []
 --- !u!114 &8579625608813117610
 MonoBehaviour:
   m_ObjectHideFlags: 0
