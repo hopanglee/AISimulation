@@ -218,7 +218,7 @@ public class CafeWorker : NPC
 
     private async UniTask MoveToEntity(Entity targetEntity, int simMinutes)
     {
-        string key = targetEntity != null ? targetEntity.GetSimpleKey() : null;
+        string key = targetEntity != null ? targetEntity.GetSimpleKeyRelativeToActor(this) : null;
         if (!string.IsNullOrEmpty(key))
         {
             Move(key);

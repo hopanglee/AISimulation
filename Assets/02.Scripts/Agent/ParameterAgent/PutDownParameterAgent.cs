@@ -170,7 +170,7 @@ public class PutDownParameterAgent : ParameterAgentBase
                 {
                     if (prop != null)
                     {
-                        locationNames.Add(prop.GetSimpleKey());
+                        locationNames.Add(prop.GetSimpleKeyRelativeToActor(actor));
                     }
                 }
                 

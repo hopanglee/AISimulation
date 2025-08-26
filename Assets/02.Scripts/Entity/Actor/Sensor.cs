@@ -200,28 +200,45 @@ public class Sensor
 
     /// <summary>
     /// Entity의 기본 키를 반환합니다.
+    /// Actor의 현재 위치를 기준으로 한 상대적 키를 생성합니다.
     /// </summary>
     private string GetEntityBaseKey(Entity entity)
     {
+        string key;
+        
         if (entity is Actor actor)
         {
-            return actor.GetSimpleKey();
+            key = actor.GetSimpleKeyRelativeToActor(owner);
         }
         else if (entity is Prop prop)
         {
-            return prop.GetSimpleKey();
+            key = prop.GetSimpleKeyRelativeToActor(owner);
         }
         else if (entity is Building building)
         {
-            return building.GetSimpleKey();
+            key = building.GetSimpleKeyRelativeToActor(owner);
         }
         else if (entity is Item item)
         {
-            return item.GetSimpleKey();
+            key = item.GetSimpleKeyRelativeToActor(owner);
         }
-        
-        // 기본값
-        return entity.Name ?? entity.GetType().Name;
+        else
+        {
+            // 기본값
+            key = entity.Name ?? entity.GetType().Name;
+        }
+
+        // 디버그: 키 생성 결과 로깅
+        if (owner != null && entity != null)
+        {
+            var oldKey = entity.GetSimpleKey();
+            if (oldKey != key)
+            {
+                Debug.Log($"[{owner.Name}] Entity '{entity.Name}' 키 변환: '{oldKey}' → '{key}'");
+            }
+        }
+
+        return key;
     }
 
     // Getter 메서드들 (lookable 기반 필터 산출)
@@ -246,9 +263,8 @@ public class Sensor
                 var distance = MathExtension.SquaredDistance2D(curPos, t.position);
                 if (distance <= interactionRange * interactionRange)
                 {
-                    // 고유한 키 생성
-                    string uniqueKey = GetUniqueKeyForDictionary(result, kv.Value);
-                    result.Add(uniqueKey, kv.Value);
+                    // lookable의 키를 그대로 사용
+                    result.Add(kv.Key, kv.Value);
                 }
             }
         }
@@ -270,8 +286,8 @@ public class Sensor
                 var d = MathExtension.SquaredDistance2D(curPos, actor.transform.position);
                 if (d <= interactionRange * interactionRange)
                 {
-                    string uniqueKey = GetUniqueKeyForDictionary(result.actors, actor);
-                    result.actors.Add(uniqueKey, actor);
+                    // lookable의 키를 그대로 사용
+                    result.actors.Add(kv.Key, actor);
                 }
                 continue;
             }
@@ -282,8 +298,8 @@ public class Sensor
                 var d = MathExtension.SquaredDistance2D(curPos, pos);
                 if (d <= interactionRange * interactionRange && prop is IInteractable)
                 {
-                    string uniqueKey = GetUniqueKeyForDictionary(result.props, prop);
-                    result.props.Add(uniqueKey, prop);
+                    // lookable의 키를 그대로 사용
+                    result.props.Add(kv.Key, prop);
                 }
                 continue;
             }
@@ -293,8 +309,8 @@ public class Sensor
                 var d = MathExtension.SquaredDistance2D(curPos, pos);
                 if (d <= interactionRange * interactionRange && building is IInteractable)
                 {
-                    string uniqueKey = GetUniqueKeyForDictionary(result.buildings, building);
-                    result.buildings.Add(uniqueKey, building);
+                    // lookable의 키를 그대로 사용
+                    result.buildings.Add(kv.Key, building);
                 }
                 continue;
             }
@@ -306,8 +322,8 @@ public class Sensor
                     var d = MathExtension.SquaredDistance2D(curPos, item.transform.position);
                     if (d <= interactionRange * interactionRange)
                     {
-                        string uniqueKey = GetUniqueKeyForDictionary(result.items, item);
-                        result.items.Add(uniqueKey, item);
+                        // lookable의 키를 그대로 사용
+                        result.items.Add(kv.Key, item);
                     }
                 }
             }
@@ -403,29 +419,29 @@ public class Sensor
             {
                 Vector3 pos = prop.transform.position;
                 if (prop.toMovePos != null) pos = prop.toMovePos.position;
-                string uniqueKey = GetUniqueKey(result, prop.GetSimpleKey());
-                result.Add(uniqueKey, pos);
+                // lookable의 키를 그대로 사용
+                result.Add(kv.Key, pos);
                 continue;
             }
             if (kv.Value is Building building)
             {
                 if (building.toMovePos != null)
                 {
-                    string uniqueKey = GetUniqueKey(result, building.GetSimpleKey());
-                    result.Add(uniqueKey, building.toMovePos.position);
+                    // lookable의 키를 그대로 사용
+                    result.Add(kv.Key, building.toMovePos.position);
                 }
                 continue;
             }
             if (kv.Value is Actor actor)
             {
-                string uniqueKey = GetUniqueKey(result, actor.GetSimpleKey());
-                result.Add(uniqueKey, actor.transform.position);
+                // lookable의 키를 그대로 사용
+                result.Add(kv.Key, actor.transform.position);
                 continue;
             }
             if (kv.Value is Item item)
             {
-                string uniqueKey = GetUniqueKey(result, item.GetSimpleKey());
-                result.Add(uniqueKey, item.transform.position);
+                // lookable의 키를 그대로 사용
+                result.Add(kv.Key, item.transform.position);
                 continue;
             }
         }

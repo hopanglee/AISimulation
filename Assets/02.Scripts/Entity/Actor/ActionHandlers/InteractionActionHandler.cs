@@ -31,10 +31,10 @@ namespace Agent.ActionHandlers
 
                 if (actor is MainActor thinkingActor)
                 {
-                    var interactableEntities = thinkingActor.sensor.GetInteractableEntities();
-                    if (interactableEntities.actors.ContainsKey(characterName))
+                    // SpeakToCharacter는 Lookable 범위에서만 대상 탐색
+                    var lookable = thinkingActor.sensor.GetLookableEntities();
+                    if (lookable.ContainsKey(characterName) && lookable[characterName] is Actor targetActor)
                     {
-                        var targetActor = interactableEntities.actors[characterName];
                         if (parameters.TryGetValue("message", out var messageObj) && messageObj is string message)
                         {
                             actor.ShowSpeech(message);

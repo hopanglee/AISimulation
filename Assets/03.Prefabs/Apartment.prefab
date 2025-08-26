@@ -9559,7 +9559,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 6ec3bcb375729324f90378a2e8fdd58c, type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 4294967295
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 6ec3bcb375729324f90378a2e8fdd58c, type: 3}
       propertyPath: m_RootOrder
@@ -9987,7 +9987,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
       propertyPath: m_Name
-      value: shampoo01 (3)
+      value: bodywash
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
       propertyPath: m_Layer
@@ -10040,13 +10040,40 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1257252052484108799}
   m_SourcePrefab: {fileID: 100100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
 --- !u!4 &937831411933591406 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
   m_PrefabInstance: {fileID: 937831411933982190}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &937831411933948750 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
+  m_PrefabInstance: {fileID: 937831411933982190}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1257252052484108799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 937831411933948750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea5dca512dbd8dd4e8fe719e9975d97d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 7663787633039031306}
+  _preposition: 
+  _isHideChild: 1
+  _name: BodyWash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
 --- !u!1001 &959850221784426370
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10333,7 +10360,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: ec846fb400bc867429fc50411fcc1a14, type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 4294967295
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 100002, guid: ec846fb400bc867429fc50411fcc1a14, type: 3}
       propertyPath: m_Layer
@@ -10341,7 +10368,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100002, guid: ec846fb400bc867429fc50411fcc1a14, type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 4294967295
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 100004, guid: ec846fb400bc867429fc50411fcc1a14, type: 3}
       propertyPath: m_Layer
@@ -10349,7 +10376,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100004, guid: ec846fb400bc867429fc50411fcc1a14, type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 4294967295
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: ec846fb400bc867429fc50411fcc1a14, type: 3}
       propertyPath: m_RootOrder
@@ -10861,7 +10888,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: bc8c37d37bf158844b5dd9a5f29a33f1, type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 4294967295
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: bc8c37d37bf158844b5dd9a5f29a33f1, type: 3}
       propertyPath: m_RootOrder
@@ -11223,13 +11250,43 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4322658708587540, guid: b3bf45078dde2bc449a32ebbb44e1f0a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 100398222178838724}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1518427394629224, guid: b3bf45078dde2bc449a32ebbb44e1f0a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7442772475200723787}
   m_SourcePrefab: {fileID: 100100000, guid: b3bf45078dde2bc449a32ebbb44e1f0a, type: 3}
 --- !u!4 &1388478754118639441 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4322658708587540, guid: b3bf45078dde2bc449a32ebbb44e1f0a, type: 3}
   m_PrefabInstance: {fileID: 1390351683730840389}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1391296162394129709 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1518427394629224, guid: b3bf45078dde2bc449a32ebbb44e1f0a, type: 3}
+  m_PrefabInstance: {fileID: 1390351683730840389}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7442772475200723787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1391296162394129709}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99f54b0b92149df4e85708b29f7d4954, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 1686275174503654562}
+  _preposition: on
+  _isHideChild: 0
+  _name: Sink
+  _currentStatusDescription: 
+  Description: 
+  toMovePos: {fileID: 0}
+  isWaterRunning: 0
+  waterTemperature: 20
+  isClean: 1
 --- !u!1001 &1416224187678328348
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11731,7 +11788,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
       propertyPath: m_Name
-      value: shampoo01 (6)
+      value: Handwash
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -11792,8 +11849,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1769115063104560453}
   m_SourcePrefab: {fileID: 100100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
+--- !u!1 &1775869890795858944 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
+  m_PrefabInstance: {fileID: 1775869890795891360}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1769115063104560453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1775869890795858944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 162bde690c3a52443a0c29cdd7918f0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 1686275174503654562}
+  _preposition: 
+  _isHideChild: 1
+  _name: HandWash
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
+  isClean: 1
+  isWet: 0
 --- !u!4 &1775869890796023840 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
@@ -13067,7 +13153,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 4294967295
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
       propertyPath: m_RootOrder
@@ -13116,8 +13202,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6056327002625786480}
   m_SourcePrefab: {fileID: 100100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
+--- !u!1 &2383732529594294503 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
+  m_PrefabInstance: {fileID: 2383732529594328647}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6056327002625786480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2383732529594294503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 101629524854770664}
+  _preposition: 
+  _isHideChild: 1
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
 --- !u!4 &2383732529594465479 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
@@ -13178,13 +13291,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: dfb4393ba36cf4540a7381791f173156, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5653254033988046313}
   m_SourcePrefab: {fileID: 100100000, guid: dfb4393ba36cf4540a7381791f173156, type: 3}
 --- !u!4 &2393535972877896544 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: dfb4393ba36cf4540a7381791f173156, type: 3}
   m_PrefabInstance: {fileID: 2393535972878291424}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2393535972878194496 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: dfb4393ba36cf4540a7381791f173156, type: 3}
+  m_PrefabInstance: {fileID: 2393535972878291424}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5653254033988046313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2393535972878194496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78f6659a42abf07419d7db3331c5d776, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 7663787633039031306}
+  _preposition: 
+  _isHideChild: 1
+  _name: Mirror
+  _currentStatusDescription: 
+  Description: 
+  toMovePos: {fileID: 0}
+  isClean: 1
+  isBroken: 0
 --- !u!1001 &2398488559916837548
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14381,7 +14523,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 4294967295
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
       propertyPath: m_RootOrder
@@ -14426,8 +14568,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1290711372431127660}
   m_SourcePrefab: {fileID: 100100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
+--- !u!1 &3179108381644472027 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
+  m_PrefabInstance: {fileID: 3179108381644503163}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1290711372431127660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3179108381644472027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 162bde690c3a52443a0c29cdd7918f0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 101629524854770664}
+  _preposition: 
+  _isHideChild: 1
+  _name: HandWash
+  _currentStatusDescription: 
+  Description: 
+  brand: lemon
+  isClean: 1
+  isWet: 0
 --- !u!4 &3179108381644628731 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
@@ -14871,6 +15042,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1499960329958344, guid: b1b90bd1a17c56942860834a7239a6d6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7715189989296188166}
+    - targetCorrespondingSourceObject: {fileID: 1499960329958344, guid: b1b90bd1a17c56942860834a7239a6d6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 101629524854770664}
   m_SourcePrefab: {fileID: 100100000, guid: b1b90bd1a17c56942860834a7239a6d6, type: 3}
 --- !u!1 &3380362012135820456 stripped
 GameObject:
@@ -14899,6 +15073,28 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 16bffee09b3655248be96cab8b55b0bd, type: 3}
+--- !u!114 &101629524854770664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3380362012135820456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99f54b0b92149df4e85708b29f7d4954, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 8110250858044063117}
+  _preposition: on
+  _isHideChild: 0
+  _name: Sink
+  _currentStatusDescription: 
+  Description: 
+  toMovePos: {fileID: 0}
+  isWaterRunning: 0
+  waterTemperature: 20
+  isClean: 1
 --- !u!4 &3385704977337312738 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4593616559676034, guid: b1b90bd1a17c56942860834a7239a6d6, type: 3}
@@ -15046,9 +15242,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 1686275174503654562}
-  _preposition: 
+  _preposition: on
   _isHideChild: 0
-  _name: 
+  _name: Toilet
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 934641233982087729}
@@ -17030,6 +17226,9 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 7921096548617201495}
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1777734698110918, guid: 367e958493e3abb40b7ea3edcd5af2cc, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 274728807207361450}
     - targetCorrespondingSourceObject: {fileID: 1394224436335832, guid: 367e958493e3abb40b7ea3edcd5af2cc, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3554039135999220567}
@@ -17065,6 +17264,33 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.3999999, y: 0.89, z: 0.65}
   m_Center: {x: 0, y: 0.445, z: 0.325}
+--- !u!1 &4915276651265755318 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1777734698110918, guid: 367e958493e3abb40b7ea3edcd5af2cc, type: 3}
+  m_PrefabInstance: {fileID: 4913641346676819824}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &274728807207361450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4915276651265755318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99f54b0b92149df4e85708b29f7d4954, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 375438815432636927}
+  _preposition: on
+  _isHideChild: 0
+  _name: Sink
+  _currentStatusDescription: 
+  Description: 
+  toMovePos: {fileID: 0}
+  isWaterRunning: 0
+  waterTemperature: 20
+  isClean: 1
 --- !u!4 &4917485241411591610 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4125369855138506, guid: 367e958493e3abb40b7ea3edcd5af2cc, type: 3}
@@ -18319,7 +18545,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 5f0694814036e7041b0f671238e91aa5, type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 4294967295
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 5f0694814036e7041b0f671238e91aa5, type: 3}
       propertyPath: m_RootOrder
@@ -18801,13 +19027,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: dfb4393ba36cf4540a7381791f173156, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7523445666283291674}
   m_SourcePrefab: {fileID: 100100000, guid: dfb4393ba36cf4540a7381791f173156, type: 3}
 --- !u!4 &5662597514731923829 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: dfb4393ba36cf4540a7381791f173156, type: 3}
   m_PrefabInstance: {fileID: 5662597514732057589}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &5662597514732025173 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: dfb4393ba36cf4540a7381791f173156, type: 3}
+  m_PrefabInstance: {fileID: 5662597514732057589}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7523445666283291674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5662597514732025173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78f6659a42abf07419d7db3331c5d776, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 1686275174503654562}
+  _preposition: 
+  _isHideChild: 1
+  _name: Mirror
+  _currentStatusDescription: 
+  Description: 
+  toMovePos: {fileID: 0}
+  isClean: 1
+  isBroken: 0
 --- !u!1001 &5722982767548490064
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18928,9 +19183,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 7663787633039031306}
-  _preposition: 
+  _preposition: in
   _isHideChild: 0
-  _name: 
+  _name: Bathtub
   _currentStatusDescription: 
   Description: 
   toMovePos: {fileID: 5483043772208718735}
@@ -19301,6 +19556,10 @@ PrefabInstance:
     - target: {fileID: 1249255316546146, guid: 9894ec6be36863645a7978b3645fcb14, type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1249255316546146, guid: 9894ec6be36863645a7978b3645fcb14, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4062559182021394, guid: 9894ec6be36863645a7978b3645fcb14, type: 3}
       propertyPath: m_RootOrder
@@ -20503,13 +20762,40 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4105150046446212195}
   m_SourcePrefab: {fileID: 100100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
 --- !u!4 &6635980119961996419 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
   m_PrefabInstance: {fileID: 6635980119962129923}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &6635980119962030243 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: 6bf0e1513bc2b1f4e92cb22009dd2571, type: 3}
+  m_PrefabInstance: {fileID: 6635980119962129923}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4105150046446212195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6635980119962030243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d343934e89188f4da804b3308fe61c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 7663787633039031306}
+  _preposition: 
+  _isHideChild: 1
+  _name: Shampoo
+  _currentStatusDescription: 
+  Description: 
+  brand: Generic
 --- !u!1001 &6661476479885858516
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23513,6 +23799,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 1054373371693326, guid: 1188a1f846b83b242a210a05a72accf4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4485306607717930, guid: 1188a1f846b83b242a210a05a72accf4, type: 3}
       propertyPath: m_RootOrder
       value: 135
@@ -24860,8 +25150,40 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1173932408329830, guid: 1ad9375b105c5b140952c3b5d1448f13, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7831993389980292707}
   m_SourcePrefab: {fileID: 100100000, guid: 1ad9375b105c5b140952c3b5d1448f13, type: 3}
+--- !u!1 &8936084098930122482 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1173932408329830, guid: 1ad9375b105c5b140952c3b5d1448f13, type: 3}
+  m_PrefabInstance: {fileID: 8937237927127107732}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7831993389980292707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8936084098930122482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa992739dc463ff409878168d12482c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 7845839950389305091}
+  _preposition: 
+  _isHideChild: 1
+  _name: Television
+  _currentStatusDescription: 
+  Description: 
+  toMovePos: {fileID: 0}
+  isOn: 0
+  currentChannel: 1
+  maxChannels: 10
+  volume: 0.5
+  isMuted: 0
 --- !u!4 &8941377450050764334 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4879503075178170, guid: 1ad9375b105c5b140952c3b5d1448f13, type: 3}

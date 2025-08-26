@@ -18,7 +18,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &5343486119777219405
 Transform:
@@ -129,7 +129,3 @@ MonoBehaviour:
   _currentStatusDescription: 
   Description: 
   brand: "\uC77C\uBC18"
-  isClean: 1
-  isWet: 0
-  remainingUses: 1
-  maxUses: 1

@@ -100,16 +100,18 @@ namespace Agent.ActionHandlers
 
             Debug.Log($"[{actor.Name}] 엔티티로 이동: {targetValue}");
 
-            // 엔티티의 위치를 찾아서 이동
-            var entity = EntityFinder.FindEntityByName(actor, targetValue);
-            if (entity != null)
+            // Movable 스코프에서만 위치를 조회
+            if (actor.sensor != null)
             {
-                await ExecuteDirectMoveToPosition(entity.transform.position, targetValue, token);
+                var movablePositions = actor.sensor.GetMovablePositions();
+                if (movablePositions.ContainsKey(targetValue))
+                {
+                    await ExecuteDirectMoveToPosition(movablePositions[targetValue], targetValue, token);
+                    return;
+                }
             }
-            else
-            {
-                Debug.LogWarning($"[{actor.Name}] 엔티티를 찾을 수 없음: {targetValue}");
-            }
+
+            Debug.LogWarning($"[{actor.Name}] 엔티티(이동 가능)를 찾을 수 없음: {targetValue}");
         }
 
         /// <summary>

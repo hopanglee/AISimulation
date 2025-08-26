@@ -131,7 +131,7 @@ namespace Agent
                     {
                         if (prop != null && prop is IInteractable)
                         {
-                            objectNames.Add(prop.GetSimpleKey());
+                            objectNames.Add(prop.GetSimpleKeyRelativeToActor(actor));
                         }
                     }
                     
@@ -140,7 +140,7 @@ namespace Agent
                     // {
                     //     if (building != null && building is IInteractable)
                     //     {
-                    //         objectNames.Add(building.GetSimpleKey());
+                    //         objectNames.Add(building.GetSimpleKeyRelativeToActor(actor));
                     //     }
                     // }
                     
@@ -149,7 +149,7 @@ namespace Agent
                     {
                         if (item != null && item is IInteractable)
                         {
-                            objectNames.Add(item.GetSimpleKey());
+                            objectNames.Add(item.GetSimpleKeyRelativeToActor(actor));
                         }
                     }
                     

@@ -133,6 +133,12 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         // 공통 센서 초기화 (MainActor/NPC 공용)
         sensor = new Sensor(this);
 
+        // 인벤토리 배열 보정 (null 또는 길이 0인 경우 기본 슬롯 2개 생성)
+        if (_inventoryItems == null || _inventoryItems.Length == 0)
+        {
+            _inventoryItems = new Item[2];
+        }
+
         // 초기 의상/모델 적용은 MainActor에서만 처리
         if (this is MainActor)
         {
@@ -184,36 +190,41 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         // 현재 인벤토리 시스템은 Item만 저장 가능
         if (collectible is Item item)
         {
+            // 1) 손이 비어있으면 손에 든다
             if (HandItem == null)
             {
-                HandItem = item;
-                HandItem.curLocation = Hand;
-                item.transform.localPosition = new(0, 0, 0);
+                AttachToHand(item);
                 return true;
             }
 
-            if (_inventoryItems[0] == null)
+            // 2) 인벤토리에서 빈 슬롯 찾기 (반복문으로 변경)
+            for (int i = 0; i < _inventoryItems.Length; i++)
             {
-                InvenItemSet(0, HandItem);
-                HandItem = item;
-                HandItem.curLocation = Hand;
-                item.transform.localPosition = new(0, 0, 0);
-                return true;
-            }
-
-            if (_inventoryItems[1] == null)
-            {
-                InvenItemSet(1, HandItem);
-                HandItem = item;
-                HandItem.curLocation = Hand;
-                item.transform.localPosition = new(0, 0, 0);
-                return true;
+                if (_inventoryItems[i] == null)
+                {
+                    // 새 아이템을 인벤토리 빈 슬롯에 넣는다 (손에 넣지 않음)
+                    InvenItemSet(i, item);
+                    return true;
+                }
             }
             return false;
         }
         // ICollectible이지만 Item이 아닌 경우(예: FoodBlock)는 현재 인벤토리 구조상 보관 불가
         Debug.LogWarning($"[{Name}] PickUp: 현재 시스템에서는 Item만 손/인벤토리에 보관할 수 있습니다. ({collectible?.GetType().Name})");
         return false;
+    }
+
+    private void AttachToHand(Item item)
+    {
+        HandItem = item;
+        HandItem.curLocation = Hand;
+        if (Hand != null)
+        {
+            item.transform.SetParent(Hand.transform, false);
+        }
+        item.transform.localPosition = new Vector3(0f, 0f, 0f);
+        item.transform.localRotation = Quaternion.identity;
+        // localScale은 변경하지 않음 (요청사항)
     }
 
     /// <summary>
@@ -234,6 +245,14 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         // 인벤토리에 있는 아이템은 보이지 않게 처리
         SetItemVisibility(item, false);
         item.curLocation = Inven;
+        // 인벤트리 하위로 부모 설정 (요청사항: inven의 자식으로 넣기)
+        if (Inven != null)
+        {
+            item.transform.SetParent(Inven.transform, false);
+        }
+        // 위치는 기본값으로, 스케일은 유지
+        item.transform.localPosition = Vector3.zero;
+        item.transform.localRotation = Quaternion.identity;
     }
 
     #region Agent Selectable Fucntion
@@ -526,7 +545,13 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             // 손이 비어있으면 손에 들기
             HandItem = clothing;
             clothing.curLocation = Hand;
-            clothing.transform.localPosition = new Vector3(0, 0, 0);
+            if (Hand != null)
+            {
+                clothing.transform.SetParent(Hand.transform, false);
+            }
+            clothing.transform.localPosition = new Vector3(0f, 0f, 0f);
+            clothing.transform.localRotation = Quaternion.identity;
+            clothing.transform.localScale = Vector3.one;
             Debug.Log($"[{Name}] {clothing.Name}을(를) 벗어서 손에 들었습니다.");
         }
         else

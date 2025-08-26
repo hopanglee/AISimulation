@@ -25,11 +25,23 @@ namespace Agent.ActionHandlers
         /// </summary>
         public async Task HandlePickUpItem(Dictionary<string, object> parameters, CancellationToken token = default)
         {
-            if (parameters.TryGetValue("item_name", out var itemNameObj) && itemNameObj is string itemName)
+            // accept both new key (item_name) and legacy key (target_item)
+            string itemName = null;
+            if (parameters.TryGetValue("item_name", out var itemNameObj) && itemNameObj is string itemNameStr && !string.IsNullOrEmpty(itemNameStr))
+            {
+                itemName = itemNameStr;
+            }
+            else if (parameters.TryGetValue("target_item", out var legacyObj) && legacyObj is string legacyStr && !string.IsNullOrEmpty(legacyStr))
+            {
+                itemName = legacyStr;
+            }
+
+            if (!string.IsNullOrEmpty(itemName))
             {
                 Debug.Log($"[{actor.Name}] 아이템 집기: {itemName}");
 
-                var item = EntityFinder.FindItemByName(actor, itemName);
+                // PickUp은 Collectible 키로만 허용 (거리/상호작용 범위 보장)
+                var item = EntityFinder.FindCollectibleItemByKey(actor, itemName);
                 if (item != null)
                 {
                     if (actor.PickUp(item))
@@ -43,7 +55,7 @@ namespace Agent.ActionHandlers
                 }
                 else
                 {
-                    Debug.LogWarning($"[{actor.Name}] 아이템을 찾을 수 없음: {itemName}");
+                    Debug.LogWarning($"[{actor.Name}] 아이템을 찾을 수 없음(collectible 전용): {itemName}");
                 }
             }
             await SimDelay.DelaySimMinutes(3);
@@ -99,7 +111,7 @@ namespace Agent.ActionHandlers
                     // Props에서 찾기
                     foreach (var prop in interactableEntities.props.Values)
                     {
-                        if (prop != null && prop.GetSimpleKey() == targetKey)
+                        if (prop != null && prop.GetSimpleKeyRelativeToActor(actor) == targetKey)
                         {
                             if (prop is ILocation location)
                             {
@@ -111,7 +123,7 @@ namespace Agent.ActionHandlers
                     // Buildings에서 찾기
                     foreach (var building in interactableEntities.buildings.Values)
                     {
-                        if (building != null && building.GetSimpleKey() == targetKey)
+                        if (building != null && building.GetSimpleKeyRelativeToActor(actor) == targetKey)
                         {
                             if (building is ILocation location)
                             {
@@ -123,7 +135,7 @@ namespace Agent.ActionHandlers
                     // Items에서 찾기 (특별한 경우)
                     foreach (var item in interactableEntities.items.Values)
                     {
-                        if (item != null && item.GetSimpleKey() == targetKey)
+                        if (item != null && item.GetSimpleKeyRelativeToActor(actor) == targetKey)
                         {
                             if (item is ILocation location)
                             {

@@ -129,6 +129,113 @@ public abstract partial class NPC : Actor
         Debug.Log($"[{Name}] AI Agent 초기화 완료 - 역할: {npcRole}");
     }
 
+    #region Perception Debug (Odin Inspector)
+    [FoldoutGroup("Perception Debug"), Button("Update Lookable Snapshot")]
+    private void Odin_UpdateLookable()
+    {
+        if (Application.isPlaying)
+        {
+            UpdateLookableEntity();
+        }
+    }
+
+    [FoldoutGroup("Perception Debug"), ShowInInspector, ReadOnly]
+    private SerializableDictionary<string, Entity> Odin_Lookable
+    {
+        get
+        {
+            if (sensor == null) return new SerializableDictionary<string, Entity>();
+            if (Application.isPlaying)
+                UpdateLookableEntity();
+            return sensor.GetLookableEntities();
+        }
+    }
+
+    [FoldoutGroup("Perception Debug"), ShowInInspector, ReadOnly]
+    private SerializableDictionary<string, Entity> Odin_Collectible
+    {
+        get
+        {
+            if (sensor == null) return new SerializableDictionary<string, Entity>();
+            if (Application.isPlaying)
+                UpdateLookableEntity();
+            return sensor.GetCollectibleEntities();
+        }
+    }
+
+    [FoldoutGroup("Perception Debug/Interactable"), ShowInInspector, ReadOnly]
+    private SerializableDictionary<string, Actor> Odin_Interactable_Actors
+    {
+        get
+        {
+            if (sensor == null) return new SerializableDictionary<string, Actor>();
+            if (Application.isPlaying)
+                UpdateLookableEntity();
+            return sensor.GetInteractableEntities().actors;
+        }
+    }
+
+    [FoldoutGroup("Perception Debug/Interactable"), ShowInInspector, ReadOnly]
+    private SerializableDictionary<string, Prop> Odin_Interactable_Props
+    {
+        get
+        {
+            if (sensor == null) return new SerializableDictionary<string, Prop>();
+            if (Application.isPlaying)
+                UpdateLookableEntity();
+            return sensor.GetInteractableEntities().props;
+        }
+    }
+
+    [FoldoutGroup("Perception Debug/Interactable"), ShowInInspector, ReadOnly]
+    private SerializableDictionary<string, Building> Odin_Interactable_Buildings
+    {
+        get
+        {
+            if (sensor == null) return new SerializableDictionary<string, Building>();
+            if (Application.isPlaying)
+                UpdateLookableEntity();
+            return sensor.GetInteractableEntities().buildings;
+        }
+    }
+
+    [FoldoutGroup("Perception Debug/Interactable"), ShowInInspector, ReadOnly]
+    private SerializableDictionary<string, Item> Odin_Interactable_Items
+    {
+        get
+        {
+            if (sensor == null) return new SerializableDictionary<string, Item>();
+            if (Application.isPlaying)
+                UpdateLookableEntity();
+            return sensor.GetInteractableEntities().items;
+        }
+    }
+
+    [FoldoutGroup("Perception Debug/Movable"), ShowInInspector, ReadOnly]
+    private SerializableDictionary<string, Vector3> Odin_Movable_Positions
+    {
+        get
+        {
+            if (sensor == null) return new SerializableDictionary<string, Vector3>();
+            if (Application.isPlaying)
+                UpdateLookableEntity();
+            return sensor.GetMovablePositions();
+        }
+    }
+
+    [FoldoutGroup("Perception Debug/Movable"), ShowInInspector, ReadOnly]
+    private List<string> Odin_Movable_Entities
+    {
+        get
+        {
+            if (sensor == null) return new List<string>();
+            if (Application.isPlaying)
+                UpdateLookableEntity();
+            return sensor.GetMovableEntities();
+        }
+    }
+    #endregion
+
     
     
     /// <summary>
