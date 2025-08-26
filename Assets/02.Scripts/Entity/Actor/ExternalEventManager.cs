@@ -145,7 +145,8 @@ public class ExternalEventService : IExternalEventService
     /// </summary>
     public void NotifyiPhoneNotification(Actor targetActor, string notificationContent)
     {
-        if (CanSendEvent(targetActor))
+        // iPhone이 손(Hand)이나 인벤토리에 있을 때에만 외부 이벤트 전송
+        if (CanSendEvent(targetActor) && IsIPhoneHeldOrInInventory(targetActor))
         {
             var externalEvent = new ExternalEvent
             {
@@ -158,6 +159,39 @@ public class ExternalEventService : IExternalEventService
             SendExternalEvent(externalEvent);
             Debug.Log($"[ExternalEventService] {targetActor.Name}에게 iPhone 알림 이벤트 발생: {notificationContent}");
         }
+    }
+
+    /// <summary>
+    /// 대상 Actor가 iPhone을 손에 들고 있거나 인벤토리에 보관 중인지 확인합니다.
+    /// </summary>
+    private bool IsIPhoneHeldOrInInventory(Actor actor)
+    {
+        try
+        {
+            if (actor is MainActor main)
+            {
+                var phone = main.iPhone;
+                if (phone == null) return false;
+
+                // 손에 들고 있는지
+                if (ReferenceEquals(actor.HandItem, phone)) return true;
+
+                // 인벤토리에 있는지
+                var inv = actor.InventoryItems;
+                if (inv != null)
+                {
+                    for (int i = 0; i < inv.Length; i++)
+                    {
+                        if (ReferenceEquals(inv[i], phone)) return true;
+                    }
+                }
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogWarning($"[ExternalEventService] IsIPhoneHeldOrInInventory 검사 실패: {ex.Message}");
+        }
+        return false;
     }
 
     /// <summary>

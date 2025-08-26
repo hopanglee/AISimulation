@@ -175,13 +175,14 @@ public class ManualActionController
             ActionType.MoveToArea => "예시: target_area = \"Living Room\" (Area 이름)",
             ActionType.MoveToEntity => "예시: target_entity = \"Yellow Clock in Living Room\" (Entity 전체 이름)",
             ActionType.SpeakToCharacter => "예시: target_character = \"Hino\", message = \"안녕하세요\"",
-            ActionType.PickUpItem => "예시: target_item = \"apple in kitchen\"",
+            ActionType.PickUpItem => "예시: item_name = \"Donut_1 on Plate\"",
             ActionType.InteractWithObject => "예시: target_object = \"refrigerator in kitchen\"",
             ActionType.PutDown => "예시: target_location = \"table in living room\"",
             ActionType.GiveMoney => "예시: target_character = \"Hino\", amount = \"1000\"",
             ActionType.GiveItem => "예시: target_character = \"Hino\", item_name = \"apple\"",
             ActionType.RemoveClothing => "예시: clothing_type = \"shirt\"",
             ActionType.PerformActivity => "예시: activity_name = \"reading\", duration = \"30\"",
+            ActionType.UseObject => GetUseObjectParameterExamples(),
             _ => "파라미터 예시 없음"
         };
         
@@ -257,8 +258,23 @@ public class ManualActionController
             
             Debug.Log($"[{mainActor.Name}] 수동 액션 실행: {debugActionType} with parameters: [{GetParameterLogString(paramResult)}]");
             
-            // Brain을 통해 액션 실행 (Handler에서 자동 변환 처리됨)
-            await mainActor.brain.Act(paramResult, System.Threading.CancellationToken.None);
+            // UseObject 액션은 UseActionManager를 통해 직접 실행
+            if (debugActionType == ActionType.UseObject)
+            {
+                var useRequest = new ActParameterRequest
+                {
+                    ActType = debugActionType,
+                    Reasoning = "Manual action execution",
+                    Intention = "Test UseObject functionality",
+                    PreviousFeedback = ""
+                };
+                await mainActor.brain.UseActionManager.ExecuteUseActionAsync(useRequest);
+            }
+            else
+            {
+                // Brain을 통해 액션 실행 (Handler에서 자동 변환 처리됨)
+                await mainActor.brain.Act(paramResult, System.Threading.CancellationToken.None);
+            }
         }
         catch (Exception ex)
         {
@@ -305,14 +321,167 @@ public class ManualActionController
             ActionType.MoveToArea => new List<string> { "target_area" }, // 예: "Living Room", "Kitchen", "Bedroom"
             ActionType.MoveToEntity => new List<string> { "target_entity" }, // 예: "Yellow Clock in Living Room"
             ActionType.SpeakToCharacter => new List<string> { "target_character", "message" },
-            ActionType.PickUpItem => new List<string> { "target_item" },
+            ActionType.PickUpItem => new List<string> { "item_name" },
             ActionType.InteractWithObject => new List<string> { "target_object" },
             ActionType.PutDown => new List<string> { "target_location" },
             ActionType.GiveMoney => new List<string> { "target_character", "amount" },
             ActionType.GiveItem => new List<string> { "target_character", "item_name" },
             ActionType.RemoveClothing => new List<string> { "clothing_type" },
             ActionType.PerformActivity => new List<string> { "activity_name", "duration" },
+            ActionType.UseObject => GetUseObjectParameterKeys(),
             _ => new List<string>()
         };
+    }
+
+    /// <summary>
+    /// UseObject 액션에 필요한 파라미터 키들을 손에 든 아이템에 따라 동적으로 반환
+    /// </summary>
+    private List<string> GetUseObjectParameterKeys()
+    {
+        if (mainActor?.HandItem == null)
+        {
+            return new List<string> { "command" }; // 기본적으로 command 파라미터만
+        }
+
+        // 손에 든 아이템 타입에 따라 다른 파라미터 반환
+        return mainActor.HandItem switch
+        {
+            iPhone => new List<string> { "command", "target_actor", "message", "message_count" },
+            Note => new List<string> { "action" },
+            Book => new List<string> { "action" },
+            _ => new List<string> { "command" } // 기본 IUsable 아이템
+        };
+    }
+
+    /// <summary>
+    /// UseObject 액션의 파라미터 예시를 손에 든 아이템에 따라 동적으로 반환
+    /// </summary>
+    private string GetUseObjectParameterExamples()
+    {
+        if (mainActor?.HandItem == null)
+        {
+            return "예시: 손에 아이템이 없음 - command = \"use\"";
+        }
+
+        return mainActor.HandItem switch
+        {
+            iPhone => "예시: command = \"chat\", target_actor = \"Hino\", message = \"안녕하세요\", message_count = \"10\"",
+            Note => "예시: action = \"write\" 또는 \"read\"",
+            Book => "예시: action = \"read\" 또는 \"study\" 또는 \"bookmark\"",
+            _ => $"예시: command = \"use\" ({mainActor.HandItem.Name} 사용)"
+        };
+    }
+
+    /// <summary>
+    /// UseObject 액션의 상세 사용법을 로그로 출력
+    /// </summary>
+    [FoldoutGroup("Manual Think Act Control"), Button("Show UseObject Instructions")]
+    private void ShowUseObjectInstructions()
+    {
+        if (mainActor?.HandItem == null)
+        {
+            Debug.Log("[ManualActionController] 손에 아이템이 없습니다. 사용법을 표시할 수 없습니다.");
+            return;
+        }
+
+        var instructions = mainActor.HandItem switch
+        {
+            iPhone => GetDetailediPhoneInstructions(),
+            Note => GetDetailedNoteInstructions(),
+            Book => GetDetailedBookInstructions(),
+            _ => GetDetailedDefaultItemInstructions(mainActor.HandItem)
+        };
+
+        Debug.Log($"[ManualActionController] {mainActor.HandItem.Name} 상세 사용법:\n{instructions}");
+    }
+
+    /// <summary>
+    /// iPhone 상세 사용법 반환
+    /// </summary>
+    private string GetDetailediPhoneInstructions()
+    {
+        return @"📱 iPhone 상세 사용법:
+
+🔹 command (필수): 사용할 기능 선택
+  • 'chat': 다른 캐릭터와 채팅
+  • 'read': 메시지 읽기
+  • 'continue': 이어서 메시지 읽기
+
+🔹 target_actor (chat/read/continue 시 필수): 대상 캐릭터 이름
+  • 예: 'Hino', 'Kamiya Tooru', 'NPC_1'
+
+🔹 message (chat 시 필수): 전송할 메시지 내용
+  • 예: '안녕하세요', '오늘 날씨 어때요?'
+
+🔹 message_count (read/continue 시 선택): 읽을 메시지 개수
+  • 기본값: 10개
+  • 예: '5', '20'
+
+📝 사용 예시:
+1. 채팅: command='chat', target_actor='Hino', message='안녕하세요'
+2. 메시지 읽기: command='read', target_actor='Hino', message_count='15'
+3. 계속 읽기: command='continue', target_actor='Hino', message_count='5'";
+    }
+
+    /// <summary>
+    /// Note 상세 사용법 반환
+    /// </summary>
+    private string GetDetailedNoteInstructions()
+    {
+        return @"📝 Note 상세 사용법:
+
+🔹 action (필수): 수행할 작업 선택
+  • 'write': 새 메모 작성
+  • 'read': 기존 메모 읽기
+  • 'edit': 메모 편집
+  • 'delete': 메모 삭제
+
+📝 사용 예시:
+1. 메모 작성: action='write'
+2. 메모 읽기: action='read'
+3. 메모 편집: action='edit'
+4. 메모 삭제: action='delete'
+
+⏱️ 소요 시간: 각 작업당 약 2분";
+    }
+
+    /// <summary>
+    /// Book 상세 사용법 반환
+    /// </summary>
+    private string GetDetailedBookInstructions()
+    {
+        return @"📚 Book 상세 사용법:
+
+🔹 action (필수): 수행할 작업 선택
+  • 'read': 책 읽기 (3분 소요)
+  • 'study': 공부하기 (5분 소요)
+  • 'skim': 훑어보기 (1분 소요)
+  • 'bookmark': 북마크 추가 (1분 소요)
+  • 'close': 책 닫기 (1분 소요)
+
+📝 사용 예시:
+1. 책 읽기: action='read'
+2. 공부하기: action='study'
+3. 훑어보기: action='skim'
+4. 북마크: action='bookmark'
+5. 책 닫기: action='close'
+
+⏱️ 소요 시간: 각 작업별로 다름 (1-5분)";
+    }
+
+    /// <summary>
+    /// 기본 아이템 상세 사용법 반환
+    /// </summary>
+    private string GetDetailedDefaultItemInstructions(Item item)
+    {
+        return $@"🔧 {item.Name} 상세 사용법:
+
+🔹 command (필수): 사용 명령
+  • 'use': 기본 사용 기능
+
+📝 사용 예시:
+1. 기본 사용: command='use'
+
+⏱️ 소요 시간: 약 2분";
     }
 }

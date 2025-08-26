@@ -135,6 +135,20 @@ namespace Agent.ActionHandlers
                 {
                     return interactableEntities.items[itemName];
                 }
+
+                // 1-1. 수집 가능한 Item들(collectible)에서 검색 (픽업은 여기 키를 사용하는 경우가 많음)
+                var collectible = thinkingActor.sensor.GetCollectibleEntities();
+                if (collectible.ContainsKey(itemName) && collectible[itemName] is Item collectibleItem)
+                {
+                    return collectibleItem;
+                }
+
+                // 1-2. lookable에서 직접 키로 검색 (키 통합 정책에 따라 동일 키 유지)
+                var lookable = thinkingActor.sensor.GetLookableEntities();
+                if (lookable.ContainsKey(itemName) && lookable[itemName] is Item lookableItem)
+                {
+                    return lookableItem;
+                }
             }
             else
             {
@@ -156,7 +170,33 @@ namespace Agent.ActionHandlers
                 }
             }
 
-            Debug.LogWarning($"[{actor.Name}] 아이템을 찾을 수 없음: {itemName}");
+            // 호출부에서 경고를 출력하므로 이곳에서는 중복 경고를 피합니다 (정보 수준 로그)
+            Debug.Log($"[{actor.Name}] 아이템을 찾을 수 없음: {itemName}");
+            return null;
+        }
+
+        /// <summary>
+        /// Collectible 딕셔너리(센서)에서만 키로 Item을 찾습니다. (PickUp 전용)
+        /// </summary>
+        public static Item FindCollectibleItemByKey(Actor actor, string itemKey)
+        {
+            if (string.IsNullOrEmpty(itemKey))
+                return null;
+
+            if (actor is MainActor thinkingActor)
+            {
+                var collectible = thinkingActor.sensor.GetCollectibleEntities();
+                if (collectible.ContainsKey(itemKey) && collectible[itemKey] is Item item)
+                {
+                    return item;
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"[{actor.Name}] sensor 기능을 사용할 수 없습니다.");
+            }
+
+            Debug.Log($"[{actor.Name}] (Collectible 전용) 아이템을 찾을 수 없음: {itemKey}");
             return null;
         }
     }

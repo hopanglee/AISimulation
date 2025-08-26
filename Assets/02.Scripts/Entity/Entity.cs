@@ -155,7 +155,6 @@ public abstract class Entity : MonoBehaviour, ILocation
         //         return $"{Name} in {curLocation.locationName} in {curLocation.curLocation.locationName}";
         //     }
         //     else
-        //     {
         //         return $"{Name} in {curLocation.locationName}";
         //     }
         // }
@@ -165,6 +164,55 @@ public abstract class Entity : MonoBehaviour, ILocation
             // 예: "Plate in Living Room"
             return $"{Name} {curLocation.preposition} {curLocation.locationName}";
         // }
+    }
+
+    /// <summary>
+    /// Actor의 현재 위치를 기준으로 한 상대적 키 생성
+    /// Actor와 같은 location인 부분은 제외하고 내부 location부터 출력
+    /// 예: Actor가 Kitchen에 있을 때 "Plate on Table" (in Kitchen 제외)
+    /// </summary>
+    public virtual string GetSimpleKeyRelativeToActor(Actor actor)
+    {
+        if (curLocation == null) return Name;
+        if (actor?.curLocation == null) return GetSimpleKey();
+
+        // Actor와 같은 location인지 확인
+        if (curLocation == actor.curLocation)
+        {
+            // Actor와 같은 location이면 Entity 이름만 반환
+            return Name;
+        }
+
+        // Actor의 location을 포함하는지 확인 (계층 구조에서)
+        var currentLocation = curLocation;
+        var actorLocation = actor.curLocation;
+        
+        // Actor의 location까지 올라가면서 중복되는 부분 찾기
+        while (currentLocation != null && currentLocation != actorLocation)
+        {
+            currentLocation = currentLocation.curLocation;
+        }
+
+        // 중복되는 부분을 찾았으면 그 이전부터 키 생성
+        if (currentLocation == actorLocation)
+        {
+            // Actor의 location 이전까지만 포함
+            var relativeLocation = curLocation;
+            var result = $"{Name} {relativeLocation.preposition} {relativeLocation.locationName}";
+            
+            // 더 상위 location이 있으면 추가
+            var parentLocation = relativeLocation.curLocation;
+            while (parentLocation != null && parentLocation != actorLocation)
+            {
+                result += $" {parentLocation.preposition} {parentLocation.locationName}";
+                parentLocation = parentLocation.curLocation;
+            }
+            
+            return result;
+        }
+
+        // 중복되는 부분을 찾지 못했으면 전체 키 반환
+        return GetSimpleKey();
     }
 
     protected virtual void Awake()

@@ -228,7 +228,7 @@ public abstract partial class NPC
 	private async Task MoveToInventoryBox(InventoryBox inventoryBox)
 	{
 		// InventoryBox의 위치로 이동
-		Move(inventoryBox.GetSimpleKey());
+		Move(inventoryBox.GetSimpleKeyRelativeToActor(this));
 		
 		// 이동 완료까지 대기 (간단한 지연)
 		await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);

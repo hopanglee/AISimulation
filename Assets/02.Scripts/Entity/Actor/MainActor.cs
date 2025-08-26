@@ -376,6 +376,95 @@ public abstract class MainActor : Actor
 	
 	#region Odin Inspector Buttons
 	// 버튼들은 Actor로 이동하여 공용화됨
+
+	[FoldoutGroup("Debug Inventory"), Button("Swap Hand <-> Inven Slot 1")]
+	private void DebugSwapHandWithInvenSlot1()
+	{
+		SwapHandWithInvenSlot(0);
+	}
+
+	[FoldoutGroup("Debug Inventory"), Button("Swap Hand <-> Inven Slot 2")]
+	private void DebugSwapHandWithInvenSlot2()
+	{
+		SwapHandWithInvenSlot(1);
+	}
+
+	private void SwapHandWithInvenSlot(int index)
+	{
+		if (InventoryItems == null || index < 0 || index >= InventoryItems.Length)
+		{
+			Debug.LogWarning($"[{Name}] 잘못된 인벤토리 슬롯 인덱스: {index}");
+			return;
+		}
+
+		var invItem = InventoryItems[index];
+		var hand = HandItem;
+
+		// Case 1: 둘 다 null → 아무것도 안 함
+		if (hand == null && invItem == null)
+		{
+			Debug.Log($"[{Name}] 손과 인벤 슬롯 {index + 1} 모두 비어 있음");
+			return;
+		}
+
+		// Helper: Attach to Hand
+		void AttachToHandLocal(Item item)
+		{
+			if (item == null) return;
+			HandItem = item;
+			HandItem.curLocation = Hand;
+			if (Hand != null)
+			{
+				item.transform.SetParent(Hand.transform, false);
+			}
+			item.gameObject.SetActive(true);
+			item.transform.localPosition = Vector3.zero;
+			item.transform.localRotation = Quaternion.identity;
+		}
+
+		// Helper: Attach to Inventory slot
+		void AttachToInventoryLocal(int slot, Item item)
+		{
+			if (item == null) return;
+			InventoryItems[slot] = item;
+			item.curLocation = Inven;
+			if (Inven != null)
+			{
+				item.transform.SetParent(Inven.transform, false);
+			}
+			item.gameObject.SetActive(false); // 인벤토리 아이템은 비가시화
+			item.transform.localPosition = Vector3.zero;
+			item.transform.localRotation = Quaternion.identity;
+		}
+
+		// Case 2: 손 비었고 인벤에 있음 → 인벤 -> 손
+		if (hand == null && invItem != null)
+		{
+			InventoryItems[index] = null;
+			AttachToHandLocal(invItem);
+			Debug.Log($"[{Name}] 인벤 슬롯 {index + 1} → 손으로 이동: {invItem.Name}");
+			return;
+		}
+
+		// Case 3: 손에 있고 인벤 비었음 → 손 -> 인벤
+		if (hand != null && invItem == null)
+		{
+			HandItem = null;
+			AttachToInventoryLocal(index, hand);
+			Debug.Log($"[{Name}] 손 → 인벤 슬롯 {index + 1} 이동: {hand.Name}");
+			return;
+		}
+
+		// Case 4: 둘 다 있음 → 스왑
+		if (hand != null && invItem != null)
+		{
+			var temp = invItem;
+			AttachToInventoryLocal(index, hand);
+			AttachToHandLocal(temp);
+			Debug.Log($"[{Name}] 손 ↔ 인벤 슬롯 {index + 1} 스왑: {hand.Name} ↔ {temp.Name}");
+			return;
+		}
+	}
 	#endregion
 }
 
