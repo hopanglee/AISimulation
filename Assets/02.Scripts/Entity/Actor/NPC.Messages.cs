@@ -83,13 +83,13 @@ public abstract partial class NPC
 		}
 	}
 
-	private async UniTask LogActionCompletion(INPCAction action, object[] parameters)
+	private async UniTask LogActionCompletion(INPCAction action, object[] parameters, bool success = true)
 	{
 		if (actionAgent == null)
 			return;
 
 		string currentTime = GetFormattedCurrentTime();
-		string completionMessage = GenerateActionCompletionMessage(action, parameters, currentTime);
+		string completionMessage = GenerateActionCompletionMessage(action, parameters, currentTime, success);
 		if (!string.IsNullOrEmpty(completionMessage))
 		{
 			actionAgent.AddSystemMessage(completionMessage);
@@ -97,8 +97,20 @@ public abstract partial class NPC
 		await UniTask.Yield();
 	}
 
-	protected virtual string GenerateActionCompletionMessage(INPCAction action, object[] parameters, string timeStamp)
+	protected virtual string GenerateActionCompletionMessage(INPCAction action, object[] parameters, string timeStamp, bool success = true)
 	{
+		if (!success)
+		{
+			return action.ActionName switch
+			{
+				"Payment" => $"{timeStamp} [본인] : 결제 처리 실패했습니다.",
+				"GiveItem" => $"{timeStamp} [본인] : 아이템 전달 실패했습니다.",
+				"GiveMoney" => $"{timeStamp} [본인] : 돈 전달 실패했습니다.",
+				"PutDown" => $"{timeStamp} [본인] : 아이템 배치 실패했습니다.",
+				_ => $"{timeStamp} [본인] : {action.ActionName} 작업 실패했습니다."
+			};
+		}
+
 		return action.ActionName switch
 		{
 			"Talk" => GenerateTalkCompletionMessage(parameters, timeStamp),

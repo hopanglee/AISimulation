@@ -192,7 +192,7 @@ public class HostClubWorker : NPC
             {
                 Debug.LogWarning($"[{Name}] 결제 처리 실패: 항목 이름이 없습니다.");
                 ShowSpeech("결제할 항목을 알려주세요.");
-                return;
+                throw new InvalidOperationException("결제할 항목 이름이 없습니다.");
             }
             
             // 가격표에서 항목 찾기
@@ -201,36 +201,51 @@ public class HostClubWorker : NPC
             {
                 Debug.LogWarning($"[{Name}] 결제 처리 실패: '{itemName}' 항목을 찾을 수 없습니다.");
                 ShowSpeech($"죄송합니다. '{itemName}' 항목은 등록되지 않았습니다.");
-                return;
+                throw new InvalidOperationException($"'{itemName}' 항목을 찾을 수 없습니다.");
             }
             
             Debug.Log($"[{Name}] 결제 처리 시작 - 항목: {priceItem.itemName}, 가격: {priceItem.price}원");
-            ShowSpeech($"{priceItem.itemName} {priceItem.price}원 결제를 도와드리겠습니다.");
+            ShowSpeech($"{priceItem.itemName} {priceItem.price}원 결제 도와드릴게요.");
+            
+            // 보유 금액 0원 특수 처리
+            if (Money <= 0)
+            {
+                Debug.LogWarning($"[{Name}] 결제 실패: 보유 금액 0원. 먼저 돈을 받아야 합니다.");
+                ShowSpeech("결제를 위해 먼저 돈을 받아야 합니다.");
+                throw new InvalidOperationException("보유 금액이 0원입니다. 먼저 돈을 받아야 합니다.");
+            }
+            
+            // 보유 금액 체크
+            if (Money < priceItem.price)
+            {
+                Debug.LogWarning($"[{Name}] 결제 실패: 보유 금액 부족 (보유: {Money}원, 필요: {priceItem.price}원)");
+                ShowSpeech("죄송합니다. 금액이 부족합니다.");
+                throw new InvalidOperationException($"보유 금액이 부족합니다. (보유: {Money}원, 필요: {priceItem.price}원)");
+            }
             
             // 결제 처리 시뮬레이션
             await SimDelay.DelaySimMinutes(2);
             
-            // 결제 성공 시 호스트클럽 운영자금 증가 및 수익 추가
-            Money += priceItem.price;        // 호스트클럽 운영자금 증가 (고객이 돈을 지불)
-            totalRevenue += priceItem.price; // 수익 추가
+            // 결제 성공: 수익 증가, 보유 금액 차감
+            Money -= priceItem.price;
+            totalRevenue += priceItem.price;
             
-            string paymentReport = $"호스트클럽 직원 {Name}이 {priceItem.itemName} {priceItem.price}원 결제를 처리했습니다. 현재 운영자금: {Money}원, 총 수익: {totalRevenue}원";
+            string paymentReport = $"호스트클럽 직원 {Name}이 {priceItem.itemName} {priceItem.price}원 결제를 처리했습니다. 현재 보유금: {Money}원, 총 수익: {totalRevenue}원";
             Debug.Log($"[{Name}] 결제 완료: {paymentReport}");
-            
             ShowSpeech("결제가 완료되었습니다. 감사합니다!");
             
             // AI Agent에 결제 완료 메시지 추가
             if (actionAgent != null)
             {
                 string currentTime = GetFormattedCurrentTime();
-                string systemMessage = $"[{currentTime}] [SYSTEM] 결제 완료 - {priceItem.itemName} {priceItem.price}원, 현재 운영자금: {Money}원, 총 수익: {totalRevenue}원";
+                string systemMessage = $"[{currentTime}] [SYSTEM] 결제 완료 - {priceItem.itemName} {priceItem.price}원, 현재 보유금: {Money}원, 총 수익: {totalRevenue}원";
                 actionAgent.AddSystemMessage(systemMessage);
-                Debug.Log($"[{Name}] AI Agent에 결제 완료 메시지 추가: {systemMessage}");
             }
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[{Name}] 결제 처리 중 오류 발생: {ex.Message}");
+            Debug.LogWarning($"[{Name}] 결제 처리 중 오류 발생: {ex.Message}");
+            throw; // 예외를 다시 던져서 실패로 처리
         }
     }
 

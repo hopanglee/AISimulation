@@ -10,16 +10,57 @@ public abstract partial class NPC
 		if (string.IsNullOrEmpty(actorName))
 			return null;
 
-		var locationService = Services.Get<ILocationService>();
-		var currentArea = locationService.GetArea(curLocation);
-		if (currentArea != null)
+		// Sensor의 lookable에서 검색 (추가 감지 영역 포함)
+		if (sensor == null)
 		{
-			var actors = locationService.GetActor(currentArea, this);
-			foreach (var foundActor in actors)
+			// 폴백: 현재 Area에서 LocationService로 검색
+			var locationService = Services.Get<ILocationService>();
+			var currentArea = locationService.GetArea(curLocation);
+			if (currentArea != null)
 			{
-				if (foundActor.Name == actorName || foundActor.name == actorName)
+				var actors = locationService.GetActor(currentArea, this);
+				foreach (var foundActor in actors)
 				{
-					return foundActor;
+					if (string.Equals(foundActor.Name, actorName, StringComparison.OrdinalIgnoreCase) ||
+						string.Equals(foundActor.name, actorName, StringComparison.OrdinalIgnoreCase))
+					{
+						return foundActor;
+					}
+				}
+			}
+			Debug.LogWarning($"[{Name}] Sensor가 없어 Area 기반으로 검색했으나 Actor를 찾지 못했습니다: {actorName}");
+			return null;
+		}
+
+		var lookable = sensor.GetLookableEntities();
+		if (lookable == null || lookable.Count == 0)
+		{
+			sensor.UpdateAllSensors();
+			lookable = sensor.GetLookableEntities();
+		}
+
+		if (lookable != null)
+		{
+			// 1) full key로 먼저 매칭 시도 (예: "Hino Maori in Seating Area")
+			foreach (var kv in lookable)
+			{
+				if (string.Equals(kv.Key, actorName, StringComparison.OrdinalIgnoreCase) && kv.Value is Actor ak)
+				{
+					return ak;
+				}
+			}
+
+			// 2) 값의 표시 이름으로 매칭 (예: "Hino Maori")
+			foreach (var kv in lookable)
+			{
+				if (kv.Value is Actor a)
+				{
+					// 이름 또는 GameObject 이름으로 매칭 (대소문자 무시)
+					if (string.Equals(a.Name, actorName, StringComparison.OrdinalIgnoreCase) ||
+						string.Equals(a.name, actorName, StringComparison.OrdinalIgnoreCase))
+					{
+						return a;
+					}
 				}
 			}
 		}

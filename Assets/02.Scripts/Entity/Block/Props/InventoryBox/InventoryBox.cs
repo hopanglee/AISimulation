@@ -16,6 +16,16 @@ public abstract class InventoryBox : InteractableProp
     
     protected Entity[] positionEntities; // 각 위치에 있는 Entity 추적
     
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        // useSimplePlacement이 아니면 placement 위치 수를 maxItems로 자동 설정
+        if (!useSimplePlacement && itemPlacementPositions != null)
+        {
+            maxItems = itemPlacementPositions.Count;
+        }
+    }
+    
     protected virtual void Start()
     {
         // useSimplePlacement가 true면 itemPlacementPositions가 필요 없음

@@ -19,7 +19,7 @@ public class IzakayaWorker : NPC
     [InfoBox("Cook으로 만들 수 있는 요리 prefab을 key와 함께 등록하세요. key는 에이전트가 사용할 문자열입니다.")]
     [SerializeField] private SerializableDictionary<string, FoodBlock> cookablePrefabs = new();
 
-    [SerializeField, Min(0)] private int cookSimMinutes = 10; // 분 단위 조리 시간 (시뮬레이션 분)
+    [SerializeField] private int cookSimMinutes = 10; // 분 단위 조리 시간 (시뮬레이션 분)
 
     [Title("Kitchen (Cooking Room)")]
     [InfoBox("조리 전 이동할 조리실 위치를 지정합니다. Transform이 지정되면 해당 위치로, 없으면 Location Key로 이동합니다.")]
@@ -98,14 +98,14 @@ public class IzakayaWorker : NPC
                 return;
             }
 
-            ShowSpeech($"{locationKey}로 이동합니다.");
+            Debug.Log($"{locationKey}로 이동합니다.");
             var token = currentActionCancellation != null ? currentActionCancellation.Token : CancellationToken.None;
             await MoveToLocationAsync(locationKey, token);
         }
         catch (OperationCanceledException)
         {
             Debug.LogWarning($"[{Name}] Move 액션이 취소되었습니다.");
-            ShowSpeech("이동을 취소합니다.");
+            Debug.Log("이동을 취소합니다.");
         }
         catch (Exception ex)
         {
@@ -134,7 +134,7 @@ public class IzakayaWorker : NPC
 
             if (!cookablePrefabs.ContainsKey(dishKey) || cookablePrefabs[dishKey] == null)
             {
-                ShowSpeech($"{dishKey}는(은) 조리 목록에 없습니다.");
+                Debug.Log($"{dishKey}는(은) 조리 목록에 없습니다.");
                 await SimDelay.DelaySimMinutes(1, token);
                 return;
             }
@@ -143,35 +143,48 @@ public class IzakayaWorker : NPC
             await MoveToKitchenAsync(token);
 
             // 조리 시작
-            ShowSpeech($"{dishKey}를 조리합니다.");
+            Debug.Log($"{dishKey}를 조리합니다.");
             await SimDelay.DelaySimMinutes(cookSimMinutes, token);
 
-            // 프리팹 인스턴스화
+            // 프리팹 인스턴스화 (OnEnable 전에 curLocation을 설정하기 위해 비활성 부모 아래에서 생성)
             var prefab = cookablePrefabs[dishKey];
             Vector3 spawnPos = kitchenTransform != null ? kitchenTransform.position : transform.position;
-            FoodBlock cookedFood = Instantiate(prefab, spawnPos, Quaternion.identity);
 
-            // 이름 유지
+            // 임시 비활성 부모 생성
+            GameObject tempParent = new GameObject("_SpawnBuffer_TempParent");
+            tempParent.SetActive(false);
+
+            // 비활성 부모 아래에서 인스턴스 생성 (활성 상태는 prefab의 activeSelf를 따르지만, hierarchy상 비활성이라 OnEnable 호출되지 않음)
+            GameObject cookedGo = Instantiate(prefab.gameObject, spawnPos, Quaternion.identity, tempParent.transform);
+            FoodBlock cookedFood = cookedGo.GetComponent<FoodBlock>();
+
+            // 이름 유지 및 curLocation 선설정 (OnEnable 전에 등록 방지)
             cookedFood.Name = prefab.Name;
+            if (curLocation != null)
+                cookedFood.curLocation = curLocation;
+
+            // 부모 해제 후 활성화되어 OnEnable 호출됨 (이미 curLocation 설정됨)
+            cookedGo.transform.SetParent(null);
+            cookedGo.SetActive(true);
+            Destroy(tempParent);
 
             // 손(우선) 또는 인벤토리에 보관 시도
             bool picked = PickUp(cookedFood);
             if (!picked)
             {
-                // 손과 인벤토리가 가득한 경우, 현재 위치에 내려놓기
-                cookedFood.curLocation = curLocation;
-                ShowSpeech($"손과 인벤토리가 가득합니다. {dishKey}를 자리에 두었습니다.");
+                // PickUp 실패 시 현재 위치에 두기 (curLocation은 이미 설정됨)
+                Debug.Log($"손과 인벤토리가 가득합니다. {dishKey}를 자리에 두었습니다.");
                 await SimDelay.DelaySimMinutes(1, token);
                 return;
             }
 
-            ShowSpeech($"{dishKey} 준비 완료.");
+            Debug.Log($"{dishKey} 준비 완료.");
             await SimDelay.DelaySimMinutes(1, token);
         }
         catch (OperationCanceledException)
         {
             Debug.LogWarning($"[{Name}] Cook 액션이 취소되었습니다.");
-            ShowSpeech("조리를 취소합니다.");
+            Debug.Log("조리를 취소합니다.");
         }
         catch (Exception ex)
         {
@@ -190,7 +203,7 @@ public class IzakayaWorker : NPC
             {
                 Debug.LogWarning($"[{Name}] 결제 처리 실패: 매개변수가 없습니다.");
                 ShowSpeech("결제할 아이템을 알려주세요.");
-                return;
+                throw new InvalidOperationException("결제할 아이템 매개변수가 없습니다.");
             }
             
             string itemName = parameters[0]?.ToString();
@@ -198,7 +211,7 @@ public class IzakayaWorker : NPC
             {
                 Debug.LogWarning($"[{Name}] 결제 처리 실패: 아이템 이름이 없습니다.");
                 ShowSpeech("결제할 아이템을 알려주세요.");
-                return;
+                throw new InvalidOperationException("결제할 아이템 이름이 없습니다.");
             }
             
             // 가격표에서 아이템 찾기
@@ -207,36 +220,51 @@ public class IzakayaWorker : NPC
             {
                 Debug.LogWarning($"[{Name}] 결제 처리 실패: '{itemName}' 아이템을 찾을 수 없습니다.");
                 ShowSpeech($"죄송합니다. '{itemName}' 아이템은 판매하지 않습니다.");
-                return;
+                throw new InvalidOperationException($"'{itemName}' 아이템을 찾을 수 없습니다.");
             }
             
             Debug.Log($"[{Name}] 결제 처리 시작 - 아이템: {priceItem.itemName}, 가격: {priceItem.price}원");
-            ShowSpeech($"{priceItem.itemName} {priceItem.price}원 결제를 도와드리겠습니다.");
+            ShowSpeech($"{priceItem.itemName} {priceItem.price}원 결제 도와드릴게요.");
+            
+            // 보유 금액 0원 특수 처리
+            if (Money <= 0)
+            {
+                Debug.LogWarning($"[{Name}] 결제 실패: 보유 금액 0원. 먼저 돈을 받아야 합니다.");
+                ShowSpeech("결제를 위해 먼저 돈을 받아야 합니다.");
+                throw new InvalidOperationException("보유 금액이 0원입니다. 먼저 돈을 받아야 합니다.");
+            }
+            
+            // 보유 금액 체크
+            if (Money < priceItem.price)
+            {
+                Debug.LogWarning($"[{Name}] 결제 실패: 보유 금액 부족 (보유: {Money}원, 필요: {priceItem.price}원)");
+                ShowSpeech("죄송합니다. 금액이 부족합니다.");
+                throw new InvalidOperationException($"보유 금액이 부족합니다. (보유: {Money}원, 필요: {priceItem.price}원)");
+            }
             
             // 결제 처리 시뮬레이션
             await SimDelay.DelaySimMinutes(2);
             
-            // 결제 성공 시 이자카야 운영자금 증가 및 수익 추가
-            Money += priceItem.price;        // 이자카야 운영자금 증가 (고객이 돈을 지불)
-            totalRevenue += priceItem.price; // 수익 추가
+            // 결제 성공: 수익 증가, 보유 금액 차감
+            Money -= priceItem.price;
+            totalRevenue += priceItem.price;
             
-            string paymentReport = $"이자카야 직원 {Name}이 {priceItem.itemName} {priceItem.price}원 결제를 처리했습니다. 현재 운영자금: {Money}원, 총 수익: {totalRevenue}원";
+            string paymentReport = $"이자카야 직원 {Name}이 {priceItem.itemName} {priceItem.price}원 결제를 처리했습니다. 현재 보유금: {Money}원, 총 수익: {totalRevenue}원";
             Debug.Log($"[{Name}] 결제 완료: {paymentReport}");
-            
             ShowSpeech("결제가 완료되었습니다. 감사합니다!");
             
             // AI Agent에 결제 완료 메시지 추가
             if (actionAgent != null)
             {
                 string currentTime = GetFormattedCurrentTime();
-                string systemMessage = $"[{currentTime}] [SYSTEM] 결제 완료 - {priceItem.itemName} {priceItem.price}원, 현재 운영자금: {Money}원, 총 수익: {totalRevenue}원";
+                string systemMessage = $"[{currentTime}] [SYSTEM] 결제 완료 - {priceItem.itemName} {priceItem.price}원, 현재 보유금: {Money}원, 총 수익: {totalRevenue}원";
                 actionAgent.AddSystemMessage(systemMessage);
-                Debug.Log($"[{Name}] AI Agent에 결제 완료 메시지 추가: {systemMessage}");
             }
         }
         catch (Exception ex)
         {
             Debug.LogError($"[{Name}] 결제 처리 중 오류 발생: {ex.Message}");
+            throw; // 예외를 다시 던져서 실패로 처리
         }
     }
 
@@ -307,7 +335,10 @@ public class IzakayaWorker : NPC
         System.Action onReachedCallback = () =>
         {
             Debug.Log($"[{Name}] {locationKey}에 도착했습니다.");
-            tcs.SetResult(true);
+            if (!tcs.Task.IsCompleted)
+            {
+                tcs.SetResult(true);
+            }
         };
 
         // MoveController의 OnReached 이벤트에 콜백 등록
@@ -348,16 +379,15 @@ public class IzakayaWorker : NPC
             var timeoutTask = Task.Delay(30000, cancellationToken);
             var completedTask = await Task.WhenAny(tcs.Task, timeoutTask);
 
-            if (completedTask == timeoutTask) // 타임아웃 발생
+            // 도착했는지 확인
+            if (tcs.Task.IsCompleted)
+            {
+                await tcs.Task; // 성공/취소 결과를 전파
+            }
+            else if (completedTask == timeoutTask)
             {
                 Debug.LogWarning($"[{Name}] 이동 타임아웃: {locationKey}");
-                // 타임아웃 시 이동 리셋
                 MoveController.Reset();
-            }
-            else
-            {
-                // tcs.Task가 완료. 취소/성공 모두 await하여 예외/정상 완료를 전파
-                await tcs.Task;
             }
         }
         finally
@@ -381,7 +411,10 @@ public class IzakayaWorker : NPC
 
         System.Action onReachedCallback = () =>
         {
-            tcs.SetResult(true);
+            if (!tcs.Task.IsCompleted)
+            {
+                tcs.SetResult(true);
+            }
         };
 
         MoveController.OnReached += onReachedCallback;
@@ -412,14 +445,15 @@ public class IzakayaWorker : NPC
             var timeoutTask = Task.Delay(30000, cancellationToken);
             var completedTask = await Task.WhenAny(tcs.Task, timeoutTask);
 
-            if (completedTask == timeoutTask)
+            // 도착했는지 확인
+            if (tcs.Task.IsCompleted)
+            {
+                await tcs.Task; // 성공/취소 결과를 전파
+            }
+            else if (completedTask == timeoutTask)
             {
                 Debug.LogWarning($"[{Name}] 위치 이동 타임아웃: {position}");
                 MoveController.Reset();
-            }
-            else
-            {
-                await tcs.Task;
             }
         }
         finally

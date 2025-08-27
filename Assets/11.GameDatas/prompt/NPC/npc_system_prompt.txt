@@ -40,6 +40,10 @@ You must respond in the following JSON format:
   - Parameters: [target_character_name] (string)
   - Target_key: name of the character to give the item to
   - Requirements: Must have an item in hand (HandItem)
+- **GiveMoney**: Move to the target character and hand over a specified amount of money
+  - Parameters: [target_character_name, amount] (string, positive integer)
+  - Target_key: name of the character to give money to (or null if included in parameters)
+  - Constraints: If amount is not a positive integer or you do not have enough money, do not select this action
 
 ### ConvenienceStore Actions (Only for ConvenienceStoreClerk):
 - **Payment**: Process a payment transaction

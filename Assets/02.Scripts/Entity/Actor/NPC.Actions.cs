@@ -21,6 +21,7 @@ public struct NPCAction : INPCAction
 	public static readonly NPCAction GiveItem = new("GiveItem", "손에 있는 아이템을 다른 캐릭터에게 주기");
 	public static readonly NPCAction Talk = new("Talk", "대화하기");
 	public static readonly NPCAction PutDown = new("PutDown", "손에 있는 아이템을 특정 위치에 내려놓기");
+	public static readonly NPCAction GiveMoney = new("GiveMoney", "상대에게 돈을 건네기");
 
 	public override string ToString() => ActionName;
 	public override bool Equals(object obj) => obj is NPCAction other && ActionName == other.ActionName;
@@ -37,6 +38,7 @@ public abstract partial class NPC
 		RegisterActionHandler(NPCAction.Talk, HandleTalk);
 		RegisterActionHandler(NPCAction.GiveItem, HandleGiveItem);
 		RegisterActionHandler(NPCAction.PutDown, HandlePutDown);
+		RegisterActionHandler(NPCAction.GiveMoney, HandleGiveMoney);
 	}
 
 	protected void RegisterActionHandler(INPCAction action, Func<object[], Task> handler)
@@ -66,13 +68,15 @@ public abstract partial class NPC
 			currentAction = action;
 			isExecutingAction = true;
 			currentActionCancellation = new CancellationTokenSource();
+			bool actionSuccess = false;
 			try
 			{
 				await handler.Invoke(parameters);
+				actionSuccess = true;
 			}
 			finally
 			{
-				await LogActionCompletion(action, parameters);
+				await LogActionCompletion(action, parameters, actionSuccess);
 				isExecutingAction = false;
 				currentAction = null;
 				currentActionCancellation?.Dispose();
@@ -117,23 +121,144 @@ public abstract partial class NPC
 
 	protected virtual async Task HandleGiveItem(object[] parameters)
 	{
-		if (parameters == null || parameters.Length == 0) return;
+		if (parameters == null || parameters.Length == 0)
+		{
+			Debug.LogWarning($"[{Name}] GiveItem 실패: 파라미터가 없습니다.");
+			throw new InvalidOperationException("GiveItem 파라미터가 없습니다.");
+		}
+		
 		string targetName = parameters[0]?.ToString();
-		if (string.IsNullOrEmpty(targetName)) return;
-		if (HandItem == null) return;
+		if (string.IsNullOrEmpty(targetName))
+		{
+			Debug.LogWarning($"[{Name}] GiveItem 실패: 대상 이름이 없습니다.");
+			throw new InvalidOperationException("GiveItem 대상 이름이 없습니다.");
+		}
+		
+		if (HandItem == null)
+		{
+			Debug.LogWarning($"[{Name}] GiveItem 실패: 손에 아이템이 없습니다.");
+			throw new InvalidOperationException("GiveItem 손에 아이템이 없습니다.");
+		}
+		
 		Actor targetActor = FindActorByName(targetName);
-		if (targetActor == null) return;
-		Give(targetName);
-		await SimDelay.DelaySimMinutes(2, currentActionCancellation != null ? currentActionCancellation.Token : default);
+		if (targetActor == null)
+		{
+			Debug.LogWarning($"[{Name}] GiveItem 실패: 대상 배우를 찾지 못했습니다: {targetName}");
+			throw new InvalidOperationException($"GiveItem 대상 배우를 찾지 못했습니다: {targetName}");
+		}
+
+		// 대상에게 이동
+		await MoveToActor(targetActor, currentActionCancellation != null ? currentActionCancellation.Token : default);
+
+		var beforeItem = HandItem;
+		// 이름 키 대신 실제 Actor 참조로 직접 전달
+		bool received = targetActor.Receive(this, beforeItem);
+		await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
+		if (!received)
+		{
+			Debug.LogWarning($"[{Name}] GiveItem 실패: 아이템 전달 실패: {beforeItem?.Name} -> {targetActor.Name}");
+			throw new InvalidOperationException($"GiveItem 아이템 전달 실패: {beforeItem?.Name} -> {targetActor.Name}");
+		}
+		else
+		{
+			// 수신 성공 시 보낸 쪽 HandItem 비우기
+			HandItem = null;
+			ShowSpeech($"{targetActor.Name}에게 건넸습니다.");
+		}
+	}
+
+	protected virtual async Task HandleGiveMoney(object[] parameters)
+	{
+		if (parameters == null || parameters.Length < 2)
+		{
+			Debug.LogWarning($"[{Name}] GiveMoney 실패: 파라미터가 부족합니다. [target, money]");
+			throw new InvalidOperationException("GiveMoney 파라미터가 부족합니다. [target, money]");
+		}
+		
+		string targetName = parameters[0]?.ToString();
+		if (string.IsNullOrEmpty(targetName))
+		{
+			Debug.LogWarning($"[{Name}] GiveMoney 실패: 대상 이름이 없습니다.");
+			throw new InvalidOperationException("GiveMoney 대상 이름이 없습니다.");
+		}
+		
+		if (!int.TryParse(parameters[1]?.ToString(), out int amount) || amount <= 0)
+		{
+			Debug.LogWarning($"[{Name}] GiveMoney 실패: 금액이 유효하지 않습니다. (입력값: {parameters[1]})");
+			throw new InvalidOperationException($"GiveMoney 금액이 유효하지 않습니다. (입력값: {parameters[1]})");
+		}
+		
+		if (Money < amount)
+		{
+			Debug.LogWarning($"[{Name}] GiveMoney 실패: 보유 금액이 부족합니다. (보유: {Money}원, 필요: {amount}원)");
+			throw new InvalidOperationException($"GiveMoney 보유 금액이 부족합니다. (보유: {Money}원, 필요: {amount}원)");
+		}
+		
+		Actor targetActor = FindActorByName(targetName);
+		if (targetActor == null)
+		{
+			Debug.LogWarning($"[{Name}] GiveMoney 실패: 대상 배우를 찾지 못했습니다: {targetName}");
+			throw new InvalidOperationException($"GiveMoney 대상 배우를 찾지 못했습니다: {targetName}");
+		}
+
+		// 이동 후 지급
+		await MoveToActor(targetActor, currentActionCancellation != null ? currentActionCancellation.Token : default);
+		GiveMoney(targetActor, amount);
+		Debug.Log($"[{Name}] {targetActor.Name}에게 {amount}원을 전달했습니다. 남은 보유금: {Money}");
+		await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
+	}
+
+	private async Task MoveToActor(Actor target, CancellationToken token)
+	{
+		if (target == null) return;
+		
+		// Interactable 범위 안에 있는지 확인
+		if (IsInInteractableRange(target))
+		{
+			Debug.Log($"[{Name}] {target.Name}이(가) 이미 Interactable 범위 안에 있습니다. 이동하지 않습니다.");
+			return;
+		}
+		
+		// 범위 밖에 있으면 이동
+		string key = target.GetSimpleKeyRelativeToActor(this);
+		if (!string.IsNullOrEmpty(key))
+		{
+			Debug.Log($"[{Name}] {target.Name}이(가) Interactable 범위 밖에 있습니다. 이동을 시작합니다.");
+			Move(key);
+			await SimDelay.DelaySimMinutes(1, token);
+		}
+	}
+	
+	/// <summary>
+	/// 대상이 Interactable 범위 안에 있는지 확인
+	/// </summary>
+	private bool IsInInteractableRange(Actor target)
+	{
+		if (target == null || sensor == null) return false;
+		
+		// sensor의 Interactable 범위 내에 있는지 확인
+		var interactableEntities = sensor.GetInteractableEntities();
+		if (interactableEntities?.actors != null)
+		{
+			// target이 interactable actors 목록에 있는지 확인
+			foreach (var actor in interactableEntities.actors.Values)
+			{
+				if (actor == target)
+				{
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 
 	protected virtual async Task HandlePutDown(object[] parameters)
 	{
 		if (HandItem == null)
 		{
-			ShowSpeech("손에 들고 있는 아이템이 없습니다.");
-			await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
-			return;
+			Debug.LogWarning($"[{Name}] PutDown 실패: 손에 들고 있는 아이템이 없습니다.");
+			throw new InvalidOperationException("PutDown 손에 들고 있는 아이템이 없습니다.");
 		}
 
 		string targetKey = null;
@@ -142,13 +267,32 @@ public abstract partial class NPC
 			targetKey = parameters[0]?.ToString();
 		}
 
-		// InventoryBox 찾기 (targetKey가 제공되면 해당 키로, 아니면 주변에서 자동으로)
-		InventoryBox targetInventoryBox = null;
+		// 타겟 위치 찾기 (ILocation 또는 InventoryBox)
+		ILocation targetLocation = null;
 		
 		if (!string.IsNullOrEmpty(targetKey))
 		{
 			// 특정 키로 InventoryBox 찾기
-			targetInventoryBox = FindInventoryBoxByKey(targetKey);
+			var targetInventoryBox = FindInventoryBoxByKey(targetKey);
+			if (targetInventoryBox != null)
+			{
+				targetLocation = targetInventoryBox;
+			}
+			else
+			{
+				// 키가 주어졌는데 해당 InventoryBox가 주변에 없으면 액션 취소 (UseGPT면 재결정 유도)
+				Debug.LogWarning($"[{Name}] '{targetKey}' InventoryBox를 찾지 못했습니다. PutDown을 취소합니다.");
+				if (UseGPT)
+				{
+					var currentTime = GetFormattedCurrentTime();
+					var systemMessage = $"[{currentTime}] SYSTEM: 대상을 찾지 못했습니다. 다시 판단합니다.";
+					if (actionAgent != null)
+						actionAgent.AddSystemMessage(systemMessage);
+					await ProcessEventWithAgent();
+				}
+				await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
+				return;
+			}
 		}
 		else
 		{
@@ -156,17 +300,26 @@ public abstract partial class NPC
 			var nearbyInventoryBoxes = FindNearbyInventoryBoxes();
 			if (nearbyInventoryBoxes.Count > 0)
 			{
-				targetInventoryBox = nearbyInventoryBoxes[0];
+				targetLocation = nearbyInventoryBoxes[0];
+			}
+			else
+			{
+				// InventoryBox가 없으면 현재 위치에 놓기 (키가 없을 때만 허용)
+				targetLocation = curLocation;
 			}
 		}
 
-		if (targetInventoryBox != null)
+		if (targetLocation != null)
 		{
-			// InventoryBox로 이동
-			await MoveToInventoryBox(targetInventoryBox);
+			// InventoryBox인 경우 Interactable 범위 확인 후 필요시 이동
+			if (targetLocation is InventoryBox inventoryBox)
+			{
+				await MoveToInventoryBoxIfNeeded(inventoryBox);
+			}
 			
-			// 상호작용하여 아이템 놓기 (공통 함수 사용)
-			await InteractWithInteractable(targetInventoryBox);
+			// Actor.PutDown 함수를 직접 호출 (Agent 호출 없이)
+			Debug.Log($"[{Name}] {HandItem.Name}을(를) {(targetLocation as UnityEngine.MonoBehaviour)?.name ?? "현재 위치"}에 놓습니다.");
+			PutDown(targetLocation);
 			
 			await SimDelay.DelaySimMinutes(2, currentActionCancellation != null ? currentActionCancellation.Token : default);
 		}
@@ -174,8 +327,8 @@ public abstract partial class NPC
 		{
 			string errorMessage = !string.IsNullOrEmpty(targetKey) 
 				? $"{targetKey}를 찾을 수 없습니다." 
-				: "주변에 물건을 놓을 수 있는 곳이 없습니다.";
-			ShowSpeech(errorMessage);
+				: "아이템을 놓을 위치를 찾을 수 없습니다.";
+			Debug.LogWarning($"[{Name}] {errorMessage}");
 			await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
 		}
 	}
@@ -234,6 +387,49 @@ public abstract partial class NPC
 		await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
 	}
 
+	/// <summary>
+	/// InventoryBox가 Interactable 범위 밖에 있으면 이동합니다.
+	/// </summary>
+	private async Task MoveToInventoryBoxIfNeeded(InventoryBox inventoryBox)
+	{
+		if (inventoryBox == null) return;
+		
+		// Interactable 범위 안에 있는지 확인
+		if (IsInventoryBoxInInteractableRange(inventoryBox))
+		{
+			Debug.Log($"[{Name}] {inventoryBox.name}이(가) 이미 Interactable 범위 안에 있습니다. 이동하지 않습니다.");
+			return;
+		}
+		
+		// 범위 밖에 있으면 이동
+		Debug.Log($"[{Name}] {inventoryBox.name}이(가) Interactable 범위 밖에 있습니다. 이동을 시작합니다.");
+		await MoveToInventoryBox(inventoryBox);
+	}
+	
+	/// <summary>
+	/// InventoryBox가 Interactable 범위 안에 있는지 확인
+	/// </summary>
+	private bool IsInventoryBoxInInteractableRange(InventoryBox inventoryBox)
+	{
+		if (inventoryBox == null || sensor == null) return false;
+		
+		// sensor의 Interactable 범위 내에 있는지 확인
+		var interactableEntities = sensor.GetInteractableEntities();
+		if (interactableEntities?.props != null)
+		{
+			// inventoryBox가 interactable props 목록에 있는지 확인
+			foreach (var prop in interactableEntities.props.Values)
+			{
+				if (prop == inventoryBox)
+				{
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+
 	protected virtual async Task HandleTalk(object[] parameters)
 	{
 		string targetName = null;
@@ -251,6 +447,8 @@ public abstract partial class NPC
 		if (!string.IsNullOrEmpty(targetName)) targetActor = FindActorByName(targetName);
 		if (targetActor != null)
 		{
+			// 대상이 Interactable 범위 밖에 있으면 이동
+			await MoveToActor(targetActor, currentActionCancellation != null ? currentActionCancellation.Token : default);
 			Talk(targetActor, message);
 		}
 		else

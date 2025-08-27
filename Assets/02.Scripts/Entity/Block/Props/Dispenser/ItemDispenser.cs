@@ -36,11 +36,23 @@ public class ItemDispenser : InteractableProp
 
         var entry = supplies.First(e => e.itemKey == itemKey);
 
-        // 위치는 신경쓰지 않으므로 기본 오버로드로 단순 생성
-        var instance = Instantiate(entry.prefab);
+        // 임시 비활성 부모 생성
+        GameObject tempParent = new GameObject("TempParent");
+        tempParent.SetActive(false);
         
-        // 생성된 아이템의 curLocation을 이 디스펜서로 설정
-        instance.curLocation = this;
+        // 비활성 상태로 생성하여 OnEnable 실행 방지
+        var instance = Instantiate(entry.prefab, tempParent.transform);
+        
+        // curLocation 설정 (OnEnable 실행 전)
+        if (instance is Entity entity)
+        {
+            entity.curLocation = this;
+        }
+        
+        // 부모에서 분리하고 활성화
+        instance.transform.SetParent(null);
+        Destroy(tempParent);
+        instance.gameObject.SetActive(true);
         
         return instance;
     }

@@ -129,6 +129,17 @@ public class NPCActionAgent : GPT
     {
         try
         {
+            // UseGPT가 비활성화된 경우 즉시 기본 액션 반환 (API 호출 방지)
+            if (owner is Actor a && !a.UseGPT)
+            {
+                Debug.Log($"[NPCActionAgent] GPT 비활성화됨 - 기본 Wait 반환 (owner: {a.Name})");
+                return new NPCActionDecision
+                {
+                    actionType = availableActions?.FirstOrDefault()?.ActionName ?? "Wait",
+                    parameters = null
+                };
+            }
+
             // 최신 인지 스냅샷 반영 (NPC에서 선행 호출하지만 안전망으로 한 번 더 처리)
             if (owner?.sensor != null)
             {

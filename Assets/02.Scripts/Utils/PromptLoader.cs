@@ -195,7 +195,7 @@ public static class PromptLoader
         var actionDescriptions = new List<string>();
 
         // 공통 액션 목록 (Common에서 관리)
-        var commonActions = new HashSet<string> { "Wait", "Talk", "PutDown", "GiveItem" };
+        var commonActions = new HashSet<string> { "Wait", "Talk", "PutDown", "GiveItem", "GiveMoney" };
 
         foreach (var action in availableActions)
         {

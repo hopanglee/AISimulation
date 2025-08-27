@@ -12,6 +12,7 @@ public class ActorEditor : OdinEditor
     private bool showInteractableEntities = false;
     private bool showMovableEntities = false;
     private bool showMovableAreas = false;
+    private bool showHandAndInventory = false;
     
     public override void OnInspectorGUI()
     {
@@ -123,6 +124,63 @@ public class ActorEditor : OdinEditor
             EditorGUILayout.LabelField(
                 "Sensor not found. Please ensure Actor has a Sensor component."
             );
+        }
+
+        // Hand Item & Inventory Information
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Hand & Inventory Information", EditorStyles.boldLabel);
+        
+        showHandAndInventory = EditorGUILayout.Foldout(showHandAndInventory, "Hand & Inventory Items");
+        if (showHandAndInventory)
+        {
+            EditorGUI.indentLevel++;
+            
+            // Hand Item
+            EditorGUILayout.LabelField("Hand Item:");
+            if (actor.HandItem != null)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.LabelField($"• Key: {actor.HandItem.Name}");
+                EditorGUILayout.LabelField($"• GameObject: {actor.HandItem.gameObject.name}");
+                EditorGUILayout.LabelField($"• Type: {actor.HandItem.GetType().Name}");
+                EditorGUI.indentLevel--;
+            }
+            else
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.LabelField("• None");
+                EditorGUI.indentLevel--;
+            }
+            
+            EditorGUILayout.Space();
+            
+            // Inventory Items
+            EditorGUILayout.LabelField("Inventory Items:");
+            if (actor.InventoryItems != null)
+            {
+                EditorGUI.indentLevel++;
+                for (int i = 0; i < actor.InventoryItems.Length; i++)
+                {
+                    var item = actor.InventoryItems[i];
+                    if (item != null)
+                    {
+                        EditorGUILayout.LabelField($"• Slot {i}: {item.Name} ({item.gameObject.name})");
+                    }
+                    else
+                    {
+                        EditorGUILayout.LabelField($"• Slot {i}: Empty");
+                    }
+                }
+                EditorGUI.indentLevel--;
+            }
+            else
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.LabelField("• Inventory not initialized");
+                EditorGUI.indentLevel--;
+            }
+            
+            EditorGUI.indentLevel--;
         }
     }
 }

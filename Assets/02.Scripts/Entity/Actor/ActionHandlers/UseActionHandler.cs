@@ -37,7 +37,11 @@ namespace Agent.ActionHandlers
                 Debug.Log($"[{actor.Name}] {actor.HandItem.Name} 사용 시작");
 
                 // Hand에 있는 아이템의 타입에 따라 다른 처리
-                if (actor.HandItem is iPhone iphone)
+                if (actor.HandItem is Clothing clothing)
+                {
+                    await HandleClothingUse(clothing, token);
+                }
+                else if (actor.HandItem is iPhone iphone)
                 {
                     await HandleiPhoneUse(iphone, parameters, token);
                 }
@@ -73,6 +77,33 @@ namespace Agent.ActionHandlers
             catch (Exception ex)
             {
                 Debug.LogError($"[{actor.Name}] HandleUseObject 오류: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Clothing 사용을 처리합니다.
+        /// </summary>
+        private async Task HandleClothingUse(Clothing clothing, CancellationToken token)
+        {
+            try
+            {
+                Debug.Log($"[{actor.Name}] {clothing.Name} 착용 시작");
+                
+                // Clothing.Use() 메서드 호출 (Wear 호출)
+                var result = clothing.Use(actor, null);
+                Debug.Log($"[{actor.Name}] Clothing 착용 결과: {result}");
+                
+                // 옷 착용에는 1분 소요
+                await SimDelay.DelaySimMinutes(1, token);
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.Log($"[{actor.Name}] Clothing 착용이 취소됨");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[{actor.Name}] HandleClothingUse 오류: {ex.Message}");
             }
         }
 

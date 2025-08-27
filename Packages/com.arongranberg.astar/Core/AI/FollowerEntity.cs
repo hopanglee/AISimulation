@@ -235,7 +235,7 @@ namespace Pathfinding {
 				allowRotatingOnSpot = true,
 				leadInRadiusWhenApproachingDestination = 1f,
 			},
-			stopDistance = 0.2f,
+			stopDistance = 0.5f,
 			rotationSmoothing = 0f,
 			groundMask = -1,
 			isStopped = false,
