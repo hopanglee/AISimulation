@@ -59,6 +59,17 @@ namespace Agent
             var itemType = actor.HandItem.GetType();
             ParameterAgentBase targetAgent = null;
 
+            // Clothing은 파라미터 없이 직접 처리
+            if (actor.HandItem is Clothing)
+            {
+                Debug.Log($"[{actor.Name}] Clothing 아이템은 파라미터 없이 착용합니다.");
+                return new ActParameterResult
+                {
+                    ActType = request.ActType,
+                    Parameters = new Dictionary<string, object>()
+                };
+            }
+
             // 정확한 타입 매칭 시도
             if (itemTypeAgents.TryGetValue(itemType, out targetAgent))
             {

@@ -108,7 +108,11 @@ public abstract class Entity : MonoBehaviour, ILocation
     private string _name; // Never change. ex. "iPhone", "box", "Table"
     public string Name
     {
-        get { return _name; }
+        get {
+            if (string.IsNullOrEmpty(_name))
+                return gameObject != null ? gameObject.name : "";
+            return _name;
+        }
         set { _name = value; }
     }
 
@@ -228,6 +232,36 @@ public abstract class Entity : MonoBehaviour, ILocation
 
     public void RegisterToLocationService()
     {
-        Services.Get<ILocationService>().Add(this.curLocation, this);
+        if (curLocation != null)
+        {
+            Services.Get<ILocationService>().Add(this.curLocation, this);
+        }
+        else
+        {
+            var safeName = string.IsNullOrEmpty(Name) && gameObject != null ? gameObject.name : Name;
+
+            // 가장 가까운 부모 중 ILocation을 찾는다
+            ILocation nearestParentLocation = null;
+            foreach (var component in transform.GetComponentsInParent<MonoBehaviour>())
+            {
+                if (component == this)
+                    continue;
+                if (component is ILocation loc)
+                {
+                    nearestParentLocation = loc;
+                    break;
+                }
+            }
+
+            if (nearestParentLocation != null)
+            {
+                Debug.Log($"[{safeName}] curLocation이 null이어서 부모 ILocation('{(nearestParentLocation as MonoBehaviour)?.name}')로 등록합니다.");
+                Services.Get<ILocationService>().Add(nearestParentLocation, this);
+            }
+            else
+            {
+                Debug.LogWarning($"[{safeName}] curLocation이 null이고 부모 ILocation도 없어 LocationService에 등록할 수 없습니다.");
+            }
+        }
     }
 }

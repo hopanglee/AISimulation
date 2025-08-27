@@ -11,11 +11,14 @@ public class MoveController : MonoBehaviour
     public bool isMoving = false;
     public event Action OnReached;
 
+    private Entity entity;
+
     private void Awake()
     {
         followerEntity = GetComponent<FollowerEntity>();
         aIDestinationSetter = GetComponent<AIDestinationSetter>();
         //followerEntity.stopDistance = 0f; // 목적지와 1m 거리에서도 멈추도록 설정
+        entity = GetComponent<Entity>();
     }
 
     public void SetTarget(Vector3 vector)
@@ -49,10 +52,23 @@ public class MoveController : MonoBehaviour
         if (followerEntity == null)
             Debug.LogError("FollowerEntity is NULL");
 
+        // 한 프레임 대기 후 상태 체크 시작
         yield return null;
 
-        while (!followerEntity.reachedCrowdedEndOfPath)
+        while (true)
         {
+            bool reached = false;
+            if (followerEntity != null)
+            {
+                // 다양한 도착 조건을 모두 고려
+                reached = followerEntity.reachedCrowdedEndOfPath
+                          || followerEntity.reachedEndOfPath
+                          || followerEntity.reachedDestination;
+            }
+
+            if (reached)
+                break;
+
             yield return null; // 프레임 대기
         }
 
@@ -62,11 +78,14 @@ public class MoveController : MonoBehaviour
 
     private void OnReachTarget()
     {
-        Debug.Log($"{gameObject.name} REACH!!");
-        Reset();
+        var namePrefix = entity != null ? entity.Name : gameObject.name;
+        Debug.Log($"[{namePrefix}] REACH!!");
+
         OnReached?.Invoke();
 
-        OnReached = null;
+        Reset();
+
+        //OnReached = null;
     }
 
     public void Pause()

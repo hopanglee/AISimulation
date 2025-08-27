@@ -45,7 +45,10 @@ public abstract partial class NPC : Actor
     [ValueDropdown("GetAvailableActionNames")]
     [SerializeField] private string debugActionType = "Wait";
     
+    private string previousDebugActionType = "Wait";
+    
     [FoldoutGroup("Manual Action Testing")]
+    [ShowIf("HasParameters")]
     [SerializeField] private string[] debugParameters = new string[0];
     
     [FoldoutGroup("Manual Action Testing")]
@@ -59,6 +62,13 @@ public abstract partial class NPC : Actor
     }
     
     [FoldoutGroup("Manual Action Testing")]
+    [Button("Show Parameter Examples")]
+    private void ShowParameterExamples()
+    {
+        LogParameterExamples();
+    }
+    
+    [FoldoutGroup("Manual Action Testing")]
     [Button("Clear Agent Messages")]
     private void ClearAgentMessages()
     {
@@ -67,6 +77,18 @@ public abstract partial class NPC : Actor
             actionAgent.ClearMessages();
             Debug.Log($"[{Name}] AI Agent 메시지 기록 초기화됨");
         }
+    }
+    
+    [FoldoutGroup("Debug Inventory"), Button("Swap Hand <-> Inven Slot 1")]
+    private void DebugSwapHandWithInvenSlot1()
+    {
+        SwapHandWithInvenSlot(0);
+    }
+
+    [FoldoutGroup("Debug Inventory"), Button("Swap Hand <-> Inven Slot 2")]
+    private void DebugSwapHandWithInvenSlot2()
+    {
+        SwapHandWithInvenSlot(1);
     }
     
 
@@ -85,6 +107,19 @@ public abstract partial class NPC : Actor
         
         // TimeService 가져오기
         timeService = Services.Get<ITimeService>();
+    }
+    
+    protected virtual void OnValidate()
+    {
+        // ActionType이 변경되었을 때 파라미터 예시 로그 출력
+        if (debugActionType != previousDebugActionType)
+        {
+            previousDebugActionType = debugActionType;
+            if (Application.isPlaying)
+            {
+                LogParameterExamples();
+            }
+        }
     }
     
     protected virtual void InitializeNPC()
@@ -129,112 +164,7 @@ public abstract partial class NPC : Actor
         Debug.Log($"[{Name}] AI Agent 초기화 완료 - 역할: {npcRole}");
     }
 
-    #region Perception Debug (Odin Inspector)
-    [FoldoutGroup("Perception Debug"), Button("Update Lookable Snapshot")]
-    private void Odin_UpdateLookable()
-    {
-        if (Application.isPlaying)
-        {
-            UpdateLookableEntity();
-        }
-    }
 
-    [FoldoutGroup("Perception Debug"), ShowInInspector, ReadOnly]
-    private SerializableDictionary<string, Entity> Odin_Lookable
-    {
-        get
-        {
-            if (sensor == null) return new SerializableDictionary<string, Entity>();
-            if (Application.isPlaying)
-                UpdateLookableEntity();
-            return sensor.GetLookableEntities();
-        }
-    }
-
-    [FoldoutGroup("Perception Debug"), ShowInInspector, ReadOnly]
-    private SerializableDictionary<string, Entity> Odin_Collectible
-    {
-        get
-        {
-            if (sensor == null) return new SerializableDictionary<string, Entity>();
-            if (Application.isPlaying)
-                UpdateLookableEntity();
-            return sensor.GetCollectibleEntities();
-        }
-    }
-
-    [FoldoutGroup("Perception Debug/Interactable"), ShowInInspector, ReadOnly]
-    private SerializableDictionary<string, Actor> Odin_Interactable_Actors
-    {
-        get
-        {
-            if (sensor == null) return new SerializableDictionary<string, Actor>();
-            if (Application.isPlaying)
-                UpdateLookableEntity();
-            return sensor.GetInteractableEntities().actors;
-        }
-    }
-
-    [FoldoutGroup("Perception Debug/Interactable"), ShowInInspector, ReadOnly]
-    private SerializableDictionary<string, Prop> Odin_Interactable_Props
-    {
-        get
-        {
-            if (sensor == null) return new SerializableDictionary<string, Prop>();
-            if (Application.isPlaying)
-                UpdateLookableEntity();
-            return sensor.GetInteractableEntities().props;
-        }
-    }
-
-    [FoldoutGroup("Perception Debug/Interactable"), ShowInInspector, ReadOnly]
-    private SerializableDictionary<string, Building> Odin_Interactable_Buildings
-    {
-        get
-        {
-            if (sensor == null) return new SerializableDictionary<string, Building>();
-            if (Application.isPlaying)
-                UpdateLookableEntity();
-            return sensor.GetInteractableEntities().buildings;
-        }
-    }
-
-    [FoldoutGroup("Perception Debug/Interactable"), ShowInInspector, ReadOnly]
-    private SerializableDictionary<string, Item> Odin_Interactable_Items
-    {
-        get
-        {
-            if (sensor == null) return new SerializableDictionary<string, Item>();
-            if (Application.isPlaying)
-                UpdateLookableEntity();
-            return sensor.GetInteractableEntities().items;
-        }
-    }
-
-    [FoldoutGroup("Perception Debug/Movable"), ShowInInspector, ReadOnly]
-    private SerializableDictionary<string, Vector3> Odin_Movable_Positions
-    {
-        get
-        {
-            if (sensor == null) return new SerializableDictionary<string, Vector3>();
-            if (Application.isPlaying)
-                UpdateLookableEntity();
-            return sensor.GetMovablePositions();
-        }
-    }
-
-    [FoldoutGroup("Perception Debug/Movable"), ShowInInspector, ReadOnly]
-    private List<string> Odin_Movable_Entities
-    {
-        get
-        {
-            if (sensor == null) return new List<string>();
-            if (Application.isPlaying)
-                UpdateLookableEntity();
-            return sensor.GetMovableEntities();
-        }
-    }
-    #endregion
 
     
     
@@ -244,6 +174,11 @@ public abstract partial class NPC : Actor
     /// </summary>
     public virtual async UniTask ProcessEventWithAgent()
     {
+        if (!UseGPT)
+        {
+            Debug.Log($"[{Name}] GPT 비활성화됨 - Agent 호출 건너뜀");
+            return;
+        }
         if (actionAgent == null)
         {
             Debug.LogWarning($"[{Name}] AI Agent가 초기화되지 않았습니다.");
@@ -540,7 +475,8 @@ public abstract partial class NPC : Actor
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[{Name}] 디버그 액션 실행 실패: {ex.Message}");
+            Debug.LogWarning($"[{Name}] 디버그 액션 실행 실패: {ex.Message}");
+            // 예외를 다시 던지지 않음 - 디버그 액션이므로 실패해도 계속 진행
         }
     }
     
@@ -565,6 +501,176 @@ public abstract partial class NPC : Actor
     private INPCAction FindActionByName(string actionName)
     {
         return availableActions?.FirstOrDefault(action => action.ActionName == actionName);
+    }
+    
+    /// <summary>
+    /// 현재 선택된 ActionType이 파라미터를 필요로 하는지 확인
+    /// </summary>
+    private bool HasParameters()
+    {
+        return GetParameterCount(debugActionType) > 0;
+    }
+    
+    /// <summary>
+    /// 현재 선택된 ActionType의 파라미터 예시를 로그로 출력
+    /// </summary>
+    private void LogParameterExamples()
+    {
+        var paramCount = GetParameterCount(debugActionType);
+        if (paramCount == 0)
+        {
+            Debug.Log($"[{Name}] {debugActionType} 액션은 파라미터가 필요하지 않습니다.");
+            return;
+        }
+        
+        var examples = GetParameterExamples(debugActionType);
+        Debug.Log($"[{Name}] {debugActionType} 액션 파라미터 예시: {examples}");
+    }
+    
+    /// <summary>
+    /// 액션 타입에 따른 파라미터 개수 반환
+    /// </summary>
+    private int GetParameterCount(string actionName)
+    {
+        return actionName switch
+        {
+            "Wait" => 0,
+            "Talk" => 2, // [대상이름, 메시지] 또는 [메시지] (선택사항)
+            "GiveItem" => 1, // 대상 캐릭터 이름
+            "GiveMoney" => 2, // [대상캐릭터이름, 금액]
+            "PutDown" => 1, // 대상 위치/키 (선택사항)
+            "Move" => 1, // 이동할 위치/대상
+            "Payment" => 1, // [아이템이름] (편의점/호스트클럽/이자카야/병원접수처)
+            "Examine" => 2, // [환자이름, 진찰내용] (병원의사)
+            "NotifyReceptionist" => 1, // [메시지] (병원의사)
+            "NotifyDoctor" => 1, // [메시지] (병원접수처)
+            "Cook" => 1, // [요리키] (이자카야)
+            "PrepareMenu" => 3, // [메뉴키1, 메뉴키2, 메뉴키3] (카페)
+            _ => 0
+        };
+    }
+    
+    /// <summary>
+    /// 액션 타입에 따른 파라미터 예시 문자열 생성
+    /// </summary>
+    private string GetParameterExamples(string actionName)
+    {
+        var paramCount = GetParameterCount(actionName);
+        if (paramCount == 0)
+            return "파라미터 없음";
+        
+        var examples = new List<string>();
+        for (int i = 0; i < paramCount; i++)
+        {
+            var example = GetParameterExample(actionName, i);
+            examples.Add($"parameter[{i}] = {example}");
+        }
+        
+        return string.Join(", ", examples);
+    }
+    
+    /// <summary>
+    /// 액션 타입과 파라미터 인덱스에 따른 구체적인 예시 반환
+    /// </summary>
+    private string GetParameterExample(string actionName, int parameterIndex)
+    {
+        // 액션 타입별로 파라미터 예시 제공
+        return actionName switch
+        {
+            "Talk" => parameterIndex == 0 ? "\"Customer\"" : "\"안녕하세요\"",
+            "GiveItem" => parameterIndex == 0 ? "\"Customer\"" : "\"대상 캐릭터 이름\"",
+            "GiveMoney" => parameterIndex == 0 ? "\"Customer\"" : parameterIndex == 1 ? "\"500\"" : "\"금액\"",
+            "PutDown" => parameterIndex == 0 ? "\"Table\" 또는 \"Kitchen\"" : "\"대상 위치/키\"",
+            "Move" => parameterIndex == 0 ? "\"Kitchen\" 또는 \"Table\"" : "\"이동할 위치/대상\"",
+            "Payment" => parameterIndex == 0 ? "\"apple\" 또는 \"coffee\"" : "\"결제할 아이템 이름\"",
+            "Examine" => parameterIndex == 0 ? "\"Patient\"" : "\"환자 이름\"",
+            "NotifyReceptionist" => parameterIndex == 0 ? "\"환자 안내를 요청합니다\"" : "\"전달할 메시지\"",
+            "NotifyDoctor" => parameterIndex == 0 ? "\"환자가 도착했습니다\"" : "\"전달할 메시지\"",
+            "Cook" => parameterIndex == 0 ? "\"Yakitori\" 또는 \"Oden\"" : "\"조리할 요리 키\"",
+            "PrepareMenu" => parameterIndex == 0 ? "\"americano\"" : parameterIndex == 1 ? "\"latte\"" : "\"croissant\"",
+            "Wait" => "파라미터 없음",
+            _ => "\"값\""
+        };
+    }
+    
+    /// <summary>
+    /// 손과 인벤토리 슬롯 간의 아이템 스왑
+    /// </summary>
+    private void SwapHandWithInvenSlot(int index)
+    {
+        if (InventoryItems == null || index < 0 || index >= InventoryItems.Length)
+        {
+            Debug.LogWarning($"[{Name}] 잘못된 인벤토리 슬롯 인덱스: {index}");
+            return;
+        }
+
+        var invItem = InventoryItems[index];
+        var hand = HandItem;
+
+        // Case 1: 둘 다 null → 아무것도 안 함
+        if (hand == null && invItem == null)
+        {
+            Debug.Log($"[{Name}] 손과 인벤 슬롯 {index + 1} 모두 비어 있음");
+            return;
+        }
+
+        // Helper: Attach to Hand
+        void AttachToHandLocal(Item item)
+        {
+            if (item == null) return;
+            HandItem = item;
+            HandItem.curLocation = Hand;
+            if (Hand != null)
+            {
+                item.transform.SetParent(Hand.transform, false);
+            }
+            item.gameObject.SetActive(true);
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localRotation = Quaternion.identity;
+        }
+
+        // Helper: Attach to Inventory slot
+        void AttachToInventoryLocal(int slot, Item item)
+        {
+            if (item == null) return;
+            InventoryItems[slot] = item;
+            item.curLocation = Inven;
+            if (Inven != null)
+            {
+                item.transform.SetParent(Inven.transform, false);
+            }
+            item.gameObject.SetActive(false); // 인벤토리 아이템은 비가시화
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localRotation = Quaternion.identity;
+        }
+
+        // Case 2: 손 비었고 인벤에 있음 → 인벤 -> 손
+        if (hand == null && invItem != null)
+        {
+            InventoryItems[index] = null;
+            AttachToHandLocal(invItem);
+            Debug.Log($"[{Name}] 인벤 슬롯 {index + 1} → 손으로 이동: {invItem.Name}");
+            return;
+        }
+
+        // Case 3: 손에 있고 인벤 비었음 → 손 -> 인벤
+        if (hand != null && invItem == null)
+        {
+            HandItem = null;
+            AttachToInventoryLocal(index, hand);
+            Debug.Log($"[{Name}] 손 → 인벤 슬롯 {index + 1} 이동: {hand.Name}");
+            return;
+        }
+
+        // Case 4: 둘 다 있음 → 스왑
+        if (hand != null && invItem != null)
+        {
+            var temp = invItem;
+            AttachToInventoryLocal(index, hand);
+            AttachToHandLocal(temp);
+            Debug.Log($"[{Name}] 손 ↔ 인벤 슬롯 {index + 1} 스왑: {hand.Name} ↔ {temp.Name}");
+            return;
+        }
     }
     
     #endregion

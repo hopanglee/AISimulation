@@ -155,7 +155,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                         _currentOutfit.transform.SetParent(_currentClothesRoot, false);
                         _currentOutfit.transform.localPosition = Vector3.zero;
                         _currentOutfit.transform.localRotation = Quaternion.identity;
-                        _currentOutfit.transform.localScale = Vector3.one;
+                        // localScale은 변경하지 않음 (원본 스케일 유지)
                     }
                 }
                 else
@@ -190,6 +190,8 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         // 현재 인벤토리 시스템은 Item만 저장 가능
         if (collectible is Item item)
         {
+            // 바라보기
+            FaceTowards(item as MonoBehaviour);
             // 1) 손이 비어있으면 손에 든다
             if (HandItem == null)
             {
@@ -274,6 +276,8 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     /// </summary>
     public virtual async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
+        // 바라보기
+        FaceTowards(actor as MonoBehaviour);
         await SimDelay.DelaySimMinutes(1, cancellationToken);
         if (actor == null)
         {
@@ -348,6 +352,10 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     {
         if (HandItem != null)
         {
+            // 대상 방향 바라보기
+            FaceTowards(location as MonoBehaviour);
+
+            var itemName = HandItem.Name;
             if (location != null) // Put down there
             {
                 // location이 InventoryBox인 경우 AddItem 호출
@@ -357,11 +365,11 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                     {
                         // AddItem 성공 시 HandItem 초기화
                         HandItem = null;
-                        Debug.Log($"[{Name}] {HandItem?.Name ?? "아이템"}을(를) {inventoryBox.name}에 성공적으로 추가했습니다.");
+                        Debug.Log($"[{Name}] {itemName}을(를) {inventoryBox.name}에 성공적으로 추가했습니다.");
                     }
                     else
                     {
-                        Debug.LogWarning($"[{Name}] {HandItem?.Name ?? "아이템"}을(를) {inventoryBox.name}에 추가하는데 실패했습니다.");
+                        Debug.LogWarning($"[{Name}] {itemName}을(를) {inventoryBox.name}에 추가하는데 실패했습니다.");
                     }
                 }
                 else
@@ -551,7 +559,6 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             }
             clothing.transform.localPosition = new Vector3(0f, 0f, 0f);
             clothing.transform.localRotation = Quaternion.identity;
-            clothing.transform.localScale = Vector3.one;
             Debug.Log($"[{Name}] {clothing.Name}을(를) 벗어서 손에 들었습니다.");
         }
         else
@@ -828,10 +835,43 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         {
             ;
         };
+        Debug.Log($"[{Name}] Moving to position {position}");
+    }
+
+    /// <summary>
+    /// Entity의 위치로 직접 이동 (movable 위치 목록을 사용하지 않음)
+    /// </summary>
+    public void MoveToEntity(Entity targetEntity)
+    {
+        if (targetEntity == null)
+        {
+            Debug.LogWarning($"[{Name}] MoveToEntity: targetEntity가 null입니다.");
+            return;
+        }
+
+        Vector3 targetPosition;
+        // Entity의 ToMovePos가 있으면 사용, 없으면 transform.position 사용
+        if (targetEntity is Prop movable && movable.toMovePos != null)
+        {
+            targetPosition = movable.toMovePos.position;
+        }
+        else
+        {
+            targetPosition = targetEntity.transform.position;
+        }
+
+        moveController.SetTarget(targetPosition);
+        moveController.OnReached += () =>
+        {
+            ;
+        };
+        Debug.Log($"[{Name}] Moving to {targetEntity.Name} at position {targetPosition}");
     }
 
     public void Talk(Actor target, string text)
     {
+        // 바라보기
+        FaceTowards(target as MonoBehaviour);
         ShowSpeech(text);
         target.Hear(this, text);
     }
@@ -1024,4 +1064,15 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
     // OnSimulationTimeChanged는 ThinkingActor로 이동
     #endregion
+
+    private void FaceTowards(MonoBehaviour target)
+    {
+        if (target == null) return;
+        var targetPos = target.transform.position;
+        var myPos = transform.position;
+        var direction = new Vector3(targetPos.x - myPos.x, 0f, targetPos.z - myPos.z);
+        if (direction.sqrMagnitude < 0.0001f) return;
+        var lookRotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
+        transform.rotation = Quaternion.Euler(0f, lookRotation.eulerAngles.y, 0f);
+    }
 }

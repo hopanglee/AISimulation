@@ -55,6 +55,24 @@ public class Sensor
                 }
             }
         }
+
+        // Owner가 추가 감지 Area를 제공하면 통합
+        if (owner is IHasExtraSenseAreas extra)
+        {
+            var extraAreas = extra.GetExtraSenseAreas();
+            if (extraAreas != null)
+            {
+                foreach (var area in extraAreas)
+                {
+                    if (area == null) continue;
+                    var areaEntities = locationManager.Get(area, owner);
+                    if (areaEntities != null)
+                    {
+                        AllLookableEntityDFS(areaEntities);
+                    }
+                }
+            }
+        }
     }
 
     /// <summary>

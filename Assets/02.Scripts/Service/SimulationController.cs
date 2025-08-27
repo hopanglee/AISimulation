@@ -187,8 +187,7 @@ public class SimulationController : MonoBehaviour
         if (dateTimeText != null && timeService != null)
         {
             var currentTime = timeService.CurrentTime;
-            dateTimeText.text =
-                $"날짜: {currentTime.year:D4}년 {currentTime.month:D2}월 {currentTime.day:D2}일\n시간: {currentTime}";
+            dateTimeText.text = $"{currentTime.year}년 {currentTime.month}월 {currentTime.day}일 시간 : {currentTime.hour:D2}:{currentTime.minute:D2}:00";
         }
     }
 

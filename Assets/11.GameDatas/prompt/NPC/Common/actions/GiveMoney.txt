@@ -1,0 +1,18 @@
+GiveMoney
+
+Description:
+- Move to the target character and hand over a specified amount of money.
+
+Parameters:
+- [target_character_name, amount]
+  - target_character_name: string (must be a nearby/known actor key)
+  - amount: positive integer (e.g., "500")
+
+Constraints:
+- Do NOT select if amount is not a positive integer.
+- Do NOT select if your current money is less than amount.
+
+Notes:
+- Consider moving first (Move) if you are far from the target.
+- Keep the interaction brief and natural if Talk is needed before/after.
+

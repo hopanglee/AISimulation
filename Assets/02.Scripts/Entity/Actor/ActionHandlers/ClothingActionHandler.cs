@@ -25,53 +25,31 @@ namespace Agent.ActionHandlers
         /// </summary>
         public async Task HandleRemoveClothing(Dictionary<string, object> parameters, CancellationToken token = default)
         {
-            if (parameters.TryGetValue("clothing_type", out var clothingTypeObj) && clothingTypeObj is string clothingTypeStr)
+            try
             {
-                Debug.Log($"[{actor.Name}] 옷 벗기: {clothingTypeStr}");
-
-                // 문자열을 ClothingType으로 변환
-                if (Enum.TryParse<ClothingType>(clothingTypeStr, true, out var clothingType))
+                // 파라미터는 사용하지 않습니다. (세트로 전체 의상을 벗음)
+                if (actor.CurrentOutfit == null)
                 {
-                    var removedClothing = RemoveClothingByType(clothingType);
-                    if (removedClothing != null)
-                    {
-                        Debug.Log($"[{actor.Name}] {removedClothing.Name}을(를) 성공적으로 벗었습니다.");
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"[{actor.Name}] {clothingType} 타입의 옷을 착용하고 있지 않습니다.");
-                    }
+                    Debug.LogWarning($"[{actor.Name}] 현재 벗을 의상이 없습니다.");
                 }
                 else
                 {
-                    Debug.LogWarning($"[{actor.Name}] 잘못된 옷 타입입니다: {clothingTypeStr}");
-                }
-            }
-            else if (parameters.TryGetValue("clothing_name", out var clothingNameObj) && clothingNameObj is string clothingName)
-            {
-                Debug.Log($"[{actor.Name}] 특정 옷 벗기: {clothingName}");
-
-                // 착용 중인 옷들 중에서 이름으로 찾기
-                var clothingToRemove = FindWornClothingByName(clothingName);
-                if (clothingToRemove != null)
-                {
-                    if (actor.RemoveClothing(clothingToRemove))
+                    // 현재 착용 중인 전체 의상을 벗어서 공통 로직에 따라 손/인벤/바닥 순서로 처리
+                    var outfit = actor.CurrentOutfit;
+                    bool removed = actor.RemoveClothing(outfit);
+                    if (removed)
                     {
-                        Debug.Log($"[{actor.Name}] {clothingName}을(를) 성공적으로 벗었습니다.");
+                        Debug.Log($"[{actor.Name}] {outfit.Name} 세트를 벗었습니다. (손 → 인벤토리 → 바닥 순 처리)");
                     }
                     else
                     {
-                        Debug.LogWarning($"[{actor.Name}] {clothingName}을(를) 벗는데 실패했습니다.");
+                        Debug.LogWarning($"[{actor.Name}] 의상을 벗지 못했습니다.");
                     }
                 }
-                else
-                {
-                    Debug.LogWarning($"[{actor.Name}] {clothingName}을(를) 착용하고 있지 않습니다.");
-                }
             }
-            else
+            catch (Exception ex)
             {
-                Debug.LogWarning($"[{actor.Name}] 옷 벗기 액션에 필요한 파라미터가 없습니다.");
+                Debug.LogError($"[{actor.Name}] HandleRemoveClothing 오류: {ex.Message}");
             }
             
             await SimDelay.DelaySimMinutes(1); // 옷 벗기에는 1분 소요
