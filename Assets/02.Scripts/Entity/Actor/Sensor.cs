@@ -246,15 +246,15 @@ public class Sensor
             key = entity.Name ?? entity.GetType().Name;
         }
 
-        // 디버그: 키 생성 결과 로깅
-        if (owner != null && entity != null)
-        {
-            var oldKey = entity.GetSimpleKey();
-            if (oldKey != key)
-            {
-                Debug.Log($"[{owner.Name}] Entity '{entity.Name}' 키 변환: '{oldKey}' → '{key}'");
-            }
-        }
+        // 디버그: 키 생성 결과 로깅 (과다 로그 방지를 위해 비활성화)
+        // if (owner != null && entity != null)
+        // {
+        // 	var oldKey = entity.GetSimpleKey();
+        // 	if (oldKey != key)
+        // 	{
+        // 		Debug.Log($"[{owner.Name}] Entity '{entity.Name}' 키 변환: '{oldKey}' → '{key}'");
+        // 	}
+        // }
 
         return key;
     }

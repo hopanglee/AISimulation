@@ -124,7 +124,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Chocolate Bread
+  _nameKr: "\uCD08\uCF5C\uB81B \uBE75"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 

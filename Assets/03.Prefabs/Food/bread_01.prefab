@@ -124,7 +124,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Corn Bread
+  _nameKr: "\uC625\uC218\uC218\uBE75"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 

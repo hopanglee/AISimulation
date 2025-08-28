@@ -124,7 +124,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Half Bagutte
+  _nameKr: "\uC808\uBC18 \uBC14\uAC8C\uD2B8"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 

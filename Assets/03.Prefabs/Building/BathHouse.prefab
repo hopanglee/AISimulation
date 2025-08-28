@@ -111,8 +111,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Lobby
+  _locationNameKr: 
   _curLocation: {fileID: 4862415938294509888}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 7788430314627412137}
@@ -520,9 +522,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bathtub
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 2549633706802496949}
 --- !u!1 &656708575590996825
@@ -573,8 +578,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Women's Locker Room
+  _locationNameKr: 
   _curLocation: {fileID: 4862415938294509888}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 1501053643623037966}
@@ -926,8 +933,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Men's Bathroom
+  _locationNameKr: 
   _curLocation: {fileID: 4862415938294509888}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 5976349017301448267}
@@ -2812,9 +2821,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 9211203235102727888}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shelf
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 4161202060202280351}
   maxItems: 0
@@ -3171,9 +3183,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bathtub
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 78646622005641093}
 --- !u!1 &3037567719425678885
@@ -3635,8 +3650,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Women's Sauna
+  _locationNameKr: 
   _curLocation: {fileID: 4862415938294509888}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 3963049094771640954}
@@ -3696,8 +3713,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Women's Bathroom
+  _locationNameKr: 
   _curLocation: {fileID: 4862415938294509888}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 4587090587051281198}
@@ -4107,8 +4126,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Men's Locker Room
+  _locationNameKr: 
   _curLocation: {fileID: 4862415938294509888}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 1501053643623037966}
@@ -5031,8 +5052,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Men's Sauna
+  _locationNameKr: 
   _curLocation: {fileID: 4862415938294509888}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 2133606054693151362}
@@ -7713,9 +7736,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 7788430314627412137}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shelf
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 782598410456960110}
   maxItems: 0
@@ -8727,8 +8753,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Bathhouse
+  _locationNameKr: "\uB300\uC911\uBAA9\uC695\uD0D5"
   _curLocation: {fileID: 0}
   _preposition: in
+  _prepositionKr: "\uC758 "
   _isHideChild: 0
   connectedAreas: []
   toMovePos:
@@ -9663,9 +9691,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3735740742125541790}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Towel3
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   material: Cotton
   isClean: 1
@@ -11009,9 +11040,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo5-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &355305217999545794 stripped
@@ -11750,9 +11784,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash3-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &524359049994464978 stripped
@@ -12100,9 +12137,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash2-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &603296620636410226
@@ -12827,9 +12867,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3729013437278522135}
   _preposition: in front of
+  _prepositionKr: 
   _isHideChild: 0
   _name: Hand Wash
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: "\uC77C\uBC18"
   isClean: 1
@@ -13280,9 +13323,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo2-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &853838135808842346
@@ -13408,9 +13454,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash3-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &853838134824312426 stripped
@@ -13827,9 +13876,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo5-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &1019705885031886742 stripped
@@ -14981,9 +15033,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo1-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &1343007868551257194
@@ -15228,9 +15283,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo6-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &1391846099944070926
@@ -15777,9 +15835,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo3-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &1681304440703449660
@@ -17781,9 +17842,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 7788430314627412137}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   _name: Clock
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
 --- !u!1001 &2160167139043085818
@@ -17984,9 +18048,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash5-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &2237002457901241506
@@ -18623,9 +18690,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash6-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &2368654661535201500
@@ -19800,9 +19870,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 6879967721550697390}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Towel1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   material: Cotton
   isClean: 1
@@ -20495,9 +20568,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo5-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &2908679926083322572
@@ -21297,9 +21373,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo3-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &3011243826745570945 stripped
@@ -21740,9 +21819,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash3-3
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &3048349298473781006 stripped
@@ -22182,9 +22264,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 6879967721550697390}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Towel2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   material: Cotton
   isClean: 1
@@ -24534,9 +24619,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash5-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &3888759048166642269
@@ -24662,9 +24750,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash1-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &3888759047553078877 stripped
@@ -24906,9 +24997,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash6-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &4012006146666286195
@@ -25386,9 +25480,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 4862415938294509888}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   _name: Clock
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
 --- !u!4 &7260239089062774870 stripped
@@ -26563,9 +26660,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash1-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &4284816532943609126 stripped
@@ -27125,9 +27225,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo1-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &4391415636284565802
@@ -27465,9 +27568,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash4-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &4434698252387458313 stripped
@@ -28427,9 +28533,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3735740742125541790}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Towel1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   material: Cotton
   isClean: 1
@@ -28663,9 +28772,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo4-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &4719443318975763852 stripped
@@ -28801,9 +28913,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash2-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &4765414135183049951
@@ -29035,9 +29150,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo2-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &4772303473188082958 stripped
@@ -29678,9 +29796,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo5-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &4937606222114106799 stripped
@@ -29816,9 +29937,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo3-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &4978578912296312681
@@ -30160,9 +30284,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 6879967721550697390}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Towel3
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   material: Cotton
   isClean: 1
@@ -30860,9 +30987,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash3-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &5270201715062362816
@@ -31086,9 +31216,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo2-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &5271399528293631651 stripped
@@ -31706,9 +31839,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash5-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &5568797154551429306
@@ -32336,9 +32472,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash6-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &5743192113729863508 stripped
@@ -32913,9 +33052,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo2-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &6100557236862658389 stripped
@@ -33238,9 +33380,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash1-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &6234583044374447300 stripped
@@ -33805,9 +33950,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo4-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &6373087200098042391
@@ -34100,9 +34248,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo6-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &6409368559907230780 stripped
@@ -34865,9 +35016,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash5-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &6590584811538611561 stripped
@@ -35003,9 +35157,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo1-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &6624557424808228011
@@ -37351,9 +37508,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash4-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &7061476396453004892 stripped
@@ -38203,9 +38363,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo4-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &7226079564198878965
@@ -38548,9 +38711,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo6-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &7334718749743486335
@@ -38986,9 +39152,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 9211203235102727888}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   _name: Clock
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
 --- !u!1001 &7415446124693909459
@@ -39220,9 +39389,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo1-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &7437865124514850943 stripped
@@ -40354,9 +40526,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash4-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &7845941993769307236
@@ -40593,9 +40768,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash4-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &7877968389016992406
@@ -40832,9 +41010,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3735740742125541790}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Towel2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   material: Cotton
   isClean: 1
@@ -41182,9 +41363,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo4-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &7926222863478118064 stripped
@@ -41622,9 +41806,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash2-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &8020405010782130757
@@ -42061,9 +42248,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash6-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &8149417404347546806
@@ -43491,9 +43681,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash1-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &8550014347250326102
@@ -44332,9 +44525,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo6-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &8684608901144285773 stripped
@@ -46281,9 +46477,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3963049094771640954}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bodywash2-1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &9195555942919492899 stripped
@@ -46528,9 +46727,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2133606054693151362}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shampoo3-2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &9222637563082259691 stripped

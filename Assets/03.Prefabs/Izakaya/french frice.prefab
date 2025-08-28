@@ -136,9 +136,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: French  fries
+  _nameKr: "\uAC10\uC790\uD280\uAE40 \uC138\uD2B8"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
 --- !u!1 &1463332165799461124
 GameObject:

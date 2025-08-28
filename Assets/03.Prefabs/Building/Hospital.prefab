@@ -177,8 +177,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Front Desk
+  _locationNameKr: 
   _curLocation: {fileID: 2953825334226901736}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 2953825334226901736}
@@ -2663,8 +2665,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Hospital
+  _locationNameKr: "\uBCD1\uC6D0"
   _curLocation: {fileID: 0}
   _preposition: in
+  _prepositionKr: "\uC758 "
   _isHideChild: 0
   connectedAreas: []
   toMovePos:
@@ -4817,9 +4821,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 4896022348185773601}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Desk
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 2
@@ -4879,9 +4886,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2953825334226901736}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Front Desk
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
 --- !u!1 &5847241920917000133
@@ -7145,8 +7155,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Doctor's office
+  _locationNameKr: 
   _curLocation: {fileID: 1271590810499709962}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 2953825334226901736}
@@ -7243,8 +7255,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Hospital room
+  _locationNameKr: 
   _curLocation: {fileID: 1271590810499709962}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 2953825334226901736}
@@ -7760,8 +7774,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Lobby
+  _locationNameKr: 
   _curLocation: {fileID: 1271590810499709962}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 3176694191105927904}
@@ -8412,9 +8428,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2953825334226901736}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Lobby Bench1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxOccupants: 4
@@ -8515,9 +8534,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2953825334226901736}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Lobby Bench3
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxOccupants: 4
@@ -9485,9 +9507,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2953825334226901736}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Lobby Bench2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxOccupants: 4
@@ -12246,9 +12271,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2953825334226901736}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Lobby Bench4
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxOccupants: 4
@@ -12601,9 +12629,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 4896022348185773601}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Doctor's Chair
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   isComfortable: 1
@@ -13330,9 +13361,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3176694191105927904}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: White Board
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   isClean: 1
@@ -15839,9 +15873,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2953825334226901736}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Wait Bench
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxOccupants: 4
@@ -17590,9 +17627,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 4896022348185773601}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: White Board
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   isClean: 1
@@ -18170,9 +18210,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3176694191105927904}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Trash Bin
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0

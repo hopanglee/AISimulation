@@ -8,9 +8,13 @@ public class Area : MonoBehaviour, ILocation
     private string _locationName;
     public string locationName
     {
-        get => _locationName;
+        get => GetLocalizedName();
         set => _locationName = value;
     }
+
+    [FoldoutGroup("Localization")]
+    [SerializeField]
+    private string _locationNameKr;
 
     [ValueDropdown("GetCurLocationCandidates")]
     [SerializeField]
@@ -46,9 +50,13 @@ public class Area : MonoBehaviour, ILocation
     private string _preposition;
     public string preposition
     {
-        get => _preposition;
+        get => GetLocalizedPreposition();
         set => _preposition = value;
     }
+
+    [FoldoutGroup("Localization")]
+    [SerializeField]
+    private string _prepositionKr;
 
     [SerializeField]
     private bool _isHideChild;
@@ -69,9 +77,35 @@ public class Area : MonoBehaviour, ILocation
     {
         if (curLocation == null)
         {
-            return locationName;
+            return GetLocalizedName();
         }
-        return locationName + " " + curLocation.preposition + " " + curLocation.LocationToString();
+        var locService = Services.Get<ILocalizationService>();
+        if (locService != null && locService.CurrentLanguage == Language.KR)
+        {
+            return curLocation.LocationToString() + curLocation.preposition + GetLocalizedName();
+        }
+        else
+        {
+            return GetLocalizedName() + " " + curLocation.preposition + " " + curLocation.LocationToString();
+        }
+    }
+
+    public string GetLocalizedPreposition()
+    {
+        ILocalizationService loc = null;
+        try { loc = Services.Get<ILocalizationService>(); } catch { loc = null; }
+        if (loc != null && loc.CurrentLanguage == Language.KR && !string.IsNullOrEmpty(_prepositionKr))
+            return _prepositionKr;
+        return _preposition;
+    }
+
+    public string GetLocalizedName()
+    {
+        ILocalizationService loc = null;
+        try { loc = Services.Get<ILocalizationService>(); } catch { loc = null; }
+        if (loc != null && loc.CurrentLanguage == Language.KR && !string.IsNullOrEmpty(_locationNameKr))
+            return _locationNameKr;
+        return _locationName;
     }
 
     // void Awake()

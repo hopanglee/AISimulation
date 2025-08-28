@@ -101,11 +101,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Pizza
+  _nameKr: "\uD53C\uC790"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
-  toMovePos: {fileID: 0}
   hungerValue: 10
   currentAmount: 100
   consumePerInteract: 10

@@ -234,9 +234,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Espresso
+  _nameKr: "\uC5D0\uC2A4\uD504\uB808\uC18C"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   HungerRecovery: 5
   ThirstRecovery: 20

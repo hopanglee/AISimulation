@@ -58,11 +58,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Sushi
+  _nameKr: "\uC2A4\uC2DC"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
-  toMovePos: {fileID: 0}
   hungerValue: 10
   currentAmount: 100
   consumePerInteract: 10

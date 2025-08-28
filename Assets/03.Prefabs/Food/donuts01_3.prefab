@@ -101,7 +101,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Choco Cream Donut
+  _nameKr: "\uCD08\uCF54\uD06C\uB9BC \uB3C4\uB11B"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 

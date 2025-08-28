@@ -101,9 +101,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
-  _isHideChild: 0
+  _prepositionKr: 
+  _isHideChild: 1
   _name: 
+  _nameKr: "\uC77C\uAE30"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   maxPageNum: 100
   pages:
