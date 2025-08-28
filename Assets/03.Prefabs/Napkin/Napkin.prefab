@@ -124,8 +124,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
-  _isHideChild: 0
-  _name: 
+  _prepositionKr: 
+  _isHideChild: 1
+  _name: Napkin
+  _nameKr: "\uB0C5\uD0A8"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
-  brand: "\uC77C\uBC18"
+  brand: 

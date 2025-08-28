@@ -21,6 +21,8 @@ public class BootStrapper : MonoBehaviour
         var timeService = new TimeManager();
         var actorManager = new ActorManager();
         var externalEventService = new ExternalEventService();
+        var localizationService = new LocalizationService();
+        var promptService = new PromptService();
 
         // 서비스 등록
         Services.Provide<ILocationService>(locationService);
@@ -28,6 +30,8 @@ public class BootStrapper : MonoBehaviour
         Services.Provide<ITimeService>(timeService);
         Services.Provide<IActorService>(actorManager);
         Services.Provide<IExternalEventService>(externalEventService);
+        Services.Provide<ILocalizationService>(localizationService);
+        Services.Provide<IPromptService>(promptService);
 
         // 서비스 초기화
         await locationService.Initialize();
@@ -35,6 +39,8 @@ public class BootStrapper : MonoBehaviour
         await timeService.Initialize();
         await actorManager.Initialize();
         await externalEventService.Initialize();
+        await localizationService.Initialize();
+        await promptService.Initialize();
         await gameService.Initialize();
 
         Debug.Log("[BootStrapper] All services initialized successfully");

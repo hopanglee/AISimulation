@@ -92,9 +92,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table3
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -154,9 +157,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table14
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -1895,9 +1901,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table18
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -2694,9 +2703,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table15
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -3644,9 +3656,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table4
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -5083,9 +5098,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table16
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -5226,9 +5244,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table2
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -5472,9 +5493,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table12
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -5978,9 +6002,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table17
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -6539,13 +6566,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Host Club
+  _locationNameKr: "\uD638\uC2A4\uD2B8\uD074\uB7FD"
   _curLocation: {fileID: 0}
   _preposition: in
+  _prepositionKr: "\uC758 "
   _isHideChild: 0
   connectedAreas: []
   toMovePos:
     keys: []
     values: []
+  childAreas: []
 --- !u!1 &3623402884405166156
 GameObject:
   m_ObjectHideFlags: 0
@@ -6599,9 +6629,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -6966,9 +6999,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table6
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -7825,9 +7861,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table5
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -8194,9 +8233,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table21
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -8902,9 +8944,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table22
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -9915,9 +9960,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table20
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -10898,9 +10946,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table13
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -11109,8 +11160,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Hallway
+  _locationNameKr: 
   _curLocation: {fileID: 2269853622768586637}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 8999486157601164919}
@@ -11122,6 +11175,7 @@ MonoBehaviour:
     values:
     - {fileID: 7825216682714302414}
     - {fileID: 3896519315422461594}
+  childAreas: []
 --- !u!1 &6704728647165539243
 GameObject:
   m_ObjectHideFlags: 0
@@ -13638,9 +13692,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table10
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -14034,9 +14091,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table19
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -14558,9 +14618,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table11
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -14617,8 +14680,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Seating Area
+  _locationNameKr: 
   _curLocation: {fileID: 2269853622768586637}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 6376359749546061547}
@@ -14627,6 +14692,7 @@ MonoBehaviour:
     - {fileID: 6376359749546061547}
     values:
     - {fileID: 4349622391726728693}
+  childAreas: []
 --- !u!1 &8391719222246524008
 GameObject:
   m_ObjectHideFlags: 0
@@ -14708,9 +14774,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: 7
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -15549,9 +15618,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table9
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -15881,8 +15953,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: VIP Room
+  _locationNameKr: 
   _curLocation: {fileID: 2269853622768586637}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 6376359749546061547}
@@ -15891,6 +15965,7 @@ MonoBehaviour:
     - {fileID: 6376359749546061547}
     values:
     - {fileID: 8767054672420185921}
+  childAreas: []
 --- !u!1 &9077574981104562032
 GameObject:
   m_ObjectHideFlags: 0
@@ -16004,9 +16079,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8999486157601164919}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table8
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -35596,9 +35674,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 128524338470569744}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Table1
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 2

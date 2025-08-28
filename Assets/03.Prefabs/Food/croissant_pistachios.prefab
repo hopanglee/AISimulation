@@ -124,7 +124,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Basic Croissant
+  _nameKr: "\uAE30\uBCF8 \uD06C\uB85C\uC544\uC0C1"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 

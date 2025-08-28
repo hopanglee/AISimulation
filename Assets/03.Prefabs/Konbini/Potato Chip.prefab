@@ -105,9 +105,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Potato Chip
+  _nameKr: "\uAC10\uC790\uCE69"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
 --- !u!1 &1031258372
 GameObject:

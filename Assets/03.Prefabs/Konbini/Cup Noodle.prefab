@@ -105,9 +105,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Cup Noodle
+  _nameKr: "\uCEF5\uB77C\uBA74"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
 --- !u!1 &1031260802
 GameObject:

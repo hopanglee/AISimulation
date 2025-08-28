@@ -105,9 +105,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Chocolate
+  _nameKr: "\uCD08\uCF5C\uB9BF"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
 --- !u!1 &1031280442
 GameObject:

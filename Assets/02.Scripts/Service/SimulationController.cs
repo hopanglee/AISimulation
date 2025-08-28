@@ -47,6 +47,10 @@ public class SimulationController : MonoBehaviour
     [SerializeField]
     private bool autoStartOnPlay = false;
 
+    [Header("Localization")]
+    [SerializeField]
+    private Language language = Language.EN;
+
     [Header("Camera Focus Settings")]
     [SerializeField]
     private float focusDistance = 3f;
@@ -66,6 +70,7 @@ public class SimulationController : MonoBehaviour
         // 서비스 가져오기
         gameService = Services.Get<IGameService>();
         timeService = Services.Get<ITimeService>();
+        Services.Get<ILocalizationService>().SetLanguage(language);
 
         // 카메라 컨트롤러 찾기
         cameraController = FindObjectOfType<CameraController>();

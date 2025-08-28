@@ -14,6 +14,8 @@ public interface ILocation
      */
     public string LocationToString();
     public string preposition { get; set; } // in the, on the, under the, near the, next to, ...
+    public string GetLocalizedPreposition();
+    public string GetLocalizedName();
 
     public bool IsHideChild { get; set; } // 자식들은 감지 될 수 있는가?
 
@@ -24,7 +26,12 @@ public interface ILocation
 
 public abstract class Entity : MonoBehaviour, ILocation
 {
-    public string locationName { get; set; }
+    private string _locationName;
+    public string locationName
+    {
+        get { return _locationName; }
+        set { _locationName = value; }
+    }
 
     [ValueDropdown("GetCurLocationCandidates")]
     [SerializeField]
@@ -84,9 +91,14 @@ public abstract class Entity : MonoBehaviour, ILocation
     private string _preposition;
     public string preposition
     {
-        get { return _preposition; }
+        get { return GetLocalizedPreposition(); }
         set { _preposition = value; }
     }
+
+
+    [FoldoutGroup("Localization")]
+    [SerializeField]
+    private string _prepositionKr;
 
     [SerializeField]
     private bool _isHideChild;
@@ -108,25 +120,61 @@ public abstract class Entity : MonoBehaviour, ILocation
     private string _name; // Never change. ex. "iPhone", "box", "Table"
     public string Name
     {
-        get {
-            if (string.IsNullOrEmpty(_name))
-                return gameObject != null ? gameObject.name : "";
-            return _name;
-        }
+        get { return GetLocalizedName(); }
         set { _name = value; }
     }
+
+    [FoldoutGroup("Localization")]
+    [SerializeField]
+    private string _nameKr;
 
     [SerializeField, TextArea]
     private string _currentStatusDescription;
     public virtual string GetStatusDescription()
     {
+        return GetLocalizedStatusDescription();
+    }
+
+    [FoldoutGroup("Localization")]
+    [SerializeField, TextArea]
+    private string _currentStatusDescriptionKr;
+
+    // === Localization helpers ===
+    private static ILocalizationService SafeGetLocalizationService()
+    {
+        try { return Services.Get<ILocalizationService>(); }
+        catch { return null; }
+    }
+
+    public string GetLocalizedName()
+    {
+        var baseName = string.IsNullOrEmpty(_name) ? (gameObject != null ? gameObject.name : "") : _name;
+        var loc = SafeGetLocalizationService();
+        if (loc != null && loc.CurrentLanguage == Language.KR && !string.IsNullOrEmpty(_nameKr))
+            return _nameKr;
+        return baseName;
+    }
+
+    public string GetLocalizedPreposition()
+    {
+        var loc = SafeGetLocalizationService();
+        if (loc != null && loc.CurrentLanguage == Language.KR && !string.IsNullOrEmpty(_prepositionKr))
+            return _prepositionKr;
+        return _preposition;
+    }
+
+    public string GetLocalizedStatusDescription()
+    {
+        var loc = SafeGetLocalizationService();
+        if (loc != null && loc.CurrentLanguage == Language.KR && !string.IsNullOrEmpty(_currentStatusDescriptionKr))
+            return _currentStatusDescriptionKr;
         return _currentStatusDescription;
     }
 
     public virtual void Init()
     {
-        locationName = Name;
-        preposition = _preposition;
+        locationName = GetLocalizedName();
+        // preposition getter already localizes at access time; no need to set here
     }
 
     public abstract string Get();
@@ -136,9 +184,21 @@ public abstract class Entity : MonoBehaviour, ILocation
     {
         if (curLocation == null)
         {
-            return locationName;
+            return GetLocalizedName();
         }
-        return locationName + " " + curLocation.preposition + " " + curLocation.LocationToString();
+        // Language-aware relation text
+        var locService = Services.Get<ILocalizationService>();
+        string selfName = GetLocalizedName();
+        string prep = curLocation.GetLocalizedPreposition();
+        if (locService != null && locService.CurrentLanguage == Language.KR)
+        {
+            string parent = curLocation.LocationToString();
+            return parent + prep + selfName; // no spaces
+        }
+        else
+        {
+            return selfName + " " + prep + " " + curLocation.LocationToString();
+        }
     }
     
     /// <summary>
@@ -166,7 +226,19 @@ public abstract class Entity : MonoBehaviour, ILocation
         // {
             // 현재 위치의 이름만 사용 (계층 구조 무시)
             // 예: "Plate in Living Room"
-            return $"{Name} {curLocation.preposition} {curLocation.locationName}";
+            var locService = Services.Get<ILocalizationService>();
+            bool isKr = locService != null && locService.CurrentLanguage == Language.KR;
+            string targetName = isKr ? GetLocalizedName() : Name;
+            string prep = curLocation.preposition;
+            string locName = isKr ? curLocation.GetLocalizedName() : curLocation.locationName;
+            if (isKr)
+            {
+                return $"{locName}{prep}{targetName}"; // no spaces
+            }
+            else
+            {
+                return $"{targetName} {prep} {locName}";
+            }
         // }
     }
 
@@ -202,14 +274,50 @@ public abstract class Entity : MonoBehaviour, ILocation
         {
             // Actor의 location 이전까지만 포함
             var relativeLocation = curLocation;
-            var result = $"{Name} {relativeLocation.preposition} {relativeLocation.locationName}";
-            
-            // 더 상위 location이 있으면 추가
-            var parentLocation = relativeLocation.curLocation;
-            while (parentLocation != null && parentLocation != actorLocation)
+            var locService = Services.Get<ILocalizationService>();
+            bool isKr = locService != null && locService.CurrentLanguage == Language.KR;
+            string result;
+            string subjectName = isKr ? GetLocalizedName() : Name;
+            if (isKr)
             {
-                result += $" {parentLocation.preposition} {parentLocation.locationName}";
-                parentLocation = parentLocation.curLocation;
+                // Build chained KR: parent1+prep1 + parent2+prep2 + ... + relative+prepR + subject
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                // Collect chain from outermost to relativeLocation
+                System.Collections.Generic.List<ILocation> chain = new System.Collections.Generic.List<ILocation>();
+                var p = relativeLocation;
+                while (p != null && p != actorLocation)
+                {
+                    chain.Add(p);
+                    p = p.curLocation;
+                }
+                // Add remaining ancestors up to null (outermost first)
+                // Find outermost by traversing from relative up to root, then reverse
+                // We already built from inner to outer; reverse to get outer to inner
+                chain.Reverse();
+                foreach (var loc in chain)
+                {
+                    sb.Append(loc.GetLocalizedName());
+                    sb.Append(loc.preposition);
+                }
+                sb.Append(subjectName);
+                result = sb.ToString();
+            }
+            else
+            {
+                string firstPrep = relativeLocation.preposition;
+                string firstLocName = relativeLocation.locationName;
+                result = $"{subjectName} {firstPrep} {firstLocName}";
+                
+                // 더 상위 location이 있으면 추가
+                var parentLocation = relativeLocation.curLocation;
+                while (parentLocation != null && parentLocation != actorLocation)
+                {
+                    string pPrep = parentLocation.preposition;
+                    string pName = parentLocation.locationName;
+                    result += $" {pPrep} {pName}";
+                    parentLocation = parentLocation.curLocation;
+                }
+                return result;
             }
             
             return result;

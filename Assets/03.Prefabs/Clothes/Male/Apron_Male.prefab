@@ -78,9 +78,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Apron Clothing
+  _nameKr: "\uC55E\uCE58\uB9C8"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   clothingType: 5
   targetGender: 0

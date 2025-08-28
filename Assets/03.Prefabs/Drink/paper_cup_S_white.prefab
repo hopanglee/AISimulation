@@ -234,9 +234,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Black Tea
+  _nameKr: "\uD64D\uCC28"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   HungerRecovery: 5
   ThirstRecovery: 20

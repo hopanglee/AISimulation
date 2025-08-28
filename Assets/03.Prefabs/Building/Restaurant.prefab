@@ -1018,8 +1018,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Restaurant
+  _locationNameKr: "\uC774\uC790\uCE74\uC57C"
   _curLocation: {fileID: 0}
   _preposition: in
+  _prepositionKr: "\uC758 "
   _isHideChild: 0
   connectedAreas: []
   toMovePos:
@@ -7359,8 +7361,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Seating Area
+  _locationNameKr: 
   _curLocation: {fileID: 2678023026188660317}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas: []
   toMovePos:
@@ -31499,18 +31503,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 6751362069338531527}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 1
   _name: Refrigerator
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 10
   items: []
   itemPlacementPositions: []
   useSimplePlacement: 1
-  isOpen: 0
-  temperature: 4
-  isWorking: 1
 --- !u!1001 &5489258698754257023
 PrefabInstance:
   m_ObjectHideFlags: 0

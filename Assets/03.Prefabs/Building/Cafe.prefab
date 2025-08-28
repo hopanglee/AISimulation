@@ -146,8 +146,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Counter
+  _locationNameKr: 
   _curLocation: {fileID: 1941539815184614849}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 2330001249937403412}
@@ -497,8 +499,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Seating Area
+  _locationNameKr: 
   _curLocation: {fileID: 2974062726860181422}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 9178318686369671855}
@@ -1245,8 +1249,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Storage
+  _locationNameKr: 
   _curLocation: {fileID: 2974062726860181422}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 9178318686369671855}
@@ -2162,8 +2168,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Cafe
+  _locationNameKr: "\uCE74\uD398"
   _curLocation: {fileID: 0}
   _preposition: in
+  _prepositionKr: "\uC758 "
   _isHideChild: 0
   connectedAreas: []
   toMovePos:
@@ -2503,8 +2511,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: Toilet
+  _locationNameKr: 
   _curLocation: {fileID: 2974062726860181422}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 1941539815184614849}
@@ -3981,9 +3991,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 6414753786912006280}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Toilet
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   isClean: 1
@@ -27940,9 +27953,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2330001249937403412}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Shelf
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   supplies:
@@ -30238,9 +30254,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 6414753786912006280}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Sink
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   isWaterRunning: 0
@@ -48640,9 +48659,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 6414753786912006280}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 1
   _name: TrashBin
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -50272,9 +50294,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 9178318686369671855}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Counter
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
 --- !u!4 &2637115673104244786 stripped
@@ -50311,9 +50336,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 9178318686369671855}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Desk
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -50347,9 +50375,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 9178318686369671855}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   _name: Small Showcase
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 4939089539691640050}
   supplies:
@@ -50378,9 +50409,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 9178318686369671855}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   _name: Big Showcase
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 7149293229181246106}
   supplies:
@@ -51306,9 +51340,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 2073968207682843495}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: Beverage Machine
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   supplies:
@@ -51325,6 +51362,7 @@ MonoBehaviour:
   - itemKey: Black Tea
     prefab: {fileID: 4245950327554070356, guid: b996dbc19b9eb8b4aa09fc49fde554e9, type: 3}
   beanLevel: 100
+  beanConsumption: 15
   hasBeans: 1
 --- !u!1001 &8153811605338669083
 PrefabInstance:

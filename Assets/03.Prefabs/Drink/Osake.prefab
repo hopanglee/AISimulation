@@ -106,9 +106,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   _name: Alcohol
+  _nameKr: "\uC220"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   HungerRecovery: 5
   ThirstRecovery: 20

@@ -105,9 +105,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Bento
+  _nameKr: "\uB3C4\uC2DC\uB77D"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
 --- !u!1 &1031253523
 GameObject:

@@ -125,9 +125,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Lemonade
+  _nameKr: "\uB808\uBAAC\uC5D0\uC774\uB4DC"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   HungerRecovery: 5
   ThirstRecovery: 20

@@ -124,7 +124,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Cream Croissant
+  _nameKr: "\uD06C\uB9BC \uD06C\uB85C\uC544\uC0C1"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 

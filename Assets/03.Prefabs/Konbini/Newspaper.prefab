@@ -105,9 +105,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Newspaper
+  _nameKr: "\uC2E0\uBB38"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   maxPageNum: 100
   pages:

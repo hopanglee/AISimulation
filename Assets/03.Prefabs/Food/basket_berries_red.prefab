@@ -124,7 +124,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Raspberry Basket
+  _nameKr: "\uB77C\uC988\uBCA0\uB9AC \uBE44\uC2A4\uCF13"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 

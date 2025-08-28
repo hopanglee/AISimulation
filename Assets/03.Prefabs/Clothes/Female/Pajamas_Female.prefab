@@ -78,9 +78,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Pajamas Clothing
+  _nameKr: "\uC7A0\uC637"
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   clothingType: 7
   targetGender: 1
