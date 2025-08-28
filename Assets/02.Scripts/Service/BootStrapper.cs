@@ -43,7 +43,7 @@ public class BootStrapper : MonoBehaviour
         await promptService.Initialize();
         await gameService.Initialize();
 
-        Debug.Log("[BootStrapper] All services initialized successfully");
+        Debug.Log("[BootStrapper] 모든 서비스가 성공적으로 초기화되었습니다");
     }
 }
 

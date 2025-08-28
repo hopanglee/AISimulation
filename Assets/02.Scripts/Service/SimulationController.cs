@@ -76,7 +76,7 @@ public class SimulationController : MonoBehaviour
         cameraController = FindObjectOfType<CameraController>();
         if (cameraController == null)
         {
-            Debug.LogWarning("[SimulationController] CameraController not found!");
+            Debug.LogWarning("[SimulationController] CameraController를 찾지 못했습니다!");
         }
 
         // 캐릭터들 찾기
@@ -116,11 +116,11 @@ public class SimulationController : MonoBehaviour
 
         if (hinoMaori == null)
         {
-            Debug.LogWarning("[SimulationController] Hino Maori not found in scene!");
+            Debug.LogWarning("[SimulationController] 씬에서 Hino Maori를 찾지 못했습니다!");
         }
         if (kamiyaTooru == null)
         {
-            Debug.LogWarning("[SimulationController] Kamiya Tooru not found in scene!");
+            Debug.LogWarning("[SimulationController] 씬에서 Kamiya Tooru를 찾지 못했습니다!");
         }
     }
 
@@ -202,7 +202,7 @@ public class SimulationController : MonoBehaviour
         if (gameService != null)
         {
             _ = gameService.StartSimulation();
-            Debug.Log("[SimulationController] Starting simulation...");
+            Debug.Log("[SimulationController] 시뮬레이션을 시작합니다...");
         }
     }
 
@@ -212,7 +212,7 @@ public class SimulationController : MonoBehaviour
         if (gameService != null)
         {
             gameService.PauseSimulation();
-            Debug.Log("[SimulationController] Pausing simulation...");
+            Debug.Log("[SimulationController] 시뮬레이션을 일시정지합니다...");
         }
     }
 
@@ -222,7 +222,7 @@ public class SimulationController : MonoBehaviour
         if (gameService != null)
         {
             gameService.ResumeSimulation();
-            Debug.Log("[SimulationController] Resuming simulation...");
+            Debug.Log("[SimulationController] 시뮬레이션을 재개합니다...");
         }
     }
 
@@ -232,7 +232,7 @@ public class SimulationController : MonoBehaviour
         if (gameService != null)
         {
             gameService.StopSimulation();
-            Debug.Log("[SimulationController] Stopping simulation...");
+            Debug.Log("[SimulationController] 시뮬레이션을 중지합니다...");
         }
         SetPlayPauseState(PlayPauseState.Start);
     }
@@ -291,11 +291,11 @@ public class SimulationController : MonoBehaviour
         {
             Vector3 targetPosition = CalculateFocusPosition(hinoMaori.transform.position);
             cameraController.FocusOnTarget(targetPosition);
-            Debug.Log("[SimulationController] Focusing on Hino Maori");
+            Debug.Log("[SimulationController] Hino Maori에 포커스합니다");
         }
         else
         {
-            Debug.LogWarning("[SimulationController] Cannot focus on Hino Maori - character or camera not found");
+            Debug.LogWarning("[SimulationController] Hino Maori에 포커스할 수 없습니다 - 캐릭터 또는 카메라를 찾지 못했습니다");
         }
     }
 
@@ -306,11 +306,11 @@ public class SimulationController : MonoBehaviour
         {
             Vector3 targetPosition = CalculateFocusPosition(kamiyaTooru.transform.position);
             cameraController.FocusOnTarget(targetPosition);
-            Debug.Log("[SimulationController] Focusing on Kamiya Tooru");
+            Debug.Log("[SimulationController] Kamiya Tooru에 포커스합니다");
         }
         else
         {
-            Debug.LogWarning("[SimulationController] Cannot focus on Kamiya Tooru - character or camera not found");
+            Debug.LogWarning("[SimulationController] Kamiya Tooru에 포커스할 수 없습니다 - 캐릭터 또는 카메라를 찾지 못했습니다");
         }
     }
 
@@ -381,17 +381,17 @@ public class SimulationController : MonoBehaviour
     private void SetGlobalGPTUsage(bool enabled)
     {
         var actors = Object.FindObjectsByType<Actor>(FindObjectsSortMode.None);
-        Debug.Log($"[SimulationController] Found {actors.Length} actors in scene");
+        Debug.Log($"[SimulationController] 씬에서 액터 {actors.Length}명을 찾았습니다");
         
         foreach (var actor in actors)
         {
             if (actor != null)
             {
-                Debug.Log($"[SimulationController] Setting GPT usage for {actor.Name} ({actor.GetType().Name}): {enabled}");
+                Debug.Log($"[SimulationController] {actor.Name} ({actor.GetType().Name})의 GPT 사용을 {enabled}로 설정합니다");
                 actor.SetGPTUsage(enabled);
-                Debug.Log($"[SimulationController] {actor.Name} GPT usage is now: {actor.UseGPT}");
+                Debug.Log($"[SimulationController] {actor.Name}의 GPT 사용 상태: {actor.UseGPT}");
             }
         }
-        Debug.Log($"[SimulationController] Set global GPT usage: {(enabled ? "ENABLED" : "DISABLED")} for {actors.Length} actors");
+        Debug.Log($"[SimulationController] 전역 GPT 사용을 {(enabled ? "활성화" : "비활성화")}했습니다. 대상 액터 수: {actors.Length}");
     }
 }
