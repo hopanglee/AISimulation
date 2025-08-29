@@ -7,8 +7,6 @@ using UnityEngine;
 /// </summary>
 public static class PromptLoader
 {
-    private const string PROMPT_BASE_PATH = "Assets/11.GameDatas/prompt/";
-
     /// <summary>
     /// 지정된 프롬프트 파일을 로드합니다.
     /// </summary>
@@ -17,21 +15,48 @@ public static class PromptLoader
     /// <returns>로드된 프롬프트 문자열</returns>
     public static string LoadPrompt(string promptFileName, string defaultPrompt = "")
     {
-        string promptPath = Path.Combine(PROMPT_BASE_PATH, promptFileName);
-        string prompt = "";
-
-        if (File.Exists(promptPath))
+        try
         {
-            prompt = File.ReadAllText(promptPath);
-            Debug.Log($"프롬프트 파일 로드 완료: {promptFileName}");
-        }
-        else
-        {
-            Debug.LogWarning($"프롬프트 파일을 찾을 수 없습니다: {promptPath}");
-            prompt = defaultPrompt;
-        }
+            var localizationService = Services.Get<ILocalizationService>();
+            string promptPath = localizationService.GetPromptPath(promptFileName);
+            string prompt = "";
 
-        return prompt;
+            if (File.Exists(promptPath))
+            {
+                prompt = File.ReadAllText(promptPath);
+                Debug.Log($"[PromptLoader] 프롬프트 파일 로드 완료: {promptFileName} (언어: {localizationService.CurrentLanguage}, 경로: {promptPath})");
+            }
+            else
+            {
+                // Fallback to English if current language file doesn't exist
+                var fallbackPath = $"Assets/11.GameDatas/prompt/agent/en/{promptFileName}";
+                if (File.Exists(fallbackPath))
+                {
+                    prompt = File.ReadAllText(fallbackPath);
+                    Debug.Log($"[PromptLoader] 프롬프트 파일 폴백 로드: {promptFileName} (언어: {localizationService.CurrentLanguage}, KR 파일 없음 → 영어 폴더에서 찾음)");
+                }
+                else
+                {
+                    Debug.LogWarning($"[PromptLoader] 프롬프트 파일을 찾을 수 없습니다: {promptPath}");
+                    prompt = defaultPrompt;
+                }
+            }
+
+            return prompt;
+        }
+                    catch (System.Exception e)
+            {
+                Debug.LogWarning($"[PromptLoader] LocalizationService를 찾을 수 없습니다. 기본 경로 사용: {e.Message}");
+                // Fallback to original path
+                string promptPath = Path.Combine("Assets/11.GameDatas/prompt/agent/", promptFileName);
+                if (File.Exists(promptPath))
+                {
+                    Debug.Log($"[PromptLoader] 프롬프트 파일 기본 경로 폴백 로드: {promptFileName} (LocalizationService 오류로 인한 폴백)");
+                    return File.ReadAllText(promptPath);
+                }
+                Debug.LogWarning($"[PromptLoader] 프롬프트 파일을 찾을 수 없습니다: {promptPath}");
+                return defaultPrompt;
+            }
     }
 
     /// <summary>
@@ -139,24 +164,67 @@ public static class PromptLoader
     public static string LoadNPCRoleSystemPrompt(NPCRole npcRole, INPCAction[] availableActions)
     {
         string roleFolder = GetNPCRoleFolder(npcRole);
-        string promptPath = $"NPC/{roleFolder}/system_prompt.txt";
-        
-        // 역할별 시스템 프롬프트 우선 시도, 없으면 Common/system_prompt.txt 시도
-        string fullRolePath = Path.Combine(PROMPT_BASE_PATH, promptPath);
-        string fullCommonPath = Path.Combine(PROMPT_BASE_PATH, "NPC/Common/system_prompt.txt");
         string basePrompt;
-        if (File.Exists(fullRolePath))
+        
+        try
         {
-            basePrompt = File.ReadAllText(fullRolePath);
+            var localizationService = Services.Get<ILocalizationService>();
+            
+            // 역할별 시스템 프롬프트 우선 시도
+            string rolePromptPath = localizationService.GetNpcPromptPath($"{roleFolder}/system_prompt.txt");
+            // string commonPromptPath = localizationService.GetNpcPromptPath("Common/system_prompt.txt");
+            
+            if (File.Exists(rolePromptPath))
+            {
+                basePrompt = File.ReadAllText(rolePromptPath);
+            }
+            // else if (File.Exists(commonPromptPath))
+            // {
+            //     basePrompt = File.ReadAllText(commonPromptPath);
+            // }
+            else
+            {
+                // Fallback to English
+                var fallbackRolePath = $"Assets/11.GameDatas/prompt/NPC/en/{roleFolder}/system_prompt.txt";
+                //var fallbackCommonPath = $"Assets/11.GameDatas/prompt/NPC/en/Common/system_prompt.txt";
+                
+                if (File.Exists(fallbackRolePath))
+                {
+                    basePrompt = File.ReadAllText(fallbackRolePath);
+                    Debug.Log($"[PromptLoader] NPC 시스템 프롬프트 폴백 로드: {roleFolder}/system_prompt.txt (원본 언어: {localizationService.CurrentLanguage} → 영어 폴더에서 찾음)");
+                }
+                // else if (File.Exists(fallbackCommonPath))
+                // {
+                //     basePrompt = File.ReadAllText(fallbackCommonPath);
+                //     Debug.Log($"[PromptLoader] NPC 공통 시스템 프롬프트 폴백 로드: Common/system_prompt.txt (원본 언어: {localizationService.CurrentLanguage} → 영어 폴더에서 찾음)");
+                // }
+                else
+                {
+                    basePrompt = GetDefaultNPCPrompt(npcRole);
+                    // Debug.LogWarning($"[PromptLoader] 프롬프트 파일을 찾을 수 없습니다: {rolePromptPath} 또는 {commonPromptPath}. 기본 시스템 프롬프트를 사용합니다.");
+                }
+            }
         }
-        else if (File.Exists(fullCommonPath))
+        catch (System.Exception e)
         {
-            basePrompt = File.ReadAllText(fullCommonPath);
-        }
-        else
-        {
-            basePrompt = GetDefaultNPCPrompt(npcRole);
-            Debug.LogWarning($"프롬프트 파일을 찾을 수 없습니다: {fullRolePath} 또는 {fullCommonPath}. 기본 시스템 프롬프트를 사용합니다.");
+            Debug.LogWarning($"LocalizationService를 찾을 수 없습니다. 기본 경로 사용: {e.Message}");
+            // Fallback to original path
+            string fullRolePath = $"Assets/11.GameDatas/prompt/NPC/{roleFolder}/system_prompt.txt";
+            //string fullCommonPath = "Assets/11.GameDatas/prompt/NPC/Common/system_prompt.txt";
+            
+            if (File.Exists(fullRolePath))
+            {
+                basePrompt = File.ReadAllText(fullRolePath);
+            }
+            // else if (File.Exists(fullCommonPath))
+            // {
+            //     basePrompt = File.ReadAllText(fullCommonPath);
+            // }
+            else
+            {
+                basePrompt = GetDefaultNPCPrompt(npcRole);
+                // Debug.LogWarning($"프롬프트 파일을 찾을 수 없습니다: {fullRolePath} 또는 {fullCommonPath}. 기본 시스템 프롬프트를 사용합니다.");
+            }
         }
         
         // 사용 가능한 액션들의 설명 로드
@@ -201,35 +269,84 @@ public static class PromptLoader
         {
             string description = null;
             
-            if (commonActions.Contains(action.ActionName))
+            try
             {
-                // 공통 액션: Common 폴더에서 찾기
-                string commonActionRel = $"NPC/Common/actions/{action.ActionName}.txt";
-                string commonActionFull = Path.Combine(PROMPT_BASE_PATH, commonActionRel);
+                var localizationService = Services.Get<ILocalizationService>();
                 
-                if (File.Exists(commonActionFull))
+                if (commonActions.Contains(action.ActionName))
                 {
-                    description = File.ReadAllText(commonActionFull);
+                    // 공통 액션: Common 폴더에서 찾기
+                    string commonActionPath = localizationService.GetNpcPromptPath($"Common/actions/{action.ActionName}.txt");
+                    
+                    if (File.Exists(commonActionPath))
+                    {
+                        description = File.ReadAllText(commonActionPath);
+                    }
+                    else
+                    {
+                        // Fallback to English
+                        var fallbackPath = $"Assets/11.GameDatas/prompt/NPC/en/Common/actions/{action.ActionName}.txt";
+                        if (File.Exists(fallbackPath))
+                        {
+                            description = File.ReadAllText(fallbackPath);
+                            Debug.Log($"[PromptLoader] 공통 액션 프롬프트 폴백 로드: {action.ActionName} (원본 언어: {localizationService.CurrentLanguage} → 영어 폴더에서 찾음)");
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"[PromptLoader] 공통 액션 프롬프트 파일을 찾을 수 없습니다: {commonActionPath}");
+                            description = $"**{action.ActionName}**: {action.Description}";
+                        }
+                    }
                 }
                 else
                 {
-                    Debug.LogWarning($"공통 액션 프롬프트 파일을 찾을 수 없습니다: {commonActionFull}");
-                    description = $"**{action.ActionName}**: {action.Description}";
+                    // 전용 액션: 역할별 폴더에서만 찾기
+                    string roleActionPath = localizationService.GetNpcPromptPath($"{roleFolder}/actions/{action.ActionName}.txt");
+                    
+                    if (File.Exists(roleActionPath))
+                    {
+                        description = File.ReadAllText(roleActionPath);
+                    }
+                    else
+                    {
+                        // Fallback to English
+                        var fallbackPath = $"Assets/11.GameDatas/prompt/NPC/en/{roleFolder}/actions/{action.ActionName}.txt";
+                        if (File.Exists(fallbackPath))
+                        {
+                            description = File.ReadAllText(fallbackPath);
+                            Debug.Log($"[PromptLoader] 전용 액션 프롬프트 폴백 로드: {roleFolder}/{action.ActionName} (원본 언어: {localizationService.CurrentLanguage} → 영어 폴더에서 찾음)");
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"[PromptLoader] 전용 액션 프롬프트 파일을 찾을 수 없습니다: {roleActionPath}");
+                            description = $"**{action.ActionName}**: {action.Description}";
+                        }
+                    }
                 }
             }
-            else
+            catch (System.Exception e)
             {
-                // 전용 액션: 역할별 폴더에서만 찾기
-                string roleActionRel = $"NPC/{roleFolder}/actions/{action.ActionName}.txt";
-                string roleActionFull = Path.Combine(PROMPT_BASE_PATH, roleActionRel);
-                
-                if (File.Exists(roleActionFull))
+                Debug.LogWarning($"LocalizationService를 찾을 수 없습니다. 기본 경로 사용: {e.Message}");
+                // Fallback to original path
+                if (commonActions.Contains(action.ActionName))
                 {
-                    description = File.ReadAllText(roleActionFull);
+                    string commonActionPath = $"Assets/11.GameDatas/prompt/NPC/Common/actions/{action.ActionName}.txt";
+                    if (File.Exists(commonActionPath))
+                    {
+                        description = File.ReadAllText(commonActionPath);
+                    }
                 }
                 else
                 {
-                    Debug.LogWarning($"전용 액션 프롬프트 파일을 찾을 수 없습니다: {roleActionFull}");
+                    string roleActionPath = $"Assets/11.GameDatas/prompt/NPC/{roleFolder}/actions/{action.ActionName}.txt";
+                    if (File.Exists(roleActionPath))
+                    {
+                        description = File.ReadAllText(roleActionPath);
+                    }
+                }
+                
+                if (description == null)
+                {
                     description = $"**{action.ActionName}**: {action.Description}";
                 }
             }

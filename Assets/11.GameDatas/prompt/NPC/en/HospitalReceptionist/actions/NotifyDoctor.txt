@@ -1,0 +1,8 @@
+**NotifyDoctor**: Send a directed message to the assigned doctor
+- **Use when**: A patient arrives or there is an update the doctor should know in advance
+- **Effect**: Performs a remote, targeted Talk to the linked HospitalDoctor (inspector reference)
+- **Parameters**: [message] (string) — what to inform
+- **Examples**:
+  - ["New patient arrived with abdominal pain"]
+  - ["Scheduled patient has arrived"]
+

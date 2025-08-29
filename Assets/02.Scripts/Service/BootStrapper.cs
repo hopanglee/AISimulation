@@ -24,6 +24,8 @@ public class BootStrapper : MonoBehaviour
         var localizationService = new LocalizationService();
         var promptService = new PromptService();
 
+        // 언어 설정은 SimulationController에서 처리됨
+
         // 서비스 등록
         Services.Provide<ILocationService>(locationService);
         Services.Provide<IPathfindingService>(pathfindingService);

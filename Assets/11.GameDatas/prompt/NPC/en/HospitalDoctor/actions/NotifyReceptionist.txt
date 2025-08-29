@@ -1,0 +1,8 @@
+**NotifyReceptionist**: Send a directed message to the receptionist
+- **Use when**: You need the receptionist to relay information or prepare a patient
+- **Effect**: Performs a remote, targeted Talk to the linked HospitalReceptionist (inspector reference)
+- **Parameters**: [message] (string)
+- **Examples**:
+  - ["Please guide the next patient in"]
+  - ["Consultation ready, please admit the patient"]
+

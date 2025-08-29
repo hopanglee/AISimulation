@@ -35,12 +35,33 @@ public class CharacterMemoryManager
     private string characterName;
     private string memoryFilePath;
     private CharacterLocationMemoryData memory;
+    private ILocalizationService localizationService;
 
     public CharacterMemoryManager(string characterName)
     {
         this.characterName = characterName;
-        this.memoryFilePath =
-            $"Assets/11.GameDatas/Character/{characterName}/memory/location_memories.json";
+        
+        // LocalizationService를 사용하여 언어별 폴더 구조에 맞는 경로 생성
+        try
+        {
+            this.localizationService = Services.Get<ILocalizationService>();
+            if (this.localizationService != null)
+            {
+                // LocalizationService의 GetMemoryPath를 사용하여 언어별 폴더 구조에 맞는 경로 생성
+                this.memoryFilePath = this.localizationService.GetMemoryPath(characterName, "location", "location_memories.json");
+            }
+            else
+            {
+                // LocalizationService를 사용할 수 없는 경우 기본 경로 사용
+                this.memoryFilePath = $"Assets/11.GameDatas/Character/{characterName}/memory/location/location_memories.json";
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"LocalizationService를 사용할 수 없어 기본 경로를 사용합니다: {e.Message}");
+            this.memoryFilePath = $"Assets/11.GameDatas/Character/{characterName}/memory/location/location_memories.json";
+        }
+        
         LoadMemory();
     }
 

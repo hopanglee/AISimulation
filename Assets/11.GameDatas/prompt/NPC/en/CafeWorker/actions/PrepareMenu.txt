@@ -1,0 +1,8 @@
+**PrepareMenu**: Prepare multiple menu items in sequence
+- **Use when**: Handling one or more orders at once
+- **Parameters**: [menu_key1, menu_key2, ...]
+- **Behavior**:
+  - For coffee keys, use the coffee machine; if beans are low, refill then brew
+  - For beverage keys, use the beverage machine
+  - For bakery keys, fetch from the showcase
+

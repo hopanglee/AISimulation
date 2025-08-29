@@ -1,4 +1,0 @@
-**Wait**: Pause and wait for a moment
-- Use when: No immediate action is needed, customer is thinking, or between tasks
-- Parameters: None
-- Example: Customer is browsing, waiting for next customer, or taking a brief pause

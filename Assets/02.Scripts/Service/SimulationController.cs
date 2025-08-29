@@ -64,13 +64,18 @@ public class SimulationController : MonoBehaviour
     private enum PlayPauseState { Start, Pause, Resume }
     private PlayPauseState playPauseState = PlayPauseState.Start;
 
+    private void Awake()
+    {
+        Services.Get<ILocalizationService>().SetLanguage(language);
+    }
+
     [System.Obsolete]
     private void Start()
     {
         // 서비스 가져오기
         gameService = Services.Get<IGameService>();
         timeService = Services.Get<ITimeService>();
-        Services.Get<ILocalizationService>().SetLanguage(language);
+        // Services.Get<ILocalizationService>().SetLanguage(language);
 
         // 카메라 컨트롤러 찾기
         cameraController = FindObjectOfType<CameraController>();

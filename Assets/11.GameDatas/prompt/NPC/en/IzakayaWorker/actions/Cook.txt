@@ -1,0 +1,6 @@
+**Cook**: Create a dish prefab matching the key and hold it (preferably), otherwise store in inventory
+- parameters: ["dish_key"]
+- The dish_key must match a key registered in the inspector cookablePrefabs
+- If hands are full, store in inventory; if everything is full, place it at the current location
+- examples: ["Yakitori"], ["Oden"], ["Karaage"], ["Edamame"]
+

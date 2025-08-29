@@ -5,6 +5,8 @@ using UnityEngine;
 public interface IPromptService : IService
 {
     string GetPromptText(string promptName);
+    string GetActionPromptJson(string actionPromptFile);
+    string GetNpcPromptText(string npcPromptFile);
     string GetCharacterInfoJson(string characterName);
     string GetMemoryJson(string characterName, string memoryType, string memoryFileName);
 }
@@ -23,8 +25,8 @@ public class PromptService : IPromptService
     {
         // Try localized path, then EN fallback, then root legacy
         var locPath = localization.GetPromptPath(promptName);
-        var enPath = $"Assets/11.GameDatas/prompt/en/{promptName}";
-        var rootPath = $"Assets/11.GameDatas/prompt/{promptName}";
+        var enPath = $"Assets/11.GameDatas/prompt/agent/en/{promptName}";
+        var rootPath = $"Assets/11.GameDatas/prompt/agent/{promptName}";
         return ReadFirstExisting(locPath, enPath, rootPath);
     }
 
@@ -38,8 +40,25 @@ public class PromptService : IPromptService
     public string GetMemoryJson(string characterName, string memoryType, string memoryFileName)
     {
         var locPath = localization.GetMemoryPath(characterName, memoryType, memoryFileName);
+        // 새로운 폴더 구조에 맞게 fallback 경로 수정
         var rootPath = $"Assets/11.GameDatas/Character/{characterName}/memory/{memoryType}/{memoryFileName}";
         return ReadFirstExisting(locPath, rootPath);
+    }
+
+    public string GetActionPromptJson(string actionPromptFile)
+    {
+        var locPath = localization.GetActionPromptPath(actionPromptFile);
+        var enPath = $"Assets/11.GameDatas/prompt/actions/en/{actionPromptFile}";
+        var rootPath = $"Assets/11.GameDatas/prompt/actions/{actionPromptFile}";
+        return ReadFirstExisting(locPath, enPath, rootPath);
+    }
+
+    public string GetNpcPromptText(string npcPromptFile)
+    {
+        var locPath = localization.GetNpcPromptPath(npcPromptFile);
+        var enPath = $"Assets/11.GameDatas/prompt/NPC/en/{npcPromptFile}";
+        var rootPath = $"Assets/11.GameDatas/prompt/NPC/{npcPromptFile}";
+        return ReadFirstExisting(locPath, enPath, rootPath);
     }
 
     private string ReadFirstExisting(params string[] assetRelativePaths)
