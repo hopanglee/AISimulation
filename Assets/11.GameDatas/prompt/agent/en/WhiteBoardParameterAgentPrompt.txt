@@ -47,22 +47,22 @@ You must respond in JSON format with the following fields:
 ```json
 {
   "action_type": "write",
-  "content": "회의 안건: 1. 프로젝트 진행상황 2. 다음 주 계획 3. 예산 검토"
+  "content": "Meeting Agenda: 1. Project Progress 2. Next Week Plan 3. Budget Review"
 }
 ```
 
 **Situation**: Actor sees existing content that's outdated
-**Current Board**: "오늘 할 일: 청소, 빨래"
+**Current Board**: "Today's Tasks: Cleaning, Laundry"
 **Appropriate Response**: 
 ```json
 {
   "action_type": "update",
-  "content": "오늘 할 일: 청소, 빨래, 장보기, 운동"
+  "content": "Today's Tasks: Cleaning, Laundry, Grocery Shopping, Exercise"
 }
 ```
 
 **Situation**: Actor needs a clean board for new work
-**Current Board**: "이전 프로젝트 노트들..."
+**Current Board**: "Previous project notes..."
 **Appropriate Response**: 
 ```json
 {

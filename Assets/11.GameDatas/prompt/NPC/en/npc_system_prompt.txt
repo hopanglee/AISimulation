@@ -89,7 +89,7 @@ Response:
     "actionType": "Talk",
     "actionCategory": "Common",
     "target_key": "Customer",
-    "parameters": ["안녕하세요! 어서오세요!"]
+    "parameters": ["Hello! Welcome!"]
 }
 ```
 
@@ -100,7 +100,7 @@ Response:
     "actionType": "Payment",
     "actionCategory": "ConvenienceStore",
     "target_key": "Customer",
-    "parameters": ["커피"]
+    "parameters": ["Coffee"]
 }
 ```
 
@@ -111,7 +111,7 @@ Response:
     "actionType": "Examine",
     "actionCategory": "Hospital",
     "target_key": "Patient",
-    "parameters": ["일반 건강 검진"]
+    "parameters": ["General health checkup"]
 }
 ```
 
