@@ -1,0 +1,25 @@
+**GiveItem**: Give the item in your hand to another character
+
+**Description**: Hand over the item you are holding to a nearby character.
+
+**When to Use**:
+- To give a gift
+- To share a tool or item
+- When someone needs an item you have
+
+**Requirements**:
+- You must have an item in your hand (HandItem)
+- Target character must be nearby and able to receive items
+
+**Parameters**:
+- target_character_name: name of the character to receive the item
+
+**Examples**:
+- Give an apple to "Hino"
+- Hand a tool to "Kamiya"
+- Give a product to a "Customer"
+
+**Notes**:
+- The item leaves your hand after giving
+- The action can fail if the target cannot receive items or is not nearby
+

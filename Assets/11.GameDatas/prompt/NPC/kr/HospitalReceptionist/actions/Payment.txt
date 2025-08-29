@@ -1,0 +1,7 @@
+**Payment**: Handle payment for consultation/medication
+- Use when: Patient requests intake/consultation/payment
+- Parameters: [item_name] (string) - e.g., "consultation fee", "medication"
+- Notes:
+  - If the item is not in the price list, inform politely and do not charge
+  - On success, update clinic funds and revenue
+

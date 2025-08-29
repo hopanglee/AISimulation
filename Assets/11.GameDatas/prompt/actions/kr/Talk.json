@@ -1,0 +1,37 @@
+{
+  "name": "Talk",
+  "displayName": "대화하기",
+  "description": "시뮬레이션 월드 내의 다른 **캐릭터**와 대화합니다.",
+  "usage": "다른 캐릭터와 **소통**하고 싶을 때 이 행동을 사용하세요.",
+  "parameters": [
+    {
+      "name": "character_name",
+      "type": "string",
+      "description": "대화할 캐릭터의 **이름**",
+      "required": true
+    },
+    {
+      "name": "message",
+      "type": "string",
+      "description": "캐릭터에게 할 **메시지**",
+      "required": true
+    }
+  ],
+  "examples": [
+    "누군가에게 인사하기: \"좋은 아침!\"",
+    "질문하기: \"오늘 어떠세요?\"",
+    "요청하기: \"이것 좀 도와줄 수 있나요?\""
+  ],
+  "requirements": [
+    "대상 캐릭터는 **근처에 있고 상호작용 가능**해야 합니다",
+    "캐릭터는 상호작용 가능한 개체 목록에 포함되어야 합니다"
+  ],
+  "whenToUse": [
+    "누군가에게 인사하고 싶을 때",
+    "정보를 물어봐야 할 때",
+    "대화를 나누고 싶을 때",
+    "다른 사람들과 협력해야 할 때",
+    "생각이나 감정을 표현하고 싶을 때"
+  ],
+  "category": "social"
+}
