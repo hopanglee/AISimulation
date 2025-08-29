@@ -1,0 +1,5 @@
+**Payment**: Process customer payment for specific items
+- Use when: Customer wants to buy something, checkout process, handling money transactions
+- Parameters: itemKey (string)
+- Notes: Updates revenue on success
+

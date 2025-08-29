@@ -1,0 +1,5 @@
+**Examine**: Perform medical examination on a patient
+- Use when: A patient requests medical consultation, showing symptoms, or routine health checkups
+- Parameters: [patient_name, examination_details] (string, string) - Who to examine and what type of examination to perform
+- Example: ["Patient", "Measured blood pressure and pulse, auscultated heart sounds"], ["Mr.Kim", "Checked throat and measured temperature"], ["Ms.Lee", "Palpated abdomen and tested reflexes"]
+

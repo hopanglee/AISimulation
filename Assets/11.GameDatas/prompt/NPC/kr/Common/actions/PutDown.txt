@@ -1,0 +1,56 @@
+# PutDown Action - Common NPC Role
+
+## Action Name
+PutDown
+
+## Description
+Place the item in your hand onto a specific location or surface (e.g., desk, shelf, floor).
+
+## Usage
+Use PutDown when the NPC needs to place a held item at an appropriate nearby location. You can specify a target_key or provide additional parameters.
+
+## Category
+Item Management
+
+## Parameters
+- **target_key**: Key of the location or surface (e.g., 'table', 'shelf', 'counter') - optional
+- **parameters[0]**: Additional location info or special instruction - optional
+
+## Examples
+
+### Example 1: Place a coffee cup on the table
+- **target_key**: "table"
+- **parameters**: null
+- **Result**: "Places the coffee on the table"
+
+### Example 2: Place item at current location
+- **target_key**: null
+- **parameters**: null
+- **Result**: "Places the item at the current location"
+
+### Example 3: Place a book on the shelf
+- **target_key**: "shelf"
+- **parameters**: ["top"]
+- **Result**: "Places the book on the shelf"
+
+## Requirements
+- NPC must be holding an item (HandItem != null)
+- target_key must be a valid location key (existing table, shelf, etc.)
+- The location must be accessible
+
+## When to Use
+- No longer need to hold the item
+- Organize or store the item
+- Need free hands for other tasks
+- Must place the item in a specific spot
+
+## Related Actions
+- PickUp - pick up an item
+- GiveItem - give an item to another character
+- Move - move to a specific location
+
+## Notes
+- Available in all Common NPC roles
+- If target_key is not provided, an InventoryBox nearby will be used automatically
+- Hands will be free after placing the item
+

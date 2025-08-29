@@ -1,0 +1,5 @@
+**Move**: Move to the location that matches the given key
+- parameters: ["location_key"]
+- examples: ["Kitchen"], ["Counter"], ["Table_3"]
+- constraint: Only use existing location keys. If unclear, choose Wait.
+

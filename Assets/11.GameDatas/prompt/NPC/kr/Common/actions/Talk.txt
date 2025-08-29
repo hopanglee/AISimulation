@@ -1,0 +1,5 @@
+**Talk**: Speak to someone or respond to conversation
+- Use when: Customer speaks to you, greeting customers, answering questions, general conversation
+- Parameters: [target_name, message_to_say] (string, string) - Who to talk to and what to say
+- Example: ["Customer", "Hello! Welcome!"], ["Customer", "How can I help you?"], ["Customer", "Thank you!"]
+
