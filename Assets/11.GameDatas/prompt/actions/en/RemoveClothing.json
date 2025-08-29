@@ -1,0 +1,9 @@
+{
+  "actionName": "RemoveClothing",
+  "description": "Remove clothing from the actor's body",
+  "parameters": [],
+  "constraints": [
+    "Actor must be wearing clothing to remove"
+  ],
+  "examples": []
+}

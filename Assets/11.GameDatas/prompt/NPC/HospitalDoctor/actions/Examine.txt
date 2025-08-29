@@ -1,4 +1,0 @@
-**Examine**: Perform medical examination on a patient
-- Use when: A patient requests medical consultation, showing symptoms, or routine health checkups
-- Parameters: [patient_name, examination_details] (string, string) - Who to examine and what type of examination to perform
-- Example: ["환자", "혈압과 맥박을 측정하고 청진기로 심장소리를 확인했습니다"], ["김환자", "목과 목구멍을 검사하고 체온을 측정했습니다"], ["이환자", "복부를 촉진하고 반사신경을 테스트했습니다"]

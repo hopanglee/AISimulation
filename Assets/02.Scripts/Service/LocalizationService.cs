@@ -8,6 +8,8 @@ public interface ILocalizationService : IService
 
     // Prompt & memory path helpers
     string GetPromptPath(string promptName);
+    string GetActionPromptPath(string actionPromptFile);
+    string GetNpcPromptPath(string npcPromptFile);
     string GetMemoryPath(string characterName, string memoryType, string memoryFileName);
     string GetCharacterInfoPath(string characterName);
 }
@@ -35,20 +37,36 @@ public class LocalizationService : ILocalizationService
     {
         // expect folders: Assets/11.GameDatas/prompt/en , /kr
         var langFolder = currentLanguage == Language.KR ? "kr" : "en";
-        var localized = $"Assets/11.GameDatas/prompt/{langFolder}/{promptName}";
-        var fallback = $"Assets/11.GameDatas/prompt/en/{promptName}";
+        var localized = $"Assets/11.GameDatas/prompt/agent/{langFolder}/{promptName}";
+        var fallback = $"Assets/11.GameDatas/prompt/agent/en/{promptName}";
         // Note: actual file existence check could be added if needed via Resources/Addressables
         return localized;
+    }
+
+    // Action prompt: Assets/11.GameDatas/prompt/actions/{lang}/{file}
+    public string GetActionPromptPath(string actionPromptFile)
+    {
+        var langFolder = currentLanguage == Language.KR ? "kr" : "en";
+        return $"Assets/11.GameDatas/prompt/actions/{langFolder}/{actionPromptFile}";
+    }
+
+    // NPC prompt: Assets/11.GameDatas/prompt/NPC/{lang}/{file}
+    public string GetNpcPromptPath(string npcPromptFile)
+    {
+        var langFolder = currentLanguage == Language.KR ? "kr" : "en";
+        return $"Assets/11.GameDatas/prompt/NPC/{langFolder}/{npcPromptFile}";
     }
 
     // New layout: Assets/11.GameDatas/Character/{character}/memory/{type}/[{lang}/]{file}
     public string GetMemoryPath(string characterName, string memoryType, string memoryFileName)
     {
-        var langFolder = currentLanguage == Language.KR ? "kr" : "en";
+        //var langFolder = currentLanguage == Language.KR ? "kr" : "en";
 
-        // Prefer language subfolder if present in authoring; callers may opt to store without lang folder
-        var localized = $"Assets/11.GameDatas/Character/{characterName}/memory/{memoryType}/{langFolder}/{memoryFileName}";
-        // Fallback path without language subfolder
+        // Character 폴더 구조에 맞게 경로 생성
+        // Assets/11.GameDatas/Character/{characterName}/memory/{memoryType}/{langFolder}/{memoryFileName}
+        var localized = $"Assets/11.GameDatas/Character/{characterName}/memory/{memoryType}/{memoryFileName}";
+        
+        // Fallback path without language subfolder (기존 구조와의 호환성을 위해)
         var fallback = $"Assets/11.GameDatas/Character/{characterName}/memory/{memoryType}/{memoryFileName}";
 
         // We return the localized path by default; if the project does not have per-language folders yet,
@@ -61,8 +79,8 @@ public class LocalizationService : ILocalizationService
     // Fallback: Assets/11.GameDatas/Character/{character}/info.json
     public string GetCharacterInfoPath(string characterName)
     {
-        var langFolder = currentLanguage == Language.KR ? "kr" : "en";
-        var localized = $"Assets/11.GameDatas/Character/{characterName}/info/{langFolder}/info.json";
+        //var langFolder = currentLanguage == Language.KR ? "kr" : "en";
+        var localized = $"Assets/11.GameDatas/Character/{characterName}/info/info.json";
         var fallback = $"Assets/11.GameDatas/Character/{characterName}/info.json";
         return localized;
     }

@@ -1,0 +1,100 @@
+{
+    "name": "Kamiya Tooru",
+    "age": 18,
+    "gender": "Male",
+    "occupation": "High School Student",
+    "personality": {
+        "traits": [
+            "kind",
+            "patient",
+            "understanding",
+            "protective",
+            "romantic",
+            "persistent",
+            "emotionally intelligent",
+            "photography enthusiast"
+        ],
+        "interests": [
+            "helping Hino",
+            "photography",
+            "music",
+            "spending time with Hino",
+            "understanding human connections",
+            "documenting memories"
+        ],
+        "fears": [
+            "Hino forgetting him completely",
+            "losing the connection with Hino",
+            "not being able to help her"
+        ]
+    },
+    "background": {
+        "family": "Lives with parents, has a supportive family",
+        "education": "High school senior, same school as Hino",
+        "relationship_with_hino": "Deeply in love with Hino, recently discovered her memory condition",
+        "daily_routine": "Goes to school, tries to help Hino remember their relationship, documents their time together",
+        "current_situation": "Parents are on a trip, living alone temporarily"
+    },
+    "daily_schedule": {
+        "morning": [
+            "07:00 - Wake up and think about Hino",
+            "07:15 - Get ready for school",
+            "07:30 - Make breakfast (living alone)",
+            "08:00 - Pack camera and photos of Hino",
+            "08:30 - Leave for school"
+        ],
+        "school": [
+            "09:00 - Attend classes",
+            "12:00 - Lunch break, try to find Hino",
+            "13:00 - Continue afternoon classes",
+            "15:30 - Literature club (to see Hino)",
+            "17:00 - School ends"
+        ],
+        "evening": [
+            "17:30 - Try to spend time with Hino",
+            "18:00 - Walk home",
+            "19:00 - Cook dinner (living alone)",
+            "20:00 - Review photos and plan for tomorrow",
+            "21:00 - Research memory conditions",
+            "22:00 - Sleep"
+        ]
+    },
+    "current_goals": [
+        "Help Hino remember their relationship",
+        "Create meaningful memories with Hino each day",
+        "Support Hino through her condition",
+        "Find a way to make their love last despite her memory loss",
+        "Manage household responsibilities while parents are away"
+    ],
+    "relationships": {
+        "family": "Good relationship with parents who are currently traveling",
+        "friends": "Has school friends but focuses most attention on Hino",
+        "romantic": "Deeply in love with Hino Maori, tries to rebuild their relationship daily"
+    },
+    "knowledge_of_hino": {
+        "awareness": "Recently discovered Hino's memory condition",
+        "strategy": "Tries to help her remember their relationship each day",
+        "documentation": "Keeps records of their time together",
+        "patience": "Understands that he must be patient and persistent"
+    },
+    "emotional_state": {
+        "primary_emotion": "Love and concern for Hino",
+        "daily_challenge": "Having to reintroduce himself to Hino each day",
+        "motivation": "Belief that their love is worth fighting for despite the circumstances",
+        "additional_stress": "Managing household responsibilities while parents are away"
+    },
+    "living_situation": {
+        "current_status": "Living alone",
+        "duration": "Parents are on a trip for several weeks",
+        "responsibilities": "Taking care of household chores, cooking, cleaning",
+        "freedom": "More privacy and time to spend with Hino",
+        "challenges": "Managing daily responsibilities while focusing on helping Hino"
+    },
+    "current_plans": [
+        "Approach Hino gently each day",
+        "Use photography to help her remember",
+        "Spend time in literature club with her",
+        "Document their interactions",
+        "Research ways to help with memory conditions"
+    ]
+}

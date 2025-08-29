@@ -1,0 +1,34 @@
+{
+  "name": "PerformActivity",
+  "displayName": "Perform Activity",
+  "description": "Perform a specific activity or task in the simulation world.",
+  "usage": "Use this action when you want to perform a particular activity or task.",
+  "parameters": [
+    {
+      "name": "activity_name",
+      "type": "string",
+      "description": "The name of the activity to perform",
+      "required": true
+    }
+  ],
+  "examples": [
+    "Performing morning stretches",
+    "Cooking a meal",
+    "Reading a book",
+    "Exercising",
+    "Working on a project"
+  ],
+  "requirements": [
+    "Activity must be available and appropriate for current situation",
+    "Must have necessary resources or location for the activity"
+  ],
+  "whenToUse": [
+    "Want to perform a specific task",
+    "Need to engage in an activity",
+    "Want to work on something",
+    "Need to perform routine activities",
+    "Want to engage in hobbies or work"
+  ],
+  "category": "activity"
+} 
+

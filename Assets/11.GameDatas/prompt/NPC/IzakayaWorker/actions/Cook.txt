@@ -1,6 +1,0 @@
-**Cook**: key에 해당하는 요리 prefab을 생성하여 손(우선) 또는 인벤토리에 보관한다.
-- parameters: ["dish_key"]
-- 요리 key는 Inspector의 cookablePrefabs에 미리 등록된 key여야 한다.
-- 손이 비어있지 않으면 자동으로 인벤토리에 보관한다. 모두 가득하면 현재 위치에 둔다.
-- 예시: ["Yakitori"], ["Oden"], ["Karaage"], ["Edamame"]
-
