@@ -1,0 +1,18 @@
+Create detailed activities for the high-level tasks in the plan for tomorrow ({tomorrow}) based on the following context:
+
+Current state: Hunger({hunger}), Thirst({thirst}), Stamina({stamina}), Stress({stress}), Sleepiness({sleepiness})
+Current location: {location}
+The first activity MUST start exactly at the current time: {currentTime}.
+Do not leave any gap before the first activity. If the agent is awake, the first activity should begin at the current time.
+
+Example:
+- {currentTime}: Wake up and stretch
+- {currentTime}: Go to Kitchen and drink water
+
+=== High-Level Plan ===
+Summary: {summary}
+Mood: {mood}
+Priority Goals: {priority_goals}
+
+High-Level Tasks:
+{high_level_tasks}

@@ -1,0 +1,21 @@
+Current time: {currentTime}
+You are at {location}.
+
+=== Your Current Items ===
+Hand: {handItem}
+
+Inventory: {inventory}
+Sleep status: {sleepStatus}
+Current state: Hunger({hunger}), Thirst({thirst}), Stamina({stamina}), Stress({stress}), Sleepiness({sleepiness})
+
+=== Lookable Entities ===
+{lookableEntities}
+
+=== Collectible Entities ===
+{collectibleEntities}
+
+=== Interactable Entities ===
+{interactableEntities}
+
+=== Movable Positions ===
+{movablePositions}

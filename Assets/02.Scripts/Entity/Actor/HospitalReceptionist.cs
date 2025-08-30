@@ -6,6 +6,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using Cysharp.Threading.Tasks;
 
+
 /// <summary>
 /// 병원 접수처 직원 NPC
 /// 환자 접수 및 의사에게 전달 역할을 수행
@@ -19,16 +20,16 @@ public class HospitalReceptionist : NPC
     [Title("Payment Settings")]
     [SerializeField, TableList]
     private List<PriceItem> priceList = new List<PriceItem>();
-    
+
     [SerializeField, ReadOnly]
     private int totalRevenue = 0; // 총 수익
-    
+
     [System.Serializable]
     public class PriceItem
     {
         [TableColumnWidth(200)]
         public string itemName; // 아이템 이름 (예: "진료비", "약품비")
-        
+
         [TableColumnWidth(100)]
         public int price; // 가격
     }
@@ -46,8 +47,15 @@ public class HospitalReceptionist : NPC
             return;
         }
         string currentTime = GetFormattedCurrentTime();
+        var localizationService = Services.Get<ILocalizationService>();
         string fromLabel = $"의사 {from?.Name}";
-        string systemMessage = $"[{currentTime}] SYSTEM: [{fromLabel}] ▶ {text}";
+        var replacements = new Dictionary<string, string>
+        {
+            { "time", currentTime },
+            { "name", fromLabel },
+            { "message", text }
+        };
+        string systemMessage = localizationService.GetLocalizedText("doctor_message", replacements);
         actionAgent.AddSystemMessage(systemMessage);
         _ = ProcessEventWithAgent();
     }
@@ -81,7 +89,7 @@ public class HospitalReceptionist : NPC
         base.InitializeActionHandlers();
         RegisterActionHandler(ReceptionAction.NotifyDoctor, HandleNotifyDoctor);
         RegisterActionHandler(ReceptionAction.Payment, HandlePayment);
-        
+
         Debug.Log($"[{Name}] 병원 접수처 액션 핸들러 초기화 완료");
     }
 
@@ -124,7 +132,7 @@ public class HospitalReceptionist : NPC
                 ShowSpeech("결제할 항목을 알려주세요.");
                 throw new InvalidOperationException("결제할 항목 매개변수가 없습니다.");
             }
-            
+
             string itemName = parameters[0]?.ToString();
             if (string.IsNullOrEmpty(itemName))
             {
@@ -132,7 +140,7 @@ public class HospitalReceptionist : NPC
                 ShowSpeech("결제할 항목을 알려주세요.");
                 throw new InvalidOperationException("결제할 항목 이름이 없습니다.");
             }
-            
+
             // 가격표에서 항목 찾기
             PriceItem priceItem = FindPriceItem(itemName);
             if (priceItem == null)
@@ -141,10 +149,10 @@ public class HospitalReceptionist : NPC
                 ShowSpeech($"죄송합니다. '{itemName}' 항목은 등록되지 않았습니다.");
                 throw new InvalidOperationException($"'{itemName}' 항목을 찾을 수 없습니다.");
             }
-            
+
             Debug.Log($"[{Name}] 결제 처리 시작 - 항목: {priceItem.itemName}, 가격: {priceItem.price}원");
             ShowSpeech($"{priceItem.itemName} {priceItem.price}원 결제 도와드릴게요.");
-            
+
             // 보유 금액 0원 특수 처리
             if (Money <= 0)
             {
@@ -152,7 +160,7 @@ public class HospitalReceptionist : NPC
                 ShowSpeech("결제를 위해 먼저 돈을 받아야 합니다.");
                 throw new InvalidOperationException("보유 금액이 0원입니다. 먼저 돈을 받아야 합니다.");
             }
-            
+
             // 보유 금액 체크
             if (Money < priceItem.price)
             {
@@ -160,23 +168,33 @@ public class HospitalReceptionist : NPC
                 ShowSpeech("죄송합니다. 금액이 부족합니다.");
                 throw new InvalidOperationException($"보유 금액이 부족합니다. (보유: {Money}원, 필요: {priceItem.price}원)");
             }
-            
+
             // 결제 처리 시뮬레이션
             await SimDelay.DelaySimMinutes(2);
-            
+
             // 결제 성공: 수익 증가, 보유 금액 차감
             Money -= priceItem.price;
             totalRevenue += priceItem.price;
-            
-            string paymentReport = $"병원 접수처 직원 {Name}이 {priceItem.itemName} {priceItem.price}원 결제를 처리했습니다. 현재 보유금: {Money}원, 총 수익: {totalRevenue}원";
-            Debug.Log($"[{Name}] 결제 완료: {paymentReport}");
+
+
+            Debug.Log($"[{Name}] 결제 완료");
             ShowSpeech("결제가 완료되었습니다. 감사합니다!");
-            
+
             // AI Agent에 결제 완료 메시지 추가
             if (actionAgent != null)
             {
+                var localizationService = Services.Get<ILocalizationService>();
+                var replacements = new Dictionary<string, string>
+            {
+                { "name", Name },
+                { "itemName", priceItem.itemName },
+                { "price", priceItem.price.ToString() },
+                { "money", Money.ToString() },
+                { "totalRevenue", totalRevenue.ToString() }
+            };
                 string currentTime = GetFormattedCurrentTime();
-                string systemMessage = $"[{currentTime}] [SYSTEM] 결제 완료 - {priceItem.itemName} {priceItem.price}원, 현재 보유금: {Money}원, 총 수익: {totalRevenue}원";
+                replacements.Add("time", currentTime);
+                string systemMessage = localizationService.GetLocalizedText("hospital_payment_system", replacements);
                 actionAgent.AddSystemMessage(systemMessage);
             }
         }
@@ -232,13 +250,13 @@ public class HospitalReceptionist : NPC
             switch (decision.actionType.ToLower())
             {
                 case "notifydoctor":
-                {
-                    string notifyMsg = (decision.parameters != null && decision.parameters.Length >= 1 && !string.IsNullOrEmpty(decision.parameters[0]))
-                        ? decision.parameters[0]
-                        : "환자 도착 알림";
-                    string targetName = doctor != null ? doctor.Name : "의사";
-                    return $"[{currentTime}] 의사 {targetName}에게 \"{notifyMsg}\" 전달";
-                }
+                    {
+                        string notifyMsg = (decision.parameters != null && decision.parameters.Length >= 1 && !string.IsNullOrEmpty(decision.parameters[0]))
+                            ? decision.parameters[0]
+                            : "환자 도착 알림";
+                        string targetName = doctor != null ? doctor.Name : "의사";
+                        return $"[{currentTime}] 의사 {targetName}에게 \"{notifyMsg}\" 전달";
+                    }
                 case "payment":
                     if (decision.parameters != null && decision.parameters.Length >= 1)
                     {

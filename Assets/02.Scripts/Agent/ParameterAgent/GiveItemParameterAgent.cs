@@ -9,6 +9,7 @@ using System.Text.Json;
 using Agent.Tools;
 using System.Threading;
 
+
 namespace Agent
 {
     public class GiveItemParameterAgent : ParameterAgentBase
@@ -139,10 +140,20 @@ namespace Agent
 
         private string BuildUserMessage(CommonContext context)
         {
+            var localizationService = Services.Get<ILocalizationService>();
             var handItem = actor.HandItem?.Name ?? "Empty";
             var inventoryItems = actor.InventoryItems.Where(item => item != null).Select(item => item.Name).ToList();
             
-            return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableCharacters: {string.Join(", ", characterList)}\nHandItem: {handItem}\nInventoryItems: {string.Join(", ", inventoryItems)}";
+            var replacements = new Dictionary<string, string>
+            {
+                { "reasoning", context.Reasoning },
+                { "intention", context.Intention },
+                { "characters", string.Join(", ", characterList) },
+                { "handItem", handItem },
+                { "inventoryItems", string.Join(", ", inventoryItems) }
+            };
+            
+            return localizationService.GetLocalizedText("parameter_message_with_inventory", replacements);
         }
     }
 } 

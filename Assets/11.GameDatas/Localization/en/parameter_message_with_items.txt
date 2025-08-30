@@ -1,0 +1,3 @@
+Reasoning: {reasoning}
+Intention: {intention}
+Available Items: {items}

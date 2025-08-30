@@ -1,0 +1,1 @@
+[{time}] [SYSTEM] Hospital receptionist {name} processed payment for {itemName} {price}원. Current money: {money}원, Total revenue: {totalRevenue}원

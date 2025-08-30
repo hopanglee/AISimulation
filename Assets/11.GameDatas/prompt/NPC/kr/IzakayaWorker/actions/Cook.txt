@@ -1,6 +1,9 @@
-**Cook**: Create a dish prefab matching the key and hold it (preferably), otherwise store in inventory
-- parameters: ["dish_key"]
-- The dish_key must match a key registered in the inspector cookablePrefabs
-- If hands are full, store in inventory; if everything is full, place it at the current location
-- examples: ["Yakitori"], ["Oden"], ["Karaage"], ["Edamame"]
+Cook: 키와 일치하는 요리 프리팹을 생성하고, 가급적 손에 들고, 그렇지 않으면 인벤토리에 보관하기
 
+파라미터: ["dish_key"]
+
+규칙:
+dish_key는 인스펙터의 cookablePrefabs에 등록된 키와 일치해야 합니다.
+손이 가득 차 있으면 인벤토리에 보관하고, 모든 것이 가득 차 있으면 현재 위치에 놓습니다.
+
+예시: ["Yakitori"], ["Oden"], ["Karaage"], ["Edamame"]

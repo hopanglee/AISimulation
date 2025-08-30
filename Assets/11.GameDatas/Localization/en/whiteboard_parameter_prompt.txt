@@ -1,0 +1,19 @@
+## Actor Information
+- Name: {actor_name}
+- Item in hand: {hand_item}
+- Current location: {current_location}
+
+## Current WhiteBoard Status
+{whiteboard_status}
+
+## Current Situation
+- Action reason: {reasoning}
+- Action intention: {intention}
+
+## Available Actions
+- write: Write new content on the whiteboard (overwrites existing content)
+- update: Modify or add to existing content
+- erase: Clear the whiteboard completely
+
+Based on the above information, please decide what action to take on the whiteboard.
+Consider the actor's current situation, needs, and the whiteboard's current state.

@@ -161,16 +161,17 @@ namespace Agent
 
         private string BuildUserMessage(CommonContext context)
         {
-            var message = $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableCharacters: {string.Join(", ", characterList)}";
+            var localizationService = Services.Get<ILocalizationService>();
             
-            // 피드백이 있으면 추가
-            if (!string.IsNullOrEmpty(context.PreviousFeedback))
+            var replacements = new Dictionary<string, string>
             {
-                message += $"\n\nPrevious Action Feedback: {context.PreviousFeedback}";
-                message += "\n\nPlease consider this feedback when making your selection. Choose a different character if the previous one was not available for conversation.";
-            }
+                { "reasoning", context.Reasoning },
+                { "intention", context.Intention },
+                { "characters", string.Join(", ", characterList) },
+                { "feedback", !string.IsNullOrEmpty(context.PreviousFeedback) ? context.PreviousFeedback : "" }
+            };
             
-            return message;
+            return localizationService.GetLocalizedText("parameter_message_with_feedback", replacements);
         }
     }
 } 

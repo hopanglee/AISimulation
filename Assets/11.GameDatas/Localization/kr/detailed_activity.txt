@@ -1,0 +1,2 @@
+- {activityName}: {description} ({startTime}-{endTime}) at {location}
+  Parent Task: {parentTask}

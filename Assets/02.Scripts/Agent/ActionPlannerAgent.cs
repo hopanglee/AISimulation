@@ -9,6 +9,7 @@ using UnityEngine;
 using System.Linq; // Added for .Select()
 using Agent.Tools;
 
+
 /// <summary>
 /// 구체적 행동을 담당하는 전문화된 Agent (Stanford Generative Agent 스타일)
 /// 세부 활동을 분 단위의 실제 실행 가능한 액션으로 분해
@@ -240,34 +241,43 @@ public class ActionPlannerAgent : GPT
     /// </summary>
     private string GenerateActionPlanPrompt(DetailedPlannerAgent.DetailedPlan detailedPlan, GameTime tomorrow)
     {
-        var sb = new StringBuilder();
         var timeService = Services.Get<ITimeService>();
+        var localizationService = Services.Get<ILocalizationService>();
         var currentTime = $"{timeService.CurrentTime.hour:D2}:{timeService.CurrentTime.minute:D2}";
-        sb.AppendLine($"Create specific actions for the detailed activities in the plan for tomorrow ({tomorrow}) based on the following context:");
-        if (actor is MainActor thinkingActor)
-        {
-            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({thinkingActor.Sleepiness})");
-        }
-        else
-        {
-            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress})");
-        }
-        sb.AppendLine($"Current location: {actor.curLocation.LocationToString()}");
-        sb.AppendLine($"The first activity MUST start exactly at the current time: {currentTime}.");
-        sb.AppendLine("Do not leave any gap before the first activity. If the agent is awake, the first activity should begin at the current time.");
-        sb.AppendLine("Example:");
-        sb.AppendLine($"- {currentTime}: Wake up and stretch");
-        sb.AppendLine($"- {currentTime}: Go to Kitchen and drink water");
-        sb.AppendLine("\n=== Detailed Activities Plan ===");
-        sb.AppendLine($"Summary: {detailedPlan.Summary}");
-        sb.AppendLine($"Mood: {detailedPlan.Mood}");
-        sb.AppendLine("\nDetailed Activities:");
+        
+        // 상세 활동 목록 생성
+        var detailedActivitiesList = new List<string>();
         foreach (var activity in detailedPlan.DetailedActivities)
         {
-            sb.AppendLine($"- {activity.ActivityName}: {activity.Description} ({activity.StartTime}-{activity.EndTime}) at {activity.Location}");
-            sb.AppendLine($"  Parent Task: {activity.ParentTask}");
+            var activityReplacements = new Dictionary<string, string>
+            {
+                { "activityName", activity.ActivityName },
+                { "description", activity.Description },
+                { "startTime", activity.StartTime },
+                { "endTime", activity.EndTime },
+                { "location", activity.Location },
+                { "parentTask", activity.ParentTask }
+            };
+            detailedActivitiesList.Add(localizationService.GetLocalizedText("detailed_activity", activityReplacements));
         }
-        return sb.ToString();
+        
+        // 통합 치환 정보
+        var replacements = new Dictionary<string, string>
+        {
+            { "tomorrow", tomorrow.ToString() },
+            { "hunger", actor.Hunger.ToString() },
+            { "thirst", actor.Thirst.ToString() },
+            { "stamina", actor.Stamina.ToString() },
+            { "stress", actor.Stress.ToString() },
+            { "sleepiness", (actor as MainActor)?.Sleepiness.ToString() ?? "0" },
+            { "location", actor.curLocation.LocationToString() },
+            { "currentTime", currentTime },
+            { "summary", detailedPlan.Summary },
+            { "mood", detailedPlan.Mood },
+            { "detailed_activities", string.Join("\n", detailedActivitiesList) }
+        };
+        
+        return localizationService.GetLocalizedText("action_plan_prompt", replacements);
     }
 
     /// <summary>

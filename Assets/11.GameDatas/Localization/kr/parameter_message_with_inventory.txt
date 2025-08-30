@@ -1,0 +1,5 @@
+Reasoning: {reasoning}
+Intention: {intention}
+Available Characters: {characters}
+Hand Item: {handItem}
+Inventory Items: {inventoryItems}

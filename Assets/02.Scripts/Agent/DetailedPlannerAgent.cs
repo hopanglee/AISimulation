@@ -173,38 +173,38 @@ public class DetailedPlannerAgent : GPT
     /// </summary>
     private string GenerateDetailedPlanPrompt(HighLevelPlannerAgent.HighLevelPlan highLevelPlan, GameTime tomorrow)
     {
-        var sb = new StringBuilder();
+        var localizationService = Services.Get<ILocalizationService>();
         var timeService = Services.Get<ITimeService>();
         var currentTime = $"{timeService.CurrentTime.hour:D2}:{timeService.CurrentTime.minute:D2}";
-        sb.AppendLine($"Create detailed activities for the high-level tasks in the plan for tomorrow ({tomorrow}) based on the following context:");
-        if (actor is MainActor thinkingActor)
-        {
-            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({thinkingActor.Sleepiness})");
-        }
-        else
-        {
-            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress})");
-        }
-        sb.AppendLine($"Current location: {actor.curLocation.LocationToString()}");
-        sb.AppendLine($"The first activity MUST start exactly at the current time: {currentTime}.");
-        sb.AppendLine("Do not leave any gap before the first activity. If the agent is awake, the first activity should begin at the current time.");
-        sb.AppendLine("Example:");
-        sb.AppendLine($"- {currentTime}: Wake up and stretch");
-        sb.AppendLine($"- {currentTime}: Go to Kitchen and drink water");
-        sb.AppendLine("\n=== High-Level Plan ===");
-        sb.AppendLine($"Summary: {highLevelPlan.Summary}");
-        sb.AppendLine($"Mood: {highLevelPlan.Mood}");
-        sb.AppendLine($"Priority Goals: {string.Join(", ", highLevelPlan.PriorityGoals)}");
-        sb.AppendLine("\nHigh-Level Tasks:");
+        
+        // 고수준 작업들을 문자열로 변환
+        var highLevelTasksBuilder = new StringBuilder();
         foreach (var task in highLevelPlan.HighLevelTasks)
         {
-            sb.AppendLine($"- {task.TaskName}: {task.Description} ({task.StartTime}-{task.EndTime}) at {task.Location}");
+            highLevelTasksBuilder.AppendLine($"- {task.TaskName}: {task.Description} ({task.StartTime}-{task.EndTime}) at {task.Location}");
             if (task.SubTasks.Count > 0)
             {
-                sb.AppendLine($"  Sub-tasks: {string.Join(", ", task.SubTasks)}");
+                highLevelTasksBuilder.AppendLine($"  Sub-tasks: {string.Join(", ", task.SubTasks)}");
             }
         }
-        return sb.ToString();
+        
+        var replacements = new Dictionary<string, string>
+        {
+            { "tomorrow", tomorrow.ToString() },
+            { "currentTime", currentTime },
+            { "location", actor.curLocation.LocationToString() },
+            { "hunger", actor.Hunger.ToString() },
+            { "thirst", actor.Thirst.ToString() },
+            { "stamina", actor.Stamina.ToString() },
+            { "stress", actor.Stress.ToString() },
+            { "sleepiness", (actor as MainActor)?.Sleepiness.ToString() ?? "0" },
+            { "summary", highLevelPlan.Summary },
+            { "mood", highLevelPlan.Mood },
+            { "priority_goals", string.Join(", ", highLevelPlan.PriorityGoals) },
+            { "high_level_tasks", highLevelTasksBuilder.ToString() }
+        };
+
+        return localizationService.GetLocalizedText("detailed_plan_prompt", replacements);
     }
 
     /// <summary>

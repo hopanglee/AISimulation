@@ -1,8 +1,11 @@
-**NotifyDoctor**: Send a directed message to the assigned doctor
-- **Use when**: A patient arrives or there is an update the doctor should know in advance
-- **Effect**: Performs a remote, targeted Talk to the linked HospitalDoctor (inspector reference)
-- **Parameters**: [message] (string) — what to inform
-- **Examples**:
-  - ["New patient arrived with abdominal pain"]
-  - ["Scheduled patient has arrived"]
+NotifyDoctor: 담당 의사에게 지정된 메시지 보내기
 
+사용 시점: 환자가 도착했거나 의사가 미리 알아야 할 업데이트가 있을 때
+
+효과: 연결된 HospitalDoctor (인스펙터 참조)에게 원격으로 지정된 Talk를 수행합니다
+
+파라미터: [message] (문자열) — 알릴 내용
+
+예시:
+["복통이 있는 새 환자가 도착했습니다"]
+["예약된 환자분이 도착했습니다"]

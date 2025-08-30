@@ -1,5 +1,8 @@
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 public interface ILocalizationService : IService
 {
@@ -12,11 +15,17 @@ public interface ILocalizationService : IService
     string GetNpcPromptPath(string npcPromptFile);
     string GetMemoryPath(string characterName, string memoryType, string memoryFileName);
     string GetCharacterInfoPath(string characterName);
+    
+    // Template localization helpers
+    string GetLocalizedText(string templateName, Dictionary<string, string> replacements = null);
+    bool TemplateExists(string templateName);
+    void ClearCache();
 }
 
 public class LocalizationService : ILocalizationService
 {
     private Language currentLanguage = Language.EN; // default EN
+    private readonly Dictionary<string, string> templateCache = new();
 
     public UniTask Initialize()
     {
@@ -29,6 +38,7 @@ public class LocalizationService : ILocalizationService
     public void SetLanguage(Language language)
     {
         currentLanguage = language;
+        ClearCache(); // 언어 변경 시 캐시 초기화
         Debug.Log($"[LocalizationService] Language set to {currentLanguage}");
     }
 
@@ -83,6 +93,86 @@ public class LocalizationService : ILocalizationService
         var localized = $"Assets/11.GameDatas/Character/{characterName}/info/info.json";
         var fallback = $"Assets/11.GameDatas/Character/{characterName}/info.json";
         return localized;
+    }
+
+    // Template localization methods
+    public string GetLocalizedText(string templateName, Dictionary<string, string> replacements = null)
+    {
+        try
+        {
+            // 캐시에서 템플릿 가져오기
+            if (!templateCache.TryGetValue(templateName, out string template))
+            {
+                template = GetTemplate(templateName);
+                if (template != null)
+                {
+                    templateCache[templateName] = template;
+                }
+            }
+
+            if (template == null)
+            {
+                Debug.LogWarning($"[LocalizationService] Template '{templateName}' not found");
+                return $"[MISSING_TEMPLATE: {templateName}]";
+            }
+
+            // 치환 작업
+            if (replacements != null)
+            {
+                foreach (var kvp in replacements)
+                {
+                    template = template.Replace($"{{{kvp.Key}}}", kvp.Value);
+                }
+            }
+
+            return template;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[LocalizationService] Error getting localized text for '{templateName}': {ex.Message}");
+            return $"[ERROR: {templateName}]";
+        }
+    }
+
+    public bool TemplateExists(string templateName)
+    {
+        try
+        {
+            var template = GetTemplate(templateName);
+            return template != null;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public void ClearCache()
+    {
+        templateCache.Clear();
+    }
+
+    private string GetTemplate(string templateName)
+    {
+        try
+        {
+            var langFolder = currentLanguage == Language.KR ? "kr" : "en";
+            var templatePath = $"Assets/11.GameDatas/Localization/{langFolder}/{templateName}.txt";
+            
+            // 파일이 존재하는지 확인
+            if (!File.Exists(templatePath))
+            {
+                Debug.LogWarning($"[LocalizationService] Template file not found: {templatePath}");
+                return null;
+            }
+
+            return File.ReadAllText(templatePath);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[LocalizationService] Error loading template '{templateName}': {ex.Message}");
+            return null;
+        }
     }
 }
 

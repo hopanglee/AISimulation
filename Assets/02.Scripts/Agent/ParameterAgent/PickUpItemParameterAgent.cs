@@ -7,6 +7,7 @@ using System.Linq;
 using UnityEngine;
 using System.Threading;
 
+
 namespace Agent
 {
     public class PickUpItemParameterAgent : ParameterAgentBase
@@ -129,16 +130,15 @@ namespace Agent
 
         private string BuildUserMessage(CommonContext context)
         {
-            var message = $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableItems: {string.Join(", ", itemList)}";
-            
-            // 피드백이 있으면 추가
-            if (!string.IsNullOrEmpty(context.PreviousFeedback))
+            var localizationService = Services.Get<ILocalizationService>();
+            var replacements = new Dictionary<string, string>
             {
-                message += $"\n\nPrevious Action Feedback: {context.PreviousFeedback}";
-                message += "\n\nPlease consider this feedback when making your selection. Choose a different item if the previous one was not pickable.";
-            }
+                { "reasoning", context.Reasoning },
+                { "intention", context.Intention },
+                { "items", string.Join(", ", itemList) }
+            };
             
-            return message;
+            return localizationService.GetLocalizedText("parameter_message_with_items", replacements);
         }
     }
 } 

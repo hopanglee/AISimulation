@@ -1,0 +1,1 @@
+[{time}] [SYSTEM] 병원 접수처 직원 {name}이 {itemName} {price}원 결제를 처리했습니다. 현재 보유금: {money}원, 총 수익: {totalRevenue}원

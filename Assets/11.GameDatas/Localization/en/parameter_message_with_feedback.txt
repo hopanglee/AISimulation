@@ -1,0 +1,7 @@
+Reasoning: {reasoning}
+Intention: {intention}
+Available Characters: {characters}
+
+Previous Action Feedback: {feedback}
+
+Please consider this feedback when making your selection. Choose a different character if the previous one was not available for conversation.
