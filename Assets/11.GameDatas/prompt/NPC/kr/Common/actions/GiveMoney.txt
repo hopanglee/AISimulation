@@ -1,19 +1,15 @@
-GiveMoney
+설명:
+대상 캐릭터에게 이동하여 지정된 금액의 돈을 건네줍니다.
 
-Description:
-- Move to the target character and hand over a specified amount of money.
+파라미터:
+[target_character_name, amount]
+target_character_name: 문자열 (근처에 있거나 알려진 액터 키여야 함)
+amount: 양의 정수 (예: "500")
 
-Parameters:
-- [target_character_name, amount]
-  - target_character_name: string (must be a nearby/known actor key)
-  - amount: positive integer (e.g., "500")
+제약 조건:
+amount가 양의 정수가 아니면 선택하지 마세요.
+현재 가진 돈이 amount보다 적으면 선택하지 마세요.
 
-Constraints:
-- Do NOT select if amount is not a positive integer.
-- Do NOT select if your current money is less than amount.
-
-Notes:
-- Consider moving first (Move) if you are far from the target.
-- Keep the interaction brief and natural if Talk is needed before/after.
-
-
+참고사항:
+대상과 멀리 떨어져 있다면 먼저 이동(Move)하는 것을 고려하세요.
+전후에 대화(Talk)가 필요하다면 상호작용을 짧고 자연스럽게 유지하세요.

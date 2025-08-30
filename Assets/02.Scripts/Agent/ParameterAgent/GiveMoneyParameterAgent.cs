@@ -7,6 +7,7 @@ using System.Linq;
 using UnityEngine;
 using System.Threading;
 
+
 namespace Agent
 {
     public class GiveMoneyParameterAgent : ParameterAgentBase
@@ -142,7 +143,15 @@ namespace Agent
 
         private string BuildUserMessage(CommonContext context)
         {
-            return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableCharacters: {string.Join(", ", characterList)}";//\nCurrentMoney: {actor.Money}
+            var localizationService = Services.Get<ILocalizationService>();
+            var replacements = new Dictionary<string, string>
+            {
+                { "reasoning", context.Reasoning },
+                { "intention", context.Intention },
+                { "characters", string.Join(", ", characterList) }
+            };
+            
+            return localizationService.GetLocalizedText("parameter_message_with_characters", replacements);
         }
     }
 } 

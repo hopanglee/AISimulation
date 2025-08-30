@@ -1,8 +1,11 @@
-**NotifyReceptionist**: Send a directed message to the receptionist
-- **Use when**: You need the receptionist to relay information or prepare a patient
-- **Effect**: Performs a remote, targeted Talk to the linked HospitalReceptionist (inspector reference)
-- **Parameters**: [message] (string)
-- **Examples**:
-  - ["Please guide the next patient in"]
-  - ["Consultation ready, please admit the patient"]
+NotifyReceptionist: 접수원에게 지정된 메시지 보내기
 
+사용 시점: 접수원이 정보를 전달하거나 환자를 준비시켜야 할 때
+
+효과: 연결된 HospitalReceptionist (인스펙터 참조)에게 원격으로 지정된 Talk를 수행합니다
+
+파라미터: [message] (문자열)
+
+예시:
+["다음 환자분을 안내해 주세요"]
+["진료 준비가 끝났으니 환자분을 들여보내 주세요"]

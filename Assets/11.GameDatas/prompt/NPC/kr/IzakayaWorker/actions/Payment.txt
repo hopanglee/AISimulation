@@ -1,5 +1,7 @@
-**Payment**: Process customer payment for specific items
-- Use when: Customer wants to buy something, checkout process, handling money transactions
-- Parameters: itemKey (string)
-- Notes: Updates revenue on success
+Payment: 특정 아이템에 대한 고객 결제를 처리합니다.
 
+사용 시점: 고객이 무언가를 구매하려 할 때, 계산 과정, 금전 거래 처리 시
+
+파라미터: itemKey (문자열)
+
+참고사항: 성공 시 수익을 업데이트합니다.

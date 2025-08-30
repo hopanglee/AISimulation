@@ -1,0 +1,1 @@
+Current state: Hunger({hunger}), Thirst({thirst}), Stamina({stamina}), Stress({stress})

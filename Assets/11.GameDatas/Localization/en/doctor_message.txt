@@ -1,0 +1,1 @@
+SYSTEM: [Doctor {name}] ▶ {message}

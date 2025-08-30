@@ -1,5 +1,9 @@
-**Move**: Move to the location that matches the given key
-- parameters: ["location_key"]
-- examples: ["VIP_Area"], ["Bar"], ["Stage"], ["Private_Room"]
-- constraint: Only use existing location keys. If unclear, choose Wait.
-- notes: As a host club worker, prioritize moving to areas where you can interact with customers or perform your duties.
+Move: 주어진 키와 일치하는 위치로 이동하기
+
+파라미터: ["location_key"]
+
+예시: ["VIP_Area"], ["Bar"], ["Stage"], ["Private_Room"]
+
+제약 조건: 존재하는 위치 키만 사용하세요. 불분명할 경우, Wait를 선택하세요.
+
+참고사항: 호스트 클럽 직원으로서, 고객과 상호작용하거나 임무를 수행할 수 있는 구역으로 이동하는 것을 우선시하세요.

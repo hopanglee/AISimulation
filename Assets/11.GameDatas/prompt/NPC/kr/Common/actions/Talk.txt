@@ -1,5 +1,7 @@
-**Talk**: Speak to someone or respond to conversation
-- Use when: Customer speaks to you, greeting customers, answering questions, general conversation
-- Parameters: [target_name, message_to_say] (string, string) - Who to talk to and what to say
-- Example: ["Customer", "Hello! Welcome!"], ["Customer", "How can I help you?"], ["Customer", "Thank you!"]
+Talk: 누군가에게 말하거나 대화에 응답하기
 
+사용 시점: 고객이 당신에게 말을 걸 때, 고객에게 인사할 때, 질문에 답할 때, 일반적인 대화
+
+파라미터: [target_name, message_to_say] (문자열, 문자열) - 누구에게 말할지와 무슨 말을 할지
+
+예시: ["Customer", "안녕하세요! 환영합니다!"], ["Customer", "무엇을 도와드릴까요?"], ["Customer", "감사합니다!"]

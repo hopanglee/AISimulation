@@ -1,0 +1,6 @@
+Reasoning: {reasoning}
+Intention: {intention}
+Available Items (Actor's hand/inventory + nearby collectibles): {items}
+Box Items (Current box + nearby inventory boxes): {boxItems}
+
+IMPORTANT: You can ONLY select items from these lists. Do not invent item names.

@@ -139,40 +139,33 @@ namespace Agent
         /// </summary>
         private string BuildUserMessage(ActParameterRequest request)
         {
-            var message = new System.Text.StringBuilder();
+            var localizationService = Services.Get<ILocalizationService>();
             
-            message.AppendLine($"## Actor Information");
-            message.AppendLine($"- Name: {actor.Name}");
-            message.AppendLine($"- Item in hand: {(actor.HandItem != null ? actor.HandItem.Name : "None")}");
-            message.AppendLine($"- Current location: {actor.curLocation?.GetType().Name ?? "Unknown"}");
-            message.AppendLine();
-
-            message.AppendLine($"## Current WhiteBoard Status");
+            // 화이트보드 상태 결정
+            string whiteboardStatus;
             if (string.IsNullOrEmpty(currentBoardContent))
             {
-                message.AppendLine("- The whiteboard is currently clean and empty.");
+                whiteboardStatus = localizationService.GetLocalizedText("whiteboard_empty");
             }
             else
             {
-                message.AppendLine($"- Current content: '{currentBoardContent}'");
+                whiteboardStatus = localizationService.GetLocalizedText("whiteboard_content", new Dictionary<string, string>
+                {
+                    { "content", currentBoardContent }
+                });
             }
-            message.AppendLine();
+            
+            var replacements = new Dictionary<string, string>
+            {
+                { "actor_name", actor.Name },
+                { "hand_item", actor.HandItem != null ? actor.HandItem.Name : localizationService.GetLocalizedText("none") },
+                { "current_location", actor.curLocation?.GetType().Name ?? localizationService.GetLocalizedText("unknown") },
+                { "whiteboard_status", whiteboardStatus },
+                { "reasoning", request.Reasoning },
+                { "intention", request.Intention }
+            };
 
-            message.AppendLine($"## Current Situation");
-            message.AppendLine($"- Action reason: {request.Reasoning}");
-            message.AppendLine($"- Action intention: {request.Intention}");
-            message.AppendLine();
-
-            message.AppendLine($"## Available Actions");
-            message.AppendLine("- write: Write new content on the whiteboard (overwrites existing content)");
-            message.AppendLine("- update: Modify or add to existing content");
-            message.AppendLine("- erase: Clear the whiteboard completely");
-            message.AppendLine();
-
-            message.AppendLine("Based on the above information, please decide what action to take on the whiteboard.");
-            message.AppendLine("Consider the actor's current situation, needs, and the whiteboard's current state.");
-
-            return message.ToString();
+            return localizationService.GetLocalizedText("whiteboard_parameter_prompt", replacements);
         }
 
         /// <summary>

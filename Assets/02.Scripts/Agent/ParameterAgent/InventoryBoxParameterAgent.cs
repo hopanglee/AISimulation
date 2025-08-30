@@ -7,6 +7,7 @@ using UnityEngine;
 using System.Linq;
 using System.Threading;
 
+
 namespace Agent
 {
     public class InventoryBoxParameterAgent : ParameterAgentBase
@@ -233,24 +234,19 @@ namespace Agent
 
         private string BuildUserMessage(CommonContext context)
         {
-            var message = $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\n";
-            
-            // 현재 사용 가능한 아이템들 (동적으로 가져온 것)
+            var localizationService = Services.Get<ILocalizationService>();
             var currentAvailableItems = GetCurrentAvailableItems();
             var currentBoxItems = GetCurrentBoxItems();
             
-            message += $"Available Items (Actor's hand/inventory + nearby collectibles): {string.Join(", ", currentAvailableItems)}\n";
-            message += $"Box Items (Current box + nearby inventory boxes): {string.Join(", ", currentBoxItems)}\n";
-            message += $"\nIMPORTANT: You can ONLY select items from these lists. Do not invent item names.";
-            
-            // 피드백이 있으면 추가
-            if (!string.IsNullOrEmpty(context.PreviousFeedback))
+            var replacements = new Dictionary<string, string>
             {
-                message += $"\n\nPrevious Action Feedback: {context.PreviousFeedback}";
-                message += "\n\nPlease consider this feedback when making your decision.";
-            }
+                { "reasoning", context.Reasoning },
+                { "intention", context.Intention },
+                { "items", string.Join(", ", currentAvailableItems) },
+                { "boxItems", string.Join(", ", currentBoxItems) }
+            };
             
-            return message;
+            return localizationService.GetLocalizedText("parameter_message_with_box", replacements);
         }
     }
 }

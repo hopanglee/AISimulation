@@ -1,0 +1,12 @@
+Create specific actions for the detailed activities in the plan for tomorrow ({tomorrow}) based on the following context:
+
+Current state: Hunger({hunger}), Thirst({thirst}), Stamina({stamina}), Stress({stress}), Sleepiness({sleepiness})
+Current location: {location}
+
+=== Memory Information ===
+{memory_summary}
+
+For each detailed activity in the plan, create 1-3 specific actions.
+Each specific action should have an action name, description, start and end time, duration in minutes, parameters, and location.
+Use only the actual locations and action types listed above.
+For locations, use the exact full path format (e.g., 'Kitchen in Apartment') as shown in the available locations list.

@@ -1,0 +1,11 @@
+Create detailed activities for the high-level tasks in the plan for tomorrow ({tomorrow}) based on the following context:
+Current state: Hunger({hunger}), Thirst({thirst}), Stamina({stamina}), Stress({stress}), Sleepiness({sleepiness})
+Current location: {location}
+
+=== Memory Information ===
+{memory_summary}
+
+For each high-level task in the plan, create 1-3 detailed activities.
+Each detailed activity should have a name, description, start and end time, duration, location, and parent task.
+Use only the actual locations and action types listed above.
+For locations, use the exact full path format (e.g., 'Kitchen in Apartment') as shown in the available locations list.

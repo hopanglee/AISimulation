@@ -8,6 +8,7 @@ using OpenAI.Chat;
 using UnityEngine;
 using System.Linq; // Added for Select
 
+
 public class DayPlanAgent : GPT
 {
     private Actor actor;
@@ -322,34 +323,26 @@ public class DayPlanAgent : GPT
     /// </summary>
     private string GenerateHighLevelPlanPrompt(GameTime tomorrow)
     {
-        var sb = new StringBuilder();
-        sb.AppendLine($"Create a high-level plan for tomorrow ({tomorrow}) based on the following context:");
-        if (actor is MainActor thinkingActor)
-        {
-            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({thinkingActor.Sleepiness})");
-        }
-        else
-        {
-            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress})");
-        }
-        sb.AppendLine($"Current location: {actor.curLocation.LocationToString()}");
-
+        var localizationService = Services.Get<ILocalizationService>();
+        
         // 캐릭터의 메모리 정보 추가
         var memoryManager = new CharacterMemoryManager(actor.Name);
         var memorySummary = memoryManager.GetMemorySummary();
-        sb.AppendLine("\n=== Memory Information ===");
-        sb.AppendLine(memorySummary);
 
-        sb.AppendLine("\nGenerate a list of 3-5 priority goals and 3-5 high-level tasks for tomorrow.");
-        sb.AppendLine("Prioritize goals based on current state and long-term objectives.");
-        sb.AppendLine("Tasks should be specific, achievable, and relevant to the day's plan.");
-        sb.AppendLine("Each task should have a start and end time, duration, priority, and location.");
-        sb.AppendLine("The last high-level task's end_time MUST be exactly 22:00 (bedtime). Fill the plan so that there is no gap until 22:00.");
-        sb.AppendLine("Example: ... 21:00-22:00: Prepare for bed and sleep at Bedroom in Apartment");
-        sb.AppendLine("Use only the actual locations and action types listed above.");
-        sb.AppendLine("For locations, use the exact full path format (e.g., 'Kitchen in Apartment') as shown in the available locations list.");
+        // 통합 치환 정보
+        var replacements = new Dictionary<string, string>
+        {
+            { "tomorrow", tomorrow.ToString() },
+            { "hunger", actor.Hunger.ToString() },
+            { "thirst", actor.Thirst.ToString() },
+            { "stamina", actor.Stamina.ToString() },
+            { "stress", actor.Stress.ToString() },
+            { "sleepiness", (actor as MainActor)?.Sleepiness.ToString() ?? "0" },
+            { "location", actor.curLocation.LocationToString() },
+            { "memory_summary", memorySummary }
+        };
 
-        return sb.ToString();
+        return localizationService.GetLocalizedText("high_level_plan_prompt", replacements);
     }
 
     /// <summary>
@@ -441,30 +434,26 @@ public class DayPlanAgent : GPT
     /// </summary>
     private string GenerateDetailedActivitiesPrompt(HierarchicalDayPlan highLevelPlan, GameTime tomorrow)
     {
-        var sb = new StringBuilder();
-        sb.AppendLine($"Create detailed activities for the high-level tasks in the plan for tomorrow ({tomorrow}) based on the following context:");
-        if (actor is MainActor thinkingActor)
-        {
-            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({thinkingActor.Sleepiness})");
-        }
-        else
-        {
-            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress})");
-        }
-        sb.AppendLine($"Current location: {actor.curLocation.LocationToString()}");
-
+        var localizationService = Services.Get<ILocalizationService>();
+        
         // 캐릭터의 메모리 정보 추가
         var memoryManager = new CharacterMemoryManager(actor.Name);
         var memorySummary = memoryManager.GetMemorySummary();
-        sb.AppendLine("\n=== Memory Information ===");
-        sb.AppendLine(memorySummary);
 
-        sb.AppendLine("\nFor each high-level task in the plan, create 1-3 detailed activities.");
-        sb.AppendLine("Each detailed activity should have a name, description, start and end time, duration, location, and parent task.");
-        sb.AppendLine("Use only the actual locations and action types listed above.");
-        sb.AppendLine("For locations, use the exact full path format (e.g., 'Kitchen in Apartment') as shown in the available locations list.");
+        // 통합 치환 정보
+        var replacements = new Dictionary<string, string>
+        {
+            { "tomorrow", tomorrow.ToString() },
+            { "hunger", actor.Hunger.ToString() },
+            { "thirst", actor.Thirst.ToString() },
+            { "stamina", actor.Stamina.ToString() },
+            { "stress", actor.Stress.ToString() },
+            { "sleepiness", (actor as MainActor)?.Sleepiness.ToString() ?? "0" },
+            { "location", actor.curLocation.LocationToString() },
+            { "memory_summary", memorySummary }
+        };
 
-        return sb.ToString();
+        return localizationService.GetLocalizedText("detailed_activities_prompt", replacements);
     }
 
     /// <summary>
@@ -544,30 +533,25 @@ public class DayPlanAgent : GPT
     /// </summary>
     private string GenerateSpecificActionsPrompt(HierarchicalDayPlan detailedPlan, GameTime tomorrow)
     {
-        var sb = new StringBuilder();
-        sb.AppendLine($"Create specific actions for the detailed activities in the plan for tomorrow ({tomorrow}) based on the following context:");
-        if (actor is MainActor thinkingActor)
-        {
-            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({thinkingActor.Sleepiness})");
-        }
-        else
-        {
-            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress})");
-        }
-        sb.AppendLine($"Current location: {actor.curLocation.LocationToString()}");
-
+        var localizationService = Services.Get<ILocalizationService>();
+        
         // 캐릭터의 메모리 정보 추가
         var memoryManager = new CharacterMemoryManager(actor.Name);
         var memorySummary = memoryManager.GetMemorySummary();
-        sb.AppendLine("\n=== Memory Information ===");
-        sb.AppendLine(memorySummary);
+        
+        var replacements = new Dictionary<string, string>
+        {
+            { "tomorrow", tomorrow.ToString() },
+            { "location", actor.curLocation.LocationToString() },
+            { "hunger", actor.Hunger.ToString() },
+            { "thirst", actor.Thirst.ToString() },
+            { "stamina", actor.Stamina.ToString() },
+            { "stress", actor.Stress.ToString() },
+            { "sleepiness", (actor as MainActor)?.Sleepiness.ToString() ?? "0" },
+            { "memory_summary", memorySummary }
+        };
 
-        sb.AppendLine("\nFor each detailed activity in the plan, create 1-3 specific actions.");
-        sb.AppendLine("Each specific action should have an action name, description, start and end time, duration in minutes, parameters, and location.");
-        sb.AppendLine("Use only the actual locations and action types listed above.");
-        sb.AppendLine("For locations, use the exact full path format (e.g., 'Kitchen in Apartment') as shown in the available locations list.");
-
-        return sb.ToString();
+        return localizationService.GetLocalizedText("specific_actions_prompt", replacements);
     }
 
     /// <summary>

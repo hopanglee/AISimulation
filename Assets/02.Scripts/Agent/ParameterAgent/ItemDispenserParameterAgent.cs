@@ -7,6 +7,7 @@ using System;
 using UnityEngine;
 using Agent.Tools;
 using System.Threading;
+using System.Linq;
 
 namespace Agent
 {
@@ -127,38 +128,31 @@ namespace Agent
         /// </summary>
         private string BuildUserMessage(ActParameterRequest request)
         {
-            var message = new System.Text.StringBuilder();
+            var localizationService = Services.Get<ILocalizationService>();
             
-            message.AppendLine($"## Actor Information");
-            message.AppendLine($"- Name: {actor.Name}");
-            message.AppendLine($"- Item in hand: {(actor.HandItem != null ? actor.HandItem.Name : "None")}");
-            message.AppendLine($"- Inventory status: {GetInventoryStatus()}");
-            message.AppendLine();
-
-            message.AppendLine($"## Current Situation");
-            message.AppendLine($"- Action reason: {request.Reasoning}");
-            message.AppendLine($"- Action intention: {request.Intention}");
-            message.AppendLine();
-
-            message.AppendLine($"## Available Item List");
+            // 사용 가능한 아이템 목록 생성
             var availableItems = GetAvailableItems();
+            string availableItemsText;
             if (availableItems.Count > 0)
             {
-                foreach (var item in availableItems)
-                {
-                    message.AppendLine($"- {item}");
-                }
+                availableItemsText = string.Join("\n", availableItems.Select(item => $"- {item}"));
             }
             else
             {
-                message.AppendLine("- No available items.");
+                availableItemsText = localizationService.GetLocalizedText("no_available_items");
             }
-            message.AppendLine();
+            
+            var replacements = new Dictionary<string, string>
+            {
+                { "actor_name", actor.Name },
+                { "hand_item", actor.HandItem != null ? actor.HandItem.Name : localizationService.GetLocalizedText("none") },
+                { "inventory_status", GetInventoryStatus() },
+                { "reasoning", request.Reasoning },
+                { "intention", request.Intention },
+                { "available_items", availableItemsText }
+            };
 
-            message.AppendLine("Based on the above information, please select the most appropriate item.");
-            message.AppendLine("You must select only from the provided item key list.");
-
-            return message.ToString();
+            return localizationService.GetLocalizedText("item_dispenser_parameter_prompt", replacements);
         }
 
         /// <summary>

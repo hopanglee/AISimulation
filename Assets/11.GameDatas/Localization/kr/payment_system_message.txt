@@ -1,0 +1,1 @@
+[{time}] [SYSTEM] 결제 완료 - {itemName} {price}원, 현재 보유금: {money}원, 총 수익: {totalRevenue}원

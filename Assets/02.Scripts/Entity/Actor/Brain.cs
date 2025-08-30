@@ -35,6 +35,7 @@ public class Brain
     // --- AI Agent Components ---
     private ActSelectorAgent actSelectorAgent;
     private Dictionary<ActionType, ParameterAgentBase> parameterAgents;
+    private PerceptionAgent perceptionAgent;
     private GPT gpt;
     
     // --- Refactored Components ---
@@ -53,6 +54,11 @@ public class Brain
     /// </summary>
     public UseActionManager UseActionManager => useActionManager;
 
+    /// <summary>
+    /// PerceptionAgent에 대한 외부 접근을 위한 프로퍼티
+    /// </summary>
+    public PerceptionAgent PerceptionAgent => perceptionAgent;
+
     public Brain(Actor actor)
     {
         this.actor = actor;
@@ -64,6 +70,7 @@ public class Brain
         // AI Agent 초기화
         actSelectorAgent = new ActSelectorAgent(actor);
         parameterAgents = ParameterAgentFactory.CreateAllParameterAgents(actor);
+        perceptionAgent = new PerceptionAgent(actor);
 
         // 메모리 관리 초기화
         memoryAgent = new MemoryAgent(actor);
@@ -139,11 +146,15 @@ public class Brain
                 return (defaultSelection, defaultParamResult);
             }
             
-            // 상황 설명 생성
+            // PerceptionAgent를 통해 시각정보 해석
+            var perceptionResult = await InterpretVisualInformationAsync();
+            
+            // 상황 설명 생성 (기존 방식과 PerceptionAgent 결과를 결합)
             var situationDescription = GenerateSituationDescription();
+            var enhancedDescription = $"{situationDescription}\n\n=== Perception Analysis ===\n{perceptionResult.interpretation}\n\nFocus Points: {string.Join(", ", perceptionResult.focus_points)}\nEmotional Response: {perceptionResult.emotional_response}\nPriority Actions: {string.Join(", ", perceptionResult.priority_actions)}";
             
             // ActSelectorAgent를 통해 행동 선택 (Tool을 통해 동적으로 액션 정보 제공)
-            var selection = await actSelectorAgent.SelectActAsync(situationDescription);
+            var selection = await actSelectorAgent.SelectActAsync(enhancedDescription);
             
             // ActSelectResult를 ActorManager에 저장
             Services.Get<IActorService>().StoreActResult(actor, selection);
@@ -278,32 +289,37 @@ public class Brain
     }
 
     /// <summary>
+    /// PerceptionAgent를 통해 시각정보를 해석합니다.
+    /// </summary>
+    public async UniTask<PerceptionResult> InterpretVisualInformationAsync()
+    {
+        if (actor is MainActor mainActor)
+        {
+            var visualInformation = mainActor.sensor.GetLookableEntityDescriptions();
+            return await perceptionAgent.InterpretVisualInformationAsync(visualInformation);
+        }
+        
+        return new PerceptionResult
+        {
+            interpretation = "MainActor가 아닙니다.",
+            focus_points = new List<string>(),
+            emotional_response = "중립적",
+            memory_connections = new List<string>(),
+            priority_actions = new List<string>()
+        };
+    }
+
+    /// <summary>
     /// 현재 상황에 대한 설명을 생성합니다.
     /// </summary>
     private string GenerateSituationDescription()
     {
-        var sb = new System.Text.StringBuilder();
-
-        // 시간 정보
         var timeService = Services.Get<ITimeService>();
+        var localizationService = Services.Get<ILocalizationService>();
         var currentTime = timeService.CurrentTime;
-        sb.AppendLine($"Current time: {FormatTime(currentTime)}");
-
-        // 위치 정보
-        sb.AppendLine($"You are at {actor.curLocation.locationName}.");
-
-        // 아이템 상태
-        sb.AppendLine("\n=== Your Current Items ===");
-        if (actor.HandItem != null)
-        {
-            sb.AppendLine($"Hand: {actor.HandItem.Name}");
-        }
-        else
-        {
-            sb.AppendLine("Hand: Empty");
-        }
-
-        // 인벤토리 상태
+        
+        // 기본 정보 준비
+        var handItem = actor.HandItem?.Name ?? "Empty";
         var inventoryItems = new List<string>();
         for (int i = 0; i < actor.InventoryItems.Length; i++)
         {
@@ -316,86 +332,79 @@ public class Brain
                 inventoryItems.Add($"Slot {i + 1}: Empty");
             }
         }
-        sb.AppendLine($"Inventory: {string.Join(", ", inventoryItems)}");
-
-        // 메모리 정보
-        var memorySummary = memoryManager.GetMemorySummary();
-        sb.AppendLine("\n=== Your Memories ===");
-        sb.AppendLine(memorySummary);
 
         // ThinkingActor인 경우 추가 정보 제공
         if (actor is MainActor thinkingActor)
         {
-            sb.AppendLine($"Sleep status: {(thinkingActor.IsSleeping ? "Sleeping" : "Awake")}");
-            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress}), Sleepiness({thinkingActor.Sleepiness})");
+            var sleepStatus = thinkingActor.IsSleeping ? "Sleeping" : "Awake";
             
-            // 주변 엔티티 정보
+            // 주변 엔티티 정보 수집
             var lookable = thinkingActor.sensor.GetLookableEntities();
             var collectible = thinkingActor.sensor.GetCollectibleEntities();
             var interactable = thinkingActor.sensor.GetInteractableEntities();
             var movable = thinkingActor.sensor.GetMovablePositions();
 
-            if (lookable.Count > 0)
+            var lookableEntities = new List<string>();
+            foreach (var entity in lookable)
             {
-                sb.AppendLine("\n=== Lookable Entities ===");
-                foreach (var entity in lookable)
-                {
-                    sb.AppendLine($"- {entity.Key}: {entity.Value.GetStatusDescription()}");
-                }
+                lookableEntities.Add($"- {entity.Key}: {entity.Value.GetStatusDescription()}");
             }
 
-            if (collectible.Count > 0)
+            var collectibleEntities = new List<string>();
+            foreach (var entity in collectible)
             {
-                sb.AppendLine("\n=== Collectible Entities ===");
-                foreach (var entity in collectible)
-                {
-                    sb.AppendLine($"- {entity.Key}: {entity.Value.GetStatusDescription()}");
-                }
+                collectibleEntities.Add($"- {entity.Key}: {entity.Value.GetStatusDescription()}");
             }
 
             // Interactable entities are organized by type
-            var allInteractable = new List<(string, string)>();
+            var allInteractable = new List<string>();
             foreach (var actor in interactable.actors)
             {
-                allInteractable.Add((actor.Key, $"Actor: {actor.Value.Name}"));
+                allInteractable.Add($"- {actor.Key}: Actor: {actor.Value.Name}");
             }
             foreach (var item in interactable.items)
             {
-                allInteractable.Add((item.Key, $"Item: {item.Value.Name}"));
+                allInteractable.Add($"- {item.Key}: Item: {item.Value.Name}");
             }
             foreach (var building in interactable.buildings)
             {
-                allInteractable.Add((building.Key, $"Building: {building.Value.Name}"));
+                allInteractable.Add($"- {building.Key}: Building: {building.Value.Name}");
             }
             foreach (var prop in interactable.props)
             {
-                allInteractable.Add((prop.Key, $"Prop: {prop.Value.Name}"));
+                allInteractable.Add($"- {prop.Key}: Prop: {prop.Value.Name}");
             }
 
-            if (allInteractable.Count > 0)
+            var movablePositions = new List<string>();
+            foreach (var position in movable)
             {
-                sb.AppendLine("\n=== Interactable Entities ===");
-                foreach (var (key, description) in allInteractable)
-                {
-                    sb.AppendLine($"- {key}: {description}");
-                }
+                movablePositions.Add($"- {position.Key}");
             }
 
-            if (movable.Count > 0)
+            // 통합 치환 정보
+            var replacements = new Dictionary<string, string>
             {
-                sb.AppendLine("\n=== Movable Positions ===");
-                foreach (var position in movable)
-                {
-                    sb.AppendLine($"- {position.Key}");
-                }
-            }
-        }
-        else
-        {
-            sb.AppendLine($"Current state: Hunger({actor.Hunger}), Thirst({actor.Thirst}), Stamina({actor.Stamina}), Stress({actor.Stress})");
-        }
+                { "currentTime", FormatTime(currentTime) },
+                { "location", actor.curLocation.locationName },
+                { "handItem", handItem },
+                { "inventory", string.Join(", ", inventoryItems) },
+                { "sleepStatus", sleepStatus },
+                { "hunger", actor.Hunger.ToString() },
+                { "thirst", actor.Thirst.ToString() },
+                { "stamina", actor.Stamina.ToString() },
+                { "stress", actor.Stress.ToString() },
+                { "sleepiness", thinkingActor.Sleepiness.ToString() },
+                { "lookableEntities", string.Join("\n", lookableEntities) },
+                { "collectibleEntities", string.Join("\n", collectibleEntities) },
+                { "interactableEntities", string.Join("\n", allInteractable) },
+                { "movablePositions", string.Join("\n", movablePositions) }
+            };
 
-        return sb.ToString();
+            return localizationService.GetLocalizedText("brain_status", replacements);
+        }
+        
+        // NPC는 Brain이 없으므로 여기까지 오면 안 됨
+        throw new System.InvalidOperationException("Brain should only be used with MainActor");
     }
 
     /// <summary>

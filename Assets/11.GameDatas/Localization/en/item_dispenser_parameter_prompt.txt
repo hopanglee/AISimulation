@@ -1,0 +1,14 @@
+## Actor Information
+- Name: {actor_name}
+- Item in hand: {hand_item}
+- Inventory status: {inventory_status}
+
+## Current Situation
+- Action reason: {reasoning}
+- Action intention: {intention}
+
+## Available Item List
+{available_items}
+
+Based on the above information, please select the most appropriate item.
+You must select only from the provided item key list.

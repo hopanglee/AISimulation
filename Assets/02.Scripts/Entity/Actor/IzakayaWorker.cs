@@ -7,6 +7,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using Cysharp.Threading.Tasks;
 
+
 /// <summary>
 /// 이자카야에서 요리와 서빙을 혼자 담당하는 직원 NPC
 /// 전용 액션: Move, Cook
@@ -257,7 +258,16 @@ public class IzakayaWorker : NPC
             if (actionAgent != null)
             {
                 string currentTime = GetFormattedCurrentTime();
-                string systemMessage = $"[{currentTime}] [SYSTEM] 결제 완료 - {priceItem.itemName} {priceItem.price}원, 현재 보유금: {Money}원, 총 수익: {totalRevenue}원";
+                var localizationService = Services.Get<ILocalizationService>();
+                var replacements = new Dictionary<string, string>
+                {
+                    { "time", currentTime },
+                    { "itemName", priceItem.itemName },
+                    { "price", priceItem.price.ToString() },
+                    { "money", Money.ToString() },
+                    { "totalRevenue", totalRevenue.ToString() }
+                };
+                string systemMessage = localizationService.GetLocalizedText("payment_system_message", replacements);
                 actionAgent.AddSystemMessage(systemMessage);
             }
         }

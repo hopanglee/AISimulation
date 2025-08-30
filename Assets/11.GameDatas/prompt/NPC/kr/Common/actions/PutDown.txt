@@ -1,56 +1,53 @@
-# PutDown Action - Common NPC Role
-
-## Action Name
+액션 이름
 PutDown
 
-## Description
-Place the item in your hand onto a specific location or surface (e.g., desk, shelf, floor).
+설명
+손에 든 아이템을 특정 위치나 표면(예: 책상, 선반, 바닥)에 놓습니다.
 
-## Usage
-Use PutDown when the NPC needs to place a held item at an appropriate nearby location. You can specify a target_key or provide additional parameters.
+사용법
+NPC가 들고 있는 아이템을 근처의 적절한 위치에 놓아야 할 때 PutDown을 사용하세요. target_key를 지정하거나 추가 파라미터를 제공할 수 있습니다.
 
-## Category
-Item Management
+카테고리
+아이템 관리
 
-## Parameters
-- **target_key**: Key of the location or surface (e.g., 'table', 'shelf', 'counter') - optional
-- **parameters[0]**: Additional location info or special instruction - optional
+파라미터
+target_key: 위치나 표면의 키 (예: 'table', 'shelf', 'counter') - 선택 사항
+parameters[0]: 추가 위치 정보 또는 특별 지시 - 선택 사항
 
-## Examples
+예시
 
-### Example 1: Place a coffee cup on the table
-- **target_key**: "table"
-- **parameters**: null
-- **Result**: "Places the coffee on the table"
+예시 1: 테이블 위에 커피잔 놓기
+target_key: "table"
+parameters: null
+결과: "테이블 위에 커피를 놓습니다"
 
-### Example 2: Place item at current location
-- **target_key**: null
-- **parameters**: null
-- **Result**: "Places the item at the current location"
+예시 2: 현재 위치에 아이템 놓기
+target_key: null
+parameters: null
+결과: "현재 위치에 아이템을 놓습니다"
 
-### Example 3: Place a book on the shelf
-- **target_key**: "shelf"
-- **parameters**: ["top"]
-- **Result**: "Places the book on the shelf"
+예시 3: 선반 위에 책 놓기
+target_key: "shelf"
+parameters: ["top"]
+결과: "선반 위에 책을 놓습니다"
 
-## Requirements
-- NPC must be holding an item (HandItem != null)
-- target_key must be a valid location key (existing table, shelf, etc.)
-- The location must be accessible
+요구사항
+NPC는 손에 아이템을 들고 있어야 합니다 (HandItem != null)
+target_key는 유효한 위치 키여야 합니다 (존재하는 테이블, 선반 등)
+해당 위치는 접근 가능해야 합니다
 
-## When to Use
-- No longer need to hold the item
-- Organize or store the item
-- Need free hands for other tasks
-- Must place the item in a specific spot
+사용 시점
+더 이상 아이템을 들고 있을 필요가 없을 때
+아이템을 정리하거나 보관할 때
+다른 작업을 위해 손이 비어 있어야 할 때
+아이템을 특정 장소에 놓아야 할 때
 
-## Related Actions
-- PickUp - pick up an item
-- GiveItem - give an item to another character
-- Move - move to a specific location
+관련 액션
+PickUp - 아이템 집기
+GiveItem - 다른 캐릭터에게 아이템 주기
+Move - 특정 위치로 이동
 
-## Notes
-- Available in all Common NPC roles
-- If target_key is not provided, an InventoryBox nearby will be used automatically
-- Hands will be free after placing the item
-
+참고사항
+모든 일반 NPC 역할에서 사용 가능
+target_key가 제공되지 않으면, 근처의 InventoryBox가 자동으로 사용됩니다
+아이템을 내려놓은 후에는 손이 비게 됩니다
