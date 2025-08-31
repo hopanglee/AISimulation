@@ -481,9 +481,10 @@ public class Sensor
                         {
                             foreach (var kv in connectedArea.toMovePos)
                             {
-                                if (kv.Key != null && kv.Value != null)
+                                if (kv.Key == area && kv.Value != null)
                                 {
                                     string uniqueKey = GetUniqueKey(result, connectedArea.locationName);
+                                     Debug.Log($"[{owner.Name}] Add {uniqueKey} {connectedArea.gameObject.name}");
                                     result.Add(uniqueKey, kv.Value.position);
                                 }
                             }
@@ -492,6 +493,7 @@ public class Sensor
                         {
                             // toMovePos가 없으면 Area 자체의 위치 사용
                             string uniqueKey = GetUniqueKey(result, connectedArea.locationName);
+                           
                             result.Add(uniqueKey, connectedArea.transform.position);
                         }
                     }
