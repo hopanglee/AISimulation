@@ -33,10 +33,11 @@ public class PerceptionAgent : GPT
     {
         try
         {
-            var textAsset = Resources.Load<TextAsset>("GameDatas/prompt/agent/kr/PerceptionPrompt");
-            if (textAsset != null)
+            // Assets/11.GameDatas/prompt/agent/kr/PerceptionPrompt.txt 파일에서 직접 읽기
+            var promptPath = "Assets/11.GameDatas/prompt/agent/kr/PerceptionPrompt.txt";
+            if (System.IO.File.Exists(promptPath))
             {
-                var promptText = textAsset.text;
+                var promptText = System.IO.File.ReadAllText(promptPath);
                 
                 // 캐릭터 정보와 기억을 동적으로 로드
                 var characterInfo = LoadCharacterInfo();
@@ -50,7 +51,7 @@ public class PerceptionAgent : GPT
             }
             else
             {
-                Debug.LogWarning($"[PerceptionAgent] 프롬프트 파일을 찾을 수 없음: GameDatas/prompt/agent/kr/PerceptionPrompt");
+                Debug.LogWarning($"[PerceptionAgent] 프롬프트 파일을 찾을 수 없음: {promptPath}");
                 messages.Add(new SystemChatMessage(GetDefaultSystemPrompt()));
             }
         }
@@ -68,29 +69,63 @@ public class PerceptionAgent : GPT
     {
         try
         {
-            var promptService = Services.Get<IPromptService>();
-            if (promptService != null)
+            // actor가 null인지 확인
+            if (actor == null)
             {
-                var infoJson = promptService.GetCharacterInfoJson(actor.Name);
-                if (!string.IsNullOrEmpty(infoJson))
+                Debug.LogError("[PerceptionAgent] actor가 null입니다.");
+                return "캐릭터 정보를 찾을 수 없습니다. (actor가 null)";
+            }
+
+            // actor.Name이 null인지 확인
+            if (string.IsNullOrEmpty(actor.Name))
+            {
+                Debug.LogError("[PerceptionAgent] actor.Name이 null 또는 빈 문자열입니다.");
+                return "캐릭터 정보를 찾을 수 없습니다. (actor.Name이 null)";
+            }
+
+            Debug.Log($"[PerceptionAgent] 캐릭터 정보 로드 시작: {actor.Name}");
+
+            // PromptService 시도
+            try
+            {
+                var promptService = Services.Get<IPromptService>();
+                Debug.Log($"[PerceptionAgent] PromptService 상태: {(promptService != null ? "찾음" : "null")}");
+                
+                if (promptService != null)
                 {
-                    return $"캐릭터 정보:\n{infoJson}";
+                    var infoJson = promptService.GetCharacterInfoJson(actor.Name);
+                    Debug.Log($"[PerceptionAgent] PromptService에서 가져온 정보: {(string.IsNullOrEmpty(infoJson) ? "null 또는 빈 문자열" : "성공")}");
+                    
+                    if (!string.IsNullOrEmpty(infoJson))
+                    {
+                        return $"캐릭터 정보:\n{infoJson}";
+                    }
                 }
+            }
+            catch (Exception promptEx)
+            {
+                Debug.LogError($"[PerceptionAgent] PromptService 사용 중 오류: {promptEx.Message}");
             }
             
             // PromptService를 사용할 수 없는 경우 직접 파일 읽기
             var infoPath = $"Assets/11.GameDatas/Character/{actor.Name}/info/info.json";
+            Debug.Log($"[PerceptionAgent] 파일 경로 시도: {infoPath}");
+            Debug.Log($"[PerceptionAgent] 파일 존재 여부: {System.IO.File.Exists(infoPath)}");
+            
             if (System.IO.File.Exists(infoPath))
             {
                 var infoText = System.IO.File.ReadAllText(infoPath);
+                Debug.Log($"[PerceptionAgent] 파일 읽기 성공: {infoText.Length} 문자");
                 return $"캐릭터 정보:\n{infoText}";
             }
             
+            Debug.LogWarning($"[PerceptionAgent] 캐릭터 정보를 찾을 수 없음: {actor.Name}");
             return "캐릭터 정보를 찾을 수 없습니다.";
         }
         catch (Exception ex)
         {
             Debug.LogError($"[PerceptionAgent] 캐릭터 정보 로드 실패: {ex.Message}");
+            Debug.LogError($"[PerceptionAgent] 스택 트레이스: {ex.StackTrace}");
             return "캐릭터 정보 로드 중 오류가 발생했습니다.";
         }
     }
@@ -102,19 +137,41 @@ public class PerceptionAgent : GPT
     {
         try
         {
+            // actor가 null인지 확인
+            if (actor == null)
+            {
+                Debug.LogError("[PerceptionAgent] 캐릭터 기억 로드: actor가 null입니다.");
+                return "캐릭터 기억이 없습니다. (actor가 null)";
+            }
+
+            // actor.Name이 null인지 확인
+            if (string.IsNullOrEmpty(actor.Name))
+            {
+                Debug.LogError("[PerceptionAgent] 캐릭터 기억 로드: actor.Name이 null 또는 빈 문자열입니다.");
+                return "캐릭터 기억이 없습니다. (actor.Name이 null)";
+            }
+
+            Debug.Log($"[PerceptionAgent] 캐릭터 기억 로드 시작: {actor.Name}");
+
             var memoryManager = new CharacterMemoryManager(actor.Name);
+            Debug.Log($"[PerceptionAgent] CharacterMemoryManager 생성 완료");
+            
             var memorySummary = memoryManager.GetMemorySummary();
+            Debug.Log($"[PerceptionAgent] 메모리 요약 가져오기: {(string.IsNullOrEmpty(memorySummary) ? "null 또는 빈 문자열" : "성공")}");
             
             if (!string.IsNullOrEmpty(memorySummary))
             {
+                Debug.Log($"[PerceptionAgent] 메모리 요약 길이: {memorySummary.Length} 문자");
                 return $"캐릭터 기억:\n{memorySummary}";
             }
             
+            Debug.LogWarning($"[PerceptionAgent] 캐릭터 기억이 없음: {actor.Name}");
             return "캐릭터 기억이 없습니다.";
         }
         catch (Exception ex)
         {
             Debug.LogError($"[PerceptionAgent] 캐릭터 기억 로드 실패: {ex.Message}");
+            Debug.LogError($"[PerceptionAgent] 스택 트레이스: {ex.StackTrace}");
             return "캐릭터 기억 로드 중 오류가 발생했습니다.";
         }
     }
