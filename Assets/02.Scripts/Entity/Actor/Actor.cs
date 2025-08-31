@@ -139,6 +139,9 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             _inventoryItems = new Item[2];
         }
 
+        // SpeechBubbleUI 초기화
+        InitializeSpeechBubble();
+
         // 초기 의상/모델 적용은 MainActor에서만 처리
         if (this is MainActor)
         {
@@ -923,6 +926,23 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
     [Header("Speech Bubble")]
     public SpeechBubbleUI speechBubble;
+
+    /// <summary>
+    /// SpeechBubbleUI 초기화
+    /// </summary>
+    private void InitializeSpeechBubble()
+    {
+        if (speechBubble != null)
+        {
+            // SpeechBubbleUI에 이 Actor를 targetActor로 설정
+            speechBubble.SetTargetActor(transform);
+            Debug.Log($"[{Name}] SpeechBubbleUI 초기화 완료 - targetActor 설정됨");
+        }
+        else
+        {
+            Debug.LogWarning($"[{Name}] SpeechBubbleUI가 할당되지 않았습니다.");
+        }
+    }
 
     public void ShowSpeech(string message, float duration = -1f, Color? bgColor = null, Color? textColor = null)
     {

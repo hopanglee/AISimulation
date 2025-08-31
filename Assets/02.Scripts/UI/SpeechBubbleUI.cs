@@ -11,10 +11,6 @@ public class SpeechBubbleUI : MonoBehaviour
     [Header("Speech Bubble Prefab")]
     [SerializeField] private GameObject speechBubbleItemPrefab;
     
-    [Header("Layout Settings")]
-    [SerializeField] private VerticalLayoutGroup verticalLayoutGroup;
-    [SerializeField] private ContentSizeFitter contentSizeFitter;
-    
     [Header("Pool Settings")]
     [SerializeField] private int defaultCapacity = 10;
     [SerializeField] private int maxSize = 20;
@@ -29,13 +25,20 @@ public class SpeechBubbleUI : MonoBehaviour
     [SerializeField] private Color defaultBgColor = new Color(1f, 1f, 1f, 0.9f); // 흰색 배경
     [SerializeField] private Color defaultTextColor = Color.black; // 검정 텍스트
 
+    [Header("Actor Tracking Settings")]
+    [SerializeField] private Transform targetActor; // 추적할 Actor
+    [SerializeField] private Vector3 offsetFromActor = new Vector3(0f, 2f, 0f); // Actor 위쪽 오프셋
+
     [Header("UI Overlay Support")]
     [SerializeField] private WorldSpaceOverlayUI worldSpaceOverlayUI;
 
     private ObjectPool<SpeechBubbleItem> speechBubblePool;
     private List<SpeechBubbleItem> activeBubbles = new List<SpeechBubbleItem>();
     private Camera mainCamera;
-    [SerializeField] private Transform canvas;
+    private Canvas canvas;
+    private RectTransform canvasRectTransform;
+    private VerticalLayoutGroup verticalLayoutGroup;
+    private ContentSizeFitter contentSizeFitter;
     
     // 연타 방지를 위한 플래그
     private bool isProcessingMultipleSpeech = false;
@@ -122,6 +125,20 @@ public class SpeechBubbleUI : MonoBehaviour
         // 메인 카메라 찾기
         mainCamera = Camera.main;
         
+        // Canvas 컴포넌트를 자식에서 찾기 (주의: SpeechBubbleUI가 Canvas를 자식으로 가지고 있음)
+        canvas = GetComponentInChildren<Canvas>();
+        canvasRectTransform = canvas != null ? canvas.GetComponent<RectTransform>() : null;
+        
+        // Canvas를 Screen Space - Overlay로 설정
+        if (canvas != null)
+        {
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        }
+        
+        // VerticalLayoutGroup과 ContentSizeFitter 자동 찾기
+        verticalLayoutGroup = GetComponentInChildren<VerticalLayoutGroup>();
+        contentSizeFitter = GetComponentInChildren<ContentSizeFitter>();
+        
         // Pool 초기화
         InitializePool();
         
@@ -131,8 +148,8 @@ public class SpeechBubbleUI : MonoBehaviour
             worldSpaceOverlayUI = GetComponent<WorldSpaceOverlayUI>();
         }
         
-        // 초기 상태는 숨김
-        gameObject.SetActive(false);
+        // 초기 상태는 활성화 (비활성화하지 않음)
+        // gameObject.SetActive(false);
     }
 
     private void InitializePool()
@@ -216,12 +233,35 @@ public class SpeechBubbleUI : MonoBehaviour
 
     private void LateUpdate()
     {
-        // Canvas 회전을 카메라 방향으로 고정 (Actor 회전에 영향받지 않도록)
-        if (mainCamera != null && canvas != null && gameObject.activeInHierarchy)
-        {
-            // Canvas를 카메라 방향으로 회전
-            canvas.rotation = mainCamera.transform.rotation;
-        }
+        if (targetActor == null || mainCamera == null)
+            return;
+
+        // Actor의 월드 좌표를 화면 좌표로 변환
+        Vector3 actorScreenPosition = ConvertWorldToScreenPosition(targetActor.position + offsetFromActor);
+        
+        // SpeechBubbleUI 오브젝트 자체를 이동 (Canvas가 아닌)
+        transform.position = actorScreenPosition;
+    }
+
+    /// <summary>
+    /// 월드 좌표를 화면 좌표로 변환
+    /// </summary>
+    private Vector3 ConvertWorldToScreenPosition(Vector3 worldPosition)
+    {
+        Vector3 screenPosition = mainCamera.WorldToScreenPoint(worldPosition);
+        
+        // Screen Space - Overlay에서는 Z 좌표가 중요하지 않으므로 X, Y만 사용
+        return new Vector3(screenPosition.x, screenPosition.y, 0f);
+    }
+
+
+
+    /// <summary>
+    /// 추적할 Actor 설정
+    /// </summary>
+    public void SetTargetActor(Transform actor)
+    {
+        targetActor = actor;
     }
 
     public void ShowSpeech(string message, float duration = -1f, Color? bgColor = null, Color? textColor = null)
@@ -302,7 +342,9 @@ public class SpeechBubbleUI : MonoBehaviour
         }
         
         activeBubbles.Clear();
-        gameObject.SetActive(false);
+        
+        // ClearAllSpeech에서는 UI를 비활성화하지 않음
+        // gameObject.SetActive(false);
     }
 
     public void ShowMultipleSpeech(List<string> messages, float durationPerMessage = -1f, Color? bgColor = null, Color? textColor = null)

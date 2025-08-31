@@ -1767,13 +1767,13 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 8913331427501662079}
   - {fileID: 4000011108333932}
   - {fileID: 4000011472031388}
   - {fileID: 4000010031417726}
   - {fileID: 4000010102440508}
   - {fileID: 7976898675622936899}
   - {fileID: 4681677397114147349}
-  - {fileID: 7330036633675666851}
   - {fileID: 2939025226407137450}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1885,9 +1885,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: of
+  _prepositionKr: 
   _isHideChild: 1
   _name: Yuki
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   useGPT: 1
   money: 0
   Hunger: 0
@@ -1906,12 +1909,13 @@ MonoBehaviour:
   _characterRenderer: {fileID: 0}
   _nakedFbx: {fileID: 0}
   _currentClothesRoot: {fileID: 2939025226407137450}
-  speechBubble: {fileID: 3800042575473319700}
+  speechBubble: {fileID: 5244013494037570464}
   npcRole: 0
   debugActionType: Wait
   debugParameters: []
   priceList: []
   totalRevenue: 0
+  seatingArea: {fileID: 0}
 --- !u!1 &1000013840407644
 GameObject:
   m_ObjectHideFlags: 0
@@ -2243,9 +2247,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: 
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
 --- !u!1 &1685999936852545861
 GameObject:
   m_ObjectHideFlags: 0
@@ -2277,6 +2284,108 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4000011913560556}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2010428115660016139
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8511216863075718976}
+  - component: {fileID: 2986684248191208840}
+  - component: {fileID: 8998354031447412955}
+  - component: {fileID: 5244013494037570464}
+  m_Layer: 5
+  m_Name: Speech Bubble Container
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &8511216863075718976
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2010428115660016139}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8913331427501662079}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0}
+--- !u!114 &2986684248191208840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2010428115660016139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 10
+    m_Right: 10
+    m_Top: 10
+    m_Bottom: 10
+  m_ChildAlignment: 1
+  m_Spacing: 5
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
+--- !u!114 &8998354031447412955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2010428115660016139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 2
+  m_VerticalFit: 2
+--- !u!114 &5244013494037570464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2010428115660016139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ea06555c0b00e04d90837787c0e5352, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speechBubbleItemPrefab: {fileID: 5140690520029271632, guid: a813b56eda50d0543be549580b3a6f8b, type: 3}
+  defaultCapacity: 10
+  maxSize: 20
+  fadeInDuration: 0.3
+  fadeOutDuration: 0.5
+  defaultDuration: 3
+  spacingBetweenBubbles: 0.2
+  defaultBgColor: {r: 1, g: 1, b: 1, a: 0.9}
+  defaultTextColor: {r: 0, g: 0, b: 0, a: 1}
+  targetActor: {fileID: 0}
+  offsetFromActor: {x: 0, y: 2, z: 0}
+  worldSpaceOverlayUI: {fileID: 0}
 --- !u!1 &5360889154703885364
 GameObject:
   m_ObjectHideFlags: 0
@@ -2323,10 +2432,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: 
+  _nameKr: 
   _currentStatusDescription: 
---- !u!1 &7256824119804150443
+  _currentStatusDescriptionKr: 
+--- !u!1 &6993915694745961502
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2334,12 +2446,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1387801594281032714}
-  - component: {fileID: 4212348333474555138}
-  - component: {fileID: 5081933984137460734}
-  - component: {fileID: 1781543227901295488}
-  - component: {fileID: 52384038747369635}
-  - component: {fileID: 2847847810200267317}
+  - component: {fileID: 8913331427501662079}
+  - component: {fileID: 5156780777036632083}
+  - component: {fileID: 1194680370835167805}
+  - component: {fileID: 8076874182670663711}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -2347,35 +2457,36 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &1387801594281032714
+--- !u!224 &8913331427501662079
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7256824119804150443}
-  m_LocalRotation: {x: 0.53729963, y: -0, z: -0, w: 0.8433915}
+  m_GameObject: {fileID: 6993915694745961502}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.049999997, y: 0.049999997, z: 0.049999997}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7330036633675666851}
+  m_Children:
+  - {fileID: 8511216863075718976}
+  m_Father: {fileID: 4000011913560556}
   m_LocalEulerAnglesHint: {x: 65, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0}
---- !u!223 &4212348333474555138
+  m_Pivot: {x: 0, y: 0}
+--- !u!223 &5156780777036632083
 Canvas:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7256824119804150443}
+  m_GameObject: {fileID: 6993915694745961502}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 2
+  m_RenderMode: 0
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -2389,13 +2500,13 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
---- !u!114 &5081933984137460734
+--- !u!114 &1194680370835167805
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7256824119804150443}
+  m_GameObject: {fileID: 6993915694745961502}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
@@ -2411,14 +2522,14 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
---- !u!114 &1781543227901295488
+  m_PresetInfoIsWorld: 0
+--- !u!114 &8076874182670663711
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7256824119804150443}
+  m_GameObject: {fileID: 6993915694745961502}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
@@ -2429,46 +2540,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 16375
---- !u!114 &52384038747369635
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7256824119804150443}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 10
-    m_Right: 10
-    m_Top: 10
-    m_Bottom: 10
-  m_ChildAlignment: 1
-  m_Spacing: 5
-  m_ChildForceExpandWidth: 0
-  m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
---- !u!114 &2847847810200267317
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7256824119804150443}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_HorizontalFit: 2
-  m_VerticalFit: 2
 --- !u!1 &8085988500423763183
 GameObject:
   m_ObjectHideFlags: 0
@@ -2546,79 +2617,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: 
+  _nameKr: 
   _currentStatusDescription: 
---- !u!1 &8544952417572280146
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7330036633675666851}
-  - component: {fileID: 3800042575473319700}
-  - component: {fileID: 7730789935789814587}
-  m_Layer: 0
-  m_Name: SpeechBubbleContainer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7330036633675666851
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8544952417572280146}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1387801594281032714}
-  m_Father: {fileID: 4000011913560556}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3800042575473319700
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8544952417572280146}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ea06555c0b00e04d90837787c0e5352, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speechBubbleItemPrefab: {fileID: 5140690520029271632, guid: a813b56eda50d0543be549580b3a6f8b, type: 3}
-  verticalLayoutGroup: {fileID: 52384038747369635}
-  contentSizeFitter: {fileID: 2847847810200267317}
-  defaultCapacity: 10
-  maxSize: 20
-  fadeInDuration: 0.3
-  fadeOutDuration: 0.5
-  defaultDuration: 3
-  spacingBetweenBubbles: 0.2
-  defaultBgColor: {r: 1, g: 1, b: 1, a: 0.9}
-  defaultTextColor: {r: 0, g: 0, b: 0, a: 1}
-  worldSpaceOverlayUI: {fileID: 0}
-  canvas: {fileID: 1387801594281032714}
---- !u!114 &7730789935789814587
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8544952417572280146}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00f821eba02748143ac6cb40cde8881f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  desiredUIComparison: 8
-  uiElementsToApplyTo: []
+  _currentStatusDescriptionKr: 

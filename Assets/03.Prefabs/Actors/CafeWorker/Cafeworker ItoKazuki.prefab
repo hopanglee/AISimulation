@@ -1516,7 +1516,7 @@ Transform:
   - {fileID: 4000011096688414}
   - {fileID: 4273539392693882632}
   - {fileID: 1490653928123804662}
-  - {fileID: 1581595537383947793}
+  - {fileID: 2976886214982661662}
   - {fileID: 927871425452130468}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1628,9 +1628,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: of
+  _prepositionKr: 
   _isHideChild: 1
   _name: Kazuki
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   useGPT: 1
   money: 0
   Hunger: 0
@@ -1649,7 +1652,7 @@ MonoBehaviour:
   _characterRenderer: {fileID: 0}
   _nakedFbx: {fileID: 0}
   _currentClothesRoot: {fileID: 927871425452130468}
-  speechBubble: {fileID: 4316190380991321814}
+  speechBubble: {fileID: 8793566150279417160}
   npcRole: 3
   debugActionType: Wait
   debugParameters: []
@@ -1658,6 +1661,7 @@ MonoBehaviour:
   showcaseBig: {fileID: 0}
   showcaseSmall: {fileID: 0}
   storage: {fileID: 0}
+  seatingArea: {fileID: 0}
   priceList: []
   totalRevenue: 0
 --- !u!1 &1000013165858314
@@ -2136,79 +2140,6 @@ Transform:
   - {fileID: 4000014231485772}
   m_Father: {fileID: 4000011714625222}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &322280271281504245
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1581595537383947793}
-  - component: {fileID: 4316190380991321814}
-  - component: {fileID: 838997528477646045}
-  m_Layer: 0
-  m_Name: SpeechBubbleContainer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1581595537383947793
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 322280271281504245}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2976886214982661662}
-  m_Father: {fileID: 4000012009108142}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4316190380991321814
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 322280271281504245}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ea06555c0b00e04d90837787c0e5352, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speechBubbleItemPrefab: {fileID: 5140690520029271632, guid: a813b56eda50d0543be549580b3a6f8b, type: 3}
-  verticalLayoutGroup: {fileID: 598320784941482836}
-  contentSizeFitter: {fileID: 4163585205364225065}
-  defaultCapacity: 10
-  maxSize: 20
-  fadeInDuration: 0.3
-  fadeOutDuration: 0.5
-  defaultDuration: 3
-  spacingBetweenBubbles: 0.2
-  defaultBgColor: {r: 1, g: 1, b: 1, a: 0.9}
-  defaultTextColor: {r: 0, g: 0, b: 0, a: 1}
-  worldSpaceOverlayUI: {fileID: 0}
-  canvas: {fileID: 2976886214982661662}
---- !u!114 &838997528477646045
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 322280271281504245}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00f821eba02748143ac6cb40cde8881f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  desiredUIComparison: 8
-  uiElementsToApplyTo: []
 --- !u!1 &2213864940377529288
 GameObject:
   m_ObjectHideFlags: 0
@@ -2221,8 +2152,6 @@ GameObject:
   - component: {fileID: 6012673471487337879}
   - component: {fileID: 6566921199643366901}
   - component: {fileID: 7306132541466447792}
-  - component: {fileID: 598320784941482836}
-  - component: {fileID: 4163585205364225065}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -2237,18 +2166,19 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2213864940377529288}
-  m_LocalRotation: {x: 0.53729963, y: -0, z: -0, w: 0.8433915}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.049999997, y: 0.049999997, z: 0.049999997}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1581595537383947793}
+  m_Children:
+  - {fileID: 2558980949901455468}
+  m_Father: {fileID: 4000012009108142}
   m_LocalEulerAnglesHint: {x: 65, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0}
+  m_Pivot: {x: 0, y: 0}
 --- !u!223 &6012673471487337879
 Canvas:
   m_ObjectHideFlags: 0
@@ -2258,7 +2188,7 @@ Canvas:
   m_GameObject: {fileID: 2213864940377529288}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 2
+  m_RenderMode: 0
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -2294,7 +2224,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &7306132541466447792
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2312,13 +2242,51 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 16375
---- !u!114 &598320784941482836
+--- !u!1 &5418482305803832804
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2558980949901455468}
+  - component: {fileID: 8084612677851767274}
+  - component: {fileID: 4674678083676721108}
+  - component: {fileID: 8793566150279417160}
+  m_Layer: 5
+  m_Name: Speech Bubble Container
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2558980949901455468
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5418482305803832804}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2976886214982661662}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0}
+--- !u!114 &8084612677851767274
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2213864940377529288}
+  m_GameObject: {fileID: 5418482305803832804}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
@@ -2338,13 +2306,13 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &4163585205364225065
+--- !u!114 &4674678083676721108
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2213864940377529288}
+  m_GameObject: {fileID: 5418482305803832804}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
@@ -2352,6 +2320,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 2
+--- !u!114 &8793566150279417160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5418482305803832804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ea06555c0b00e04d90837787c0e5352, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speechBubbleItemPrefab: {fileID: 5140690520029271632, guid: a813b56eda50d0543be549580b3a6f8b, type: 3}
+  defaultCapacity: 10
+  maxSize: 20
+  fadeInDuration: 0.3
+  fadeOutDuration: 0.5
+  defaultDuration: 3
+  spacingBetweenBubbles: 0.2
+  defaultBgColor: {r: 1, g: 1, b: 1, a: 0.9}
+  defaultTextColor: {r: 0, g: 0, b: 0, a: 1}
+  targetActor: {fileID: 0}
+  offsetFromActor: {x: 0, y: 2, z: 0}
+  worldSpaceOverlayUI: {fileID: 0}
 --- !u!1 &6529376090247664223
 GameObject:
   m_ObjectHideFlags: 0
@@ -2398,9 +2390,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: 
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
 --- !u!1 &7183776067213193816
 GameObject:
   m_ObjectHideFlags: 0
@@ -2509,9 +2504,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: 
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
 --- !u!1 &9193145708953566608
 GameObject:
   m_ObjectHideFlags: 0
@@ -2558,6 +2556,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: 
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
