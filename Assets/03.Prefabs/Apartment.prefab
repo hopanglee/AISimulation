@@ -169,8 +169,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: 
+  _locationNameKr: 
   _curLocation: {fileID: 3164435457798945682}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 8110250858044063117}
@@ -1292,8 +1294,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: 
+  _locationNameKr: 
   _curLocation: {fileID: 3164435457798945682}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 5532513386286755346}
@@ -1506,8 +1510,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: 
+  _locationNameKr: 
   _curLocation: {fileID: 3164435457798945682}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 5532513386286755346}
@@ -1873,8 +1879,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: 
+  _locationNameKr: 
   _curLocation: {fileID: 3164435457798945682}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 5532513386286755346}
@@ -3373,6 +3381,115 @@ Transform:
   - {fileID: 7404632352652187797}
   m_Father: {fileID: 8206046021783716312}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3926657954800602682
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9007602743257657779}
+  - component: {fileID: 4168721426450724051}
+  - component: {fileID: 1812542037602611871}
+  - component: {fileID: 2938025694314516010}
+  m_Layer: 10
+  m_Name: Plane
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9007602743257657779
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3926657954800602682}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.1, y: 1, z: 0.1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8215177598758984029}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &4168721426450724051
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3926657954800602682}
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &1812542037602611871
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3926657954800602682}
+  m_Enabled: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &2938025694314516010
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3926657954800602682}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &3930266544227808991
 GameObject:
   m_ObjectHideFlags: 0
@@ -3573,8 +3690,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: 
+  _locationNameKr: 
   _curLocation: {fileID: 3164435457798945682}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 5532513386286755346}
@@ -3966,8 +4085,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: 
+  _locationNameKr: 
   _curLocation: {fileID: 3164435457798945682}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas:
   - {fileID: 1686275174503654562}
@@ -8219,8 +8340,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationName: 
+  _locationNameKr: 
   _curLocation: {fileID: 0}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   connectedAreas: []
   toMovePos:
@@ -9649,9 +9772,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 5301720456392187889}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Donut
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
 --- !u!1001 &715498996882203356
 PrefabInstance:
@@ -9910,9 +10036,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 375438815432636927}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 1
   _name: Refrigator
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
@@ -10069,9 +10198,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 7663787633039031306}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: BodyWash
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &959850221784426370
@@ -10530,9 +10662,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3187469858088934068}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: 
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   HungerRecovery: 5
   ThirstRecovery: 20
@@ -10961,9 +11096,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 5301720456392187889}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Donut
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
 --- !u!4 &1335099351501685692 stripped
 Transform:
@@ -11279,9 +11417,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 1686275174503654562}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Sink
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   isWaterRunning: 0
@@ -11873,9 +12014,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 1686275174503654562}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: HandWash
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
   isClean: 1
@@ -13226,9 +13370,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 101629524854770664}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Shampoo
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!4 &2383732529594465479 stripped
@@ -13320,9 +13467,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 7663787633039031306}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Mirror
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   isClean: 1
@@ -14592,9 +14742,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 101629524854770664}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: HandWash
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: lemon
   isClean: 1
@@ -15087,9 +15240,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 8110250858044063117}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Sink
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   isWaterRunning: 0
@@ -15243,9 +15399,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 1686275174503654562}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Toilet
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 934641233982087729}
   isClean: 1
@@ -17050,9 +17209,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 7845839950389305091}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 1
   _name: Chair
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   isComfortable: 1
@@ -17283,9 +17445,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 375438815432636927}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Sink
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   isWaterRunning: 0
@@ -18630,9 +18795,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 5301720456392187889}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Donut
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
 --- !u!4 &5547572218082690704 stripped
 Transform:
@@ -18780,9 +18948,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 7845839950389305091}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: 
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 4898290608762593706}
   maxItems: 0
@@ -19056,9 +19227,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 1686275174503654562}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Mirror
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   isClean: 1
@@ -19184,9 +19358,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 7663787633039031306}
   _preposition: in
+  _prepositionKr: 
   _isHideChild: 0
   _name: Bathtub
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 5483043772208718735}
 --- !u!4 &5722982767548890064 stripped
@@ -20791,9 +20968,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 7663787633039031306}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Shampoo
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   brand: Generic
 --- !u!1001 &6661476479885858516
@@ -22640,9 +22820,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 7845839950389305091}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 0
   _name: 
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 9028871841394943710}
   maxItems: 4
@@ -23573,6 +23756,10 @@ PrefabInstance:
       value: door Entryway <-> Laundry room
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 7dc9a4345a58d7d459c1e5d3038079ab, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 7dc9a4345a58d7d459c1e5d3038079ab, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -23581,12 +23768,24 @@ PrefabInstance:
       value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 100002, guid: 7dc9a4345a58d7d459c1e5d3038079ab, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 100002, guid: 7dc9a4345a58d7d459c1e5d3038079ab, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 100004, guid: 7dc9a4345a58d7d459c1e5d3038079ab, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 7dc9a4345a58d7d459c1e5d3038079ab, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 100006, guid: 7dc9a4345a58d7d459c1e5d3038079ab, type: 3}
+      propertyPath: m_Layer
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 100006, guid: 7dc9a4345a58d7d459c1e5d3038079ab, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -23706,7 +23905,10 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 2d0f61f9aeab65442a76ed3f60600e72, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 400000, guid: 7dc9a4345a58d7d459c1e5d3038079ab, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9007602743257657779}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7dc9a4345a58d7d459c1e5d3038079ab, type: 3}
 --- !u!4 &8215177598758984029 stripped
@@ -23887,9 +24089,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 3187469858088934068}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Plate
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   maxItems: 3
@@ -23998,9 +24203,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 7845839950389305091}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Chair
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   isComfortable: 1
@@ -25174,9 +25382,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 7845839950389305091}
   _preposition: 
+  _prepositionKr: 
   _isHideChild: 1
   _name: Television
+  _nameKr: 
   _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
   Description: 
   toMovePos: {fileID: 0}
   isOn: 0

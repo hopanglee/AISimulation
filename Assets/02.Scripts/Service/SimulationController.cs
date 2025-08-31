@@ -51,9 +51,7 @@ public class SimulationController : MonoBehaviour
     [SerializeField]
     private Language language = Language.EN;
 
-    [Header("Camera Focus Settings")]
-    [SerializeField]
-    private float focusDistance = 3f;
+
 
     private IGameService gameService;
     private ITimeService timeService;
@@ -294,9 +292,8 @@ public class SimulationController : MonoBehaviour
     {
         if (hinoMaori != null && cameraController != null)
         {
-            Vector3 targetPosition = CalculateFocusPosition(hinoMaori.transform.position);
-            cameraController.FocusOnTarget(targetPosition);
-            Debug.Log("[SimulationController] Hino Maori에 포커스합니다");
+            cameraController.FocusOnTransform(hinoMaori.transform);
+            Debug.Log("[SimulationController] Hino Maori를 계속 따라다닙니다");
         }
         else
         {
@@ -309,9 +306,8 @@ public class SimulationController : MonoBehaviour
     {
         if (kamiyaTooru != null && cameraController != null)
         {
-            Vector3 targetPosition = CalculateFocusPosition(kamiyaTooru.transform.position);
-            cameraController.FocusOnTarget(targetPosition);
-            Debug.Log("[SimulationController] Kamiya Tooru에 포커스합니다");
+            cameraController.FocusOnTransform(kamiyaTooru.transform);
+            Debug.Log("[SimulationController] Kamiya Tooru를 계속 따라다닙니다");
         }
         else
         {
@@ -319,42 +315,7 @@ public class SimulationController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 카메라 회전을 고려하여 캐릭터가 화면 중앙에 오도록 카메라 위치를 계산합니다
-    /// </summary>
-    /// <param name="characterPosition">캐릭터의 위치</param>
-    /// <returns>카메라가 이동해야 할 위치</returns>
-    private Vector3 CalculateFocusPosition(Vector3 characterPosition)
-    {
-        // 방법 1: 사용자가 제공한 오프셋 값 사용
-        Vector3 rotationOffset = new Vector3(0f, 0f, -24.6638f);
-        
-        // 방법 2: 삼각함수를 이용한 수학적 계산
-        // 카메라의 Y축 회전을 라디안으로 변환
-        float cameraYRotation = cameraController.transform.eulerAngles.y * Mathf.Deg2Rad;
-        
-        // 65도 기울어진 카메라에서의 수직 거리 계산
-        float verticalDistance = focusDistance * Mathf.Sin(65f * Mathf.Deg2Rad);
-        float horizontalDistance = focusDistance * Mathf.Cos(65f * Mathf.Deg2Rad);
-        
-        // 카메라 회전에 따른 X, Z 오프셋 계산
-        float offsetX = horizontalDistance * Mathf.Sin(cameraYRotation);
-        float offsetZ = horizontalDistance * Mathf.Cos(cameraYRotation);
-        
-        Vector3 calculatedOffset = new Vector3(offsetX, 0f, offsetZ);
-        
-        // 캐릭터 위치에서 기본 오프셋 적용
-        Vector3 cameraForward = cameraController.transform.forward;
-        Vector3 baseOffset = -cameraForward * focusDistance;
-        
-        // 계산된 오프셋과 사용자 제공 오프셋 중 선택 (현재는 사용자 제공 값 사용)
-        Vector3 targetPosition = characterPosition + baseOffset + rotationOffset;
-        
-        // Y축은 현재 카메라 높이 유지
-        targetPosition.y = cameraController.transform.position.y;
-        
-        return targetPosition;
-    }
+    
 
     private void OnDestroy()
     {
