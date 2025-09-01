@@ -51,13 +51,12 @@ public class LocationService : ILocationService
     [SerializeField]
     private SerializableDictionary<ILocation, List<Item>> items = new();
 
-    public UniTask Initialize()
+    public void Initialize()
     {
         actors = new();
         props = new();
         buildings = new();
         items = new();
-        return UniTask.CompletedTask;
     }
 
     public void Add(ILocation key, Entity value)

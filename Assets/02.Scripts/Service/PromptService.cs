@@ -15,7 +15,7 @@ public class PromptService : IPromptService
 {
     private ILocalizationService localization;
 
-    public UniTask Initialize()
+    public void Initialize()
     {
         try
         {
@@ -34,7 +34,6 @@ public class PromptService : IPromptService
             Debug.LogError($"[PromptService] ILocalizationService 초기화 중 오류: {ex.Message}");
             localization = null;
         }
-        return UniTask.CompletedTask;
     }
 
     public string GetPromptText(string promptName)
