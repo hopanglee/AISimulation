@@ -256,7 +256,7 @@ public class ActionPlannerAgent : GPT
                 { "startTime", activity.StartTime },
                 { "endTime", activity.EndTime },
                 { "location", activity.Location },
-                { "parentTask", activity.ParentTask }
+                { "parentTask", activity.ParentHighLevelTask }
             };
             detailedActivitiesList.Add(localizationService.GetLocalizedText("detailed_activity", activityReplacements));
         }
