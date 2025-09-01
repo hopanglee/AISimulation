@@ -56,9 +56,6 @@ public class DetailedPlannerAgent : GPT
         [JsonProperty("location")]
         public string Location { get; set; } = "";
 
-        [JsonProperty("parent_task")]
-        public string ParentTask { get; set; } = ""; // 어떤 고수준 작업에 속하는지
-
         [JsonProperty("parent_high_level_task")]
         public string ParentHighLevelTask { get; set; } = "";
 
@@ -111,11 +108,10 @@ public class DetailedPlannerAgent : GPT
                                             ""end_time"": {{ ""type"": ""string"", ""pattern"": ""^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"" }},
                                             ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 15, ""maximum"": 240 }},
                                             ""location"": {{ ""type"": ""string"" }},
-                                            ""parent_task"": {{ ""type"": ""string"" }},
                                             ""parent_high_level_task"": {{ ""type"": ""string"" }},
                                             ""status"": {{ ""type"": ""string"", ""enum"": [""pending"", ""in_progress"", ""completed""] }}
                                         }},
-                                        ""required"": [""activity_name"", ""description"", ""start_time"", ""end_time"", ""duration_minutes"", ""location"", ""parent_task"", ""parent_high_level_task"", ""status""]
+                                        ""required"": [""activity_name"", ""description"", ""start_time"", ""end_time"", ""duration_minutes"", ""location"", ""parent_high_level_task"", ""status""]
                                     }},
                                     ""description"": ""List of detailed activities for tomorrow""
                                 }}

@@ -70,7 +70,7 @@ public class HierarchicalPlanner
             Debug.Log($"[HierarchicalPlanner] 2단계: 세부 활동 계획 생성 중...");
             var detailedPlan = await detailedPlannerAgent.CreateDetailedPlanAsync(highLevelPlan, tomorrow);
             
-            // 3단계: 구체적 행동 계획 생성
+            // 3단계: 구체적 행동 계획 생성 (이거 따로 빼도 될듯.)
             Debug.Log($"[HierarchicalPlanner] 3단계: 구체적 행동 계획 생성 중...");
             var actionPlan = await actionPlannerAgent.CreateActionPlanAsync(detailedPlan, tomorrow);
 
