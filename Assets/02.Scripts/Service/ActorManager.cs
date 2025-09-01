@@ -38,11 +38,10 @@ public class ActorManager : IActorService
     /// <summary>
     /// IService 인터페이스 구현
     /// </summary>
-    public UniTask Initialize()
+    public void Initialize()
     {
         actorActResults = new Dictionary<string, ActSelectorAgent.ActSelectionResult>();
         Debug.Log("[ActorManager] 초기화 완료");
-        return UniTask.CompletedTask;
     }
 
     /// <summary>

@@ -59,7 +59,7 @@ public class ExternalEventService : IExternalEventService
     // 이벤트 발생 시 중복 방지를 위한 최소 간격 (초)
     private const float EVENT_COOLDOWN = 1.0f;
 
-    public UniTask Initialize()
+    public void Initialize()
     {
         Debug.Log("[ExternalEventService] 초기화 완료");
         // 모든 Actor의 초기 상태 기록
@@ -68,7 +68,6 @@ public class ExternalEventService : IExternalEventService
         {
             previousNearbyActors[actor] = GetNearbyActorNames(actor);
         }
-        return UniTask.CompletedTask;
     }
 
     /// <summary>

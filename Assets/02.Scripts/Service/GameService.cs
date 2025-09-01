@@ -92,10 +92,9 @@ public class GameService : MonoBehaviour, IGameService
 
     private ITimeService timeService;
 
-    public async UniTask Initialize()
+    public void Initialize()
     {
         Debug.Log("[GameService] Initializing...");
-        await UniTask.Yield();
         Debug.Log("[GameService] Initialization completed.");
     }
 

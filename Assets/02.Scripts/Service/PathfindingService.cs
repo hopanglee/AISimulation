@@ -62,10 +62,9 @@ public class PathfindingService : IPathfindingService
     private Dictionary<string, AreaInfo> allAreas = new Dictionary<string, AreaInfo>();
     private Dictionary<string, AreaInfo> allAreasByFullPath = new Dictionary<string, AreaInfo>(); // 전체 경로로 검색하기 위한 딕셔너리
 
-    public async UniTask Initialize()
+    public void Initialize()
     {
         LoadAllAreaInfo();
-        await UniTask.Yield();
     }
 
     private void LoadAllAreaInfo()

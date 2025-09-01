@@ -27,10 +27,9 @@ public class LocalizationService : ILocalizationService
     private Language currentLanguage = Language.EN; // default EN
     private readonly Dictionary<string, string> templateCache = new();
 
-    public UniTask Initialize()
+    public void Initialize()
     {
         // Nothing to initialize for now
-        return UniTask.CompletedTask;
     }
 
     public Language CurrentLanguage => currentLanguage;

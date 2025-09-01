@@ -9,7 +9,7 @@ using UnityEditor;
 
 public interface IService
 {
-    public UniTask Initialize();
+    public void Initialize();
 }
 
 public static class Services

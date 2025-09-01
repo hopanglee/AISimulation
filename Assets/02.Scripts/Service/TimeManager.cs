@@ -285,10 +285,9 @@ public class TimeManager : ITimeService
     }
     public bool IsTimeFlowing => isTimeFlowing;
 
-    public async UniTask Initialize()
+    public void Initialize()
     {
         Debug.Log("[TimeManager] Initializing...");
-        await UniTask.Yield();
     }
 
     public void StartTimeFlow()
