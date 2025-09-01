@@ -83,29 +83,7 @@ public static class PromptLoader
         );
     }
 
-    /// <summary>
-    /// DayPlanAgent용 프롬프트를 로드합니다.
-    /// </summary>
-    /// <returns>DayPlanAgent 시스템 프롬프트</returns>
-    public static string LoadDayPlanAgentPrompt()
-    {
-        return LoadPrompt(
-            "DayPlanAgentPrompt",
-            "당신은 AI 시뮬레이션에서 캐릭터의 하루 계획을 세우는 전문가입니다."
-        );
-    }
-
-    /// <summary>
-    /// HierarchicalDayPlanAgent용 프롬프트를 로드합니다.
-    /// </summary>
-    /// <returns>HierarchicalDayPlanAgent 시스템 프롬프트</returns>
-    public static string LoadHierarchicalDayPlanAgentPrompt()
-    {
-        return LoadPrompt(
-            "HierarchicalDayPlanAgentPrompt",
-            "당신은 Stanford Generative Agent 스타일의 계층적 하루 계획을 세우는 전문가입니다."
-        );
-    }
+    
 
     /// <summary>
     /// HighLevelPlannerAgent용 프롬프트를 로드합니다.
