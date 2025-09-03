@@ -186,8 +186,8 @@ namespace Agent
             catch (Exception ex)
             {
                 Debug.LogWarning($"[InventoryBoxParameterAgent] 사용 가능한 아이템 목록 가져오기 실패: {ex.Message}");
+                throw new System.InvalidOperationException($"InventoryBoxParameterAgent 사용 가능한 아이템 목록 가져오기 실패: {ex.Message}");
             }
-            return new List<string>();
         }
 
         private List<string> GetCurrentBoxItems()
@@ -228,8 +228,8 @@ namespace Agent
             catch (Exception ex)
             {
                 Debug.LogWarning($"[InventoryBoxParameterAgent] 박스 아이템 목록 가져오기 실패: {ex.Message}");
+                throw new System.InvalidOperationException($"InventoryBoxParameterAgent 박스 아이템 목록 가져오기 실패: {ex.Message}");
             }
-            return new List<string>();
         }
 
         private string BuildUserMessage(CommonContext context)

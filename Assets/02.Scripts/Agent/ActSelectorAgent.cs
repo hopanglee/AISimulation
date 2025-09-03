@@ -228,7 +228,7 @@ namespace Agent
             catch (Exception ex)
             {
                 Debug.LogError($"[ActSelectorAgent] Error getting current available actions: {ex.Message}");
-                return new HashSet<ActionType>();
+                throw new System.InvalidOperationException($"ActSelectorAgent 사용 가능한 액션 가져오기 실패: {ex.Message}");
             }
         }
 
@@ -262,7 +262,7 @@ namespace Agent
             catch (Exception ex)
             {
                 Debug.LogError($"[ActSelectorAgent] Error formatting available actions: {ex.Message}");
-                return "Error formatting available actions.";
+                throw new System.InvalidOperationException($"ActSelectorAgent 액션 포맷팅 실패: {ex.Message}");
             }
         }
 

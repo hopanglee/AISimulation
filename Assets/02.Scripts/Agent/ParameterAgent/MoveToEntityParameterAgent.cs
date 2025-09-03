@@ -121,7 +121,10 @@ namespace Agent
             catch (Exception ex)
             {
                 Debug.LogWarning($"[MoveToEntityParameterAgent] 주변 엔티티 목록 가져오기 실패: {ex.Message}");
+                throw new System.InvalidOperationException($"MoveToEntityParameterAgent 주변 엔티티 목록 가져오기 실패: {ex.Message}");
             }
+            
+            // 기본값 반환
             return new List<string>();
         }
 

@@ -243,8 +243,7 @@ public class DetailedPlannerAgent : GPT
         catch (System.Exception ex)
         {
             Debug.LogError($"[DetailedPlannerAgent] 장소 목록 가져오기 실패: {ex.Message}");
-            // 기본 장소들 반환 (에러 시)
-            return new List<string> { "Apartment", "Living Room in Apartment", "Kitchen in Apartment", "Bedroom in Apartment" };
+            throw new System.InvalidOperationException($"DetailedPlannerAgent 장소 목록 가져오기 실패: {ex.Message}");
         }
     }
 

@@ -83,7 +83,7 @@ public class CharacterMemoryManager
         catch (Exception e)
         {
             Debug.LogError($"Failed to load memory for {characterName}: {e.Message}");
-            memory = new CharacterLocationMemoryData();
+            throw new System.InvalidOperationException($"CharacterMemoryManager 메모리 로드 실패: {e.Message}");
         }
     }
 
@@ -105,6 +105,7 @@ public class CharacterMemoryManager
         catch (Exception e)
         {
             Debug.LogError($"Failed to save memory for {characterName}: {e.Message}");
+            throw new System.InvalidOperationException($"CharacterMemoryManager 메모리 저장 실패: {e.Message}");
         }
     }
 
