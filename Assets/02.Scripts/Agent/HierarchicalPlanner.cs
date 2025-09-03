@@ -215,6 +215,7 @@ public class HierarchicalPlanner
         catch (Exception ex)
         {
             Debug.LogError($"[HierarchicalPlanner] 계획 저장 중 오류 발생: {ex.Message}");
+            throw new System.InvalidOperationException($"HierarchicalPlanner 계획 저장 실패: {ex.Message}");
         }
     }
 
@@ -249,7 +250,7 @@ public class HierarchicalPlanner
         catch (Exception ex)
         {
             Debug.LogError($"[HierarchicalPlanner] 계획 로드 중 오류 발생: {ex.Message}");
-            return null;
+            throw new System.InvalidOperationException($"HierarchicalPlanner 계획 로드 실패: {ex.Message}");
         }
     }
 
@@ -269,7 +270,7 @@ public class HierarchicalPlanner
         catch (Exception ex)
         {
             Debug.LogError($"[HierarchicalPlanner] 계획 파일 확인 중 오류 발생: {ex.Message}");
-            return false;
+            throw new System.InvalidOperationException($"HierarchicalPlanner 계획 파일 확인 실패: {ex.Message}");
         }
     }
 

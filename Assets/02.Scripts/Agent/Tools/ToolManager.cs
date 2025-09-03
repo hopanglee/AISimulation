@@ -59,6 +59,11 @@ namespace Agent.Tools
                 functionName: nameof(GetCurrentTime),
                 functionDescription: "Get the current simulation time (year, month, day, hour, minute)"
             );
+
+            public static readonly ChatTool GetCurrentPlan = ChatTool.CreateFunctionTool(
+                functionName: nameof(GetCurrentPlan),
+                functionDescription: "Get current plan information (completed, in-progress, and planned tasks)"
+            );
         }
 
         // 도구 세트 정의
@@ -77,12 +82,12 @@ namespace Agent.Tools
             /// <summary>
             /// 월드 정보 관련 도구들
             /// </summary>
-            public static readonly ChatTool[] WorldInfo = { ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetUserMemory, ToolDefinitions.GetCurrentTime };
+            public static readonly ChatTool[] WorldInfo = { ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetUserMemory, ToolDefinitions.GetCurrentTime, ToolDefinitions.GetCurrentPlan };
 
             /// <summary>
             /// 모든 도구들
             /// </summary>
-            public static readonly ChatTool[] All = { ToolDefinitions.SwapInventoryToHand, ToolDefinitions.GetActionDescription, ToolDefinitions.GetAllActions, ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetUserMemory, ToolDefinitions.GetCurrentTime };
+            public static readonly ChatTool[] All = { ToolDefinitions.SwapInventoryToHand, ToolDefinitions.GetActionDescription, ToolDefinitions.GetAllActions, ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetUserMemory, ToolDefinitions.GetCurrentTime, ToolDefinitions.GetCurrentPlan };
         }
 
         /// <summary>
@@ -141,6 +146,8 @@ namespace Agent.Tools
                     return GetUserMemory();
                 case nameof(GetCurrentTime):
                     return GetCurrentTime();
+                case nameof(GetCurrentPlan):
+                    return GetCurrentPlan();
                 default:
                     return $"Error: Unknown tool '{toolCall.FunctionName}'";
             }
@@ -334,6 +341,20 @@ namespace Agent.Tools
             catch (Exception ex)
             {
                 return $"Error getting current time: {ex.Message}";
+            }
+        }
+
+        private string GetCurrentPlan()
+        {
+            try
+            {
+                // TODO: 현재 계획 정보를 가져오는 로직 구현
+                // DayPlanner나 Thinker에서 현재 계획 정보를 조회
+                return "Current plan information: [계획 조회 기능 구현 예정]";
+            }
+            catch (Exception ex)
+            {
+                return $"Error getting current plan: {ex.Message}";
             }
         }
     }

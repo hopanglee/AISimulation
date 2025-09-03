@@ -151,7 +151,7 @@ public class Brain
             
             // 상황 설명 생성 (기존 방식과 PerceptionAgent 결과를 결합)
             var situationDescription = GenerateSituationDescription();
-            var enhancedDescription = $"{situationDescription}\n\n=== Perception Analysis ===\n{perceptionResult.interpretation}\n\nFocus Points: {string.Join(", ", perceptionResult.focus_points)}\nEmotional Response: {perceptionResult.emotional_response}\nPriority Actions: {string.Join(", ", perceptionResult.priority_actions)}";
+            var enhancedDescription = $"{situationDescription}\n\n=== Perception Analysis ===\n{perceptionResult.situation_interpretation}\n\nThought Chain: {string.Join(" -> ", perceptionResult.thought_chain)}";
             
             // ActSelectorAgent를 통해 행동 선택 (Tool을 통해 동적으로 액션 정보 제공)
             var selection = await actSelectorAgent.SelectActAsync(enhancedDescription);
@@ -299,14 +299,8 @@ public class Brain
             return await perceptionAgent.InterpretVisualInformationAsync(visualInformation);
         }
         
-        return new PerceptionResult
-        {
-            interpretation = "MainActor가 아닙니다.",
-            focus_points = new List<string>(),
-            emotional_response = "중립적",
-            memory_connections = new List<string>(),
-            priority_actions = new List<string>()
-        };
+        Debug.LogError($"[{actor.Name}] MainActor가 아닌 Actor에서 시각정보 해석을 시도했습니다.");
+        throw new System.InvalidOperationException($"{actor.Name}은 MainActor가 아니므로 시각정보 해석을 수행할 수 없습니다.");
     }
 
     /// <summary>

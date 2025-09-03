@@ -108,7 +108,7 @@ namespace Agent
                 iPhone => GetiPhoneUsageInstructions(),
                 Note => GetNoteUsageInstructions(),
                 Book => GetBookUsageInstructions(),
-                _ => GetDefaultItemUsageInstructions(item)
+                _ => $"{item.Name} 사용법을 찾을 수 없습니다."
             };
 
             Debug.Log($"[{actor.Name}] {item.Name} 사용법:\n{instructions}");
@@ -160,18 +160,6 @@ namespace Agent
 - 훑어보기: action='skim' (1분 소요)
 - 북마크: action='bookmark' (1분 소요)
 - 책 닫기: action='close' (1분 소요)";
-        }
-
-        /// <summary>
-        /// 기본 아이템 사용법 반환
-        /// </summary>
-        private string GetDefaultItemUsageInstructions(Item item)
-        {
-            return $@"{item.Name} 사용법:
-• command: 'use' (기본 사용 명령)
-
-예시:
-- 기본 사용: command='use'";
         }
 
         /// <summary>

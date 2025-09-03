@@ -175,8 +175,10 @@ namespace Agent
             catch (Exception ex)
             {
                 Debug.LogWarning($"[iPhoneUseAgent] 주변 Actor 목록 가져오기 실패: {ex.Message}");
+                throw new System.InvalidOperationException($"iPhoneUseAgent 주변 Actor 목록 가져오기 실패: {ex.Message}");
             }
             
+            // 기본값 반환
             return new List<string>();
         }
 

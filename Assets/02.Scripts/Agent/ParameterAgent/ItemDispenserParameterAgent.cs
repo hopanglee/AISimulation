@@ -67,7 +67,7 @@ namespace Agent
                 if (actor == null)
                 {
                     Debug.LogError("[ItemDispenserParameterAgent] Actor가 설정되지 않았습니다.");
-                    return CreateDefaultResult(request.ActType);
+                    throw new System.InvalidOperationException("ItemDispenserParameterAgent Actor가 설정되지 않았습니다.");
                 }
 
                 // 사용자 메시지 생성
@@ -83,7 +83,7 @@ namespace Agent
                     if (string.IsNullOrEmpty(response.SelectedItemKey))
                     {
                         Debug.LogWarning("[ItemDispenserParameterAgent] 선택된 아이템 키가 비어있습니다.");
-                        return CreateDefaultResult(request.ActType);
+                        throw new System.InvalidOperationException("ItemDispenserParameterAgent 선택된 아이템 키가 비어있습니다.");
                     }
 
                     // 결과 생성
@@ -99,13 +99,14 @@ namespace Agent
                     Debug.Log($"[ItemDispenserParameterAgent] {actor.Name}의 아이템 선택: {response.SelectedItemKey}");
                     return result;
                 }
+                
+                throw new System.InvalidOperationException("ItemDispenserParameterAgent 응답이 null입니다.");
             }
             catch (Exception ex)
             {
                 Debug.LogError($"[ItemDispenserParameterAgent] 파라미터 생성 실패: {ex.Message}");
+                throw new System.InvalidOperationException($"ItemDispenserParameterAgent 파라미터 생성 실패: {ex.Message}");
             }
-
-            return CreateDefaultResult(request.ActType);
         }
 
         /// <summary>
@@ -187,19 +188,5 @@ namespace Agent
             return availableItemKeys ?? new List<string>();
         }
 
-        /// <summary>
-        /// 기본 결과를 생성합니다.
-        /// </summary>
-        private ActParameterResult CreateDefaultResult(ActionType actType)
-        {
-            return new ActParameterResult
-            {
-                ActType = actType,
-                Parameters = new Dictionary<string, object>
-                {
-                    { "selected_item_key", "" },
-                }
-            };
-        }
     }
 }

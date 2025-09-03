@@ -70,7 +70,7 @@ namespace Agent
                 if (actor == null)
                 {
                     Debug.LogError("[WhiteBoardParameterAgent] Actor가 설정되지 않았습니다.");
-                    return CreateDefaultResult(request.ActType);
+                    throw new System.InvalidOperationException("WhiteBoardParameterAgent Actor가 설정되지 않았습니다.");
                 }
 
                 // 사용자 메시지 생성
@@ -86,7 +86,7 @@ namespace Agent
                     if (string.IsNullOrEmpty(response.ActionType))
                     {
                         Debug.LogWarning("[WhiteBoardParameterAgent] 액션 타입이 비어있습니다.");
-                        return CreateDefaultResult(request.ActType);
+                        throw new System.InvalidOperationException("WhiteBoardParameterAgent 액션 타입이 비어있습니다.");
                     }
 
                     // write나 update 액션인데 content가 비어있는 경우 처리
@@ -110,13 +110,14 @@ namespace Agent
                     Debug.Log($"[WhiteBoardParameterAgent] {actor.Name}의 화이트보드 액션: {response.ActionType}, 내용: {response.Content}");
                     return result;
                 }
+                
+                throw new System.InvalidOperationException("WhiteBoardParameterAgent 응답이 null입니다.");
             }
             catch (Exception ex)
             {
                 Debug.LogError($"[WhiteBoardParameterAgent] 파라미터 생성 실패: {ex.Message}");
+                throw new System.InvalidOperationException($"WhiteBoardParameterAgent 파라미터 생성 실패: {ex.Message}");
             }
-
-            return CreateDefaultResult(request.ActType);
         }
 
         /// <summary>
@@ -168,20 +169,5 @@ namespace Agent
             return localizationService.GetLocalizedText("whiteboard_parameter_prompt", replacements);
         }
 
-        /// <summary>
-        /// 기본 결과를 생성합니다.
-        /// </summary>
-        private ActParameterResult CreateDefaultResult(ActionType actType)
-        {
-            return new ActParameterResult
-            {
-                ActType = actType,
-                Parameters = new Dictionary<string, object>
-                {
-                    { "action_type", "write" },
-                    { "content", "메모" }
-                }
-            };
-        }
     }
 }

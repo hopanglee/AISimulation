@@ -124,7 +124,10 @@ namespace Agent
             catch (Exception ex)
             {
                 Debug.LogWarning($"[PickUpItemParameterAgent] 주변 아이템 목록 가져오기 실패: {ex.Message}");
+                throw new System.InvalidOperationException($"PickUpItemParameterAgent 주변 아이템 목록 가져오기 실패: {ex.Message}");
             }
+            
+            // 기본값 반환
             return new List<string>();
         }
 

@@ -183,13 +183,7 @@ public class NPCActionAgent : GPT
         catch (Exception ex)
         {
             Debug.LogError($"[NPCActionAgent] 액션 결정 실패: {ex.Message}");
-            
-            // 실패 시 기본 액션 반환
-            return new NPCActionDecision
-            {
-                actionType = availableActions?.Length > 0 ? availableActions[0].ActionName : "Wait",
-                parameters = null
-            };
+            throw new System.InvalidOperationException($"NPCActionAgent 액션 결정 실패: {ex.Message}");
         }
     }
     

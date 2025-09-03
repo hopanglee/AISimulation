@@ -171,9 +171,10 @@ namespace Agent
             catch (Exception ex)
             {
                 Debug.LogWarning($"[PerformActivityParameterAgent] 주변 활동 목록 가져오기 실패: {ex.Message}");
+                throw new System.InvalidOperationException($"PerformActivityParameterAgent 주변 활동 목록 가져오기 실패: {ex.Message}");
             }
             
-            // 실패 시 빈 목록 반환
+            // 기본값 반환
             return new List<string>();
         }
 

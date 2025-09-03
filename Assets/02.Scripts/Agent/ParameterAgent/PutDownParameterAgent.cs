@@ -19,16 +19,16 @@ public class PutDownParameterAgent : ParameterAgentBase
         : base()
     {
         this.locationList = locationList ?? new List<string>();
-        
+
         // "null" 옵션 추가 (현재 위치에 놓기)
         if (!this.locationList.Contains("null"))
         {
             this.locationList.Add("null");
         }
-        
+
         // 프롬프트 파일에서 시스템 프롬프트 로드
         systemPrompt = PromptLoader.LoadPrompt("PutDownParameterAgentPrompt.txt", "");
-        
+
         // ResponseFormat 설정
         this.options = new ChatCompletionOptions
         {
@@ -81,21 +81,21 @@ public class PutDownParameterAgent : ParameterAgentBase
         catch (System.Exception ex)
         {
             Debug.LogError($"[PutDownParameterAgent] 파라미터 추출 실패: {ex.Message}");
-            return new PutDownParameter();
+            throw new System.InvalidOperationException($"PutDownParameterAgent 파라미터 추출 실패: {ex.Message}");
         }
     }
 
     public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
     {
         UpdateResponseFormatBeforeGPT();
-        
+
         var param = await GenerateParametersAsync(new CommonContext
         {
             Reasoning = request.Reasoning,
             Intention = request.Intention,
             PreviousFeedback = request.PreviousFeedback
         });
-        
+
         return new ActParameterResult
         {
             ActType = request.ActType,
@@ -116,7 +116,7 @@ public class PutDownParameterAgent : ParameterAgentBase
         {
             // 현재 사용 가능한 위치 목록을 동적으로 가져와서 enum 업데이트
             var currentLocationList = GetCurrentAvailableLocations();
-            
+
             options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                 jsonSchemaFormatName: "put_down_parameter",
                 jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
@@ -161,10 +161,10 @@ public class PutDownParameterAgent : ParameterAgentBase
                 // Actor의 sensor를 통해 현재 주변 위치들을 가져와서 목록 업데이트
                 var interactableEntities = actor.sensor.GetInteractableEntities();
                 var locationNames = new List<string>();
-                
+
                 // null 옵션 추가 (현재 위치에 놓기)
                 locationNames.Add("null");
-                
+
                 // Props에서 위치 가능한 곳들 추가
                 foreach (var prop in interactableEntities.props.Values)
                 {
@@ -173,7 +173,7 @@ public class PutDownParameterAgent : ParameterAgentBase
                         locationNames.Add(prop.GetSimpleKeyRelativeToActor(actor));
                     }
                 }
-                
+
                 // // Buildings에서 위치 가능한 곳들 추가
                 // foreach (var building in interactableEntities.buildings.Values)
                 // {
@@ -182,7 +182,7 @@ public class PutDownParameterAgent : ParameterAgentBase
                 //         locationNames.Add(building.GetSimpleKey());
                 //     }
                 // }
-                
+
                 // 중복 제거
                 return locationNames.Distinct().ToList();
             }
@@ -190,9 +190,10 @@ public class PutDownParameterAgent : ParameterAgentBase
         catch (System.Exception ex)
         {
             Debug.LogWarning($"[PutDownParameterAgent] 주변 위치 목록 가져오기 실패: {ex.Message}");
+            throw new System.InvalidOperationException($"PutDownParameterAgent 주변 위치 목록 가져오기 실패: {ex.Message}");
         }
-        
-        // 실패 시 null 옵션만 반환
+
+        // 기본값 반환
         return new List<string> { "null" };
     }
 
