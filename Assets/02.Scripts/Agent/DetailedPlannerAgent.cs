@@ -204,8 +204,103 @@ public class DetailedPlannerAgent : GPT
     }
 
     /// <summary>
-    /// 사용 가능한 모든 위치 목록을 가져옵니다 (계층 구조 포함)
+    /// 현재 시간 이후의 세부 활동만 재계획합니다.
+    /// 기존의 완료된 활동들은 보존하고, 현재 시간 이후의 활동만 새로 생성합니다.
     /// </summary>
+    public async UniTask<DetailedPlan> CreateDetailedPlanFromCurrentTimeAsync(
+        HighLevelPlannerAgent.HighLevelPlan highLevelPlan,
+        GameTime currentTime,
+        List<DetailedActivity> preservedActivities,
+        PerceptionResult perception,
+        string modificationSummary)
+    {
+        string prompt = GenerateDetailedPlanFromCurrentTimePrompt(
+            highLevelPlan, 
+            currentTime, 
+            preservedActivities, 
+            perception, 
+            modificationSummary
+        );
+        messages.Add(new UserChatMessage(prompt));
+
+        Debug.Log($"[DetailedPlannerAgent] {actor.Name}의 현재 시간 이후 세부 활동 재계획 시작...");
+        Debug.Log($"[DetailedPlannerAgent] 보존된 활동: {preservedActivities.Count}개");
+
+        var response = await SendGPTAsync<DetailedPlan>(messages, options);
+
+        // 보존된 활동들을 새로 생성된 활동들과 합침
+        var allActivities = new List<DetailedActivity>();
+        allActivities.AddRange(preservedActivities);
+        allActivities.AddRange(response.DetailedActivities);
+
+        var finalPlan = new DetailedPlan
+        {
+            Summary = response.Summary,
+            Mood = response.Mood,
+            DetailedActivities = allActivities
+        };
+
+        Debug.Log($"[DetailedPlannerAgent] {actor.Name}의 세부 활동 재계획 완료!");
+        Debug.Log($"[DetailedPlannerAgent] - 보존된 활동: {preservedActivities.Count}개");
+        Debug.Log($"[DetailedPlannerAgent] - 새로 생성된 활동: {response.DetailedActivities.Count}개");
+        Debug.Log($"[DetailedPlannerAgent] - 총 활동: {allActivities.Count}개");
+
+        return finalPlan;
+    }
+
+    /// <summary>
+    /// 현재 시간 이후 세부 활동 재계획 프롬프트 생성
+    /// </summary>
+    private string GenerateDetailedPlanFromCurrentTimePrompt(
+        HighLevelPlannerAgent.HighLevelPlan highLevelPlan,
+        GameTime currentTime,
+        List<DetailedActivity> preservedActivities,
+        PerceptionResult perception,
+        string modificationSummary)
+    {
+        var localizationService = Services.Get<ILocalizationService>();
+        
+        // 보존된 활동들을 문자열로 변환
+        var preservedActivitiesBuilder = new StringBuilder();
+        foreach (var activity in preservedActivities)
+        {
+            preservedActivitiesBuilder.AppendLine($"- {activity.ActivityName}: {activity.Description} ({activity.StartTime}-{activity.EndTime}) at {activity.Location}");
+        }
+        
+        // 고수준 작업들을 문자열로 변환
+        var highLevelTasksBuilder = new StringBuilder();
+        foreach (var task in highLevelPlan.HighLevelTasks)
+        {
+            highLevelTasksBuilder.AppendLine($"- {task.TaskName}: {task.Description} ({task.StartTime}-{task.EndTime}) at {task.Location}");
+            if (task.SubTasks.Count > 0)
+            {
+                highLevelTasksBuilder.AppendLine($"  Sub-tasks: {string.Join(", ", task.SubTasks)}");
+            }
+        }
+        
+        var replacements = new Dictionary<string, string>
+        {
+            { "currentTime", $"{currentTime.hour:D2}:{currentTime.minute:D2}" },
+            { "location", actor.curLocation.LocationToString() },
+            { "hunger", actor.Hunger.ToString() },
+            { "thirst", actor.Thirst.ToString() },
+            { "stamina", actor.Stamina.ToString() },
+            { "stress", actor.Stress.ToString() },
+            { "sleepiness", (actor as MainActor)?.Sleepiness.ToString() ?? "0" },
+            { "summary", highLevelPlan.Summary },
+            { "mood", highLevelPlan.Mood },
+            { "priority_goals", string.Join(", ", highLevelPlan.PriorityGoals) },
+            { "high_level_tasks", highLevelTasksBuilder.ToString() },
+            { "preserved_activities", preservedActivitiesBuilder.ToString() },
+            { "perception_interpretation", perception.situation_interpretation },
+            { "perception_thought_chain", string.Join(" -> ", perception.thought_chain) },
+            { "modification_summary", modificationSummary }
+        };
+
+        return localizationService.GetLocalizedText("detailed_plan_from_current_time_prompt", replacements);
+    }
+
+    /// <summary>
     private List<string> GetAvailableLocations()
     {
         try

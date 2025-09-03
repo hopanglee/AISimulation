@@ -148,6 +148,9 @@ public class Brain
             
             // PerceptionAgent를 통해 시각정보 해석
             var perceptionResult = await InterpretVisualInformationAsync();
+
+            // === 계획 유지/수정 결정 및 필요 시 재계획 (DayPlanner 내부로 캡슐화) ===
+            await dayPlanner.DecideAndMaybeReplanAsync(perceptionResult);
             
             // 상황 설명 생성 (기존 방식과 PerceptionAgent 결과를 결합)
             var situationDescription = GenerateSituationDescription();
@@ -414,7 +417,7 @@ public class Brain
     /// <summary>
     /// 현재 활동을 반환합니다.
     /// </summary>
-    public DetailedPlannerAgent.DetailedActivity GetCurrentActivity()
+    public HierarchicalPlanner.RuntimeDetailedActivity GetCurrentActivity()
     {
         return dayPlanner.GetCurrentActivity();
     }
@@ -422,7 +425,7 @@ public class Brain
     /// <summary>
     /// 다음 N개의 활동을 반환합니다.
     /// </summary>
-    public List<DetailedPlannerAgent.DetailedActivity> GetNextActivities(int count = 3)
+    public List<HierarchicalPlanner.RuntimeDetailedActivity> GetNextActivities(int count = 3)
     {
         return dayPlanner.GetNextActivities(count);
     }

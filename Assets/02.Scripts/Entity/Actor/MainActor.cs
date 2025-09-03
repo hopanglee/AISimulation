@@ -285,7 +285,7 @@ public abstract class MainActor : Actor
 	/// <summary>
 	/// 현재 시간에 맞는 활동 가져오기 (Brain을 통해)
 	/// </summary>
-	public DetailedPlannerAgent.DetailedActivity GetCurrentActivity()
+	public HierarchicalPlanner.RuntimeDetailedActivity GetCurrentActivity()
 	{
 		return brain?.GetCurrentActivity();
 	}
