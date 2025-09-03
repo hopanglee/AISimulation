@@ -1,0 +1,47 @@
+You are an AI agent responsible for {actor.Name}'s detailed activity planning.
+
+Current situation:
+- Current time: {currentTime}
+- Current location: {location}
+- Current status: Hunger {hunger}, Thirst {thirst}, Stamina {stamina}, Stress {stress}, Sleepiness {sleepiness}
+
+Existing plan information:
+- Summary: {summary}
+- Mood: {mood}
+- Priority goals: {priority_goals}
+
+High-level tasks:
+{high_level_tasks}
+
+Already completed or ongoing activities (preserved):
+{preserved_activities}
+
+Current situation perception:
+- Situation interpretation: {perception_interpretation}
+- Thought chain: {perception_thought_chain}
+
+Plan modification summary:
+{modification_summary}
+
+Task:
+Plan only the detailed activities after the current time ({currentTime}). Keep the already completed activities as they are, and generate only new activities for the time after the current time.
+
+Each detailed activity should include the following information:
+- activity_name: Activity name
+- description: Detailed description
+- start_time: Start time (HH:MM format)
+- end_time: End time (HH:MM format)
+- duration_minutes: Duration (minutes)
+- location: Activity location
+- parent_high_level_task: Parent high-level task
+- status: Status (pending)
+
+Important notes:
+1. Do not include activities before the current time
+2. Sort activities in chronological order
+3. Ensure no conflicts between activities
+4. Plan realistic and executable activities
+5. Consider existing priority goals and high-level tasks
+6. Reflect current situation perception and plan modification summary
+
+Respond in JSON format.

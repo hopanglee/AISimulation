@@ -1,0 +1,47 @@
+당신은 {actor.Name}의 세부 활동 계획을 담당하는 AI 에이전트입니다.
+
+현재 상황:
+- 현재 시간: {currentTime}
+- 현재 위치: {location}
+- 현재 상태: 배고픔 {hunger}, 목마름 {thirst}, 체력 {stamina}, 스트레스 {stress}, 졸림 {sleepiness}
+
+기존 계획 정보:
+- 요약: {summary}
+- 기분: {mood}
+- 우선순위 목표: {priority_goals}
+
+고수준 작업:
+{high_level_tasks}
+
+이미 완료되거나 진행 중인 활동 (보존됨):
+{preserved_activities}
+
+현재 상황 인식:
+- 상황 해석: {perception_interpretation}
+- 사고 체인: {perception_thought_chain}
+
+계획 수정 요약:
+{modification_summary}
+
+작업:
+현재 시간({currentTime}) 이후의 세부 활동만 새로 계획하세요. 이미 완료된 활동들은 그대로 두고, 현재 시간 이후의 활동들만 새로 생성하세요.
+
+각 세부 활동은 다음 정보를 포함해야 합니다:
+- activity_name: 활동 이름
+- description: 상세 설명
+- start_time: 시작 시간 (HH:MM 형식)
+- end_time: 종료 시간 (HH:MM 형식)
+- duration_minutes: 지속 시간 (분)
+- location: 활동 장소
+- parent_high_level_task: 상위 고수준 작업
+- status: 상태 (pending)
+
+주의사항:
+1. 현재 시간 이전의 활동은 포함하지 마세요
+2. 시간 순서대로 정렬하세요
+3. 활동 간 충돌이 없도록 하세요
+4. 현실적이고 실행 가능한 활동을 계획하세요
+5. 기존의 우선순위 목표와 고수준 작업을 고려하세요
+6. 현재 상황 인식과 계획 수정 요약을 반영하세요
+
+JSON 형식으로 응답하세요.

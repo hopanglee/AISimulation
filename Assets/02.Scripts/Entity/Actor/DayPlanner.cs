@@ -23,6 +23,7 @@ public class DayPlanner
 {
     private readonly Actor actor;
     private readonly HierarchicalPlanner hierarchicalPlanner;
+    private readonly PlanDecisionAgent planDecisionAgent;
     private HierarchicalPlanner.HierarchicalPlan currentHierarchicalDayPlan;
     private bool forceNewDayPlan = false;
 
@@ -30,6 +31,7 @@ public class DayPlanner
     {
         this.actor = actor;
         this.hierarchicalPlanner = new HierarchicalPlanner(actor);
+        this.planDecisionAgent = new PlanDecisionAgent(actor);
     }
 
     /// <summary>
@@ -64,20 +66,23 @@ public class DayPlanner
     /// <summary>
     /// 현재 시간에 맞는 활동을 반환합니다.
     /// </summary>
-    public DetailedPlannerAgent.DetailedActivity GetCurrentActivity()
+    public HierarchicalPlanner.RuntimeDetailedActivity GetCurrentActivity()
     {
-        if (currentHierarchicalDayPlan?.DetailedActivities == null)
+        if (currentHierarchicalDayPlan?.HighLevelTasks == null)
             return null;
 
         var timeService = Services.Get<ITimeService>();
         var currentTime = timeService.CurrentTime;
         var currentTimeStr = FormatTime(currentTime);
 
-        foreach (var activity in currentHierarchicalDayPlan.DetailedActivities)
+        foreach (var hlt in currentHierarchicalDayPlan.HighLevelTasks)
         {
-            if (IsTimeInRange(currentTimeStr, activity.StartTime, activity.EndTime))
+            foreach (var activity in hlt.DetailedActivities)
             {
-                return activity;
+                if (IsTimeInRange(currentTimeStr, activity.StartTime, activity.EndTime))
+                {
+                    return activity;
+                }
             }
         }
 
@@ -87,25 +92,29 @@ public class DayPlanner
     /// <summary>
     /// 다음 N개의 활동을 반환합니다.
     /// </summary>
-    public List<DetailedPlannerAgent.DetailedActivity> GetNextActivities(int count = 3)
+    public List<HierarchicalPlanner.RuntimeDetailedActivity> GetNextActivities(int count = 3)
     {
-        var activities = new List<DetailedPlannerAgent.DetailedActivity>();
+        var activities = new List<HierarchicalPlanner.RuntimeDetailedActivity>();
         
-        if (currentHierarchicalDayPlan?.DetailedActivities == null)
+        if (currentHierarchicalDayPlan?.HighLevelTasks == null)
             return activities;
 
         var timeService = Services.Get<ITimeService>();
         var currentTime = timeService.CurrentTime;
         var currentTimeStr = FormatTime(currentTime);
 
-        foreach (var activity in currentHierarchicalDayPlan.DetailedActivities)
+        foreach (var hlt in currentHierarchicalDayPlan.HighLevelTasks)
         {
-            if (activity.StartTime.CompareTo(currentTimeStr) > 0)
+            foreach (var activity in hlt.DetailedActivities)
             {
-                activities.Add(activity);
-                if (activities.Count >= count)
-                    break;
+                if (string.Compare(activity.StartTime, currentTimeStr) > 0)
+                {
+                    activities.Add(activity);
+                    if (activities.Count >= count)
+                        break;
+                }
             }
+            if (activities.Count >= count) break;
         }
 
         return activities;
@@ -142,6 +151,48 @@ public class DayPlanner
     public bool IsForceNewDayPlan()
     {
         return forceNewDayPlan;
+    }
+
+    /// <summary>
+    /// 현재 상태로부터 재계획을 수행합니다. (현재 시간 이후만 갱신)
+    /// Perception 결과와 PlanDecision 결과를 함께 반영합니다.
+    /// 완료 시 내부 보관 중인 DayPlan을 갱신하고 저장합니다.
+    /// </summary>
+    public async UniTask ReplanFromCurrentStateAsync(
+        HierarchicalPlanner.HierarchicalPlan currentPlan,
+        GameTime currentTime,
+        PerceptionResult perception,
+        PlanDecisionAgent.PlanDecisionResult decision)
+    {
+        if (currentPlan == null) throw new InvalidOperationException("currentPlan is null");
+        if (decision == null) throw new InvalidOperationException("decision is null");
+
+        var newPlan = await hierarchicalPlanner.ReplanFromCurrentStateAsync(currentPlan, currentTime, perception, decision);
+        currentHierarchicalDayPlan = newPlan;
+        StoreHierarchicalDayPlan(currentHierarchicalDayPlan);
+    }
+
+    /// <summary>
+    /// Perception 결과를 바탕으로 계획 유지/수정을 결정하고 필요한 경우 재계획을 수행합니다.
+    /// </summary>
+    public async UniTask DecideAndMaybeReplanAsync(PerceptionResult perception)
+    {
+        var timeService = Services.Get<ITimeService>();
+        var currentTime = timeService.CurrentTime;
+        var currentPlan = GetCurrentDayPlan();
+
+        var decisionInput = new PlanDecisionAgent.PlanDecisionInput
+        {
+            perception = perception,
+            currentPlan = currentPlan,
+            currentTime = currentTime
+        };
+
+        var decision = await planDecisionAgent.DecideAsync(decisionInput);
+        if (decision.decision == PlanDecisionAgent.Decision.Revise)
+        {
+            await ReplanFromCurrentStateAsync(currentPlan, currentTime, perception, decision);
+        }
     }
 
     /// <summary>
