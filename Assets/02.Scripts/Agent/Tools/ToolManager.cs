@@ -4,6 +4,7 @@ using System.Linq;
 using OpenAI.Chat;
 using UnityEngine;
 using Agent;
+using PlanStructures;
 
 namespace Agent.Tools
 {
@@ -82,7 +83,17 @@ namespace Agent.Tools
             /// <summary>
             /// 월드 정보 관련 도구들
             /// </summary>
-            public static readonly ChatTool[] WorldInfo = { ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetUserMemory, ToolDefinitions.GetCurrentTime, ToolDefinitions.GetCurrentPlan };
+            public static readonly ChatTool[] WorldInfo = { ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetCurrentTime };
+
+            /// <summary>
+            /// 메모리 관련 도구들
+            /// </summary>
+            public static readonly ChatTool[] Memory = { ToolDefinitions.GetUserMemory };
+
+            /// <summary>
+            /// 계획 관련 도구들
+            /// </summary>
+            public static readonly ChatTool[] Plan = { ToolDefinitions.GetCurrentPlan };
 
             /// <summary>
             /// 모든 도구들
@@ -348,13 +359,47 @@ namespace Agent.Tools
         {
             try
             {
-                // TODO: 현재 계획 정보를 가져오는 로직 구현
-                // DayPlanner나 Thinker에서 현재 계획 정보를 조회
-                return "Current plan information: [계획 조회 기능 구현 예정]";
+                // MainActor인지 확인
+                if (!(actor is MainActor mainActor))
+                {
+                    return "No plan available (not MainActor)";
+                }
+
+                // DayPlanner를 통해 현재 계획 정보 조회
+                var dayPlanner = mainActor.DayPlanner;
+                if (dayPlanner == null)
+                {
+                    return "No plan available (DayPlanner not found)";
+                }
+
+                var currentPlan = dayPlanner.GetCurrentDayPlan();
+                if (currentPlan == null)
+                {
+                    return "No current plan available";
+                }
+
+                // 간단한 계획 정보 포맷팅
+                var planInfo = new List<string>();
+                
+                // 고수준 작업들만 간단히 표시
+                if (currentPlan.HighLevelTasks != null && currentPlan.HighLevelTasks.Count > 0)
+                {
+                    foreach (var hlt in currentPlan.HighLevelTasks)
+                    {
+                        planInfo.Add($"• {hlt.TaskName} ({hlt.StartTime}-{hlt.EndTime})");
+                    }
+                }
+                else
+                {
+                    planInfo.Add("No tasks planned");
+                }
+
+                return string.Join("\n", planInfo);
             }
             catch (Exception ex)
             {
-                return $"Error getting current plan: {ex.Message}";
+                Debug.LogError($"[ActorToolExecutor] GetCurrentPlan error: {ex.Message}");
+                return $"Error: {ex.Message}";
             }
         }
     }

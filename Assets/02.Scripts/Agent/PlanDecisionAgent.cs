@@ -2,17 +2,49 @@ using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using PlanStructures;
+using OpenAI.Chat;
+using Agent.Tools;
+using Newtonsoft.Json;
+using System.Text;
+using System.IO;
 
 /// <summary>
 /// Perception 결과와 현재 계획을 바탕으로 계획을 유지할지 수정할지 결정하는 에이전트
 /// </summary>
-public class PlanDecisionAgent
+public class PlanDecisionAgent : GPT
 {
 	private readonly Actor actor;
+	private readonly IToolExecutor toolExecutor;
 
-	public PlanDecisionAgent(Actor actor)
+	public PlanDecisionAgent(Actor actor) : base()
 	{
 		this.actor = actor;
+		this.toolExecutor = new ActorToolExecutor(actor);
+		
+		SetActorName(actor.Name);
+		InitializeOptions();
+	}
+
+	protected virtual void InitializeOptions()
+	{
+		// JSON 스키마 기반 응답 형식 설정
+		options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
+			jsonSchemaFormatName: "plan_decision",
+			jsonSchema: BinaryData.FromBytes(Encoding.UTF8.GetBytes(PlanDecisionResultJsonSchema)),
+			jsonSchemaIsStrict: true
+		);
+
+		// 도구 추가
+		ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
+		ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Memory);
+		ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Plan);
+	}
+
+	protected override void ExecuteToolCall(ChatToolCall toolCall)
+	{
+		var result = toolExecutor.ExecuteTool(toolCall);
+		Debug.Log($"[PlanDecisionAgent] Tool {toolCall.FunctionName}: {result}");
 	}
 
 	/// <summary>
@@ -22,7 +54,7 @@ public class PlanDecisionAgent
 	public struct PlanDecisionInput
 	{
 		public PerceptionResult perception;                  // 새 Perception 결과
-		public HierarchicalPlanner.HierarchicalPlan currentPlan; // 현재 계획(강타입)
+		public HierarchicalPlan currentPlan; // 현재 계획(강타입)
 		public GameTime currentTime;                         // 현재 게임 시간
 	}
 
@@ -97,13 +129,107 @@ public class PlanDecisionAgent
 		try
 		{
 			Debug.Log("[PlanDecisionAgent] 계획 유지/수정 결정 시작");
-			// TODO: 프롬프트 로딩 및 모델 호출 로직 추가 (2-3 단계에서 구현)
-			throw new InvalidOperationException("PlanDecisionAgent는 아직 구현되지 않았습니다. (프롬프트/실행 로직 필요)");
+
+			// 프롬프트 생성
+			string prompt = GenerateDecisionPrompt(input);
+			
+			// 메시지 구성
+			var messages = new List<ChatMessage>
+			{
+				new SystemChatMessage(GetSystemPrompt()),
+				new UserChatMessage(prompt)
+			};
+
+			// GPT 호출
+			var response = await SendGPTAsync<PlanDecisionResult>(messages, options);
+
+			// 결과 검증
+			if (ValidateResult(response, out string error))
+			{
+				Debug.Log($"[PlanDecisionAgent] 결정 완료: {response.decision}");
+				return response;
+			}
+			else
+			{
+				throw new InvalidOperationException($"결과 검증 실패: {error}");
+			}
 		}
 		catch (Exception ex)
 		{
 			Debug.LogError($"[PlanDecisionAgent] 결정 실패: {ex.Message}");
 			throw;
 		}
+	}
+
+	/// <summary>
+	/// 시스템 프롬프트 로드
+	/// </summary>
+	private string GetSystemPrompt()
+	{
+		try
+		{
+			var localizationService = Services.Get<ILocalizationService>();
+			return localizationService.GetLocalizedText("PlanDecisionAgentPrompt");
+		}
+		catch (Exception ex)
+		{
+			Debug.LogError($"[PlanDecisionAgent] 시스템 프롬프트 로드 실패: {ex.Message}");
+			throw new FileNotFoundException("PlanDecisionAgent 프롬프트 파일을 찾을 수 없습니다.");
+		}
+	}
+
+	/// <summary>
+	/// 결정 프롬프트 생성
+	/// </summary>
+	private string GenerateDecisionPrompt(PlanDecisionInput input)
+	{
+		var localizationService = Services.Get<ILocalizationService>();
+		var timeService = Services.Get<ITimeService>();
+		
+		// 현재 계획 정보 포맷팅
+		var planInfo = FormatPlanInfo(input.currentPlan);
+		
+		// 프롬프트 치환 정보
+		var replacements = new Dictionary<string, string>
+		{
+			{ "perception_situation", input.perception.situation_interpretation },
+			{ "perception_thoughts", string.Join("\n", input.perception.thought_chain) },
+			{ "current_time", $"{input.currentTime.hour:D2}:{input.currentTime.minute:D2}" },
+			{ "current_plan", planInfo }
+		};
+
+		return localizationService.GetLocalizedText("PlanDecisionAgentPrompt", replacements);
+	}
+
+	/// <summary>
+	/// 계획 정보를 문자열로 포맷팅
+	/// </summary>
+	private string FormatPlanInfo(HierarchicalPlan plan)
+	{
+		if (plan == null) return "No current plan";
+
+		var planInfo = new List<string>();
+		
+		if (plan.HighLevelTasks != null && plan.HighLevelTasks.Count > 0)
+		{
+			foreach (var hlt in plan.HighLevelTasks)
+			{
+				planInfo.Add($"• {hlt.TaskName} ({hlt.StartTime}-{hlt.EndTime})");
+				
+				if (hlt.DetailedActivities != null)
+				{
+					foreach (var da in hlt.DetailedActivities)
+					{
+						planInfo.Add($"  - {da.ActivityName} [{da.Status}] ({da.StartTime}-{da.EndTime})");
+					}
+				}
+			}
+		}
+		else
+		{
+			planInfo.Add("No tasks planned");
+		}
+
+		return string.Join("\n", planInfo);
 	}
 }

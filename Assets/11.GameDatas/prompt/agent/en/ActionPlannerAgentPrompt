@@ -43,11 +43,12 @@ You are an expert in creating specific action plans for characters in an AI simu
 - **PerformActivity**: {"activity_name": "Morning Stretches", "description": "Do morning stretches"}
 
 ## Planning Process
-1. **Review Detailed Activities**: Understand the specific activities to break down
-2. **Decompose Activities**: Break each detailed activity into 1-3 specific actions
-3. **Specify Parameters**: Define exact parameters for each action
-4. **Assign Locations**: Determine where each action will take place
-5. **Time Planning**: Ensure actions fit within the detailed activity timeframes
+1. **Review Overall Plan**: Understand the day's high-level tasks
+2. **Analyze Current Activity**: Understand the specific activity to break down
+3. **Decompose Activities**: Break each detailed activity into 1-3 specific actions
+4. **Specify Parameters**: Define exact parameters for each action
+5. **Assign Locations**: Determine where each action will take place
+6. **Time Planning**: Ensure actions fit within the detailed activity timeframes
 
 ## Important Notes
 - Use only the actual action types listed above
@@ -57,9 +58,25 @@ You are an expert in creating specific action plans for characters in an AI simu
 - **Actions should logically flow from the detailed activities**
 - **Consider the character's current state and capabilities**
 - **Provide appropriate parameters for each action type**
+- **Consider the overall plan context for consistent behavior**
 
 ## Response Format
 Respond in JSON format with specific action structure:
-- summary: Overall summary of the specific actions
-- mood: Today's mood or condition
 - specific_actions: List of executable actions within each activity
+
+## Current Situation Information
+Character Status:
+- Hunger: {hunger}
+- Thirst: {thirst}
+- Stamina: {stamina}
+- Stress: {stress}
+- Sleepiness: {sleepiness}
+- Current Location: {location}
+- Current Time: {currentTime}
+
+Current Detailed Activity to Decompose:
+- Activity Name: {activityName}
+- Description: {description}
+- Start Time: {startTime}
+- End Time: {endTime}
+- Location: {activityLocation}

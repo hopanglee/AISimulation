@@ -5,6 +5,7 @@ using Agent;
 using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using PlanStructures;
 
 /// <summary>
 /// 메인 캐릭터(생각하는 Actor)
@@ -15,6 +16,7 @@ public abstract class MainActor : Actor
 {
 	[Header("Thinking System")]
 	public Brain brain;
+	
 	
 	[Header("Items")]
 	public iPhone iPhone;
@@ -51,6 +53,9 @@ public abstract class MainActor : Actor
 	public bool IsSleeping => isSleeping;
 	public int SleepHour => sleepHour;
 	public int SleepinessThreshold => sleepinessThreshold;
+	
+	// DayPlanner 프로퍼티 - Brain의 dayPlanner 반환
+	public DayPlanner DayPlanner => brain?.dayPlanner;
 	
 	[Header("Activity System")]
 	[SerializeField]
@@ -279,17 +284,6 @@ public abstract class MainActor : Actor
 	}
 	#endregion
 
-
-
-	#region Brain & Planning
-	/// <summary>
-	/// 현재 시간에 맞는 활동 가져오기 (Brain을 통해)
-	/// </summary>
-	public HierarchicalPlanner.RuntimeDetailedActivity GetCurrentActivity()
-	{
-		return brain?.GetCurrentActivity();
-	}
-	#endregion
 
 	#region Event History
 	public void AddEventToHistory(string eventText)

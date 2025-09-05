@@ -5,6 +5,7 @@ using System.Threading;
 using Agent;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using PlanStructures;
 
 /// <summary>
 /// Actor의 인지 시스템을 담당하는 조정자 클래스
@@ -39,7 +40,7 @@ public class Brain
     private GPT gpt;
     
     // --- Refactored Components ---
-    private DayPlanner dayPlanner;
+    public DayPlanner dayPlanner;
     private Thinker thinker;
     private ActionPerformer actionPerformer;
     private UseActionManager useActionManager; // Use Action 전용 매니저 추가
@@ -413,27 +414,10 @@ public class Brain
     }
 
     // === Public API Methods (for backward compatibility) ===
-
-    /// <summary>
-    /// 현재 활동을 반환합니다.
-    /// </summary>
-    public HierarchicalPlanner.RuntimeDetailedActivity GetCurrentActivity()
-    {
-        return dayPlanner.GetCurrentActivity();
-    }
-
-    /// <summary>
-    /// 다음 N개의 활동을 반환합니다.
-    /// </summary>
-    public List<HierarchicalPlanner.RuntimeDetailedActivity> GetNextActivities(int count = 3)
-    {
-        return dayPlanner.GetNextActivities(count);
-    }
-
     /// <summary>
     /// 현재 DayPlan을 반환합니다.
     /// </summary>
-    public HierarchicalPlanner.HierarchicalPlan GetCurrentDayPlan()
+    public HierarchicalPlan GetCurrentDayPlan()
     {
         return dayPlanner.GetCurrentDayPlan();
     }
