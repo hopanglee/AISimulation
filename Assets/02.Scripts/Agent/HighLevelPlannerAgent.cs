@@ -8,6 +8,7 @@ using OpenAI.Chat;
 using UnityEngine;
 using System.Linq; // Added for .Select()
 using Agent.Tools;
+using PlanStructures;
 
 /// <summary>
 /// 고수준 계획을 담당하는 전문화된 Agent (Stanford Generative Agent 스타일)
@@ -21,50 +22,38 @@ public class HighLevelPlannerAgent : GPT
     /// <summary>
     /// 고수준 계획 구조
     /// </summary>
-    public class HighLevelPlan
-    {
-        [JsonProperty("summary")]
-        public string Summary { get; set; } = "";
+    // public class HighLevelPlan
+    // {
+    //     [JsonProperty("summary")]
+    //     public string Summary { get; set; } = "";
 
-        [JsonProperty("mood")]
-        public string Mood { get; set; } = "";
+    //     [JsonProperty("mood")]
+    //     public string Mood { get; set; } = "";
 
-        [JsonProperty("priority_goals")]
-        public List<string> PriorityGoals { get; set; } = new List<string>();
+    //     [JsonProperty("priority_goals")]
+    //     public List<string> PriorityGoals { get; set; } = new List<string>();
 
-        [JsonProperty("high_level_tasks")]
-        public List<HighLevelTask> HighLevelTasks { get; set; } = new List<HighLevelTask>();
-    }
+    //     [JsonProperty("high_level_tasks")]
+    //     public List<HighLevelTask> HighLevelTasks { get; set; } = new List<HighLevelTask>();
+    // }
 
-    /// <summary>
-    /// 고수준 작업 (예: "아침 준비", "일하기", "저녁 식사")
-    /// </summary>
-    public class HighLevelTask
-    {
-        [JsonProperty("task_name")]
-        public string TaskName { get; set; } = "";
+    // /// <summary>
+    // /// 고수준 작업 (예: "아침 준비", "일하기", "저녁 식사")
+    // /// </summary>
+    // public class HighLevelTask
+    // {
+    //     [JsonProperty("task_name")]
+    //     public string TaskName { get; set; } = "";
 
-        [JsonProperty("description")]
-        public string Description { get; set; } = "";
+    //     [JsonProperty("description")]
+    //     public string Description { get; set; } = "";
 
-        [JsonProperty("start_time")]
-        public string StartTime { get; set; } = ""; // "HH:MM" 형식
+    //     [JsonProperty("start_time")]
+    //     public string StartTime { get; set; } = ""; // "HH:MM" 형식
 
-        [JsonProperty("end_time")]
-        public string EndTime { get; set; } = ""; // "HH:MM" 형식
-
-        [JsonProperty("duration_minutes")]
-        public int DurationMinutes { get; set; } = 0;
-
-        [JsonProperty("priority")]
-        public int Priority { get; set; } = 1; // 1-5, 높을수록 중요
-
-        [JsonProperty("location")]
-        public string Location { get; set; } = "";
-
-        [JsonProperty("sub_tasks")]
-        public List<string> SubTasks { get; set; } = new List<string>(); // 세부 작업 목록
-    }
+    //     [JsonProperty("end_time")]
+    //     public string EndTime { get; set; } = ""; // "HH:MM" 형식
+    // }
 
 
 
@@ -84,26 +73,13 @@ public class HighLevelPlannerAgent : GPT
         options = new()
         {
             ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                jsonSchemaFormatName: "high_level_plan",
+                jsonSchemaFormatName: "hierarchical_plan",
                 jsonSchema: BinaryData.FromBytes(
                     Encoding.UTF8.GetBytes(
                         $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""summary"": {{
-                                    ""type"": ""string"",
-                                    ""description"": ""Brief summary of the high-level plan""
-                                }},
-                                ""mood"": {{
-                                    ""type"": ""string"",
-                                    ""description"": ""Expected mood for tomorrow""
-                                }},
-                                ""priority_goals"": {{
-                                    ""type"": ""array"",
-                                    ""items"": {{ ""type"": ""string"" }},
-                                    ""description"": ""List of 3-5 priority goals for tomorrow""
-                                }},
                                 ""high_level_tasks"": {{
                                     ""type"": ""array"",
                                     ""items"": {{
@@ -113,22 +89,14 @@ public class HighLevelPlannerAgent : GPT
                                             ""task_name"": {{ ""type"": ""string"" }},
                                             ""description"": {{ ""type"": ""string"" }},
                                             ""start_time"": {{ ""type"": ""string"", ""pattern"": ""^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"" }},
-                                            ""end_time"": {{ ""type"": ""string"", ""pattern"": ""^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"" }},
-                                            ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 15, ""maximum"": 480 }},
-                                            ""priority"": {{ ""type"": ""integer"", ""minimum"": 1, ""maximum"": 10 }},
-                                            ""location"": {{ ""type"": ""string"" }},
-                                            ""sub_tasks"": {{
-                                                ""type"": ""array"",
-                                                ""items"": {{ ""type"": ""string"" }},
-                                                ""description"": ""2-3 specific sub-tasks or action types for this task""
-                                            }}
+                                            ""end_time"": {{ ""type"": ""string"", ""pattern"": ""^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"" }}
                                         }},
-                                        ""required"": [""task_name"", ""description"", ""start_time"", ""end_time"", ""duration_minutes"", ""priority"", ""location"", ""sub_tasks""]
+                                        ""required"": [""task_name"", ""description"", ""start_time"", ""end_time""]
                                     }},
                                     ""description"": ""List of 3-5 high-level tasks for tomorrow""
                                 }}
                             }},
-                            ""required"": [""summary"", ""mood"", ""priority_goals"", ""high_level_tasks""]
+                            ""required"": [""high_level_tasks""]
                         }}"
                     )
                 ),
@@ -138,6 +106,9 @@ public class HighLevelPlannerAgent : GPT
         
         // 월드 정보 도구 추가
         ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
+        
+        // 메모리 도구 추가
+        ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Memory);
     }
 
     // Tool 정의들
@@ -161,17 +132,16 @@ public class HighLevelPlannerAgent : GPT
     /// <summary>
     /// 고수준 계획 생성
     /// </summary>
-    public async UniTask<HighLevelPlan> CreateHighLevelPlanAsync(GameTime tomorrow)
+    public async UniTask<HierarchicalPlan> CreateHighLevelPlanAsync()
     {
-        string prompt = GenerateHighLevelPlanPrompt(tomorrow);
+        string prompt = GenerateHighLevelPlanPrompt();
         messages.Add(new UserChatMessage(prompt));
 
         Debug.Log($"[HighLevelPlannerAgent] {actor.Name}의 고수준 계획 생성 시작...");
 
-        var response = await SendGPTAsync<HighLevelPlan>(messages, options);
+        var response = await SendGPTAsync<HierarchicalPlan>(messages, options);
 
-        Debug.Log($"[HighLevelPlannerAgent] {actor.Name}의 고수준 계획 생성 완료: {response.Summary}");
-        Debug.Log($"[HighLevelPlannerAgent] 우선순위 목표: {response.PriorityGoals.Count}개");
+        Debug.Log($"[HighLevelPlannerAgent] {actor.Name}의 고수준 계획 생성 완료");
         Debug.Log($"[HighLevelPlannerAgent] 고수준 작업: {response.HighLevelTasks.Count}개");
 
         return response;
@@ -180,7 +150,7 @@ public class HighLevelPlannerAgent : GPT
     /// <summary>
     /// 고수준 계획 프롬프트 생성
     /// </summary>
-    private string GenerateHighLevelPlanPrompt(GameTime tomorrow)
+    private string GenerateHighLevelPlanPrompt()
     {
         var localizationService = Services.Get<ILocalizationService>();
         var timeService = Services.Get<ITimeService>();
@@ -188,7 +158,6 @@ public class HighLevelPlannerAgent : GPT
         
         var replacements = new Dictionary<string, string>
         {
-            { "tomorrow", tomorrow.ToString() },
             { "currentTime", currentTime },
             { "location", actor.curLocation.locationName },
             { "hunger", actor.Hunger.ToString() },
@@ -200,50 +169,5 @@ public class HighLevelPlannerAgent : GPT
 
         return localizationService.GetLocalizedText("high_level_plan_prompt", replacements);
     }
-
-    /// <summary>
-    /// 사용 가능한 모든 위치 목록을 가져옵니다 (계층 구조 포함)
-    /// </summary>
-    private List<string> GetAvailableLocations()
-    {
-        try
-        {
-            var pathfindingService = Services.Get<IPathfindingService>();
-            var allAreas = pathfindingService.GetAllAreaInfo();
-
-            Debug.Log($"[HighLevelPlannerAgent] 전체 Area 수: {allAreas.Count}");
-
-            // 실제 Area 컴포넌트들을 찾아서 LocationToString() 사용
-            var areas = UnityEngine.Object.FindObjectsByType<Area>(FindObjectsSortMode.None);
-            var locations = new List<string>();
-
-            foreach (var area in areas)
-            {
-                if (string.IsNullOrEmpty(area.locationName))
-                    continue;
-
-                // locationName을 사용해 장소 이름 가져오기
-                var locationName = area.locationName;
-                locations.Add(locationName);
-                Debug.Log($"[HighLevelPlannerAgent] Area 추가: {area.locationName} -> 장소: {locationName}");
-            }
-
-            Debug.Log($"[HighLevelPlannerAgent] 최종 사용 가능한 장소 목록 ({locations.Count}개): {string.Join(", ", locations)}");
-
-            if (locations.Count == 0)
-            {
-                Debug.LogWarning("[HighLevelPlannerAgent] 사용 가능한 장소가 없습니다! 기본 장소를 사용합니다.");
-                return new List<string> { "Apartment", "Living Room in Apartment", "Kitchen in Apartment", "Bedroom in Apartment" };
-            }
-
-            return locations;
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"[HighLevelPlannerAgent] 장소 목록 가져오기 실패: {ex.Message}");
-            throw new System.InvalidOperationException($"HighLevelPlannerAgent 장소 목록 가져오기 실패: {ex.Message}");
-        }
-    }
-
 
 }

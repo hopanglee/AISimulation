@@ -43,7 +43,8 @@ TalkToNPC: {"npc_name": "John", "message": "좋은 아침!"}
 PerformActivity: {"activity_name": "아침 스트레칭", "description": "아침 스트레칭을 한다"}
 
 계획 수립 과정
-세부 활동 검토: 분해할 구체적인 활동을 이해합니다.
+전체 계획 검토: 오늘의 전체 고수준 작업들을 파악합니다.
+현재 활동 분석: 분해할 구체적인 활동을 이해합니다.
 활동 분해: 각 세부 활동을 1-3개의 구체적인 행동으로 나눕니다.
 파라미터 명시: 각 행동에 대한 정확한 파라미터를 정의합니다.
 장소 할당: 각 행동이 일어날 장소를 결정합니다.
@@ -57,9 +58,25 @@ PerformActivity: {"activity_name": "아침 스트레칭", "description": "아침
 행동은 세부 활동으로부터 논리적으로 이어져야 합니다.
 캐릭터의 현재 상태와 능력을 고려하세요.
 각 행동 유형에 적절한 파라미터를 제공하세요.
+전체 계획의 맥락을 고려하여 일관성 있는 행동을 계획하세요.
 
 응답 형식
 JSON 형식으로 특정 행동 구조에 맞춰 응답하세요:
-summary: 구체적 행동에 대한 전체 요약
-mood: 오늘의 기분이나 상태
 specific_actions: 각 활동 내 실행 가능한 행동 목록
+
+현재 상황 정보
+캐릭터 상태:
+- 배고픔: {hunger}
+- 목마름: {thirst}
+- 체력: {stamina}
+- 스트레스: {stress}
+- 졸음: {sleepiness}
+- 현재 위치: {location}
+- 현재 시간: {currentTime}
+
+현재 분해할 상세 활동:
+- 활동명: {activityName}
+- 설명: {description}
+- 시작시간: {startTime}
+- 종료시간: {endTime}
+- 위치: {activityLocation}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using PlanStructures;
 
 /// <summary>
 /// Actor의 하루 계획(DayPlan)을 관리하는 클래스
@@ -24,8 +25,15 @@ public class DayPlanner
     private readonly Actor actor;
     private readonly HierarchicalPlanner hierarchicalPlanner;
     private readonly PlanDecisionAgent planDecisionAgent;
-    private HierarchicalPlanner.HierarchicalPlan currentHierarchicalDayPlan;
+
     private bool forceNewDayPlan = false;
+
+    private HierarchicalPlan currentHierarchicalDayPlan;
+
+    // 현재 활동 상태 저장
+    private DetailedActivity currentDetailedActivity;
+    private SpecificAction currentSpecificAction;
+    private HighLevelTask currentHighLevelTask;
 
     public DayPlanner(Actor actor)
     {
@@ -55,18 +63,21 @@ public class DayPlanner
 
         // 새 계획 생성
         Debug.Log($"[{actor.Name}] 새 DayPlan 생성");
-        currentHierarchicalDayPlan = await hierarchicalPlanner.CreateHierarchicalPlanAsync(currentDate);
-        
+        currentHierarchicalDayPlan = await hierarchicalPlanner.CreateHierarchicalPlanAsync();
+
+        // 첫 번째 작업의 액션 세분화
+        await DecomposeFirstTaskAsync();
+
         // 계획 저장 (fire-and-forget)
         StoreHierarchicalDayPlan(currentHierarchicalDayPlan);
-        
+
         forceNewDayPlan = false; // 플래그 리셋
     }
 
     /// <summary>
     /// 현재 시간에 맞는 활동을 반환합니다.
     /// </summary>
-    public HierarchicalPlanner.RuntimeDetailedActivity GetCurrentActivity()
+    public DetailedActivity GetCurrentActivity()
     {
         if (currentHierarchicalDayPlan?.HighLevelTasks == null)
             return null;
@@ -92,10 +103,10 @@ public class DayPlanner
     /// <summary>
     /// 다음 N개의 활동을 반환합니다.
     /// </summary>
-    public List<HierarchicalPlanner.RuntimeDetailedActivity> GetNextActivities(int count = 3)
+    public List<DetailedActivity> GetNextActivities(int count = 3)
     {
-        var activities = new List<HierarchicalPlanner.RuntimeDetailedActivity>();
-        
+        var activities = new List<DetailedActivity>();
+
         if (currentHierarchicalDayPlan?.HighLevelTasks == null)
             return activities;
 
@@ -123,7 +134,7 @@ public class DayPlanner
     /// <summary>
     /// 현재 DayPlan을 반환합니다.
     /// </summary>
-    public HierarchicalPlanner.HierarchicalPlan GetCurrentDayPlan()
+    public HierarchicalPlan GetCurrentDayPlan()
     {
         return currentHierarchicalDayPlan;
     }
@@ -159,7 +170,7 @@ public class DayPlanner
     /// 완료 시 내부 보관 중인 DayPlan을 갱신하고 저장합니다.
     /// </summary>
     public async UniTask ReplanFromCurrentStateAsync(
-        HierarchicalPlanner.HierarchicalPlan currentPlan,
+        HierarchicalPlan currentPlan,
         GameTime currentTime,
         PerceptionResult perception,
         PlanDecisionAgent.PlanDecisionResult decision)
@@ -221,11 +232,11 @@ public class DayPlanner
     /// <summary>
     /// 계층적 DayPlan을 저장합니다.
     /// </summary>
-    private async void StoreHierarchicalDayPlan(HierarchicalPlanner.HierarchicalPlan hierarchicalDayPlan)
+    private async void StoreHierarchicalDayPlan(HierarchicalPlan hierarchicalDayPlan)
     {
         var timeService = Services.Get<ITimeService>();
         var currentDate = timeService.CurrentTime;
-        
+
         try
         {
             await SaveHierarchicalDayPlanToJsonAsync(hierarchicalDayPlan, currentDate);
@@ -240,11 +251,11 @@ public class DayPlanner
     /// <summary>
     /// 계층적 DayPlan을 JSON 파일로 저장합니다.
     /// </summary>
-    private async UniTask SaveHierarchicalDayPlanToJsonAsync(HierarchicalPlanner.HierarchicalPlan hierarchicalDayPlan, GameTime date)
+    private async UniTask SaveHierarchicalDayPlanToJsonAsync(HierarchicalPlan hierarchicalDayPlan, GameTime date)
     {
         var filePath = GetDayPlanFilePath(date);
         var directoryPath = Path.GetDirectoryName(filePath);
-        
+
         if (!Directory.Exists(directoryPath))
         {
             Directory.CreateDirectory(directoryPath);
@@ -257,10 +268,10 @@ public class DayPlanner
     /// <summary>
     /// JSON 파일에서 계층적 DayPlan을 로드합니다.
     /// </summary>
-    public async UniTask<HierarchicalPlanner.HierarchicalPlan> LoadHierarchicalDayPlanFromJsonAsync(GameTime date)
+    public async UniTask<HierarchicalPlan> LoadHierarchicalDayPlanFromJsonAsync(GameTime date)
     {
         var filePath = GetDayPlanFilePath(date);
-        
+
         if (!File.Exists(filePath))
         {
             Debug.LogWarning($"[{actor.Name}] DayPlan 파일이 존재하지 않습니다: {filePath}");
@@ -270,7 +281,7 @@ public class DayPlanner
         try
         {
             var jsonData = await File.ReadAllTextAsync(filePath);
-            return JsonUtility.FromJson<HierarchicalPlanner.HierarchicalPlan>(jsonData);
+            return JsonUtility.FromJson<HierarchicalPlan>(jsonData);
         }
         catch (Exception ex)
         {
@@ -303,4 +314,223 @@ public class DayPlanner
     {
         return $"{time.hour:D2}:{time.minute:D2}";
     }
-} 
+
+    /// <summary>
+    /// 현재 활동 상태 업데이트
+    /// </summary>
+    public void UpdateCurrentActivity()
+    {
+        if (currentHierarchicalDayPlan == null)
+        {
+            currentHighLevelTask = null;
+            currentDetailedActivity = null;
+            currentSpecificAction = null;
+            return;
+        }
+
+        currentHighLevelTask = GetCurrentHighLevelTask();
+
+        if (currentHighLevelTask != null)
+        {
+            currentDetailedActivity = GetCurrentDetailedActivity();
+        }
+        else currentDetailedActivity = null;
+
+
+        if (currentDetailedActivity != null)
+        {
+            currentSpecificAction = GetCurrentSpecificAction(currentDetailedActivity);
+        }
+        else
+        {
+            currentSpecificAction = null;
+        }
+    }
+
+    /// <summary>
+    /// 현재 HighLevelTask 가져오기
+    /// </summary>
+    public HighLevelTask GetCurrentHighLevelTask()
+    {
+        if (currentHierarchicalDayPlan == null) return null;
+
+        foreach (var hlt in currentHierarchicalDayPlan.HighLevelTasks)
+        {
+            foreach (var activity in hlt.DetailedActivities)
+            {
+                if (activity.Status == ActivityStatus.InProgress)
+                {
+                    return hlt;
+                }
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// 현재 DetailedActivity 가져오기
+    /// </summary>
+    public DetailedActivity GetCurrentDetailedActivity()
+    {
+        if (currentHierarchicalDayPlan == null) return null;
+
+        foreach (var hlt in currentHierarchicalDayPlan.HighLevelTasks)
+        {
+            foreach (var activity in hlt.DetailedActivities)
+            {
+                if (activity.Status == ActivityStatus.InProgress)
+                {
+                    return activity;
+                }
+            }
+        }
+        return null;
+    }
+
+
+
+    /// <summary>
+    /// 현재 SpecificAction 가져오기
+    /// </summary>
+    public SpecificAction GetCurrentSpecificAction(DetailedActivity activity)
+    {
+        if (activity?.SpecificActions != null)
+        {
+            foreach (var action in activity.SpecificActions)
+            {
+                if (action.Status == ActivityStatus.InProgress)
+                {
+                    return action;
+                }
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// 다음 DetailedActivity 찾기 (상태 기반)
+    /// </summary>
+    public DetailedActivity GetNextDetailedActivity()
+    {
+        if (currentHierarchicalDayPlan == null) return null;
+
+        foreach (var hlt in currentHierarchicalDayPlan.HighLevelTasks)
+        {
+            foreach (var activity in hlt.DetailedActivities)
+            {
+                if (activity.Status == ActivityStatus.Pending)
+                {
+                    return activity;
+                }
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// 첫 번째 작업의 액션 세분화 (아침 계획 시)
+    /// </summary>
+    private async UniTask DecomposeFirstTaskAsync()
+    {
+        if (currentHierarchicalDayPlan == null) return;
+
+        // 첫 번째 DetailedActivity 찾기
+        var firstTask = GetFirstDetailedActivity();
+        if (firstTask == null)
+        {
+            Debug.Log($"[DayPlanner] 첫 번째 task가 없습니다.");
+            return;
+        }
+
+        Debug.Log($"[DayPlanner] 첫 번째 task 액션 세분화 시작: {firstTask.ActivityName}");
+
+        try
+        {
+            // HierarchicalPlanner를 사용하여 첫 번째 task를 구체적 행동으로 분해
+            var specificActions = await hierarchicalPlanner.DecomposeNextTaskAsync(firstTask);
+
+            // 생성된 액션들을 첫 번째 작업에 추가
+            if (specificActions != null && specificActions.Count > 0)
+            {
+                firstTask.SpecificActions = specificActions;
+                Debug.Log($"[DayPlanner] 첫 번째 task 액션 세분화 완료: {specificActions.Count}개 행동");
+            }
+            else
+            {
+                Debug.LogWarning($"[DayPlanner] 첫 번째 task에 대한 액션이 생성되지 않았습니다.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[DayPlanner] 첫 번째 task 액션 세분화 실패: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// 첫 번째 DetailedActivity 가져오기
+    /// </summary>
+    private DetailedActivity GetFirstDetailedActivity()
+    {
+        if (currentHierarchicalDayPlan == null) return null;
+
+        foreach (var hlt in currentHierarchicalDayPlan.HighLevelTasks)
+        {
+            if (hlt.DetailedActivities != null && hlt.DetailedActivities.Count > 0)
+            {
+                return hlt.DetailedActivities[0]; // 첫 번째 활동 반환
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// 다음 task를 구체적 행동으로 분해
+    /// </summary>
+    public async UniTask<List<SpecificAction>> DecomposeNextTaskAsync()
+    {
+        UpdateCurrentActivity();
+
+        // 현재 DetailedActivity가 완료되었는지 확인
+        if (currentDetailedActivity == null || currentDetailedActivity.Status == ActivityStatus.Completed)
+        {
+            // 다음 DetailedActivity 찾기
+            var nextTask = GetNextDetailedActivity();
+            if (nextTask == null)
+            {
+                Debug.Log($"[DayPlanner] 다음 task가 없습니다.");
+                return new List<SpecificAction>();
+            }
+
+            Debug.Log($"[DayPlanner] 다음 task 분해 시작: {nextTask.ActivityName}");
+
+            try
+            {
+                // HierarchicalPlanner를 사용하여 다음 task를 구체적 행동으로 분해
+                var specificActions = await hierarchicalPlanner.DecomposeNextTaskAsync(nextTask);
+
+                // 생성된 액션들을 다음 작업에 추가
+                if (specificActions != null && specificActions.Count > 0)
+                {
+                    nextTask.SpecificActions = specificActions;
+                    Debug.Log($"[DayPlanner] 다음 task 분해 완료: {specificActions.Count}개 행동");
+                    return specificActions;
+                }
+                else
+                {
+                    Debug.LogWarning($"[DayPlanner] 다음 task에 대한 액션이 생성되지 않았습니다.");
+                    return new List<SpecificAction>();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[DayPlanner] 다음 task 분해 실패: {ex.Message}");
+                return new List<SpecificAction>();
+            }
+        }
+        else
+        {
+            Debug.Log($"[DayPlanner] 현재 task가 아직 진행 중입니다: {currentDetailedActivity.ActivityName}");
+            return new List<SpecificAction>();
+        }
+    }
+}
