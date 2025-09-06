@@ -1,0 +1,8 @@
+=== Current Action Context ===
+Parent Activity: {parent_activity}
+Parent Task: {parent_task}
+Activity Start Time: {activity_start_time}
+Activity Duration: {activity_duration_minutes} minutes
+
+=== All Actions in Current Activity ===
+{all_actions_in_activity}

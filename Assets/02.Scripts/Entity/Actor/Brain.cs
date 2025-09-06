@@ -37,6 +37,7 @@ public class Brain
     private ActSelectorAgent actSelectorAgent;
     private Dictionary<ActionType, ParameterAgentBase> parameterAgents;
     private PerceptionAgent perceptionAgent;
+    private ReactionDecisionAgent reactionDecisionAgent; // 외부 이벤트 반응 결정 Agent
     private GPT gpt;
     
     // --- Refactored Components ---
@@ -70,8 +71,11 @@ public class Brain
 
         // AI Agent 초기화
         actSelectorAgent = new ActSelectorAgent(actor);
+        actSelectorAgent.SetDayPlanner(dayPlanner); // DayPlanner 설정
         parameterAgents = ParameterAgentFactory.CreateAllParameterAgents(actor);
         perceptionAgent = new PerceptionAgent(actor);
+        reactionDecisionAgent = new ReactionDecisionAgent(actor);
+        reactionDecisionAgent.SetDayPlanner(dayPlanner); // DayPlanner 설정
 
         // 메모리 관리 초기화
         memoryAgent = new MemoryAgent(actor);
@@ -112,10 +116,45 @@ public class Brain
 
     /// <summary>
     /// 외부 이벤트가 발생했을 때 호출됩니다.
+    /// PerceptionAgent를 실행하고 반응 여부를 결정한 후 적절한 조치를 취합니다.
     /// </summary>
     public void OnExternalEvent()
     {
-        thinker.OnExternalEventAsync();
+        try
+        {
+            Debug.Log($"[{actor.Name}] 외부 이벤트 발생 - 반응 여부 결정 시작");
+            thinker.OnExternalEventAsync();
+            // 1. PerceptionAgent를 통해 외부 이벤트 인식
+            // var perceptionResult = await InterpretVisualInformationAsync();
+            
+            // 2. Perception 직후 계획 유지/수정 결정 및 필요 시 재계획
+            //await dayPlanner.DecideAndMaybeReplanAsync(perceptionResult);
+            
+            // 3. React 기능 (현재 비활성화)
+            /*
+            var reactionDecision = await reactionDecisionAgent.DecideReactionAsync(perceptionResult);
+            
+            Debug.Log($"[{actor.Name}] 반응 결정: {reactionDecision.ShouldReact}, 우선순위: {reactionDecision.PriorityLevel}, 이유: {reactionDecision.Reasoning}");
+            
+            if (reactionDecision.ShouldReact)
+            {
+                // 반응하기로 결정: Think/Act 루프 재시작
+                Debug.Log($"[{actor.Name}] 외부 이벤트에 반응 - Think/Act 루프 재시작");
+                thinker.OnExternalEventAsync();
+            }
+            else
+            {
+                // 반응하지 않기로 결정: 현재 활동 계속
+                Debug.Log($"[{actor.Name}] 외부 이벤트 무시 - 현재 활동 계속");
+                // 현재 Think/Act 루프는 그대로 유지됨
+            }
+            */
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[{actor.Name}] 외부 이벤트 처리 실패: {ex.Message}");
+            // 오류 발생 시 기본적으로 반응하지 않음
+        }
     }
 
     /// <summary>
@@ -144,6 +183,13 @@ public class Brain
                     Parameters = new Dictionary<string, object>()
                 };
                 
+                // 기본 PerceptionResult 생성
+                var defaultPerceptionResult = new PerceptionResult
+                {
+                    situation_interpretation = "GPT 비활성화로 인한 기본 상황 해석",
+                    thought_chain = new List<string> { "GPT 비활성화", "기본 대기 모드" }
+                };
+                
                 return (defaultSelection, defaultParamResult);
             }
             
@@ -151,7 +197,7 @@ public class Brain
             var perceptionResult = await InterpretVisualInformationAsync();
 
             // === 계획 유지/수정 결정 및 필요 시 재계획 (DayPlanner 내부로 캡슐화) ===
-            await dayPlanner.DecideAndMaybeReplanAsync(perceptionResult);
+            await dayPlanner.DecideAndMaybeReplanAsync(perceptionResult); 
             
             // 상황 설명 생성 (기존 방식과 PerceptionAgent 결과를 결합)
             var situationDescription = GenerateSituationDescription();
