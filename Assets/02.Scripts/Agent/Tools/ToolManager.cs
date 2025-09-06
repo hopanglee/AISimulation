@@ -386,7 +386,7 @@ namespace Agent.Tools
                 {
                     foreach (var hlt in currentPlan.HighLevelTasks)
                     {
-                        planInfo.Add($"• {hlt.TaskName} ({hlt.StartTime}-{hlt.EndTime})");
+                        planInfo.Add($"• {hlt.TaskName} ({hlt.DurationMinutes}분)");
                     }
                 }
                 else

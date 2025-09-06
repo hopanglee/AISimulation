@@ -186,6 +186,13 @@ public abstract class Entity : MonoBehaviour, ILocation
         {
             return GetLocalizedName();
         }
+        // 전체 경로를 :로 구분하여 표시
+        string parent = curLocation.LocationToString();
+        string selfName = GetLocalizedName();
+        return parent + ":" + selfName;
+        
+        // 기존 코드 (전치사 사용) - 주석처리로 보존
+        /*
         // Language-aware relation text
         var locService = Services.Get<ILocalizationService>();
         string selfName = GetLocalizedName();
@@ -199,16 +206,22 @@ public abstract class Entity : MonoBehaviour, ILocation
         {
             return selfName + " " + prep + " " + curLocation.LocationToString();
         }
+        */
     }
     
     /// <summary>
     /// 간단하고 일관된 키 생성 (모든 Entity에 동일한 규칙 적용)
-    /// 예: "Choco Donut in Living Room", "iPhone in Kitchen"
+    /// 예: "Apartment:Living Room:Choco Donut", "Apartment:Kitchen:iPhone"
     /// </summary>
     public virtual string GetSimpleKey()
     {
         if (curLocation == null) return Name;
         
+        // 단순히 :로 구분하여 표시 (전체 경로)
+        return curLocation.LocationToString() + ":" + GetLocalizedName();
+        
+        // 기존 코드 (전치사 사용) - 주석처리로 보존
+        /*
         // 더 상세한 위치 정보를 포함할지 여부 (언제든지 바꿀 수 있도록 if문 사용)
         // if (false) // true: 상세한 위치 정보 포함, false: 간단한 위치 정보만
         // {
@@ -240,12 +253,13 @@ public abstract class Entity : MonoBehaviour, ILocation
                 return $"{targetName} {prep} {locName}";
             }
         // }
+        */
     }
 
     /// <summary>
     /// Actor의 현재 위치를 기준으로 한 상대적 키 생성
     /// Actor와 같은 location인 부분은 제외하고 내부 location부터 출력
-    /// 예: Actor가 Kitchen에 있을 때 "Plate on Table" (in Kitchen 제외)
+    /// 예: Actor가 Kitchen에 있을 때 "Plate:Table" (Kitchen 제외)
     /// </summary>
     public virtual string GetSimpleKeyRelativeToActor(Actor actor)
     {
@@ -269,6 +283,45 @@ public abstract class Entity : MonoBehaviour, ILocation
             currentLocation = currentLocation.curLocation;
         }
 
+        // 중복되는 부분을 찾았으면 그 이전부터 키 생성
+        if (currentLocation == actorLocation)
+        {
+            // Actor의 location 이전까지만 포함
+            var relativeLocation = curLocation;
+            //var locService = Services.Get<ILocalizationService>();
+            //bool isKr = locService != null && locService.CurrentLanguage == Language.KR;
+            string subjectName = GetLocalizedName();
+            
+            // Build chained location with : separator
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            // Collect chain from outermost to relativeLocation
+            List<ILocation> chain = new();
+            var p = relativeLocation;
+            while (p != null && p != actorLocation)
+            {
+                chain.Add(p);
+                p = p.curLocation;
+            }
+            // Reverse to get outer to inner order
+            chain.Reverse();
+            
+            // Build location chain with : separator
+            for (int i = 0; i < chain.Count; i++)
+            {
+                if (i > 0) sb.Append(":");
+                sb.Append(chain[i].GetLocalizedName());
+            }
+            sb.Append(":");
+            sb.Append(subjectName);
+            
+            return sb.ToString();
+        }
+
+        // 중복되는 부분을 찾지 못했으면 전체 키 반환
+        return GetSimpleKey();
+        
+        // 기존 코드 (전치사 사용) - 주석처리로 보존
+        /*
         // 중복되는 부분을 찾았으면 그 이전부터 키 생성
         if (currentLocation == actorLocation)
         {
@@ -322,9 +375,7 @@ public abstract class Entity : MonoBehaviour, ILocation
             
             return result;
         }
-
-        // 중복되는 부분을 찾지 못했으면 전체 키 반환
-        return GetSimpleKey();
+        */
     }
 
     protected virtual void Awake()

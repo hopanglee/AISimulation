@@ -32,12 +32,12 @@ You are an expert in creating specific action plans for characters in an AI simu
 
 ## Location Information Usage
 - **The location field must use the full path format**
-- Examples: "Kitchen in Apartment", "Living Room in Apartment", "Bedroom in Apartment"
+- Examples: "Apartment:Kitchen", "Apartment:Living Room", "Apartment:Bedroom"
 - Do not use just "Kitchen" or "Living Room"
 - Use the exact full path from the actual location list provided by the system
 
 ## Parameter Examples
-- **MoveToArea**: {"target_area": "Kitchen in Apartment"}
+- **MoveToArea**: {"target_area": "Apartment:Kitchen"}
 - **UseObject**: {"object_name": "coffee_machine"}
 - **TalkToNPC**: {"npc_name": "John", "message": "Good morning!"}
 - **PerformActivity**: {"activity_name": "Morning Stretches", "description": "Do morning stretches"}
@@ -79,4 +79,3 @@ Current Detailed Activity to Decompose:
 - Description: {description}
 - Start Time: {startTime}
 - End Time: {endTime}
-- Location: {activityLocation}

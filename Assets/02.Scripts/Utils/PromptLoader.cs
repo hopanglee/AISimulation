@@ -110,13 +110,13 @@ public static class PromptLoader
     }
 
     /// <summary>
-    /// ActionPlannerAgent용 프롬프트를 로드합니다.
+    /// SpecificPlannerAgent용 프롬프트를 로드합니다.
     /// </summary>
-    /// <returns>ActionPlannerAgent 시스템 프롬프트</returns>
-    public static string LoadActionPlannerAgentPrompt()
+    /// <returns>SpecificPlannerAgent 시스템 프롬프트</returns>
+    public static string LoadSpecificPlannerAgentPrompt()
     {
         return LoadPrompt(
-            "ActionPlannerAgentPrompt",
+            "SpecificPlannerAgentPrompt",
             "당신은 구체적 행동을 계획하는 전문화된 AI 에이전트입니다."
         );
     }
