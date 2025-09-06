@@ -414,7 +414,7 @@ public class ManualActionController
             // UseObject 액션은 Brain을 통해 실행 (UseActionManager로 파라미터 생성 후 UseActionHandler에서 실행)
             if (debugActionType == ActionType.UseObject)
             {
-                // Brain을 통해 액션 실행 (UseActionManager + UseActionHandler)
+
                 await mainActor.brain.Act(paramResult, System.Threading.CancellationToken.None);
 
                 // UseObject 이후 Secondary Agent 설정 (iPhone, Note 등)
@@ -422,7 +422,6 @@ public class ManualActionController
             }
             else if (debugActionType == ActionType.InteractWithObject)
             {
-                // Brain을 통해 액션 실행 (Handler에서 자동 변환 처리됨)
                 await mainActor.brain.Act(paramResult, System.Threading.CancellationToken.None);
 
                 // InteractWithObject 이후 Secondary Agent 설정 (InventoryBox 등)
@@ -430,7 +429,6 @@ public class ManualActionController
             }
             else
             {
-                // Brain을 통해 액션 실행 (Handler에서 자동 변환 처리됨)
                 await mainActor.brain.Act(paramResult, System.Threading.CancellationToken.None);
             }
         }

@@ -8,6 +8,7 @@ using UnityEngine;
 using System.IO;
 using System.Text.Json;
 using Agent.Tools;
+using PlanStructures;
 
 namespace Agent
 {
@@ -29,6 +30,7 @@ namespace Agent
     {
         private Actor actor;
         private IToolExecutor toolExecutor;
+        private DayPlanner dayPlanner; // DayPlanner 참조 추가
 
         public ActSelectorAgent(Actor actor) : base()
         {
@@ -77,6 +79,14 @@ namespace Agent
             ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.All);
         }
 
+        /// <summary>
+        /// DayPlanner 참조를 설정합니다.
+        /// </summary>
+        public void SetDayPlanner(DayPlanner dayPlanner)
+        {
+            this.dayPlanner = dayPlanner;
+        }
+
         public class ActSelectionResult
         {
             [JsonProperty("act_type")]
@@ -101,6 +111,51 @@ namespace Agent
             UpdateResponseFormatSchema();
             
             string userMessage = situation;
+            
+            // 현재 행동 정보 추가
+            if (dayPlanner != null)
+            {
+                try
+                {
+                    var currentAction = await dayPlanner.GetCurrentSpecificActionAsync();
+                    if (currentAction != null)
+                    {
+                        var currentActivity = currentAction.ParentDetailedActivity;
+                        if (currentActivity != null)
+                        {
+                            // DayPlanner의 메서드를 사용하여 활동 시작 시간과 진행률 계산
+                            var activityStartTime = dayPlanner.GetActivityStartTime(currentActivity);
+                            
+                            // 모든 SpecificAction 나열
+                            var allActionsText = new List<string>();
+                            for (int i = 0; i < currentActivity.SpecificActions.Count; i++)
+                            {
+                                var action = currentActivity.SpecificActions[i];
+                                var isCurrent = (action == currentAction) ? " [CURRENT]" : "";
+                                allActionsText.Add($"{i + 1}. {action.ActionType}{isCurrent}: {action.Description}");
+                            }
+                            
+                            // 프롬프트 텍스트 로드 및 replace
+                            var localizationService = Services.Get<ILocalizationService>();
+                            var replacements = new Dictionary<string, string>
+                            {
+                                { "parent_activity", currentActivity.ActivityName },
+                                { "parent_task", currentActivity.ParentHighLevelTask?.TaskName ?? "Unknown" },
+                                { "activity_start_time", $"{activityStartTime.hour:D2}:{activityStartTime.minute:D2}" },
+                                { "activity_duration_minutes", currentActivity.DurationMinutes.ToString() },
+                                { "all_actions_in_activity", string.Join("\n", allActionsText) }
+                            };
+                            
+                            var contextText = localizationService.GetLocalizedText("current_action_context_prompt", replacements);
+                            userMessage += $"\n\n{contextText}";
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"[ActSelectorAgent] 현재 행동 정보 가져오기 실패: {ex.Message}");
+                }
+            }
             
             // 현재 사용 가능한 액션 정보 추가
             var currentAvailableActions = GetCurrentAvailableActions();

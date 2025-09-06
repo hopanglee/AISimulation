@@ -1,0 +1,16 @@
+=== External Event Perception ===
+Situation Interpretation: {perception_interpretation}
+Thought Chain: {thought_chain}
+
+{current_action_context}
+
+=== Decision Request ===
+Should the agent interrupt their current activity to react to this external event, or continue with their current plan?
+
+Consider:
+1. The urgency and importance of the external event
+2. The current activity's importance and progress
+3. The agent's personality and priorities
+4. Whether the external event requires immediate attention
+
+Please decide whether to react (interrupt current activity) or continue (ignore the external event).

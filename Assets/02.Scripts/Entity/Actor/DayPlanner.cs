@@ -328,4 +328,36 @@ public class DayPlanner
         return Path.Combine(Application.persistentDataPath, "DayPlans", actor.Name, fileName);
     }
 
+    /// <summary>
+    /// 특정 DetailedActivity의 시작 시간을 계산합니다.
+    /// </summary>
+    /// <param name="targetActivity">시작 시간을 계산할 활동</param>
+    /// <returns>활동의 시작 시간 (GameTime)</returns>
+    public GameTime GetActivityStartTime(DetailedActivity targetActivity)
+    {
+        if (targetActivity == null || currentHierarchicalDayPlan?.HighLevelTasks == null)
+            return new GameTime { hour = 0, minute = 0 };
+
+        var startMinutes = planStartTime.hour * 60 + planStartTime.minute;
+        var activityStartMinutes = startMinutes;
+
+        // 현재 활동의 시작 시간까지 누적
+        foreach (var task in currentHierarchicalDayPlan.HighLevelTasks)
+        {
+            foreach (var activity in task.DetailedActivities)
+            {
+                if (activity == targetActivity)
+                {
+                    break;
+                }
+                activityStartMinutes += activity.DurationMinutes;
+            }
+        }
+        
+        return new GameTime 
+        { 
+            hour = activityStartMinutes / 60, 
+            minute = activityStartMinutes % 60 
+        };
+    }
 }
