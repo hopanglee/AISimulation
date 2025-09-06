@@ -32,12 +32,12 @@ PerformActivity: 특정 활동 수행하기 (아침 스트레칭, 요리 등)
 
 위치 정보 사용법
 location 필드는 반드시 전체 경로 형식을 사용해야 합니다.
-예시: "아파트의 부엌", "아파트의 거실", "아파트의 침실"
+예시: "아파트:부엌", "아파트:거실", "아파트:침실"
 "부엌"이나 "거실"처럼 단독으로 사용하지 마세요.
 시스템에서 제공된 실제 위치 목록의 정확한 전체 경로를 사용하세요.
 
 파라미터 예시
-MoveToArea: {"target_area": "아파트의 부엌"}
+MoveToArea: {"target_area": "아파트:부엌"}
 UseObject: {"object_name": "커피 머신"}
 TalkToNPC: {"npc_name": "John", "message": "좋은 아침!"}
 PerformActivity: {"activity_name": "아침 스트레칭", "description": "아침 스트레칭을 한다"}
@@ -79,4 +79,3 @@ specific_actions: 각 활동 내 실행 가능한 행동 목록
 - 설명: {description}
 - 시작시간: {startTime}
 - 종료시간: {endTime}
-- 위치: {activityLocation}

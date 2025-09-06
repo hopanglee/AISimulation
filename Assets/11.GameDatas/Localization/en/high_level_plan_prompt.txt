@@ -12,11 +12,16 @@ Example:
 === Memory Information ===
 {memory_summary}
 
-Generate a list of 3-5 priority goals and 3-5 high-level tasks for tomorrow.
-Prioritize goals based on current state and long-term objectives.
-Tasks should be specific, achievable, and relevant to the day's plan.
-Each task should have a start and end time, duration, priority, and location.
-The last high-level task's end_time MUST be exactly 22:00 (bedtime). Fill the plan so that there is no gap until 22:00.
+=== Instructions ===
+1. Generate a list of 3-5 priority goals and 3-5 high-level tasks for tomorrow
+2. Prioritize goals based on current state and long-term objectives
+3. Tasks should be specific, achievable, and relevant to the day's plan
+4. Each task should have duration_minutes (30-180 minutes)
+5. The last high-level task's end_time MUST be exactly 22:00 (bedtime)
+6. Fill the plan so that there is no gap until 22:00
+7. Use only the actual locations and action types listed above
+8. For locations, use the exact full path format (e.g., 'Kitchen in Apartment') as shown in the available locations list
+
 Example: ... 21:00-22:00: Prepare for bed and sleep at Bedroom in Apartment
-Use only the actual locations and action types listed above.
-For locations, use the exact full path format (e.g., 'Kitchen in Apartment') as shown in the available locations list.
+
+Generate a comprehensive high-level plan for the entire day.

@@ -14,13 +14,9 @@ You are an expert in creating high-level daily plans for characters in an AI sim
 6. **Location Planning**: Consider current location and accessible places
 
 ## High-Level Planning Focus
-### Priority Goals (3-5 items)
-- **Examples**: "Complete work project", "Exercise for health", "Socialize with friends"
-- **Focus**: Important goals and priorities
-
 ### High-Level Tasks (3-5 items)
 - **Examples**: "Morning preparation", "Work", "Evening meal", "Exercise"
-- **Duration**: 30 minutes ~ 3 hours
+- **Duration**: 30 minutes ~ 3 hours (specify duration_minutes)
 - **Focus**: Major goals and time blocks
 
 ## Available Action Types
@@ -36,15 +32,14 @@ You are an expert in creating high-level daily plans for characters in an AI sim
 
 ## Location Information Usage
 - **The location field must use the full path format**
-- Examples: "Kitchen in Apartment", "Living Room in Apartment", "Bedroom in Apartment"
+- Examples: "Apartment:Kitchen", "Apartment:Living Room", "Apartment:Bedroom"
 - Do not use just "Kitchen" or "Living Room"
 - Use the exact full path from the actual location list provided by the system
 
 ## Planning Process
 1. **Analyze Context**: Consider character's current state, memories, and available locations
-2. **Set Priority Goals**: Identify 3-5 main goals for the day
-3. **Create High-Level Tasks**: Break down the day into 3-5 major time blocks
-4. **Define Sub-Tasks**: For each high-level task, suggest 2-3 sub-tasks
+2. **Create High-Level Tasks**: Break down the day into 3-5 major time blocks
+3. **Set Duration**: Specify duration_minutes for each task (30-180 minutes)
 
 ## Important Notes
 - Use only the actual action types listed above
@@ -53,11 +48,9 @@ You are an expert in creating high-level daily plans for characters in an AI sim
 - **Must create tasks divided by time periods for the entire day (6 AM ~ 10 PM)**
 - **Focus on strategic planning, not detailed execution**
 - **Each task should be broad enough to contain multiple activities**
+- **Specify duration_minutes instead of start_time/end_time**
 
 ## Response Format
 Respond in JSON format with high-level structure:
-- summary: Overall summary of the high-level plan
-- mood: Today's mood or condition
-- priority_goals: List of main goals for the day
-- high_level_tasks: List of major time blocks and tasks
+- high_level_tasks: List of major time blocks and tasks with duration_minutes
 

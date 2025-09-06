@@ -8,15 +8,6 @@ using Newtonsoft.Json;
 namespace PlanStructures
 {
     /// <summary>
-    /// 활동 상태 열거형
-    /// </summary>
-    public enum ActivityStatus
-    {
-        Pending,
-        InProgress,
-        Completed
-    }
-    /// <summary>
     /// 계층적 계획의 최상위 구조
     /// </summary>
     [System.Serializable]
@@ -34,42 +25,8 @@ namespace PlanStructures
     {
         [JsonProperty("task_name")] public string TaskName { get; set; } = "";
         [JsonProperty("description")] public string Description { get; set; } = "";
-        [JsonProperty("start_time")] public string StartTime { get; set; } = "";
-        [JsonProperty("end_time")] public string EndTime { get; set; } = "";
+        [JsonProperty("duration_minutes")] public int DurationMinutes { get; set; } = 0;
         [JsonProperty("detailed_activities")] public List<DetailedActivity> DetailedActivities { get; set; } = new List<DetailedActivity>();
-        
-        /// <summary>
-        /// 시작시간과 종료시간으로부터 지속시간을 계산
-        /// </summary>
-        public int DurationMinutes
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(StartTime) || string.IsNullOrEmpty(EndTime))
-                    return 0;
-                
-                try
-                {
-                    var start = ParseTimeString(StartTime);
-                    var end = ParseTimeString(EndTime);
-                    return (end.hour * 60 + end.minute) - (start.hour * 60 + start.minute);
-                }
-                catch
-                {
-                    return 0;
-                }
-            }
-        }
-        
-        private GameTime ParseTimeString(string timeStr)
-        {
-            var parts = timeStr.Split(':');
-            if (parts.Length == 2 && int.TryParse(parts[0], out int hour) && int.TryParse(parts[1], out int minute))
-            {
-                return new GameTime(2024, 1, 1, hour, minute);
-            }
-            throw new ArgumentException($"Invalid time format: {timeStr}");
-        }
     }
 
     /// <summary>
@@ -80,43 +37,21 @@ namespace PlanStructures
     {
         [JsonProperty("activity_name")] public string ActivityName { get; set; } = "";
         [JsonProperty("description")] public string Description { get; set; } = "";
-        [JsonProperty("start_time")] public string StartTime { get; set; } = "";
-        [JsonProperty("end_time")] public string EndTime { get; set; } = "";
-        [JsonProperty("location")] public string Location { get; set; } = "";
-        [JsonProperty("status")] public ActivityStatus Status { get; set; } = ActivityStatus.Pending;
+        [JsonProperty("duration_minutes")] public int DurationMinutes { get; set; } = 0;
         [JsonProperty("specific_actions")] public List<SpecificAction> SpecificActions { get; set; } = new List<SpecificAction>();
         
         /// <summary>
-        /// 시작시간과 종료시간으로부터 지속시간을 계산
+        /// 이 활동이 속한 고수준 작업에 대한 참조 (런타임용, JSON 직렬화 제외)
         /// </summary>
-        public int DurationMinutes
+        [JsonIgnore]
+        public HighLevelTask ParentHighLevelTask { get; set; }
+
+        /// <summary>
+        /// Parent 참조 설정 시 JSON 직렬화용 이름도 함께 설정
+        /// </summary>
+        public void SetParentHighLevelTask(HighLevelTask parent)
         {
-            get
-            {
-                if (string.IsNullOrEmpty(StartTime) || string.IsNullOrEmpty(EndTime))
-                    return 0;
-                
-                try
-                {
-                    var start = ParseTimeString(StartTime);
-                    var end = ParseTimeString(EndTime);
-                    return (end.hour * 60 + end.minute) - (start.hour * 60 + start.minute);
-                }
-                catch
-                {
-                    return 0;
-                }
-            }
-        }
-        
-        private GameTime ParseTimeString(string timeStr)
-        {
-            var parts = timeStr.Split(':');
-            if (parts.Length == 2 && int.TryParse(parts[0], out int hour) && int.TryParse(parts[1], out int minute))
-            {
-                return new GameTime(2024, 1, 1, hour, minute);
-            }
-            throw new ArgumentException($"Invalid time format: {timeStr}");
+            ParentHighLevelTask = parent;
         }
     }
 
@@ -128,41 +63,20 @@ namespace PlanStructures
     {
         [JsonProperty("action_type")] public string ActionType { get; set; } = "";
         [JsonProperty("description")] public string Description { get; set; } = "";
-        [JsonProperty("start_time")] public string StartTime { get; set; } = ""; // "HH:MM" 형식
-        [JsonProperty("end_time")] public string EndTime { get; set; } = ""; // "HH:MM" 형식
+        [JsonProperty("duration_minutes")] public int DurationMinutes { get; set; } = 0;
         [JsonProperty("parameters")] public Dictionary<string, object> Parameters { get; set; } = new Dictionary<string, object>();
-        [JsonProperty("status")] public ActivityStatus Status { get; set; } = ActivityStatus.Pending;
         /// <summary>
-        /// 시작시간과 종료시간으로부터 지속시간을 계산
+        /// 이 행동이 속한 세부 활동에 대한 참조 (런타임용, JSON 직렬화 제외)
         /// </summary>
-        public int DurationMinutes
+        [JsonIgnore]
+        public DetailedActivity ParentDetailedActivity { get; set; }
+
+        /// <summary>
+        /// Parent 참조 설정 시 JSON 직렬화용 이름들도 함께 설정
+        /// </summary>
+        public void SetParentDetailedActivity(DetailedActivity parent)
         {
-            get
-            {
-                if (string.IsNullOrEmpty(StartTime) || string.IsNullOrEmpty(EndTime))
-                    return 0;
-                
-                try
-                {
-                    var start = ParseTimeString(StartTime);
-                    var end = ParseTimeString(EndTime);
-                    return (end.hour * 60 + end.minute) - (start.hour * 60 + start.minute);
-                }
-                catch
-                {
-                    return 0;
-                }
-            }
-        }
-        
-        private GameTime ParseTimeString(string timeStr)
-        {
-            var parts = timeStr.Split(':');
-            if (parts.Length == 2 && int.TryParse(parts[0], out int hour) && int.TryParse(parts[1], out int minute))
-            {
-                return new GameTime(2024, 1, 1, hour, minute);
-            }
-            throw new ArgumentException($"Invalid time format: {timeStr}");
+            ParentDetailedActivity = parent;
         }
     }
 }

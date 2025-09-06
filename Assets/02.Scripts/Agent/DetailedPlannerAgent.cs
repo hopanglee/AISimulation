@@ -83,45 +83,29 @@ public class DetailedPlannerAgent : GPT
         options = new()
         {
             ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                jsonSchemaFormatName: "hierarchical_plan",
+                jsonSchemaFormatName: "detailed_activities",
                 jsonSchema: BinaryData.FromBytes(
                     Encoding.UTF8.GetBytes(
                         $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""high_level_tasks"": {{
+                                ""detailed_activities"": {{
                                     ""type"": ""array"",
                                     ""items"": {{
                                         ""type"": ""object"",
                                         ""additionalProperties"": false,
                                         ""properties"": {{
-                                            ""task_name"": {{ ""type"": ""string"" }},
+                                            ""activity_name"": {{ ""type"": ""string"" }},
                                             ""description"": {{ ""type"": ""string"" }},
-                                            ""start_time"": {{ ""type"": ""string"", ""pattern"": ""^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"" }},
-                                            ""end_time"": {{ ""type"": ""string"", ""pattern"": ""^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"" }},
-                                            ""detailed_activities"": {{
-                                                ""type"": ""array"",
-                                                ""items"": {{
-                                                    ""type"": ""object"",
-                                                    ""additionalProperties"": false,
-                                                    ""properties"": {{
-                                                        ""activity_name"": {{ ""type"": ""string"" }},
-                                                        ""description"": {{ ""type"": ""string"" }},
-                                                        ""start_time"": {{ ""type"": ""string"", ""pattern"": ""^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"" }},
-                                                        ""end_time"": {{ ""type"": ""string"", ""pattern"": ""^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"" }},
-                                                        ""location"": {{ ""type"": ""string"" }},
-                                                    }},
-                                                    ""required"": [""activity_name"", ""description"", ""start_time"", ""end_time"", ""location""]
-                                                }}
-                                            }}
+                                            ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 1 }},
                                         }},
-                                        ""required"": [""task_name"", ""description"", ""start_time"", ""end_time"", ""detailed_activities""]
+                                        ""required"": [""activity_name"", ""description"", ""duration_minutes"", ""location""]
                                     }},
-                                    ""description"": ""List of high-level tasks with detailed activities""
+                                    ""description"": ""List of detailed activities for the given high-level task""
                                 }}
                             }},
-                            ""required"": [""high_level_tasks""]
+                            ""required"": [""detailed_activities""]
                         }}"
                     )
                 ),
@@ -158,38 +142,50 @@ public class DetailedPlannerAgent : GPT
 
 
     /// <summary>
-    /// 세부 활동 계획 생성
+    /// DetailedActivity 응답 구조
     /// </summary>
-    public async UniTask<HierarchicalPlan> CreateDetailedPlanAsync(HierarchicalPlan highLevelPlan)
+    public class DetailedActivitiesResponse
     {
-        string prompt = GenerateDetailedPlanPrompt(highLevelPlan);
-        messages.Add(new UserChatMessage(prompt));
-
-        Debug.Log($"[DetailedPlannerAgent] {actor.Name}의 세부 활동 계획 생성 시작...");
-
-        var response = await SendGPTAsync<HierarchicalPlan>(messages, options);
-
-        Debug.Log($"[DetailedPlannerAgent] {actor.Name}의 세부 활동 계획 생성 완료");
-        Debug.Log($"[DetailedPlannerAgent] 세부 활동: {response.HighLevelTasks.Count}개");
-
-        return response;
+        [JsonProperty("detailed_activities")]
+        public List<DetailedActivity> DetailedActivities { get; set; } = new List<DetailedActivity>();
     }
 
     /// <summary>
-    /// 세부 활동 계획 프롬프트 생성
+    /// 단일 HighLevelTask를 세부 활동으로 세분화
     /// </summary>
-    private string GenerateDetailedPlanPrompt(HierarchicalPlan highLevelPlan)
+    public async UniTask<List<DetailedActivity>> CreateDetailedPlanAsync(HighLevelTask highLevelTask)
+    {
+        string prompt = GenerateDetailedPlanPrompt(highLevelTask);
+        messages.Add(new UserChatMessage(prompt));
+
+        Debug.Log($"[DetailedPlannerAgent] {actor.Name}의 세부 활동 세분화 시작: {highLevelTask.TaskName}");
+
+        var response = await SendGPTAsync<DetailedActivitiesResponse>(messages, options);
+
+        if (response?.DetailedActivities != null)
+        {
+            // 생성된 DetailedActivity들에 부모 참조 설정
+            foreach (var activity in response.DetailedActivities)
+            {
+                activity.SetParentHighLevelTask(highLevelTask);
+            }
+
+            Debug.Log($"[DetailedPlannerAgent] {actor.Name}의 세부 활동 세분화 완료: {response.DetailedActivities.Count}개");
+            return response.DetailedActivities;
+        }
+
+        Debug.LogWarning($"[DetailedPlannerAgent] 세부 활동 세분화 결과가 비어있습니다.");
+        return new List<DetailedActivity>();
+    }
+
+    /// <summary>
+    /// 단일 HighLevelTask 세분화 프롬프트 생성
+    /// </summary>
+    private string GenerateDetailedPlanPrompt(HighLevelTask highLevelTask)
     {
         var localizationService = Services.Get<ILocalizationService>();
         var timeService = Services.Get<ITimeService>();
         var currentTime = $"{timeService.CurrentTime.hour:D2}:{timeService.CurrentTime.minute:D2}";
-        
-        // 고수준 작업들을 문자열로 변환
-        var highLevelTasksBuilder = new StringBuilder();
-        foreach (var task in highLevelPlan.HighLevelTasks)
-        {
-            highLevelTasksBuilder.AppendLine($"- {task.TaskName}: {task.Description} ({task.StartTime}-{task.EndTime})");
-        }
         
         var replacements = new Dictionary<string, string>
         {
@@ -200,7 +196,9 @@ public class DetailedPlannerAgent : GPT
             { "stamina", actor.Stamina.ToString() },
             { "stress", actor.Stress.ToString() },
             { "sleepiness", (actor as MainActor)?.Sleepiness.ToString() ?? "0" },
-            { "high_level_tasks", highLevelTasksBuilder.ToString() }
+            { "taskName", highLevelTask.TaskName },
+            { "taskDescription", highLevelTask.Description },
+            { "taskDuration", highLevelTask.DurationMinutes.ToString() }
         };
 
         return localizationService.GetLocalizedText("detailed_plan_prompt", replacements);
@@ -297,7 +295,7 @@ public class DetailedPlannerAgent : GPT
                 preservedActivitiesBuilder.AppendLine($"=== {h.TaskName} ===");
                 foreach (var activity in h.DetailedActivities)
                 {
-                    preservedActivitiesBuilder.AppendLine($"  - {activity.ActivityName}: {activity.Description} ({activity.StartTime}-{activity.EndTime}) at {activity.Location}");
+                    preservedActivitiesBuilder.AppendLine($"  - {activity.ActivityName}: {activity.Description} ({activity.DurationMinutes}분)");
                 }
                 preservedActivitiesBuilder.AppendLine();
             }
@@ -307,7 +305,7 @@ public class DetailedPlannerAgent : GPT
         var highLevelTasksBuilder = new StringBuilder();
         foreach (var task in highLevelPlan.HighLevelTasks)
         {
-            highLevelTasksBuilder.AppendLine($"- {task.TaskName}: {task.Description} ({task.StartTime}-{task.EndTime})");
+            highLevelTasksBuilder.AppendLine($"- {task.TaskName}: {task.Description} ({task.DurationMinutes}분)");
         }
         
         var replacements = new Dictionary<string, string>
@@ -358,8 +356,8 @@ public class DetailedPlannerAgent : GPT
 
             if (locations.Count == 0)
             {
-                Debug.LogWarning("[DetailedPlannerAgent] 사용 가능한 장소가 없습니다! 기본 장소를 사용합니다.");
-                return new List<string> { "Apartment", "Living Room in Apartment", "Kitchen in Apartment", "Bedroom in Apartment" };
+                Debug.LogError("[DetailedPlannerAgent] 사용 가능한 장소가 없습니다! 기본 장소를 사용합니다.");
+                return null;
             }
 
             return locations;

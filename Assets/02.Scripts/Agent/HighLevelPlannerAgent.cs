@@ -88,10 +88,9 @@ public class HighLevelPlannerAgent : GPT
                                         ""properties"": {{
                                             ""task_name"": {{ ""type"": ""string"" }},
                                             ""description"": {{ ""type"": ""string"" }},
-                                            ""start_time"": {{ ""type"": ""string"", ""pattern"": ""^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"" }},
-                                            ""end_time"": {{ ""type"": ""string"", ""pattern"": ""^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"" }}
+                                            ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 1 }}
                                         }},
-                                        ""required"": [""task_name"", ""description"", ""start_time"", ""end_time""]
+                                        ""required"": [""task_name"", ""description"", ""duration_minutes""]
                                     }},
                                     ""description"": ""List of 3-5 high-level tasks for tomorrow""
                                 }}
@@ -148,6 +147,28 @@ public class HighLevelPlannerAgent : GPT
     }
 
     /// <summary>
+    /// 재계획을 위한 고수준 계획 생성 (perception과 modification_summary 포함)
+    /// </summary>
+    public async UniTask<HierarchicalPlan> CreateHighLevelPlanWithContextAsync(
+        PerceptionResult perception, 
+        string modificationSummary,
+        HierarchicalPlan existingPlan = null)
+    {
+        string prompt = GenerateHighLevelPlanWithContextPrompt(perception, modificationSummary, existingPlan);
+        messages.Add(new UserChatMessage(prompt));
+
+        Debug.Log($"[HighLevelPlannerAgent] {actor.Name}의 재계획용 고수준 계획 생성 시작...");
+        Debug.Log($"[HighLevelPlannerAgent] 수정 요약: {modificationSummary}");
+
+        var response = await SendGPTAsync<HierarchicalPlan>(messages, options);
+
+        Debug.Log($"[HighLevelPlannerAgent] {actor.Name}의 재계획용 고수준 계획 생성 완료");
+        Debug.Log($"[HighLevelPlannerAgent] 고수준 작업: {response.HighLevelTasks.Count}개");
+
+        return response;
+    }
+
+    /// <summary>
     /// 고수준 계획 프롬프트 생성
     /// </summary>
     private string GenerateHighLevelPlanPrompt()
@@ -159,7 +180,7 @@ public class HighLevelPlannerAgent : GPT
         var replacements = new Dictionary<string, string>
         {
             { "currentTime", currentTime },
-            { "location", actor.curLocation.locationName },
+            { "location", actor.curLocation.LocationToString() },
             { "hunger", actor.Hunger.ToString() },
             { "thirst", actor.Thirst.ToString() },
             { "stamina", actor.Stamina.ToString() },
@@ -168,6 +189,49 @@ public class HighLevelPlannerAgent : GPT
         };
 
         return localizationService.GetLocalizedText("high_level_plan_prompt", replacements);
+    }
+
+    /// <summary>
+    /// 재계획을 위한 고수준 계획 프롬프트 생성 (perception과 modification_summary 포함)
+    /// </summary>
+    private string GenerateHighLevelPlanWithContextPrompt(
+        PerceptionResult perception, 
+        string modificationSummary, 
+        HierarchicalPlan existingPlan = null)
+    {
+        var localizationService = Services.Get<ILocalizationService>();
+        var timeService = Services.Get<ITimeService>();
+        var currentTime = $"{timeService.CurrentTime.hour:D2}:{timeService.CurrentTime.minute:D2}";
+        
+        // 기존 계획 정보를 문자열로 변환
+        var existingPlanInfo = "";
+        if (existingPlan?.HighLevelTasks != null && existingPlan.HighLevelTasks.Count > 0)
+        {
+            var existingTasksBuilder = new StringBuilder();
+            existingTasksBuilder.AppendLine("기존 계획:");
+            foreach (var task in existingPlan.HighLevelTasks)
+            {
+                existingTasksBuilder.AppendLine($"- {task.TaskName}: {task.Description} ({task.DurationMinutes}분)");
+            }
+            existingPlanInfo = existingTasksBuilder.ToString();
+        }
+        
+        var replacements = new Dictionary<string, string>
+        {
+            { "currentTime", currentTime },
+            { "location", actor.curLocation.LocationToString() },
+            { "hunger", actor.Hunger.ToString() },
+            { "thirst", actor.Thirst.ToString() },
+            { "stamina", actor.Stamina.ToString() },
+            { "stress", actor.Stress.ToString() },
+            { "sleepiness", (actor as MainActor)?.Sleepiness.ToString() ?? "0" },
+            { "perception_interpretation", perception.situation_interpretation },
+            { "perception_thought_chain", string.Join(" -> ", perception.thought_chain) },
+            { "modification_summary", modificationSummary },
+            { "existing_plan", existingPlanInfo }
+        };
+
+        return localizationService.GetLocalizedText("high_level_plan_replan_prompt", replacements);
     }
 
 }

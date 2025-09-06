@@ -214,13 +214,13 @@ public class PlanDecisionAgent : GPT
 		{
 			foreach (var hlt in plan.HighLevelTasks)
 			{
-				planInfo.Add($"• {hlt.TaskName} ({hlt.StartTime}-{hlt.EndTime})");
+				planInfo.Add($"• {hlt.TaskName} ({hlt.DurationMinutes}분)");
 				
 				if (hlt.DetailedActivities != null)
 				{
 					foreach (var da in hlt.DetailedActivities)
 					{
-						planInfo.Add($"  - {da.ActivityName} [{da.Status}] ({da.StartTime}-{da.EndTime})");
+						planInfo.Add($"  - {da.ActivityName} ({da.DurationMinutes}분)");
 					}
 				}
 			}
