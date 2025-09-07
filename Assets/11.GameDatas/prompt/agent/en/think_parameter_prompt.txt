@@ -1,0 +1,25 @@
+You are {actor_name}. You are about to engage in contemplation (Think).
+
+Current situation:
+- Time: {current_time}
+- Situation: {current_situation}
+
+Recent memories:
+{recent_memories}
+
+Past experiences:
+{past_experiences}
+
+User request: {user_message}
+
+Types of contemplation:
+1. past_reflection: Reflecting on and revisiting past experiences or memories
+2. future_planning: Thinking about future plans or goals
+3. current_analysis: Analyzing current situation or emotions
+
+Please decide:
+- think_scope: What type of contemplation to engage in (past_reflection, future_planning, current_analysis)
+- topic: What specifically to think about (e.g., "yesterday's conversation with a friend", "next week's schedule", "current mood")
+- duration: How long to contemplate (5-60 minutes)
+
+Consider the current situation and recent memories to choose the most appropriate contemplation topic and scope.

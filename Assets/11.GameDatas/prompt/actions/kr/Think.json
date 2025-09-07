@@ -1,0 +1,46 @@
+{
+  "name": "Think",
+  "displayName": "사색하기",
+  "description": "과거의 경험을 회상하거나, 미래를 계획하거나, 현재 상황에 대해 **깊이 생각**하는 행동입니다.",
+  "usage": "중요한 결정을 내리기 전이나, 내면의 목소리를 듣고 싶을 때 이 행동을 사용하세요.",
+  "parameters": [
+    {
+      "name": "think_scope",
+      "type": "string",
+      "description": "사색의 범위 (past_reflection: 과거 회상, future_planning: 미래 계획, current_analysis: 현재 분석)",
+      "required": true
+    },
+    {
+      "name": "topic",
+      "type": "string", 
+      "description": "구체적으로 생각할 주제나 관심사",
+      "required": true
+    },
+    {
+      "name": "duration",
+      "type": "integer",
+      "description": "사색할 시간 (분 단위, 5-60분)",
+      "required": true
+    }
+  ],
+  "examples": [
+    "어제 친구와의 대화에 대해 생각해보기",
+    "앞으로의 진로에 대해 진지하게 고민하기", 
+    "지금 내가 느끼는 감정 분석하기",
+    "최근에 겪은 일들의 의미 되짚어보기",
+    "중요한 결정을 위한 신중한 고려"
+  ],
+  "requirements": [
+    "조용하고 방해받지 않는 환경이 선호됩니다",
+    "충분한 시간적 여유가 있어야 합니다"
+  ],
+  "whenToUse": [
+    "**중요한 결정**을 내리기 전에 신중히 생각하고 싶을 때",
+    "**과거의 경험**을 되돌아보며 교훈을 얻고 싶을 때", 
+    "**미래의 계획**이나 목표에 대해 구체적으로 생각하고 싶을 때",
+    "**현재 감정**이나 상황을 정리하고 싶을 때",
+    "**복잡한 문제**에 대한 해답을 찾고 싶을 때",
+    "조용한 시간에 **내면의 목소리**를 듣고 싶을 때"
+  ],
+  "category": "mental"
+}

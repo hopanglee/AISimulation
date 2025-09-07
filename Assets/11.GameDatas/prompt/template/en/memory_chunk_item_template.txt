@@ -1,0 +1,6 @@
+=== Chunk {chunk_number}: {chunk_id} ===
+Time Range: {time_range}
+Summary: {summary}
+Main Events: {main_events}
+People Involved: {people_involved}
+Emotions: {emotions}

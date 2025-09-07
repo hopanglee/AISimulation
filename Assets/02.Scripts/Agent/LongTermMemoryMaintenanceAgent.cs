@@ -1,0 +1,491 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
+using OpenAI.Chat;
+using UnityEngine;
+
+/// <summary>
+/// 기존 Long Term Memory 엔트리의 평가 결과
+/// </summary>
+[System.Serializable]
+public class LongTermMemoryEvaluation
+{
+    [JsonProperty("memory_index")]
+    public int MemoryIndex { get; set; }
+    
+    [JsonProperty("recency_score")]
+    public float RecencyScore { get; set; } // 0.0 ~ 1.0
+    
+    [JsonProperty("surprise_score")]
+    public float SurpriseScore { get; set; } // 0.0 ~ 1.0
+    
+    [JsonProperty("importance_score")]
+    public float ImportanceScore { get; set; } // 0.0 ~ 1.0
+    
+    [JsonProperty("relevance_score")]
+    public float RelevanceScore { get; set; } // 0.0 ~ 1.0
+    
+    [JsonProperty("overall_score")]
+    public float OverallScore { get; set; } // 0.0 ~ 1.0
+    
+    [JsonProperty("action")]
+    public string Action { get; set; } // "keep", "remove", "merge_with", "modify"
+    
+    [JsonProperty("merge_target_index")]
+    public int? MergeTargetIndex { get; set; }
+    
+    [JsonProperty("modified_content")]
+    public Dictionary<string, object> ModifiedContent { get; set; }
+    
+    [JsonProperty("reasoning")]
+    public string Reasoning { get; set; }
+}
+
+/// <summary>
+/// Long Term Memory 정리 결과
+/// </summary>
+[System.Serializable]
+public class LongTermMemoryMaintenanceResult
+{
+    [JsonProperty("evaluations")]
+    public List<LongTermMemoryEvaluation> Evaluations { get; set; } = new List<LongTermMemoryEvaluation>();
+    
+    [JsonProperty("memories_to_keep")]
+    public List<int> MemoriesToKeep { get; set; } = new List<int>();
+    
+    [JsonProperty("memories_to_remove")]
+    public List<int> MemoriesToRemove { get; set; } = new List<int>();
+    
+    [JsonProperty("memories_to_modify")]
+    public List<int> MemoriesToModify { get; set; } = new List<int>();
+    
+    [JsonProperty("merge_operations")]
+    public List<MergeOperation> MergeOperations { get; set; } = new List<MergeOperation>();
+    
+    [JsonProperty("maintenance_reasoning")]
+    public string MaintenanceReasoning { get; set; }
+    
+    [JsonProperty("original_count")]
+    public int OriginalCount { get; set; }
+    
+    [JsonProperty("final_count")]
+    public int FinalCount { get; set; }
+}
+
+/// <summary>
+/// 메모리 병합 작업
+/// </summary>
+[System.Serializable]
+public class MergeOperation
+{
+    [JsonProperty("source_indices")]
+    public List<int> SourceIndices { get; set; } = new List<int>();
+    
+    [JsonProperty("merged_content")]
+    public Dictionary<string, object> MergedContent { get; set; }
+    
+    [JsonProperty("merge_reasoning")]
+    public string MergeReasoning { get; set; }
+}
+
+/// <summary>
+/// Long Term Memory를 주기적으로 정리하고 관리하는 Agent
+/// 최신성, 의외성, 중요도 등을 기준으로 불필요한 메모리를 제거하거나 병합합니다.
+/// </summary>
+public class LongTermMemoryMaintenanceAgent : GPT
+{
+    private Actor actor;
+
+    public LongTermMemoryMaintenanceAgent(Actor actor) : base()
+    {
+        this.actor = actor;
+        SetActorName(actor.Name);
+
+        string systemPrompt = LoadMaintenancePrompt();
+        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+
+        options = new()
+        {
+            ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
+                jsonSchemaFormatName: "memory_maintenance",
+                jsonSchema: BinaryData.FromBytes(
+                    Encoding.UTF8.GetBytes(
+                        @"{
+                            ""type"": ""object"",
+                            ""additionalProperties"": false,
+                            ""properties"": {
+                                ""evaluations"": {
+                                    ""type"": ""array"",
+                                    ""items"": {
+                                        ""type"": ""object"",
+                                        ""additionalProperties"": false,
+                                        ""properties"": {
+                                            ""memory_index"": {
+                                                ""type"": ""integer"",
+                                                ""description"": ""Index of the memory being evaluated""
+                                            },
+                                            ""surprise_score"": {
+                                                ""type"": ""number"",
+                                                ""minimum"": 0.0,
+                                                ""maximum"": 1.0,
+                                                ""description"": ""How surprising or unexpected this memory is""
+                                            },
+                                            ""importance_score"": {
+                                                ""type"": ""number"",
+                                                ""minimum"": 0.0,
+                                                ""maximum"": 1.0,
+                                                ""description"": ""How important this memory is""
+                                            },
+                                            ""relevance_score"": {
+                                                ""type"": ""number"",
+                                                ""minimum"": 0.0,
+                                                ""maximum"": 1.0,
+                                                ""description"": ""How relevant this memory is to current life""
+                                            },
+                                            ""action"": {
+                                                ""type"": ""string"",
+                                                ""enum"": [""keep"", ""remove"", ""merge_with"", ""modify""],
+                                                ""description"": ""Action to take for this memory""
+                                            },
+                                            ""merge_target_index"": {
+                                                ""type"": [""integer"", ""null""],
+                                                ""description"": ""Index to merge with (only for merge_with action)""
+                                            },
+                                            ""modified_content"": {
+                                                ""type"": [""object"", ""null""],
+                                                ""description"": ""Modified content (only for modify action)""
+                                            },
+                                            ""reasoning"": {
+                                                ""type"": ""string"",
+                                                ""description"": ""Reasoning for the action""
+                                            }
+                                        },
+                                        ""required"": [""memory_index"", ""surprise_score"", ""importance_score"", ""relevance_score"", ""action"", ""reasoning""]
+                                    }
+                                },
+                                ""maintenance_reasoning"": {
+                                    ""type"": ""string"",
+                                    ""description"": ""Overall reasoning for maintenance decisions""
+                                }
+                            },
+                            ""required"": [""evaluations"", ""maintenance_reasoning""]
+                        }"
+                    )
+                ),
+                jsonSchemaIsStrict: true
+            ),
+        };
+    }
+
+    /// <summary>
+    /// Long Term Memory를 정리하고 관리합니다.
+    /// </summary>
+    /// <param name="longTermMemories">현재 Long Term Memory 목록</param>
+    /// <param name="currentTime">현재 시간 (최신성 계산용)</param>
+    /// <returns>정리 결과</returns>
+    public async UniTask<LongTermMemoryMaintenanceResult> MaintainMemoriesAsync(
+        List<Dictionary<string, object>> longTermMemories, 
+        GameTime currentTime)
+    {
+        try
+        {
+            if (longTermMemories == null || longTermMemories.Count == 0)
+            {
+                Debug.LogWarning($"[{actor.Name}] 정리할 Long Term Memory가 없습니다.");
+                return new LongTermMemoryMaintenanceResult
+                {
+                    Evaluations = new List<LongTermMemoryEvaluation>(),
+                    MemoriesToKeep = new List<int>(),
+                    MemoriesToRemove = new List<int>(),
+                    MemoriesToModify = new List<int>(),
+                    MergeOperations = new List<MergeOperation>(),
+                    MaintenanceReasoning = "",
+                    OriginalCount = 0,
+                    FinalCount = 0
+                };
+            }
+
+            // 메모리들을 텍스트로 변환
+            var localizationService = Services.Get<ILocalizationService>();
+            var memoriesText = string.Join("\n\n", longTermMemories.Select((memory, index) => 
+            {
+                var memoryReplacements = new Dictionary<string, string>
+                {
+                    { "memory_index", index.ToString() },
+                    { "memory_date", GetValueOrDefault(memory, "date", "Unknown").ToString() },
+                    { "memory_location", GetValueOrDefault(memory, "location", "Unknown").ToString() },
+                    { "memory_title", GetValueOrDefault(memory, "title", "Untitled").ToString() },
+                    { "memory_people", FormatArrayValue(GetValueOrDefault(memory, "people", new List<object>())) },
+                    { "memory_emotion", GetValueOrDefault(memory, "emotion", "neutral").ToString() },
+                    { "memory_action", GetValueOrDefault(memory, "action", "Unknown").ToString() },
+                    { "memory_description", GetValueOrDefault(memory, "memory", "No description").ToString() }
+                };
+                
+                return localizationService.GetLocalizedText("memory_item_template", memoryReplacements);
+            }));
+
+            // 사용자 메시지 구성
+            var replacements = new Dictionary<string, string>
+            {
+                { "memory_count", longTermMemories.Count.ToString() },
+                { "current_date", $"{currentTime.year}-{currentTime.month:D2}-{currentTime.day:D2}" },
+                { "memories_text", memoriesText }
+            };
+            
+            string userMessage = localizationService.GetLocalizedText("longterm_memory_maintenance_prompt", replacements);
+
+            messages.Add(new UserChatMessage(userMessage));
+
+            var response = await SendGPTAsync<LongTermMemoryMaintenanceResult>(messages, options);
+            
+            // 결과 검증 및 보정
+            ValidateAndCorrectMaintenanceResult(response, longTermMemories);
+
+            Debug.Log($"[{actor.Name}] Long Term Memory 정리 완료: {longTermMemories.Count}개 → {response.FinalCount}개");
+            
+            return response;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[{actor.Name}] Long Term Memory 정리 실패: {ex.Message}");
+            
+            // 기본 응답: 모든 메모리 보존
+            return new LongTermMemoryMaintenanceResult
+            {
+                Evaluations = longTermMemories.Select((memory, index) => new LongTermMemoryEvaluation
+                {
+                    MemoryIndex = index,
+                    RecencyScore = 0.5f,
+                    SurpriseScore = 0.5f,
+                    ImportanceScore = 0.5f,
+                    RelevanceScore = 0.5f,
+                    OverallScore = 0.5f,
+                    Action = "keep",
+                    Reasoning = "오류로 인한 기본 평가"
+                }).ToList(),
+                MemoriesToKeep = Enumerable.Range(0, longTermMemories.Count).ToList(),
+                MemoriesToRemove = new List<int>(),
+                MemoriesToModify = new List<int>(),
+                MergeOperations = new List<MergeOperation>(),
+                MaintenanceReasoning = $"정리 과정에서 오류 발생: {ex.Message}",
+                OriginalCount = longTermMemories.Count,
+                FinalCount = longTermMemories.Count
+            };
+        }
+    }
+
+    /// <summary>
+    /// 정리 결과를 적용하여 새로운 Long Term Memory 목록을 생성합니다.
+    /// </summary>
+    /// <param name="originalMemories">원본 메모리 목록</param>
+    /// <param name="maintenanceResult">정리 결과</param>
+    /// <returns>정리된 메모리 목록</returns>
+    public List<Dictionary<string, object>> ApplyMaintenanceResult(
+        List<Dictionary<string, object>> originalMemories,
+        LongTermMemoryMaintenanceResult maintenanceResult)
+    {
+        var resultMemories = new List<Dictionary<string, object>>();
+
+        // 1. 보존할 메모리들 추가
+        foreach (var keepIndex in maintenanceResult.MemoriesToKeep)
+        {
+            if (keepIndex >= 0 && keepIndex < originalMemories.Count)
+            {
+                resultMemories.Add(new Dictionary<string, object>(originalMemories[keepIndex]));
+            }
+        }
+
+        // 2. 수정할 메모리들 적용
+        foreach (var modifyIndex in maintenanceResult.MemoriesToModify)
+        {
+            var evaluation = maintenanceResult.Evaluations.FirstOrDefault(e => 
+                e.MemoryIndex == modifyIndex && e.Action == "modify");
+            
+            if (evaluation?.ModifiedContent != null && modifyIndex >= 0 && modifyIndex < originalMemories.Count)
+            {
+                var existingMemoryIndex = resultMemories.FindIndex(m => 
+                    m == originalMemories[modifyIndex] || 
+                    (m.ContainsKey("date") && originalMemories[modifyIndex].ContainsKey("date") && 
+                     m["date"].ToString() == originalMemories[modifyIndex]["date"].ToString()));
+
+                if (existingMemoryIndex >= 0)
+                {
+                    // 기존 메모리 업데이트
+                    foreach (var kvp in evaluation.ModifiedContent)
+                    {
+                        resultMemories[existingMemoryIndex][kvp.Key] = kvp.Value;
+                    }
+                }
+            }
+        }
+
+        // 3. 병합된 메모리들 추가
+        foreach (var mergeOp in maintenanceResult.MergeOperations)
+        {
+            if (mergeOp.MergedContent != null)
+            {
+                resultMemories.Add(new Dictionary<string, object>(mergeOp.MergedContent));
+            }
+        }
+
+        return resultMemories;
+    }
+
+    /// <summary>
+    /// 정리 결과를 검증하고 보정합니다.
+    /// </summary>
+    private void ValidateAndCorrectMaintenanceResult(
+        LongTermMemoryMaintenanceResult result,
+        List<Dictionary<string, object>> originalMemories)
+    {
+        var timeService = Services.Get<ITimeService>();
+        var currentTime = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 0, 0);
+        
+        // 누락된 평가 추가 및 모든 평가에 대해 휴리스틱 점수 계산
+        for (int i = 0; i < originalMemories.Count; i++)
+        {
+            var evaluation = result.Evaluations.FirstOrDefault(e => e.MemoryIndex == i);
+            if (evaluation == null)
+            {
+                Debug.LogWarning($"[LongTermMemoryMaintenanceAgent] [{actor.Name}] 누락된 메모리에 대한 기본 평가: {i}");
+                evaluation = new LongTermMemoryEvaluation
+                {
+                    MemoryIndex = i,
+                    Action = "keep",
+                    Reasoning = "누락된 메모리에 대한 기본 평가"
+                };
+                result.Evaluations.Add(evaluation);
+            }
+            
+            // 휴리스틱 점수 계산
+            CalculateHeuristicScores(evaluation, originalMemories[i], currentTime);
+        }
+
+        // 행동별 인덱스 목록 휴리스틱 계산
+        result.MemoriesToKeep = result.Evaluations.Where(e => e.Action == "keep").Select(e => e.MemoryIndex).ToList();
+        result.MemoriesToRemove = result.Evaluations.Where(e => e.Action == "remove").Select(e => e.MemoryIndex).ToList();
+        result.MemoriesToModify = result.Evaluations.Where(e => e.Action == "modify").Select(e => e.MemoryIndex).ToList();
+
+        // merge_with 액션을 가진 메모리들에 대해 MergeOperations 생성
+        result.MergeOperations = new List<MergeOperation>();
+        var mergeGroups = result.Evaluations.Where(e => e.Action == "merge_with" && e.MergeTargetIndex.HasValue)
+            .GroupBy(e => e.MergeTargetIndex.Value);
+        
+        foreach (var group in mergeGroups)
+        {
+            var sourceIndices = group.Select(e => e.MemoryIndex).ToList();
+            sourceIndices.Add(group.Key); // 타겟 인덱스도 포함
+            
+            result.MergeOperations.Add(new MergeOperation
+            {
+                SourceIndices = sourceIndices,
+                MergedContent = new Dictionary<string, object>
+                {
+                    ["title"] = "Merged Memory",
+                    ["memory"] = $"병합된 메모리 (인덱스: {string.Join(", ", sourceIndices)})"
+                },
+                MergeReasoning = group.First().Reasoning
+            });
+        }
+
+        // 통계 휴리스틱 계산
+        result.OriginalCount = originalMemories.Count;
+        result.FinalCount = result.MemoriesToKeep.Count + result.MemoriesToModify.Count + result.MergeOperations.Count;
+    }
+
+    /// <summary>
+    /// 휴리스틱 방법으로 메모리 점수를 계산합니다.
+    /// </summary>
+    private void CalculateHeuristicScores(LongTermMemoryEvaluation evaluation, Dictionary<string, object> memory, GameTime currentTime)
+    {
+        // 1. 최신성 점수 계산 (날짜 기반 - 휴리스틱)
+        evaluation.RecencyScore = CalculateRecencyScore(memory, currentTime);
+        
+        // 2-4. 중요도, 의외성, 관련성은 Agent에서 받은 값을 그대로 사용
+        // (Response format에서 required로 설정했으므로 Agent가 반드시 제공)
+        
+        // 5. 종합 점수 계산 (휴리스틱)
+        evaluation.OverallScore = 
+            evaluation.RecencyScore * 0.2f +
+            evaluation.SurpriseScore * 0.3f +
+            evaluation.ImportanceScore * 0.4f +
+            evaluation.RelevanceScore * 0.1f;
+    }
+
+    /// <summary>
+    /// 최신성 점수를 계산합니다.
+    /// </summary>
+    private float CalculateRecencyScore(Dictionary<string, object> memory, GameTime currentTime)
+    {
+        var dateStr = GetValueOrDefault(memory, "date", "").ToString();
+        if (string.IsNullOrEmpty(dateStr)) return 0.5f;
+        
+        // 간단한 날짜 파싱 (yyyy-MM-dd 형식 가정)
+        var dateParts = dateStr.Split('-');
+        if (dateParts.Length >= 3)
+        {
+            if (int.TryParse(dateParts[0], out int year) && 
+                int.TryParse(dateParts[1], out int month) && 
+                int.TryParse(dateParts[2].Split(' ')[0], out int day)) // 시간 부분이 있을 수 있으므로 공백으로 한번 더 분리
+            {
+                var memoryTime = new GameTime(year, month, day, 0, 0);
+                var daysDiff = CalculateDaysDifference(memoryTime, currentTime);
+                
+                if (daysDiff <= 365) return 0.8f + (365 - daysDiff) / 365f * 0.2f; // 1년 이내: 0.8-1.0
+                if (daysDiff <= 1095) return 0.5f + (1095 - daysDiff) / 730f * 0.3f; // 1-3년: 0.5-0.8
+                return Math.Max(0.0f, 0.5f - (daysDiff - 1095) / 1095f * 0.5f); // 3년 이상: 0.0-0.5
+            }
+        }
+        
+        return 0.5f; // 날짜 파싱 실패 시 중간값
+    }
+
+    /// <summary>
+    /// 두 GameTime 간의 일수 차이를 계산합니다.
+    /// </summary>
+    private int CalculateDaysDifference(GameTime time1, GameTime time2)
+    {
+        var date1 = new DateTime(time1.year, time1.month, time1.day);
+        var date2 = new DateTime(time2.year, time2.month, time2.day);
+        return Math.Abs((int)(date2 - date1).TotalDays);
+    }
+
+    /// <summary>
+    /// 배열 값을 문자열로 포맷합니다.
+    /// </summary>
+    private string FormatArrayValue(object value)
+    {
+        if (value is List<object> list)
+        {
+            return string.Join(", ", list.Select(item => item?.ToString() ?? ""));
+        }
+        return value?.ToString() ?? "";
+    }
+
+    /// <summary>
+    /// Dictionary에서 값을 안전하게 가져옵니다.
+    /// </summary>
+    private static object GetValueOrDefault(Dictionary<string, object> dict, string key, object defaultValue)
+    {
+        return dict.ContainsKey(key) ? dict[key] : defaultValue;
+    }
+
+    /// <summary>
+    /// 정리 Agent용 프롬프트를 로드합니다.
+    /// </summary>
+    private string LoadMaintenancePrompt()
+    {
+        try
+        {
+            return PromptLoader.LoadPrompt("longterm_memory_maintenance_prompt", "");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Long Term Memory Maintenance Agent 프롬프트 로드 실패: {ex.Message}");
+            throw; // 에러를 다시 던져서 호출자가 처리하도록 함
+        }
+    }
+}

@@ -120,7 +120,15 @@ public class LocalizationService : ILocalizationService
             {
                 foreach (var kvp in replacements)
                 {
-                    template = template.Replace($"{{{kvp.Key}}}", kvp.Value);
+                    string placeholder = $"{{{kvp.Key}}}";
+                    if (template.Contains(placeholder))
+                    {
+                        template = template.Replace(placeholder, kvp.Value);
+                    }
+                    else
+                    {
+                        Debug.LogError($"[LocalizationService] Template '{templateName}' does not contain placeholder '{placeholder}'. Available placeholders: {GetAvailablePlaceholders(template)}");
+                    }
                 }
             }
 
@@ -172,6 +180,26 @@ public class LocalizationService : ILocalizationService
             Debug.LogError($"[LocalizationService] Error loading template '{templateName}': {ex.Message}");
             return null;
         }
+    }
+
+    /// <summary>
+    /// 템플릿에서 사용 가능한 플레이스홀더들을 추출합니다.
+    /// </summary>
+    private string GetAvailablePlaceholders(string template)
+    {
+        var placeholders = new List<string>();
+        var regex = new System.Text.RegularExpressions.Regex(@"\{([^}]+)\}");
+        var matches = regex.Matches(template);
+        
+        foreach (System.Text.RegularExpressions.Match match in matches)
+        {
+            if (!placeholders.Contains(match.Value))
+            {
+                placeholders.Add(match.Value);
+            }
+        }
+        
+        return placeholders.Count > 0 ? string.Join(", ", placeholders) : "None";
     }
 }
 

@@ -1,0 +1,21 @@
+=== Short Term Memory Entries to Consolidate ===
+There are {entry_count} memory entries in total.
+
+{entries_text}
+
+=== Task ===
+Please analyze the above Short Term Memory entries and consolidate them into meaningful chunks with summaries.
+
+Consolidation Guidelines:
+1. Combine related actions (e.g., "Started A action" + "Completed A action" → "Did A action")
+2. Group temporally consecutive similar activities
+3. Bundle events related to the same place or people
+4. Each chunk should ideally contain 3-10 original entries
+5. Maintain important details while removing unnecessary repetition
+
+For each chunk:
+- Provide clear and concise summary
+- Specify time range
+- List main events
+- Record involved people
+- Include emotions or important context
