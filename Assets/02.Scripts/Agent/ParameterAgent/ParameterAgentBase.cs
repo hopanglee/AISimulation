@@ -132,6 +132,7 @@ namespace Agent
                 //{ ActionType.RemoveClothing, SetActor(new RemoveClothingParameterAgent(actor)) }, // 파라미터 없음 - Wait과 같이 직접 실행
                 //{ ActionType.Wait, SetActor(new WaitParameterAgent(gpt)) },
                 { ActionType.PerformActivity, SetActor(new PerformActivityParameterAgent(new List<string>(), gpt)) },
+                { ActionType.Think, SetActor(new ThinkParameterAgent(actor)) },
             };
         }
     }

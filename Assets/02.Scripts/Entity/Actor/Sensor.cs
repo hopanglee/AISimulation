@@ -73,6 +73,9 @@ public class Sensor
                 }
             }
         }
+        
+        // Enhanced Memory System: location.json 업데이트
+        UpdateLocationMemory();
     }
 
     /// <summary>
@@ -626,5 +629,54 @@ public class Sensor
         }
 
         return false;
+    }
+    
+    /// <summary>
+    /// Enhanced Memory System과 연동하여 location.json을 업데이트합니다.
+    /// </summary>
+    private void UpdateLocationMemory()
+    {
+        try
+        {
+            // MainActor이고 Brain이 있는 경우에만 location memory 업데이트
+            if (owner is MainActor mainActor && mainActor.brain?.memoryManager != null)
+            {
+                var locationManager = Services.Get<ILocationService>();
+                var curArea = locationManager.GetArea(owner.curLocation);
+                
+                if (curArea != null)
+                {
+                    // 현재 위치의 객체들과 Actor들 수집
+                    var objects = new List<object>();
+                    var actors = new List<Actor>();
+                    
+                    foreach (var kv in lookable)
+                    {
+                        if (kv.Value is Actor actor && actor != owner)
+                        {
+                            actors.Add(actor);
+                        }
+                        else if (kv.Value is Item || kv.Value is Prop || kv.Value is Building)
+                        {
+                            objects.Add(kv.Value);
+                        }
+                    }
+                    
+                    // Enhanced Memory Agent를 통해 location memory 업데이트
+                    string locationKey = owner.curLocation?.LocationToString() ?? "Unknown";
+                    string locationName = curArea.locationName ?? locationKey;
+                    mainActor.brain.memoryManager.UpdateLocationMemory(
+                        locationKey, 
+                        locationName, 
+                        objects, 
+                        actors
+                    );
+                }
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogWarning($"[Sensor] Location Memory 업데이트 실패: {ex.Message}");
+        }
     }
 }

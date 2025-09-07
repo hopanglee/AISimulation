@@ -1,0 +1,8 @@
+=== Memory {memory_index}: ===
+Date: {memory_date}
+Location: {memory_location}
+Title: {memory_title}
+People: {memory_people}
+Emotion: {memory_emotion}
+Action: {memory_action}
+Memory: {memory_description}

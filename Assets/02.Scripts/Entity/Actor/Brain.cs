@@ -31,7 +31,10 @@ public class Brain
 {
     public Actor actor;
     public MemoryAgent memoryAgent;
-    private CharacterMemoryManager memoryManager;
+    private CharacterMemoryManager characterMemoryManager;
+    
+    // --- Enhanced Memory System ---
+    public MemoryManager memoryManager;
 
     // --- AI Agent Components ---
     private ActSelectorAgent actSelectorAgent;
@@ -79,7 +82,10 @@ public class Brain
 
         // 메모리 관리 초기화
         memoryAgent = new MemoryAgent(actor);
-        memoryManager = new CharacterMemoryManager(actor.Name);
+        characterMemoryManager = new CharacterMemoryManager(actor.Name);
+        
+        // Enhanced Memory System 초기화
+        memoryManager = new MemoryManager(actor);
 
         // 리팩토링된 컴포넌트들 초기화
         dayPlanner = new DayPlanner(actor);
@@ -89,7 +95,32 @@ public class Brain
     }
 
     /// <summary>
-    /// DayPlan 생성 및 Think/Act 루프를 시작합니다.
+    /// DayPlan 생성을 시작합니다 (비동기).
+    /// </summary>
+    public async UniTask StartDayPlan()
+    {
+        Debug.Log($"[{actor.Name}] DayPlan 시작");
+        await dayPlanner.PlanToday();
+        
+        // Enhanced Memory System: 계획 생성을 Short Term Memory에 추가
+        var dayPlan = dayPlanner.GetCurrentDayPlan();
+        if (dayPlan?.HighLevelTasks != null && dayPlan.HighLevelTasks.Count > 0)
+        {
+            var planDescription = $"오늘의 계획: {string.Join(", ", dayPlan.HighLevelTasks.ConvertAll(t => t.Description))}";
+            memoryManager.AddPlanCreated(planDescription);
+        }
+    }
+
+    /// <summary>
+    /// Think/Act 루프를 백그라운드에서 시작합니다.
+    /// </summary>
+    public void StartThinkLoop()
+    {
+        _ = thinker.StartThinkAndActLoop();
+    }
+
+    /// <summary>
+    /// [Legacy] DayPlan 생성 및 Think/Act 루프를 시작합니다.
     /// </summary>
     public void StartDayPlanAndThink()
     {
@@ -97,22 +128,14 @@ public class Brain
     }
 
     /// <summary>
-    /// DayPlan 생성 후 Think/Act 루프를 시작하는 비동기 메서드입니다.
+    /// [Legacy] DayPlan 생성 후 Think/Act 루프를 시작하는 비동기 메서드입니다.
     /// </summary>
     private async UniTask StartDayPlanAndThinkAsync()
     {
         await StartDayPlan();
-        await thinker.StartThinkAndActLoop();
+        StartThinkLoop();
     }
 
-    /// <summary>
-    /// DayPlan 생성을 시작합니다.
-    /// </summary>
-    private async UniTask StartDayPlan()
-    {
-        Debug.Log($"[{actor.Name}] DayPlan 시작");
-        await dayPlanner.PlanToday();
-    }
 
     /// <summary>
     /// 외부 이벤트가 발생했을 때 호출됩니다.
@@ -195,6 +218,12 @@ public class Brain
             
             // PerceptionAgent를 통해 시각정보 해석
             var perceptionResult = await InterpretVisualInformationAsync();
+            
+            // Enhanced Memory System: Perception 결과를 Short Term Memory에 추가
+            memoryManager.AddPerceptionResult(perceptionResult);
+
+            // RelationshipAgent: 관계 수정 여부 결정 및 적용
+            await ProcessRelationshipUpdatesAsync(perceptionResult);
 
             // === 계획 유지/수정 결정 및 필요 시 재계획 (DayPlanner 내부로 캡슐화) ===
             await dayPlanner.DecideAndMaybeReplanAsync(perceptionResult); 
@@ -205,6 +234,9 @@ public class Brain
             
             // ActSelectorAgent를 통해 행동 선택 (Tool을 통해 동적으로 액션 정보 제공)
             var selection = await actSelectorAgent.SelectActAsync(enhancedDescription);
+            
+            // Enhanced Memory System: ActSelector 결과를 Short Term Memory에 추가 (일단 보류)
+            //memoryManager.AddActSelectorResult(selection);
             
             // ActSelectResult를 ActorManager에 저장
             Services.Get<IActorService>().StoreActResult(actor, selection);
@@ -228,6 +260,9 @@ public class Brain
     {
         try
         {
+            // Enhanced Memory System: 행동 시작 기록
+            memoryManager.AddActionStart(paramResult.ActType, paramResult.Parameters);
+            
             // AgentAction으로 변환
             var action = new AgentAction
             {
@@ -236,7 +271,34 @@ public class Brain
             };
 
             // ActionPerformer를 통해 액션 실행
-            await actionPerformer.ExecuteAction(action, token);
+            bool isSuccess = true;
+            string completionReason = "성공적으로 완료";
+            
+            try
+            {
+                await actionPerformer.ExecuteAction(action, token);
+            }
+            catch (OperationCanceledException)
+            {
+                isSuccess = false;
+                // 외부 이벤트로 취소된 경우: 이유 없이 '멈췄다'로 기록
+                memoryManager.AddActionInterrupted(paramResult.ActType);
+                throw;
+            }
+            catch (Exception actionEx)
+            {
+                isSuccess = false;
+                Debug.LogError($"[{actor.Name}] 액션 실행 중 오류: {actionEx.Message}");
+                throw;
+            }
+            finally
+            {
+                // 정상 완료된 경우에만 완료 기록
+                if (isSuccess)
+                {
+                    memoryManager.AddActionComplete(paramResult.ActType, completionReason, true);
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -523,6 +585,55 @@ public class Brain
     public async UniTask PlanToday()
     {
         await dayPlanner.PlanToday();
+    }
+    
+    // === Enhanced Memory System Methods ===
+    /// <summary>
+    /// MemoryManager를 사용하여 관계 업데이트를 처리합니다.
+    /// </summary>
+    private async UniTask ProcessRelationshipUpdatesAsync(PerceptionResult perceptionResult)
+    {
+        try
+        {
+            await memoryManager.ProcessRelationshipUpdatesAsync(perceptionResult);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[{actor.Name}] 관계 업데이트 처리 실패: {ex.Message}");
+        }
+    }
+    /// <summary>
+    /// 하루가 끝날 때 Long Term Memory 통합 프로세스를 실행합니다.
+    /// </summary>
+    public async UniTask ProcessDayEndMemoryAsync()
+    {
+        try
+        {
+            Debug.Log($"[{actor.Name}] 하루 종료 - Long Term Memory 통합 시작");
+            
+            await memoryManager.ProcessDayEndMemoryAsync();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[{actor.Name}] Day End Memory 처리 실패: {ex.Message}");
+        }
+    }
+    
+    /// <summary>
+    /// Long Term Memory 정기 정리를 실행합니다.
+    /// </summary>
+    public async UniTask PerformLongTermMemoryMaintenanceAsync()
+    {
+        try
+        {
+            Debug.Log($"[{actor.Name}] Long Term Memory 정기 정리 시작");
+            
+            await memoryManager.PerformLongTermMemoryMaintenanceAsync();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[{actor.Name}] Long Term Memory 정리 실패: {ex.Message}");
+        }
     }
 }
 

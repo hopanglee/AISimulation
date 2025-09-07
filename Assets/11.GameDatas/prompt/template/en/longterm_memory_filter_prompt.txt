@@ -1,0 +1,23 @@
+=== Memory Chunks to Evaluate ===
+There are {chunk_count} memory chunks in total.
+Goal: Select approximately top {target_keep_count} chunks ({retention_rate}%) to preserve in Long Term Memory
+
+{chunks_text}
+
+=== Evaluation Task ===
+Please evaluate each memory chunk based on the following criteria:
+
+1. Importance Score (0.0-1.0):
+   - Long-term impact on life
+   - Impact on personality or values
+   - Impact on relationships
+   - Impact on goals or plans
+
+2. Surprise Score (0.0-1.0):
+   - Unexpected events or results
+   - New discoveries or realizations
+   - Experiences different from usual
+   - Experiences that challenge existing beliefs
+
+Please also provide reasoning for each chunk's evaluation.
+

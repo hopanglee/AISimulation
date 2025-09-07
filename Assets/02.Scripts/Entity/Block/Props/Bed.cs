@@ -98,7 +98,7 @@ public class Bed : SitableProp
         
         // MainActor의 Sleep 함수 호출
         MainActor mainActor = actor as MainActor;
-        mainActor.Sleep();
+        _ = mainActor.Sleep();
         
         return true;
     }
@@ -114,7 +114,7 @@ public class Bed : SitableProp
             // MainActor인 경우 WakeUp 함수 호출
             if (actor is MainActor mainActor)
             {
-                mainActor.WakeUp();
+                _ =mainActor.WakeUp();
             }
         }
     }

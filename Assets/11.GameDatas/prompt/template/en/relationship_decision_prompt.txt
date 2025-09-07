@@ -1,0 +1,19 @@
+=== Perception Result ===
+Situation Interpretation: {situation_interpretation}
+
+Thought Chain: {thought_chain}
+
+=== Current Relationships ===
+{relationships_json}
+
+=== Task ===
+Based on the above Perception result, analyze and decide whether any modifications are needed in the current relationships.
+
+If modifications are needed:
+- Which key to modify
+- What the new value should be
+- Why the modification is necessary
+
+If no modifications are needed:
+- Set should_update to false
+- Explain in reasoning why there are no changes

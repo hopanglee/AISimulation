@@ -1,0 +1,31 @@
+=== Current Long Term Memories ===
+Total {memory_count} Long Term Memories available.
+Current Date: {current_date}
+
+{memories_text}
+
+=== Maintenance Task ===
+Please evaluate and organize the above Long Term Memories based on the following criteria:
+
+For each memory, please evaluate:
+
+1. Importance Score (0.0-1.0):
+   - Impact on life
+   - Contribution to personality or values formation
+   - Impact on relationships
+
+2. Surprise Score (0.0-1.0):
+   - Unexpected events: high score
+   - Routine events: low score
+
+3. Relevance Score (0.0-1.0):
+   - Connection to current life
+   - Potential to influence future decisions
+
+For each memory, decide one of the following actions:
+- keep: preserve as is
+- remove: delete (low score, duplicate, unnecessary)
+- merge_with: merge with another memory (similar content)
+- modify: modify content (information update needed)
+
+Goal: Improve memory quality and optimize storage space

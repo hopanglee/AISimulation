@@ -1,0 +1,46 @@
+{
+  "name": "Think",
+  "displayName": "Contemplate",
+  "description": "An action of **reflecting** on past experiences, **planning** for the future, or **deeply contemplating** the current situation.",
+  "usage": "Use this action when you want to think carefully before making important decisions or when you want to listen to your inner voice.",
+  "parameters": [
+    {
+      "name": "think_scope",
+      "type": "string",
+      "description": "Scope of contemplation (past_reflection: reflecting on past, future_planning: planning future, current_analysis: analyzing present)",
+      "required": true
+    },
+    {
+      "name": "topic",
+      "type": "string",
+      "description": "Specific topic or matter of interest to think about",
+      "required": true
+    },
+    {
+      "name": "duration",
+      "type": "integer", 
+      "description": "Duration of contemplation (in minutes, 5-60 minutes)",
+      "required": true
+    }
+  ],
+  "examples": [
+    "Reflecting on yesterday's conversation with a friend",
+    "Seriously considering future career path",
+    "Analyzing current emotions and feelings",
+    "Reflecting on the meaning of recent life events",
+    "Careful consideration for important decisions"
+  ],
+  "requirements": [
+    "A quiet and undisturbed environment is preferred",
+    "Sufficient time availability is needed"
+  ],
+  "whenToUse": [
+    "When you want to think **carefully** before making **important decisions**",
+    "When you want to **reflect** on **past experiences** and learn lessons",
+    "When you want to think specifically about **future plans** or goals",
+    "When you want to organize **current emotions** or situations", 
+    "When you want to find answers to **complex problems**",
+    "When you want to listen to your **inner voice** during quiet time"
+  ],
+  "category": "mental"
+}

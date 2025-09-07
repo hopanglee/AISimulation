@@ -109,7 +109,7 @@ public abstract class MainActor : Actor
 	#endregion
 
 	#region Sleep System
-	public virtual void Sleep()
+	public virtual async UniTask Sleep()
 	{
 		if (isSleeping)
 		{
@@ -144,12 +144,40 @@ public abstract class MainActor : Actor
 		}
 
 		isSleeping = true;
-		// Sleepiness는 Actor에서 관리
 
 		Debug.Log($"[{Name}] Started sleeping at {sleepStartTime}. Will wake up at {wakeUpTime}");
+		
+		// Enhanced Memory System: 하루 종료 - Long Term Memory 통합 처리
+		await ProcessDayEndMemoryAsync();
+		
+		// STM 초기화 후 수면 시작을 새로운 STM에 추가
+		brain?.memoryManager?.AddActionStart(ActionType.PerformActivity, new Dictionary<string, object>
+		{
+			["activity_type"] = "수면",
+			["sleep_start_time"] = sleepStartTime.ToString(),
+			["expected_wake_time"] = wakeUpTime.ToString()
+		});
+	}
+	
+	/// <summary>
+	/// 하루가 끝날 때 Long Term Memory 처리를 수행합니다.
+	/// </summary>
+	private async UniTask ProcessDayEndMemoryAsync()
+	{
+		try
+		{
+			if (brain?.memoryManager != null)
+			{
+				await brain.ProcessDayEndMemoryAsync();
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.LogError($"[{Name}] Day End Memory 처리 실패: {ex.Message}");
+		}
 	}
 
-	public virtual void WakeUp()
+	public virtual async UniTask WakeUp()
 	{
 		if (!isSleeping)
 		{
@@ -164,25 +192,20 @@ public abstract class MainActor : Actor
 		Stamina = Mathf.Min(100, Stamina + 30); // 수면으로 체력 회복
 
 		Debug.Log($"[{Name}] Woke up at {currentTime}. Stamina restored to {Stamina}");
+		
+		// Enhanced Memory System: 기상을 STM에 추가
+		brain?.memoryManager?.AddActionComplete(ActionType.PerformActivity, 
+			$"수면 완료 - 잠에서 깨어남. 체력 {Stamina}로 회복됨", true);
+		
+		// DayPlan 생성 (await)
+		Debug.Log($"[{Name}] 기상! DayPlan 및 Think 시작");
+		await brain.StartDayPlan();
+		
+		// Think/Act 루프 시작 (백그라운드)
+		brain.StartThinkLoop();
 	}
 
-	/// <summary>
-	/// 수면 상태 체크 (시간에 따른 자동 기상)
-	/// </summary>
-	public void CheckSleepStatus()
-	{
-		if (!isSleeping)
-			return;
 
-		var timeService = Services.Get<ITimeService>();
-		var currentTime = timeService.CurrentTime;
-
-		// 기상 시간이 되었는지 확인
-		if (currentTime >= wakeUpTime)
-		{
-			WakeUp();
-		}
-	}
 
 	/// <summary>
 	/// 수면 필요성 체크 (졸림 수치에 따른 강제 수면)
@@ -323,11 +346,11 @@ public abstract class MainActor : Actor
 
 	public void OnSimulationTimeChanged(GameTime currentTime)
 	{
+		// 기상 시간 처리
 		if (!hasAwokenToday && currentTime.hour == wakeUpHour && currentTime.minute == wakeUpMinute)
 		{
 			hasAwokenToday = true;
-			Debug.Log($"[{Name}] 기상! DayPlan 및 Think 시작");
-			brain.StartDayPlanAndThink();
+			_ = WakeUp(); // async WakeUp 백그라운드 호출
 		}
 		// 자정에 플래그 리셋
 		if (currentTime.hour == 0 && currentTime.minute == 0)
