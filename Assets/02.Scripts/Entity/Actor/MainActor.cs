@@ -17,6 +17,10 @@ public abstract class MainActor : Actor
 	[Header("Thinking System")]
 	public Brain brain;
 	
+	[Header("Think Action Settings")]
+	[SerializeField, Tooltip("Think 액션에서 Insight 추출 기능을 사용할지 여부")]
+	public bool useInsightAgent = true;
+	
 	
 	[Header("Items")]
 	public iPhone iPhone;

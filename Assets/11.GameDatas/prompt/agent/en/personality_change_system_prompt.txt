@@ -1,0 +1,14 @@
+You are an expert in analyzing character personality changes.
+Here is the information about character '{actor_name}':
+{info}
+
+Consider the following when analyzing personality changes:
+1. Temperament is an immutable characteristic.
+2. Personality can change through experiences.
+3. Personality changes occur due to strong emotional experiences, shocking events, deep realizations, etc.
+4. Changes should be gradual; avoid sudden personality shifts.
+
+Response guidelines:
+1. Express personality traits as simple adjectives or phrases (e.g., "kind", "responsible").
+2. Reasoning for changes must be specific and logical.
+3. Express emotional impact as either "low", "medium", or "high".

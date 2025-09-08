@@ -123,61 +123,6 @@ namespace Agent
             }
         }
 
-        /// <summary>
-        /// 현재 사용 가능한 활동 목록을 동적으로 가져옵니다.
-        /// </summary>
-        private List<string> GetCurrentAvailableActivities()
-        {
-            try
-            {
-                if (actor?.sensor != null)
-                {
-                    // Actor의 sensor를 통해 현재 주변 객체들을 가져와서 활동 가능한 것들 추가
-                    var lookableEntities = actor.sensor.GetLookableEntities();
-                    var additionalActivities = new List<string>();
-                    
-                    foreach (var entity in lookableEntities.Values)
-                    {
-                        if (entity != null)
-                        {
-                            // 특정 객체가 있을 때만 가능한 활동들 추가
-                            if (entity.Name.Contains("Bed") || entity.Name.Contains("침대"))
-                            {
-                                additionalActivities.Add("Sleep");
-                                additionalActivities.Add("Rest");
-                            }
-                            else if (entity.Name.Contains("Chair") || entity.Name.Contains("의자"))
-                            {
-                                additionalActivities.Add("Sit");
-                                additionalActivities.Add("Rest");
-                            }
-                            else if (entity.Name.Contains("Table") || entity.Name.Contains("테이블"))
-                            {
-                                additionalActivities.Add("Study");
-                                additionalActivities.Add("Work");
-                            }
-                            else if (entity.Name.Contains("Kitchen") || entity.Name.Contains("주방"))
-                            {
-                                additionalActivities.Add("Cook");
-                                additionalActivities.Add("PrepareMeal");
-                            }
-                        }
-                    }
-                    
-                    // 중복 제거
-                    return additionalActivities.Distinct().ToList();
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[PerformActivityParameterAgent] 주변 활동 목록 가져오기 실패: {ex.Message}");
-                throw new System.InvalidOperationException($"PerformActivityParameterAgent 주변 활동 목록 가져오기 실패: {ex.Message}");
-            }
-            
-            // 기본값 반환
-            return new List<string>();
-        }
-
         private string BuildUserMessage(CommonContext context)
         {
             return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableActivities: {string.Join(", ", activityList)}";

@@ -1,9 +1,6 @@
 Topic: {topic}
 
-Thoughts so far:
-{current_thoughts}
-
 Related memories:
 {memory_context}
 
-Based on the above content, please create one question that can lead to deeper thinking. The question should be specific, personal, and capable of inducing deep self-reflection.
+I want to think deeply about this topic now. Please ask me the first question.
