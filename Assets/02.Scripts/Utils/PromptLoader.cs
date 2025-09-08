@@ -44,10 +44,10 @@ public static class PromptLoader
 
             return prompt;
         }
-                    catch (System.Exception e)
-            {
-                Debug.LogWarning($"[PromptLoader] LocalizationService를 찾을 수 없습니다. 기본 경로 사용: {e.Message}");
-                // Fallback to original path
+        catch (System.Exception e)
+        {
+            Debug.LogWarning($"[PromptLoader] LocalizationService를 찾을 수 없습니다. 기본 경로 사용: {e.Message}");
+            // Fallback to original path
                 string promptPath = Path.Combine("Assets/11.GameDatas/prompt/agent/", promptFileName);
                 if (File.Exists(promptPath))
                 {
@@ -363,5 +363,78 @@ Response Format:
 Available Actions:
 {AVAILABLE_ACTIONS}"
         };
+    }
+
+    /// <summary>
+    /// 프롬프트 파일을 로드하고 플레이스홀더를 교체합니다.
+    /// </summary>
+    /// <param name="promptFileName">프롬프트 파일명 (확장자 제외)</param>
+    /// <param name="replacements">교체할 플레이스홀더와 값들</param>
+    /// <returns>교체된 프롬프트 문자열</returns>
+    public static string LoadPromptWithReplacements(string promptFileName, Dictionary<string, string> replacements)
+    {
+        try
+        {
+            var localizationService = Services.Get<ILocalizationService>();
+            string promptPath;
+            string prompt = "";
+
+            if (localizationService != null)
+            {
+                promptPath = localizationService.GetPromptPath(promptFileName);
+                
+                if (File.Exists(promptPath))
+                {
+                    prompt = File.ReadAllText(promptPath);
+                    Debug.Log($"[PromptLoader] 프롬프트 파일 로드 완료: {promptFileName} (언어: {localizationService.CurrentLanguage})");
+                }
+                else
+                {
+                    // Fallback to English
+                    var fallbackPath = $"Assets/11.GameDatas/prompt/agent/en/{promptFileName}.txt";
+                    if (File.Exists(fallbackPath))
+                    {
+                        prompt = File.ReadAllText(fallbackPath);
+                        Debug.Log($"[PromptLoader] 프롬프트 파일 폴백 로드: {promptFileName} (KR 파일 없음 → 영어 폴더)");
+                    }
+                    else
+                    {
+                        Debug.LogError($"[PromptLoader] 프롬프트 파일을 찾을 수 없습니다: {promptPath} 및 {fallbackPath}");
+                        throw new FileNotFoundException($"프롬프트 파일을 찾을 수 없습니다: {promptFileName}");
+                    }
+                }
+            }
+            else
+            {
+                // Fallback to default path
+                promptPath = $"Assets/11.GameDatas/prompt/agent/kr/{promptFileName}.txt";
+                if (File.Exists(promptPath))
+                {
+                    prompt = File.ReadAllText(promptPath);
+                    Debug.Log($"[PromptLoader] 프롬프트 파일 기본 경로 로드: {promptFileName}");
+                }
+                else
+                {
+                    Debug.LogError($"[PromptLoader] 프롬프트 파일을 찾을 수 없습니다: {promptPath}");
+                    throw new FileNotFoundException($"프롬프트 파일을 찾을 수 없습니다: {promptFileName}");
+                }
+            }
+
+            // 플레이스홀더 교체
+            if (replacements != null)
+            {
+                foreach (var replacement in replacements)
+                {
+                    prompt = prompt.Replace($"{{{replacement.Key}}}", replacement.Value);
+                }
+            }
+
+            return prompt;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[PromptLoader] 프롬프트 로드 실패: {promptFileName}, 오류: {ex.Message}");
+            throw;
+        }
     }
 }

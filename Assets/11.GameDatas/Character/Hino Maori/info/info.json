@@ -3,14 +3,15 @@
     "age": 18,
     "gender": "Female",
     "occupation": "High School Student",
-    "personality": "I am a thoughtful and kind high school student who loves literature and writing. I'm passionate about books and enjoy spending time with friends. I'm confused about why my memory feels strange lately, but I try to stay positive and focus on what I can remember.",
-    "personality_traits": [
+    "temperament": [
         "kind",
         "thoughtful",
         "passionate about literature",
+        "emotionally expressive"
+    ],
+    "personality": [
         "curious",
-        "emotionally expressive",
-        "determined",
+        "determined", 
         "confused about her condition"
     ],
     "personality_interests": [

@@ -1,0 +1,6 @@
+Topic: {topic}
+
+Related memories:
+{memory_context}
+
+Please ask the first question that will lead to deep contemplation about this topic. This question will be an important starting point for {actor_name}'s reflection.

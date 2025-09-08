@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using Newtonsoft.Json;
 using Agent;
-using System.IO;
-using System.Linq;
+using Cysharp.Threading.Tasks;
 
 /// <summary>
 /// Short Term Memory 엔트리 구조
@@ -364,7 +365,7 @@ public class MemoryManager
     /// <summary>
     /// 관계 업데이트를 처리합니다.
     /// </summary>
-    public async Task ProcessRelationshipUpdatesAsync(PerceptionResult perceptionResult)
+    public async UniTask ProcessRelationshipUpdatesAsync(PerceptionResult perceptionResult)
     {
         try
         {
@@ -409,7 +410,7 @@ public class MemoryManager
     /// <summary>
     /// 하루 종료 시 Long Term Memory 처리를 수행합니다.
     /// </summary>
-    public async Task ProcessDayEndMemoryAsync()
+    public async UniTask ProcessDayEndMemoryAsync()
     {
         try
         {
@@ -450,7 +451,10 @@ public class MemoryManager
             // 3.1. Long Term Memory 저장
             AddLongTermMemories(newLongTermMemories);
             
-            // 4. Short Term Memory 초기화
+            // 4. 성격 변화 처리 (STM 초기화 전에 수행)
+            await ProcessPersonalityChangeAsync(filteredConsolidationResult);
+            
+            // 5. Short Term Memory 초기화
             ClearShortTermMemory();
             
             Debug.Log($"[MemoryManager] Day-end processing completed. Saved {newLongTermMemories.Count} new long-term memories");
@@ -462,9 +466,56 @@ public class MemoryManager
     }
     
     /// <summary>
+    /// 성격 변화를 처리합니다.
+    /// </summary>
+    private async UniTask ProcessPersonalityChangeAsync(MemoryConsolidationResult filteredResult)
+    {
+        try
+        {
+            Debug.Log($"[MemoryManager] {owner.Name}: 성격 변화 분석 시작");
+            
+            // 성격 변화 분석 (필터링된 메모리 직접 전달)
+            var personalityChangeAgent = new PersonalityChangeAgent(owner);
+            var changeResult = await personalityChangeAgent.AnalyzePersonalityChangeAsync(filteredResult);
+            
+            // 성격 변화 적용
+            if (changeResult.has_personality_change)
+            {
+                var personalityManager = new PersonalityManager(owner.Name);
+                var success = await personalityManager.ApplyPersonalityChangeAsync(changeResult);
+                
+                if (success)
+                {
+                    Debug.Log($"[MemoryManager] {owner.Name}: 성격 변화 적용 완료");
+                    
+                    // 성격 변화를 새로운 STM에 기록
+                    AddShortTermMemory("personality_change", 
+                        $"성격 변화 발생: 제거된 특성 [{string.Join(", ", changeResult.traits_to_remove)}], " +
+                        $"추가된 특성 [{string.Join(", ", changeResult.traits_to_add)}]",
+                        JsonConvert.SerializeObject(changeResult));
+                }
+                else
+                {
+                    Debug.LogError($"[MemoryManager] {owner.Name}: 성격 변화 적용 실패");
+                }
+            }
+            else
+            {
+                Debug.Log($"[MemoryManager] {owner.Name}: 성격 변화 없음");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[MemoryManager] {owner.Name}: 성격 변화 처리 실패: {ex.Message}");
+        }
+    }
+
+
+    
+    /// <summary>
     /// Long Term Memory 유지보수를 수행합니다.
     /// </summary>
-    public async Task PerformLongTermMemoryMaintenanceAsync()
+    public async UniTask PerformLongTermMemoryMaintenanceAsync()
     {
         try
         {

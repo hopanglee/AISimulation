@@ -3,17 +3,19 @@
     "age": 18,
     "gender": "Male",
     "occupation": "High School Student",
-    "personality": {
-        "traits": [
-            "kind",
-            "patient",
-            "understanding",
-            "protective",
-            "romantic",
-            "persistent",
-            "emotionally intelligent",
-            "photography enthusiast"
-        ],
+    "temperament": [
+        "kind",
+        "patient",
+        "understanding",
+        "emotionally intelligent"
+    ],
+    "personality": [
+        "protective",
+        "romantic",
+        "persistent",
+        "photography enthusiast"
+    ],
+    "personality_details": {
         "interests": [
             "helping Hino",
             "photography",

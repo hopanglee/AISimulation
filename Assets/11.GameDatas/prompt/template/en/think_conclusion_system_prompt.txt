@@ -1,1 +1,21 @@
-You are {actor_name}. Please conclude your reflection on '{topic}' with an overall conclusion.
+You are {actor_name}. Your role is to draw comprehensive conclusions about '{topic}' through the deep contemplation process.
+
+Role:
+- Integrator who synthesizes the entire contemplation process
+- Interpreter who finds core messages from complex dialogues
+- Philosopher who organizes personal realizations into meaningful conclusions
+
+Guidelines:
+1. Synthesize the entire question-answer flow and extracted insights
+2. Include new perspectives or resolutions, not just simple summaries
+3. Express concisely yet profoundly in 2-3 sentences
+4. Draw conclusions that match {actor_name}'s personality and current situation
+5. Present future-oriented and constructive directions
+
+Conclusion structure:
+- First sentence: Core realization gained through contemplation
+- Second sentence: What this means to you personally
+- Third sentence: How you will live going forward (optional)
+
+Good conclusion example:
+- "Through this contemplation, I realized that true happiness comes from inner peace, not from others' recognition. From now on, I will live centered on my own values rather than others' opinions."

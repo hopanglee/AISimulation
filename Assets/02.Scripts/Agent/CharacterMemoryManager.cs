@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -34,7 +36,9 @@ public class CharacterMemoryManager
 {
     private string characterName;
     private string memoryFilePath;
+    private string infoFilePath;
     private CharacterLocationMemoryData memory;
+    private CharacterInfo characterInfo;
     private ILocalizationService localizationService;
 
     public CharacterMemoryManager(string characterName)
@@ -47,22 +51,26 @@ public class CharacterMemoryManager
             this.localizationService = Services.Get<ILocalizationService>();
             if (this.localizationService != null)
             {
-                // LocalizationService의 GetMemoryPath를 사용하여 언어별 폴더 구조에 맞는 경로 생성
+                // LocalizationService의 GetMemoryPath와 GetCharacterInfoPath를 사용하여 경로 생성
                 this.memoryFilePath = this.localizationService.GetMemoryPath(characterName, "location", "location_memories.json");
+                this.infoFilePath = this.localizationService.GetCharacterInfoPath(characterName);
             }
             else
             {
                 // LocalizationService를 사용할 수 없는 경우 기본 경로 사용
                 this.memoryFilePath = $"Assets/11.GameDatas/Character/{characterName}/memory/location/location_memories.json";
+                this.infoFilePath = $"Assets/11.GameDatas/Character/{characterName}/info/info.json";
             }
         }
         catch (Exception e)
         {
             Debug.LogWarning($"LocalizationService를 사용할 수 없어 기본 경로를 사용합니다: {e.Message}");
             this.memoryFilePath = $"Assets/11.GameDatas/Character/{characterName}/memory/location/location_memories.json";
+            this.infoFilePath = $"Assets/11.GameDatas/Character/{characterName}/info/info.json";
         }
         
         LoadMemory();
+        LoadCharacterInfo();
     }
 
     private void LoadMemory()
@@ -84,6 +92,72 @@ public class CharacterMemoryManager
         {
             Debug.LogError($"Failed to load memory for {characterName}: {e.Message}");
             throw new System.InvalidOperationException($"CharacterMemoryManager 메모리 로드 실패: {e.Message}");
+        }
+    }
+
+    private void LoadCharacterInfo()
+    {
+        try
+        {
+            if (File.Exists(infoFilePath))
+            {
+                string json = File.ReadAllText(infoFilePath);
+                characterInfo = JsonConvert.DeserializeObject<CharacterInfo>(json);
+                
+                if (characterInfo == null)
+                {
+                    Debug.LogError($"[CharacterMemoryManager] 캐릭터 정보 역직렬화 실패: {infoFilePath}");
+                    throw new InvalidOperationException("캐릭터 정보 역직렬화 실패");
+                }
+            }
+            else
+            {
+                Debug.LogError($"[CharacterMemoryManager] info.json 파일을 찾을 수 없음: {infoFilePath}");
+                throw new FileNotFoundException($"캐릭터 정보 파일을 찾을 수 없음: {infoFilePath}");
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[CharacterMemoryManager] 캐릭터 정보 로드 실패: {e.Message}");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// 캐릭터 정보를 가져옵니다.
+    /// </summary>
+    public CharacterInfo GetCharacterInfo()
+    {
+        if (characterInfo == null)
+        {
+            LoadCharacterInfo();
+        }
+        return characterInfo;
+    }
+
+    /// <summary>
+    /// 캐릭터 정보를 저장합니다.
+    /// </summary>
+    public async UniTask<bool> SaveCharacterInfoAsync()
+    {
+        try
+        {
+            if (characterInfo == null)
+            {
+                LoadCharacterInfo();
+            }
+
+            // 변경사항 저장
+            var updatedJson = JsonConvert.SerializeObject(characterInfo, Formatting.Indented);
+            await File.WriteAllTextAsync(infoFilePath, updatedJson);
+
+            Debug.Log($"[CharacterMemoryManager] {characterName}: 캐릭터 정보 저장 완료");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[CharacterMemoryManager] {characterName}: 캐릭터 정보 저장 실패: {ex.Message}");
+            return false;
         }
     }
 

@@ -24,21 +24,46 @@ namespace Agent
         /// </summary>
         /// <param name="thinkScope">사색 범위 (past_reflection, future_planning, current_analysis)</param>
         /// <param name="topic">사색 주제</param>
-        /// <param name="currentThoughts">현재까지의 생각들</param>
+        /// <param name="previousAnswer">이전 답변 (대화 이어가기용)</param>
         /// <param name="memoryContext">관련 메모리 정보</param>
         /// <returns>생각을 유도하는 질문</returns>
-        public async UniTask<string> GenerateThinkingQuestionAsync(string thinkScope, string topic, string currentThoughts, string memoryContext)
+        public async UniTask<string> GenerateThinkingQuestionAsync(string thinkScope, string topic, string previousAnswer, string memoryContext)
         {
             try
             {
                 var systemPrompt = LoadSystemPrompt(thinkScope);
-                var userMessage = LoadUserMessage(topic, currentThoughts, memoryContext);
                 
-                var messages = new List<ChatMessage>
+                // 새로운 대화 시작 또는 기존 대화 이어가기
+                if (messages.Count == 0)
                 {
-                    new SystemChatMessage(systemPrompt),
-                    new UserChatMessage(userMessage)
-                };
+                    messages.Add(new SystemChatMessage(systemPrompt));
+                    // 첫 질문 생성을 위한 메시지 구성
+                    var initialUserMessage = LoadFirstUserMessage(topic, memoryContext);
+                    messages.Add(new UserChatMessage(initialUserMessage));
+
+                    var initialOptions = new ChatCompletionOptions
+                    {
+                        Temperature = 0.8f // 창의적인 질문을 위해 높은 온도
+                    };
+
+                    var initialResponse = await SendGPTAsync<string>(messages, initialOptions);
+                    
+                    if (string.IsNullOrEmpty(initialResponse))
+                    {
+                        Debug.LogError($"[ThinkQuestionAgent] 첫 질문 생성 실패: 응답이 비어있거나 null임");
+                        var fallback = GetFallbackQuestion(thinkScope, topic);
+                        messages.Add(new AssistantChatMessage(fallback));
+                        return fallback;
+                    }
+
+                    return initialResponse.Trim();
+                }
+
+                // 이전 답변을 user message로 추가
+                if (!string.IsNullOrEmpty(previousAnswer))
+                {
+                    messages.Add(new UserChatMessage(previousAnswer));
+                }
 
                 var options = new ChatCompletionOptions
                 {
@@ -46,7 +71,16 @@ namespace Agent
                 };
 
                 var response = await SendGPTAsync<string>(messages, options);
-                return response?.Trim() ?? GetFallbackQuestion(thinkScope, topic);
+                
+                if (string.IsNullOrEmpty(response))
+                {
+                    Debug.LogError($"[ThinkQuestionAgent] 질문 생성 실패: 응답이 비어있거나 null임");
+                    var fallback = GetFallbackQuestion(thinkScope, topic);
+                    messages.Add(new AssistantChatMessage(fallback));
+                    return fallback;
+                }
+
+                return response.Trim();
             }
             catch (Exception ex)
             {
@@ -73,33 +107,41 @@ namespace Agent
             }
             catch (Exception ex)
             {
-                Debug.LogWarning($"[ThinkQuestionAgent] 시스템 프롬프트 로드 실패, 기본값 사용: {ex.Message}");
+                Debug.LogError($"[ThinkQuestionAgent] 시스템 프롬프트 로드 실패, 기본값 사용: {ex.Message}");
                 return GetDefaultSystemPrompt(thinkScope);
             }
         }
 
+
         /// <summary>
-        /// 질문 생성을 위한 사용자 메시지를 로드합니다
+        /// 대화 기록 초기화
         /// </summary>
-        private string LoadUserMessage(string topic, string currentThoughts, string memoryContext)
+        public void ResetConversation()
+        {
+            messages.Clear();
+        }
+
+        /// <summary>
+        /// 첫 질문을 위한 사용자 메시지를 로드합니다
+        /// </summary>
+        private string LoadFirstUserMessage(string topic, string memoryContext)
         {
             try
             {
                 var localizationService = Services.Get<ILocalizationService>();
                 var replacements = new Dictionary<string, string>
                 {
+                    ["actor_name"] = actor.Name,
                     ["topic"] = topic,
-                    ["current_thoughts"] = currentThoughts,
                     ["memory_context"] = memoryContext
                 };
 
-                return localizationService.GetLocalizedText("think_question_user_message", replacements);
+                return localizationService.GetLocalizedText("think_first_question_user_message", replacements);
             }
             catch (Exception ex)
             {
-                Debug.LogWarning($"[ThinkQuestionAgent] 사용자 메시지 로드 실패, 기본값 사용: {ex.Message}");
-                return $"주제: {topic}\n지금까지의 생각들:\n{currentThoughts}\n관련 기억들:\n{memoryContext}\n\n" +
-                       "위 내용을 바탕으로 더 깊이 생각해볼 수 있는 질문을 하나 만들어주세요.";
+                Debug.LogError($"[ThinkQuestionAgent] 첫 질문 메시지 로드 실패, 기본값 사용: {ex.Message}");
+                return $"주제: {topic}\n\n관련 기억들:\n{memoryContext}\n\n이 주제에 대해 깊이 생각해볼 수 있는 첫 번째 질문을 해주세요.";
             }
         }
 
