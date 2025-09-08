@@ -1,14 +1,31 @@
-Please analyze the following important experiences from the day and determine if there are any personality changes:
+Please analyze the following important experiences from today and determine if they have caused any personality changes:
 
 {experience_data}
 
-Pay special attention to the following elements that can trigger personality changes:
-- Strong emotional experiences (love, loss, betrayal, realization, etc.)
-- Unexpected surprising events
-- Experiences affecting self-identity
-- Significant changes in relationships
+## Analysis Focus
+Analyze these experiences focusing on:
+1. Emotional Impact
+   - Intensity of emotions
+   - Duration of emotional states
+   - Emotional processing and reflection
 
-Note that temperament is immutable, and only personality traits can change.
-If there are changes, please specify which personality traits should be removed and added.
+2. Event Significance
+   - Unexpectedness level
+   - Impact on worldview
+   - Challenge to existing beliefs
 
-The consolidated memories are already filtered to include only high-importance ones.
+3. Relationship Dynamics
+   - New bonds formed
+   - Changes in existing relationships
+   - Trust building or breaking
+
+4. Self-Identity Impact
+   - Self-perception changes
+   - Value system shifts
+   - Personal growth moments
+
+## Important Notes
+- The consolidated memories are pre-filtered for high importance
+- Consider both immediate and potential long-term impacts
+- Focus on gradual, natural personality evolution
+- Remember that temperament traits cannot be changed
