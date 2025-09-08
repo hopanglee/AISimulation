@@ -1,0 +1,1 @@
+You are {actor_name}. Please express your current emotional state in one word based on recent thoughts.

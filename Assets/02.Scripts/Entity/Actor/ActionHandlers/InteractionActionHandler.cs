@@ -23,7 +23,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// 캐릭터와 대화하는 액션을 처리합니다.
         /// </summary>
-        public async Task HandleSpeakToCharacter(Dictionary<string, object> parameters, CancellationToken token = default)
+        public async UniTask HandleSpeakToCharacter(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             if (parameters.TryGetValue("character_name", out var characterNameObj) && characterNameObj is string characterName)
             {
@@ -67,7 +67,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// 오브젝트와 상호작용하는 액션을 처리합니다.
         /// </summary>
-        public async Task HandleInteractWithObject(Dictionary<string, object> parameters, CancellationToken token = default)
+        public async UniTask HandleInteractWithObject(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             if (parameters.TryGetValue("object_name", out var objectNameObj) && objectNameObj is string objectName)
             {
@@ -116,7 +116,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// 활동을 수행하는 액션을 처리합니다.
         /// </summary>
-        public async Task HandlePerformActivity(Dictionary<string, object> parameters, CancellationToken token = default)
+        public async UniTask HandlePerformActivity(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             if (parameters.TryGetValue("activity_name", out var activityNameObj) && activityNameObj is string activityName)
             {
@@ -143,7 +143,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// 대기하는 액션을 처리합니다.
         /// </summary>
-        public async Task HandleWait(Dictionary<string, object> parameters, CancellationToken token = default)
+        public async UniTask HandleWait(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             Debug.Log($"[{actor.Name}] 대기 중...");
             await SimDelay.DelaySimMinutes(10);

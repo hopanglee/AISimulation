@@ -158,7 +158,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// 돈을 주는 액션을 처리합니다.
         /// </summary>
-        public async Task HandleGiveMoney(Dictionary<string, object> parameters, CancellationToken token = default)
+        public async UniTask HandleGiveMoney(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             if (parameters.TryGetValue("target_character", out var targetCharacterObj) && targetCharacterObj is string targetCharacter &&
                 parameters.TryGetValue("amount", out var amountObj) && amountObj is int amount)
@@ -200,7 +200,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// 아이템을 주는 액션을 처리합니다.
         /// </summary>
-        public async Task HandleGiveItem(Dictionary<string, object> parameters, CancellationToken token = default)
+        public async UniTask HandleGiveItem(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             if (parameters.TryGetValue("target_character", out var targetCharacterObj) && targetCharacterObj is string targetCharacter)
             {

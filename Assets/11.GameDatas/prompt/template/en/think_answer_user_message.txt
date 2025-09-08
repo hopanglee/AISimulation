@@ -1,0 +1,7 @@
+Question: {question}
+
+Related memories: {memory_context}
+
+Thoughts so far: {recent_thoughts}
+
+Please think deeply about this question and provide an answer. Use memory tools if you need more specific memories.

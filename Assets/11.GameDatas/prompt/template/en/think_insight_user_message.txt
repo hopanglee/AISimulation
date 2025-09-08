@@ -1,0 +1,3 @@
+Recent thoughts: {recent_thoughts}
+
+Please summarize the insights or realizations that can be gained from these thoughts in one sentence.
