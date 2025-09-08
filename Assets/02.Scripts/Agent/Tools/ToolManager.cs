@@ -56,6 +56,71 @@ namespace Agent.Tools
                 functionDescription: "Query the agent's memory (recent events, observations, conversations, etc.)"
             );
 
+            public static readonly ChatTool GetShortTermMemory = ChatTool.CreateFunctionTool(
+                functionName: nameof(GetShortTermMemory),
+                functionDescription: "Get recent short-term memories with filtering options",
+                functionParameters: System.BinaryData.FromBytes(
+                    System.Text.Encoding.UTF8.GetBytes(
+                        @"{
+                            ""type"": ""object"",
+                            ""properties"": {
+                                ""memoryType"": {
+                                    ""type"": ""string"",
+                                    ""description"": ""Filter by memory type (perception, action_start, action_complete, plan_created, etc.). Leave empty for all types."",
+                                    ""enum"": ["""", ""perception"", ""action_start"", ""action_complete"", ""plan_created"", ""conversation""]
+                                },
+                                ""limit"": {
+                                    ""type"": ""integer"",
+                                    ""description"": ""Maximum number of memories to return (default: 20, max: 50)"",
+                                    ""minimum"": 1,
+                                    ""maximum"": 50
+                                },
+                                ""keyword"": {
+                                    ""type"": ""string"",
+                                    ""description"": ""Filter memories containing this keyword""
+                                }
+                            },
+                            ""required"": []
+                        }"
+                    )
+                )
+            );
+
+            public static readonly ChatTool GetLongTermMemory = ChatTool.CreateFunctionTool(
+                functionName: nameof(GetLongTermMemory),
+                functionDescription: "Search and retrieve long-term memories",
+                functionParameters: System.BinaryData.FromBytes(
+                    System.Text.Encoding.UTF8.GetBytes(
+                        @"{
+                            ""type"": ""object"",
+                            ""properties"": {
+                                ""searchQuery"": {
+                                    ""type"": ""string"",
+                                    ""description"": ""Search for memories containing this query""
+                                },
+                                ""dateRange"": {
+                                    ""type"": ""string"",
+                                    ""description"": ""Date range filter (e.g. 'today', 'yesterday', 'this_week', 'last_week')"",
+                                    ""enum"": [""today"", ""yesterday"", ""this_week"", ""last_week"", ""this_month"", ""all""]
+                                },
+                                ""limit"": {
+                                    ""type"": ""integer"",
+                                    ""description"": ""Maximum number of memories to return (default: 10, max: 30)"",
+                                    ""minimum"": 1,
+                                    ""maximum"": 30
+                                }
+                            },
+                            ""required"": []
+                        }"
+                    )
+                )
+            );
+
+            public static readonly ChatTool GetMemoryStats = ChatTool.CreateFunctionTool(
+                functionName: nameof(GetMemoryStats),
+                functionDescription: "Get statistics about current memory state (counts, recent activity, etc.)"
+            );
+
             public static readonly ChatTool GetCurrentTime = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetCurrentTime),
                 functionDescription: "Get the current simulation time (year, month, day, hour, minute)"
@@ -88,7 +153,7 @@ namespace Agent.Tools
             /// <summary>
             /// 메모리 관련 도구들
             /// </summary>
-            public static readonly ChatTool[] Memory = { ToolDefinitions.GetUserMemory };
+            public static readonly ChatTool[] Memory = { ToolDefinitions.GetUserMemory, ToolDefinitions.GetShortTermMemory, ToolDefinitions.GetLongTermMemory, ToolDefinitions.GetMemoryStats };
 
             /// <summary>
             /// 계획 관련 도구들
@@ -98,7 +163,7 @@ namespace Agent.Tools
             /// <summary>
             /// 모든 도구들
             /// </summary>
-            public static readonly ChatTool[] All = { ToolDefinitions.SwapInventoryToHand, ToolDefinitions.GetActionDescription, ToolDefinitions.GetAllActions, ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetUserMemory, ToolDefinitions.GetCurrentTime, ToolDefinitions.GetCurrentPlan };
+            public static readonly ChatTool[] All = { ToolDefinitions.SwapInventoryToHand, ToolDefinitions.GetActionDescription, ToolDefinitions.GetAllActions, ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetUserMemory, ToolDefinitions.GetShortTermMemory, ToolDefinitions.GetLongTermMemory, ToolDefinitions.GetMemoryStats, ToolDefinitions.GetCurrentTime, ToolDefinitions.GetCurrentPlan };
         }
 
         /// <summary>
@@ -155,6 +220,12 @@ namespace Agent.Tools
                     return GetWorldAreaInfo();
                 case nameof(GetUserMemory):
                     return GetUserMemory();
+                case nameof(GetShortTermMemory):
+                    return GetShortTermMemory(toolCall.FunctionArguments);
+                case nameof(GetLongTermMemory):
+                    return GetLongTermMemory(toolCall.FunctionArguments);
+                case nameof(GetMemoryStats):
+                    return GetMemoryStats();
                 case nameof(GetCurrentTime):
                     return GetCurrentTime();
                 case nameof(GetCurrentPlan):
@@ -400,6 +471,219 @@ namespace Agent.Tools
             {
                 Debug.LogError($"[ActorToolExecutor] GetCurrentPlan error: {ex.Message}");
                 return $"Error: {ex.Message}";
+            }
+        }
+
+        private string GetShortTermMemory(System.BinaryData arguments)
+        {
+            try
+            {
+                // MainActor인지 확인
+                if (!(actor is MainActor mainActor) || mainActor.brain?.memoryManager == null)
+                {
+                    return "No short-term memory available (not MainActor or no memory manager)";
+                }
+
+                // 파라미터 파싱
+                string memoryType = "";
+                int limit = 20;
+                string keyword = "";
+                
+                if (arguments != null)
+                {
+                    using var argumentsJson = System.Text.Json.JsonDocument.Parse(arguments.ToString());
+                    
+                    if (argumentsJson.RootElement.TryGetProperty("memoryType", out var memoryTypeElement))
+                    {
+                        memoryType = memoryTypeElement.GetString() ?? "";
+                    }
+                    
+                    if (argumentsJson.RootElement.TryGetProperty("limit", out var limitElement))
+                    {
+                        limit = Math.Min(limitElement.GetInt32(), 50);
+                    }
+                    
+                    if (argumentsJson.RootElement.TryGetProperty("keyword", out var keywordElement))
+                    {
+                        keyword = keywordElement.GetString() ?? "";
+                    }
+                }
+
+                var memories = mainActor.brain.memoryManager.GetShortTermMemory() ?? new List<ShortTermMemoryEntry>();
+                
+                // 필터링
+                var filteredMemories = memories.AsEnumerable();
+                
+                if (!string.IsNullOrEmpty(memoryType))
+                {
+                    filteredMemories = filteredMemories.Where(m => m.type.Equals(memoryType, StringComparison.OrdinalIgnoreCase));
+                }
+                
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    filteredMemories = filteredMemories.Where(m => m.content.Contains(keyword, StringComparison.OrdinalIgnoreCase));
+                }
+                
+                // 최신 순으로 정렬하고 제한
+                var resultMemories = filteredMemories
+                    .OrderByDescending(m => m.timestamp)
+                    .Take(limit)
+                    .ToList();
+
+                if (resultMemories.Count == 0)
+                {
+                    return "No matching short-term memories found.";
+                }
+
+                var memoryTexts = resultMemories.Select(m => 
+                    $"[{m.timestamp:yyyy-MM-dd HH:mm}] ({m.type}) {m.content}");
+                
+                return $"Short-term memories ({resultMemories.Count} found):\n\n{string.Join("\n", memoryTexts)}";
+            }
+            catch (Exception ex)
+            {
+                return $"Error getting short-term memory: {ex.Message}";
+            }
+        }
+
+        private string GetLongTermMemory(System.BinaryData arguments)
+        {
+            try
+            {
+                // MainActor인지 확인
+                if (!(actor is MainActor mainActor) || mainActor.brain?.memoryManager == null)
+                {
+                    return "No long-term memory available (not MainActor or no memory manager)";
+                }
+
+                // 파라미터 파싱
+                string searchQuery = "";
+                string dateRange = "all";
+                int limit = 10;
+                
+                if (arguments != null)
+                {
+                    using var argumentsJson = System.Text.Json.JsonDocument.Parse(arguments.ToString());
+                    
+                    if (argumentsJson.RootElement.TryGetProperty("searchQuery", out var searchElement))
+                    {
+                        searchQuery = searchElement.GetString() ?? "";
+                    }
+                    
+                    if (argumentsJson.RootElement.TryGetProperty("dateRange", out var dateElement))
+                    {
+                        dateRange = dateElement.GetString() ?? "all";
+                    }
+                    
+                    if (argumentsJson.RootElement.TryGetProperty("limit", out var limitElement))
+                    {
+                        limit = Math.Min(limitElement.GetInt32(), 30);
+                    }
+                }
+
+                var memories = mainActor.brain.memoryManager.GetLongTermMemories() ?? new List<Dictionary<string, object>>();
+                
+                // 검색 쿼리 필터링
+                var filteredMemories = memories.AsEnumerable();
+                
+                if (!string.IsNullOrEmpty(searchQuery))
+                {
+                    filteredMemories = filteredMemories.Where(m => 
+                    {
+                        var content = m.GetValueOrDefault("memory", "").ToString();
+                        var summary = m.GetValueOrDefault("summary", "").ToString();
+                        return content.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                               summary.Contains(searchQuery, StringComparison.OrdinalIgnoreCase);
+                    });
+                }
+                
+                // 날짜 범위 필터링 (추후 구현 가능)
+                // dateRange에 따른 필터링 로직은 필요시 추가
+                
+                // 최신 순으로 정렬하고 제한
+                var resultMemories = filteredMemories.Take(limit).ToList();
+
+                if (resultMemories.Count == 0)
+                {
+                    return "No matching long-term memories found.";
+                }
+
+                var memoryTexts = resultMemories.Select(m => 
+                {
+                    var date = m.GetValueOrDefault("date", "Unknown").ToString();
+                    var content = m.GetValueOrDefault("memory", "No content").ToString();
+                    var summary = m.GetValueOrDefault("summary", "").ToString();
+                    
+                    var text = $"[{date}] {content}";
+                    if (!string.IsNullOrEmpty(summary))
+                    {
+                        text += $" (Summary: {summary})";
+                    }
+                    return text;
+                });
+                
+                return $"Long-term memories ({resultMemories.Count} found):\n\n{string.Join("\n\n", memoryTexts)}";
+            }
+            catch (Exception ex)
+            {
+                return $"Error getting long-term memory: {ex.Message}";
+            }
+        }
+
+        private string GetMemoryStats()
+        {
+            try
+            {
+                // MainActor인지 확인
+                if (!(actor is MainActor mainActor) || mainActor.brain?.memoryManager == null)
+                {
+                    return "No memory statistics available (not MainActor or no memory manager)";
+                }
+
+                var shortTermMemories = mainActor.brain.memoryManager.GetShortTermMemory() ?? new List<ShortTermMemoryEntry>();
+                var longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories() ?? new List<Dictionary<string, object>>();
+                
+                // 단기 기억 통계
+                var stmStats = new Dictionary<string, int>();
+                foreach (var memory in shortTermMemories)
+                {
+                    stmStats[memory.type] = stmStats.GetValueOrDefault(memory.type, 0) + 1;
+                }
+                
+                // 최근 활동 (최근 10개)
+                var recentActivities = shortTermMemories
+                    .OrderByDescending(m => m.timestamp)
+                    .Take(10)
+                    .Select(m => $"[{m.timestamp:HH:mm}] {m.type}")
+                    .ToList();
+
+                var statsText = new List<string>
+                {
+                    $"=== Memory Statistics for {actor.Name} ===",
+                    "",
+                    $"Short-term memories: {shortTermMemories.Count}",
+                    $"Long-term memories: {longTermMemories.Count}",
+                    "",
+                    "Short-term memory breakdown:"
+                };
+                
+                foreach (var stat in stmStats.OrderByDescending(kvp => kvp.Value))
+                {
+                    statsText.Add($"  - {stat.Key}: {stat.Value}");
+                }
+                
+                if (recentActivities.Count > 0)
+                {
+                    statsText.Add("");
+                    statsText.Add("Recent activity:");
+                    statsText.AddRange(recentActivities.Select(a => $"  {a}"));
+                }
+                
+                return string.Join("\n", statsText);
+            }
+            catch (Exception ex)
+            {
+                return $"Error getting memory statistics: {ex.Message}";
             }
         }
     }

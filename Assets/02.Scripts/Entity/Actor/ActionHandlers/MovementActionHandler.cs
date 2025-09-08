@@ -25,7 +25,7 @@ namespace Agent.ActionHandlers
         /// 특정 영역이나 건물로 이동하는 액션을 처리합니다.
         /// Entity 이름이 들어온 경우 자동으로 Entity로 이동 처리합니다.
         /// </summary>
-        public async Task HandleMoveToArea(Dictionary<string, object> parameters, CancellationToken token = default)
+        public async UniTask HandleMoveToArea(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             string targetValue = null;
             
@@ -67,7 +67,7 @@ namespace Agent.ActionHandlers
         /// 특정 엔티티로 이동하는 액션을 처리합니다.
         /// Area 이름이 들어온 경우 자동으로 Area로 이동 처리합니다.
         /// </summary>
-        public async Task HandleMoveToEntity(Dictionary<string, object> parameters, CancellationToken token = default)
+        public async UniTask HandleMoveToEntity(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             string targetValue = null;
             

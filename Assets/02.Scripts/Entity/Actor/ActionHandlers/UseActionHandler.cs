@@ -24,7 +24,7 @@ namespace Agent.ActionHandlers
         /// Hand에 있는 아이템을 사용하는 액션을 처리합니다.
         /// iPhone, Note 등 아이템별로 다른 파라미터를 처리합니다.
         /// </summary>
-        public async Task HandleUseObject(Dictionary<string, object> parameters, CancellationToken token)
+        public async UniTask HandleUseObject(Dictionary<string, object> parameters, CancellationToken token)
         {
             try
             {
@@ -83,7 +83,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// Clothing 사용을 처리합니다.
         /// </summary>
-        private async Task HandleClothingUse(Clothing clothing, CancellationToken token)
+        private async UniTask HandleClothingUse(Clothing clothing, CancellationToken token)
         {
             try
             {
@@ -110,7 +110,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// iPhone 사용을 처리합니다.
         /// </summary>
-        private async Task HandleiPhoneUse(iPhone iphone, Dictionary<string, object> parameters, CancellationToken token)
+        private async UniTask HandleiPhoneUse(iPhone iphone, Dictionary<string, object> parameters, CancellationToken token)
         {
             try
             {
@@ -155,7 +155,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// iPhone Chat 명령을 처리합니다.
         /// </summary>
-        private async Task HandleiPhoneChat(iPhone iphone, Dictionary<string, object> parameters)
+        private async UniTask HandleiPhoneChat(iPhone iphone, Dictionary<string, object> parameters)
         {
             if (parameters.TryGetValue("target_actor", out var targetActorObj) && 
                 parameters.TryGetValue("message", out var messageObj))
@@ -182,7 +182,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// iPhone Read 명령을 처리합니다.
         /// </summary>
-        private async Task HandleiPhoneRead(iPhone iphone, Dictionary<string, object> parameters)
+        private async UniTask HandleiPhoneRead(iPhone iphone, Dictionary<string, object> parameters)
         {
             if (parameters.TryGetValue("target_actor", out var readTargetObj) &&
                 parameters.TryGetValue("message_count", out var countObj))
@@ -205,7 +205,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// iPhone Continue 명령을 처리합니다.
         /// </summary>
-        private async Task HandleiPhoneContinue(iPhone iphone, Dictionary<string, object> parameters)
+        private async UniTask HandleiPhoneContinue(iPhone iphone, Dictionary<string, object> parameters)
         {
             if (parameters.TryGetValue("target_actor", out var continueTargetObj) &&
                 parameters.TryGetValue("message_count", out var continueCountObj))
@@ -228,7 +228,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// Note 사용을 처리합니다.
         /// </summary>
-        private async Task HandleNoteUse(Note note, Dictionary<string, object> parameters, CancellationToken token)
+        private async UniTask HandleNoteUse(Note note, Dictionary<string, object> parameters, CancellationToken token)
         {
             try
             {
@@ -262,7 +262,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// Book 사용을 처리합니다.
         /// </summary>
-        private async Task HandleBookUse(Book book, Dictionary<string, object> parameters, CancellationToken token)
+        private async UniTask HandleBookUse(Book book, Dictionary<string, object> parameters, CancellationToken token)
         {
             try
             {

@@ -23,7 +23,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// 옷을 벗는 액션을 처리합니다.
         /// </summary>
-        public async Task HandleRemoveClothing(Dictionary<string, object> parameters, CancellationToken token = default)
+        public async UniTask HandleRemoveClothing(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             try
             {

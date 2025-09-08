@@ -30,6 +30,7 @@ public class ActionPerformer
     private readonly InteractionActionHandler interactionHandler;
     private readonly ItemActionHandler itemHandler;
     private readonly ClothingActionHandler clothingHandler;
+    private readonly ThinkActionHandler thinkHandler;
     private CancellationToken currentToken;
 
     public ActionPerformer(Actor actor)
@@ -43,6 +44,7 @@ public class ActionPerformer
         this.interactionHandler = new InteractionActionHandler(actor);
         this.itemHandler = new ItemActionHandler(actor);
         this.clothingHandler = new ClothingActionHandler(actor);
+        this.thinkHandler = new ThinkActionHandler(actor);
         
         RegisterActionHandlers();
     }
@@ -173,6 +175,12 @@ public class ActionPerformer
         actionExecutor.RegisterHandler(
             ActionType.RemoveClothing,
             async (parameters) => await clothingHandler.HandleRemoveClothing(parameters, currentToken)
+        );
+
+        // Think handlers
+        actionExecutor.RegisterHandler(
+            ActionType.Think,
+            async (parameters) => await thinkHandler.HandleThink(parameters, currentToken)
         );
     }
 }

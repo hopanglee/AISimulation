@@ -234,6 +234,7 @@ namespace Agent
 
                 availableActions.Add(ActionType.Wait);
                 availableActions.Add(ActionType.PerformActivity);
+                availableActions.Add(ActionType.Think);
                 
                 // 상황에 따른 제한 사항들
                 if (actor is MainActor thinkingActor)

@@ -1,0 +1,3 @@
+Recent thoughts: {recent_thoughts}
+
+Based on these thoughts, please express your current emotional state in one word. (e.g., calm, satisfied, worried, hopeful, etc.)

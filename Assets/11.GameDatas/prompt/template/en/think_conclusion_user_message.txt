@@ -1,0 +1,5 @@
+Reflection content: {thought_chain}
+
+Insights gained: {insights}
+
+Please summarize the final conclusions or realizations gained through this reflection in 2-3 sentences.
