@@ -9,7 +9,7 @@ using UnityEngine;
 public class GPT
 {
     private readonly ChatClient client;
-    protected ChatCompletionOptions options;
+    protected ChatCompletionOptions options = new();
     public List<ChatMessage> messages = new();
     protected string actorName = "Unknown"; // Actor 이름을 저장할 변수
     protected bool enableLogging = true; // 로깅 활성화 여부
@@ -203,6 +203,30 @@ public class GPT
         ChatCompletionOptions options
     )
     {
+        // GPT API 호출 전 승인 요청
+        var gameService = Services.Get<IGameService>();
+        var approvalService = Services.Get<IGPTApprovalService>();
+        
+        if (gameService != null && gameService.IsGPTApprovalEnabled() && approvalService != null)
+        {
+            string agentType = GetAgentTypeFromStackTrace();
+            int messageCount = messages.Count;
+            
+            bool approved = await approvalService.RequestApprovalAsync(actorName, agentType, messageCount);
+            
+            if (!approved)
+            {
+                Debug.LogError($"[GPT][{actorName}] GPT API 호출이 거부되었습니다: {agentType}");
+                throw new OperationCanceledException($"GPT API 호출이 거부되었습니다: {actorName} - {agentType}");
+            }
+            
+            Debug.Log($"[GPT][{actorName}] GPT API 호출이 승인되었습니다: {agentType}");
+        }
+        else if (gameService != null && !gameService.IsGPTApprovalEnabled())
+        {
+            Debug.Log($"[GPT][{actorName}] GPT 승인 시스템이 비활성화되어 자동으로 진행합니다: {GetAgentTypeFromStackTrace()}");
+        }
+
         bool requiresAction;
         string finalResponse = "";
 
@@ -307,6 +331,24 @@ public class GPT
 
     public T SendGPT<T>(List<ChatMessage> messages, ChatCompletionOptions options)
     {
+        // GPT API 호출 전 승인 요청 (동기 버전)
+        var gameService = Services.Get<IGameService>();
+        var approvalService = Services.Get<IGPTApprovalService>();
+        
+        if (gameService != null && gameService.IsGPTApprovalEnabled() && approvalService != null)
+        {
+            string agentType = GetAgentTypeFromStackTrace();
+            int messageCount = messages.Count;
+            
+            // 동기적으로 승인 요청 (이 경우는 즉시 거부)
+            Debug.LogWarning($"[GPT][{actorName}] 동기 GPT API 호출은 승인 시스템을 지원하지 않습니다. 호출을 거부합니다: {agentType}");
+            throw new OperationCanceledException($"동기 GPT API 호출은 승인 시스템을 지원하지 않습니다: {actorName} - {agentType}");
+        }
+        else if (gameService != null && !gameService.IsGPTApprovalEnabled())
+        {
+            Debug.Log($"[GPT][{actorName}] GPT 승인 시스템이 비활성화되어 자동으로 진행합니다 (동기): {GetAgentTypeFromStackTrace()}");
+        }
+
         bool requiresAction;
 
         // GPT API 호출 시작 - 시뮬레이션 시간 자동 정지
@@ -400,4 +442,33 @@ public class GPT
     {
         ;
     }
+
+    /// <summary>
+    /// 스택 트레이스에서 Agent 타입을 추출합니다
+    /// </summary>
+    private string GetAgentTypeFromStackTrace()
+    {
+        try
+        {
+            var stackTrace = new System.Diagnostics.StackTrace();
+            for (int i = 0; i < stackTrace.FrameCount; i++)
+            {
+                var frame = stackTrace.GetFrame(i);
+                var method = frame.GetMethod();
+                var className = method.DeclaringType?.Name;
+                
+                if (className != null && className.EndsWith("Agent"))
+                {
+                    return className;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[GPT] 스택 트레이스 분석 중 오류: {ex.Message}");
+        }
+        
+        return "UnknownAgent";
+    }
+
 }

@@ -13,9 +13,9 @@ public class BootStrapper : MonoBehaviour
         // GameService를 MonoBehaviour로 생성
         var gameServiceGO = new GameObject("GameService");
         var gameService = gameServiceGO.AddComponent<GameService>();
-        
 
         // 서비스들 생성 및 초기화
+        var gptApprovalService = new GPTApprovalService();
         var locationService = new LocationService();
         var pathfindingService = new PathfindingService();
         var timeService = new TimeManager();
@@ -28,6 +28,7 @@ public class BootStrapper : MonoBehaviour
 
         // 서비스 등록
         Services.Provide<IGameService>(gameService);
+        Services.Provide<IGPTApprovalService>(gptApprovalService);
         Services.Provide<ILocationService>(locationService);
         Services.Provide<IPathfindingService>(pathfindingService);
         Services.Provide<ITimeService>(timeService);
@@ -40,6 +41,8 @@ public class BootStrapper : MonoBehaviour
         // 서비스 초기화
         gameService.Initialize();
         Debug.Log("[BootStrapper] GameService가 성공적으로 초기화되었습니다");
+        gptApprovalService.Initialize();
+        Debug.Log("[BootStrapper] GPTApprovalService가 성공적으로 초기화되었습니다");
         locationService.Initialize();
         Debug.Log("[BootStrapper] LocationService가 성공적으로 초기화되었습니다");
         pathfindingService.Initialize();

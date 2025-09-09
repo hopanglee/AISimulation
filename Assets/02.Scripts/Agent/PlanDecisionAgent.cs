@@ -28,6 +28,9 @@ public class PlanDecisionAgent : GPT
 
 	protected virtual void InitializeOptions()
 	{
+		// options 초기화
+		options = new ChatCompletionOptions();
+
 		// JSON 스키마 기반 응답 형식 설정
 		options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
 			jsonSchemaFormatName: "plan_decision",
