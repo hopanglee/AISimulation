@@ -46,8 +46,8 @@ public class LocalizationService : ILocalizationService
     {
         // expect folders: Assets/11.GameDatas/prompt/en , /kr
         var langFolder = currentLanguage == Language.KR ? "kr" : "en";
-        var localized = $"Assets/11.GameDatas/prompt/agent/{langFolder}/{promptName}";
-        var fallback = $"Assets/11.GameDatas/prompt/agent/en/{promptName}";
+        var localized = $"Assets/11.GameDatas/prompt/agent/{langFolder}/{promptName}.txt";
+        var fallback = $"Assets/11.GameDatas/prompt/agent/en/{promptName}.txt";
         // Note: actual file existence check could be added if needed via Resources/Addressables
         return localized;
     }

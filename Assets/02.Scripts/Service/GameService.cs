@@ -29,10 +29,24 @@ public interface IGameService : IService
     /// 시뮬레이션 상태 확인
     /// </summary>
     bool IsSimulationRunning();
+
+    /// <summary>
+    /// GPT 승인 시스템 사용 여부 확인
+    /// </summary>
+    bool IsGPTApprovalEnabled();
+
+    /// <summary>
+    /// GPT 승인 시스템 사용 여부 설정
+    /// </summary>
 }
 
 public class GameService : MonoBehaviour, IGameService
 {
+    [Header("GPT Approval Settings")]
+    [SerializeField]
+    [Tooltip("GPT API 호출 시 승인 팝업창을 사용할지 여부")]
+    private bool useGPTApprovalSystem = true;
+
     // [Header("AI Think Settings")]
     // [BoxGroup("AI Think Settings")]
     // [Tooltip("AI가 판단을 내리는 주기 방식 (TimeBased: 초 단위, FrameBased: 프레임 단위)")]
@@ -546,4 +560,19 @@ public class GameService : MonoBehaviour, IGameService
             }
         }
     }
+
+    #region GPT Approval System
+
+    /// <summary>
+    /// GPT 승인 시스템 사용 여부 확인
+    /// </summary>
+    public bool IsGPTApprovalEnabled()
+    {
+        return useGPTApprovalSystem;
+    }
+
+    /// <summary>
+    /// GPT 승인 시스템 사용 여부 설정
+    /// </summary>
+    #endregion
 } 

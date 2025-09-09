@@ -43,6 +43,20 @@ public class SimulationController : MonoBehaviour
     [SerializeField]
     private Toggle globalGPTToggle; // 모든 Actor의 GPT 사용 여부 토글
 
+    [Header("GPT Approval Popup")]
+    [SerializeField]
+    private GameObject gptApprovalPopup; // GPT 승인 팝업창
+    [SerializeField]
+    private TextMeshProUGUI approvalActorNameText;
+    [SerializeField]
+    private TextMeshProUGUI approvalAgentTypeText;
+    [SerializeField]
+    private TextMeshProUGUI approvalMessageCountText;
+    [SerializeField]
+    private Button approvalApproveButton;
+    [SerializeField]
+    private Button approvalRejectButton;
+
     [Header("Settings")]
     [SerializeField]
     private bool autoStartOnPlay = false;
@@ -55,6 +69,7 @@ public class SimulationController : MonoBehaviour
 
     private IGameService gameService;
     private ITimeService timeService;
+    private IGPTApprovalService gptApprovalService;
     private CameraController cameraController;
     private GameObject hinoMaori;
     private GameObject kamiyaTooru;
@@ -65,7 +80,15 @@ public class SimulationController : MonoBehaviour
     private void Awake()
     {
         Services.Get<ILocalizationService>().SetLanguage(language);
+        
+        // 정적 참조 설정
+        Instance = this;
+
+        gptApprovalPopup.SetActive(false);
     }
+    
+    // 정적 참조
+    public static SimulationController Instance { get; private set; }
 
     [System.Obsolete]
     private void Start()
@@ -73,6 +96,7 @@ public class SimulationController : MonoBehaviour
         // 서비스 가져오기
         gameService = Services.Get<IGameService>();
         timeService = Services.Get<ITimeService>();
+        gptApprovalService = Services.Get<IGPTApprovalService>();
         // Services.Get<ILocalizationService>().SetLanguage(language);
 
         // 카메라 컨트롤러 찾기
@@ -319,6 +343,12 @@ public class SimulationController : MonoBehaviour
 
     private void OnDestroy()
     {
+        // 정적 참조 정리
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+        
         // 이벤트 리스너 정리
         if (playPauseButton != null)
         {
@@ -360,4 +390,85 @@ public class SimulationController : MonoBehaviour
         }
         Debug.Log($"[SimulationController] 전역 GPT 사용을 {(enabled ? "활성화" : "비활성화")}했습니다. 대상 액터 수: {actors.Length}");
     }
+
+    #region GPT Approval Popup Methods
+
+    /// <summary>
+    /// GPT 승인 팝업창을 표시합니다
+    /// </summary>
+    /// <param name="request">승인 요청 정보</param>
+    public void ShowGPTApprovalPopup(GPTApprovalRequest request)
+    {
+        if (gptApprovalPopup == null)
+        {
+            Debug.LogError("[SimulationController] GPT 승인 팝업창이 설정되지 않았습니다!");
+            return;
+        }
+
+        // 팝업창 정보 업데이트
+        if (approvalActorNameText != null)
+            approvalActorNameText.text = $"Actor: {request.ActorName}";
+        
+        if (approvalAgentTypeText != null)
+            approvalAgentTypeText.text = $"Agent: {request.AgentType}";
+        
+        if (approvalMessageCountText != null)
+            approvalMessageCountText.text = $"Messages: {request.MessageCount}";
+
+        // 버튼 이벤트 설정
+        if (approvalApproveButton != null)
+        {
+            approvalApproveButton.onClick.RemoveAllListeners();
+            approvalApproveButton.onClick.AddListener(() => OnApprovalApprove());
+        }
+
+        if (approvalRejectButton != null)
+        {
+            approvalRejectButton.onClick.RemoveAllListeners();
+            approvalRejectButton.onClick.AddListener(() => OnApprovalReject());
+        }
+
+        // 팝업창 표시
+        gptApprovalPopup.SetActive(true);
+        
+        Debug.Log($"[SimulationController] GPT 승인 팝업창 표시: {request.ActorName} - {request.AgentType}");
+    }
+
+    /// <summary>
+    /// GPT 승인 팝업창을 숨깁니다
+    /// </summary>
+    public void HideGPTApprovalPopup()
+    {
+        if (gptApprovalPopup != null)
+        {
+            gptApprovalPopup.SetActive(false);
+            Debug.Log("[SimulationController] GPT 승인 팝업창 숨김");
+        }
+    }
+
+    /// <summary>
+    /// 승인 버튼 클릭 처리
+    /// </summary>
+    private void OnApprovalApprove()
+    {
+        if (gptApprovalService != null)
+        {
+            gptApprovalService.ApproveRequest(true);
+            Debug.Log("[SimulationController] GPT API 호출 승인됨");
+        }
+    }
+
+    /// <summary>
+    /// 거부 버튼 클릭 처리 (거부와 취소 통합)
+    /// </summary>
+    private void OnApprovalReject()
+    {
+        if (gptApprovalService != null)
+        {
+            gptApprovalService.ApproveRequest(false);
+            Debug.Log("[SimulationController] GPT API 호출 거부됨");
+        }
+    }
+
+    #endregion
 }
