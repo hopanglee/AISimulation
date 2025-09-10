@@ -33,7 +33,7 @@ public static class PromptLoader
                 if (File.Exists(fallbackPath))
                 {
                     prompt = File.ReadAllText(fallbackPath);
-                    Debug.Log($"[PromptLoader] 프롬프트 파일 폴백 로드: {promptFileName} (언어: {localizationService.CurrentLanguage}, KR 파일 없음 → 영어 폴더에서 찾음)");
+                    Debug.LogWarning($"[PromptLoader] 프롬프트 파일 폴백 로드: {promptPath} (언어: {localizationService.CurrentLanguage}, KR 파일 없음 → 영어 폴더에서 찾음)");
                 }
                 else
                 {
@@ -391,7 +391,7 @@ Available Actions:
                 else
                 {
                     // Fallback to English
-                    var fallbackPath = $"Assets/11.GameDatas/prompt/agent/en/{promptFileName}.txt";
+                    var fallbackPath = $"Assets/11.GameDatas/prompt/agent/en/{promptFileName}";
                     if (File.Exists(fallbackPath))
                     {
                         prompt = File.ReadAllText(fallbackPath);
@@ -407,7 +407,7 @@ Available Actions:
             else
             {
                 // Fallback to default path
-                promptPath = $"Assets/11.GameDatas/prompt/agent/kr/{promptFileName}.txt";
+                promptPath = $"Assets/11.GameDatas/prompt/agent/kr/{promptFileName}";
                 if (File.Exists(promptPath))
                 {
                     prompt = File.ReadAllText(promptPath);

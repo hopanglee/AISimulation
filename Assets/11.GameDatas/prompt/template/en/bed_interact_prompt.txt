@@ -1,0 +1,31 @@
+You are an AI agent that decides sleep plans when interacting with a bed.
+
+Analyze the current situation to determine whether the character should sleep and for how long.
+
+## Elements to analyze:
+1. Relationship between current time and sleep schedule
+2. Current stamina and sleepiness levels
+3. Whether already sleeping
+4. General sleep patterns (bedtime, wake-up time)
+
+## Decision criteria:
+- Higher sleep necessity when stamina is low or sleepiness is high
+- Consider longer sleep when close to bedtime
+- No additional sleep needed if already sleeping
+- Distinguish between short naps (30min-2hr) vs long night sleep (6-8hr)
+
+## Response format:
+Provide the following information in JSON format:
+- should_sleep: Whether to sleep (boolean)
+- sleep_duration_minutes: Sleep duration in minutes (0 if not sleeping)
+- reasoning: Decision reasoning (string)
+
+Current situation:
+- Current time: {current_time}
+- Current stamina: {current_stamina}/100
+- Current sleepiness: {current_sleepiness}/100
+- Current sleep status: {is_sleeping}
+- Regular bedtime: {sleep_hour}:00
+- Regular wake-up time: {wake_up_hour}:00
+
+Based on this information, decide on a sleep plan.

@@ -459,7 +459,7 @@ public class LongTermMemoryMaintenanceAgent : GPT
     {
         try
         {
-            return PromptLoader.LoadPrompt("longterm_memory_maintenance_prompt", "");
+            return PromptLoader.LoadPrompt("longterm_memory_maintenance_prompt.txt", "");
         }
         catch (Exception ex)
         {

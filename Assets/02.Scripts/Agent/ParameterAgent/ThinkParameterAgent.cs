@@ -231,7 +231,7 @@ public class ThinkParameterAgent : ParameterAgentBase
     {
         try
         {
-            return PromptLoader.LoadPrompt("think_parameter_prompt");
+            return PromptLoader.LoadPrompt("think_parameter_prompt.txt");
         }
         catch (Exception ex)
         {

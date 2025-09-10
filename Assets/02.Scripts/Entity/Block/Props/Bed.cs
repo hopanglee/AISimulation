@@ -1,6 +1,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using Agent;
 
 public class Bed : SitableProp
 {
@@ -49,7 +50,45 @@ public class Bed : SitableProp
             }
         }
         
-        // 잠자기 시도
+        // MainActor인 경우 BedInteractAgent를 사용하여 수면 계획 결정
+        if (actor is MainActor mainActor)
+        {
+            try
+            {
+                var bedInteractAgent = new BedInteractAgent(actor);
+                var decision = await bedInteractAgent.DecideSleepPlanAsync();
+                
+                if (decision.ShouldSleep && decision.SleepDurationMinutes > 0)
+                {
+                    // 수면 결정된 경우
+                    if (TrySitWithDuration(actor, decision.SleepDurationMinutes))
+                    {
+                        return $"{actor.Name}이(가) {decision.SleepDurationMinutes}분 동안 잠에 빠졌습니다. ({decision.Reasoning})";
+                    }
+                    else
+                    {
+                        return $"{actor.Name}은(는) 잠을 잘 수 없습니다.";
+                    }
+                }
+                else
+                {
+                    // 수면이 필요하지 않은 경우
+                    return $"{actor.Name}은(가) 지금은 잠을 자지 않기로 결정했습니다. ({decision.Reasoning})";
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[Bed] BedInteractAgent 오류: {ex.Message}");
+                // 오류 발생 시 기본 수면 로직 사용
+                if (TrySit(actor))
+                {
+                    return $"{actor.Name}이(가) 깊은 잠에 빠졌습니다.";
+                }
+                return $"{actor.Name}은(는) 잠을 잘 수 없습니다.";
+            }
+        }
+        
+        // MainActor가 아닌 경우 기본 로직 사용
         if (TrySit(actor))
         {
             return $"{actor.Name}이(가) 깊은 잠에 빠졌습니다.";
@@ -59,6 +98,51 @@ public class Bed : SitableProp
     }
 
 
+
+    /// <summary>
+    /// 지정된 시간 동안 잠자기
+    /// </summary>
+    private bool TrySitWithDuration(Actor actor, int sleepDurationMinutes)
+    {
+        if (!CanSit(actor))
+        {
+            return false;
+        }
+        
+        // 이미 누군가 앉아있거나 자고 있으면 앉을 수 없음
+        if (IsOccupied())
+        {
+            return false;
+        }
+        
+        // MainActor가 아니면 잠잘 수 없음
+        if (!(actor is MainActor))
+        {
+            return false;
+        }
+        
+        // 잠자기 성공 - 잠자는 위치로 이동
+        if (sleepPosition != null)
+        {
+            MoveActorToSitPosition(actor, sleepPosition.position);
+        }
+        else
+        {
+            // sleepPosition이 설정되지 않은 경우 기본 위치 사용
+            Vector3 defaultSleepPosition = transform.position + Vector3.up * 0.5f;
+            MoveActorToSitPosition(actor, defaultSleepPosition);
+        }
+        
+        // 상태 설정
+        isOccupied = true;
+        sleepingActor = actor;
+        
+        // MainActor의 Sleep 함수 호출 (지정된 시간으로)
+        MainActor mainActor = actor as MainActor;
+        _ = mainActor.Sleep(sleepDurationMinutes);
+        
+        return true;
+    }
 
     // SitableProp 추상 메서드 구현
     public override bool TrySit(Actor actor)

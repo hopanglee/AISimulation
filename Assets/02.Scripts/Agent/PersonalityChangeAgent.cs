@@ -87,7 +87,7 @@ namespace Agent
                 {"info", LoadCharacterInfo()}
             };
 
-            return PromptLoader.LoadPromptWithReplacements("personality_change_system_prompt", replacements);
+            return PromptLoader.LoadPromptWithReplacements("personality_change_system_prompt.txt", replacements);
         }
         catch (Exception ex)
         {
@@ -176,7 +176,7 @@ namespace Agent
             {
                 { "experience_data", JsonConvert.SerializeObject(experienceData, Formatting.Indented) }
             };
-            var requestContent = PromptLoader.LoadPromptWithReplacements("personality_change_analysis_prompt", replacements);
+            var requestContent = PromptLoader.LoadPromptWithReplacements("personality_change_analysis_prompt.txt", replacements);
 
             // 새로운 대화 시작
             var systemPrompt = LoadSystemPrompt();
