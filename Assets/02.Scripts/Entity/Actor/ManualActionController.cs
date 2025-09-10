@@ -502,6 +502,7 @@ public class ManualActionController
         string agentType = targetEntity switch
         {
             InventoryBox => "InventoryBoxParameterAgent",
+            Bed => "BedInteractAgent",
             _ => null
         };
 
@@ -557,6 +558,10 @@ public class ManualActionController
 
             case "BookUseAgent":
                 secondaryAgentParameters["action"] = ""; // read, study, bookmark
+                break;
+
+            case "BedInteractAgent":
+                // BedInteractAgent는 파라미터가 필요하지 않음 (AI가 자동으로 결정)
                 break;
         }
     }
@@ -614,6 +619,10 @@ public class ManualActionController
 
             case "BookUseAgent":
                 await ExecuteBookAgent(parameters);
+                break;
+
+            case "BedInteractAgent":
+                await ExecuteBedInteractAgent(parameters);
                 break;
 
             default:
@@ -845,6 +854,42 @@ public class ManualActionController
         }
 
         await SimDelay.DelaySimMinutes(3);
+    }
+
+    /// <summary>
+    /// BedInteractAgent 실행
+    /// </summary>
+    private async UniTask ExecuteBedInteractAgent(Dictionary<string, object> parameters)
+    {
+        if (!(lastInteractedEntity is Bed bed))
+        {
+            Debug.LogError("[ManualActionController] lastInteractedEntity가 Bed가 아닙니다.");
+            return;
+        }
+
+        try
+        {
+            var bedInteractAgent = new BedInteractAgent(mainActor);
+            var decision = await bedInteractAgent.DecideSleepPlanAsync();
+            
+            if (decision.ShouldSleep && decision.SleepDurationMinutes > 0)
+            {
+                // 수면 결정된 경우
+                var result = await bed.Interact(mainActor);
+                Debug.Log($"[ManualActionController] Bed Interact 결과: {result}");
+            }
+            else
+            {
+                // 수면이 필요하지 않은 경우
+                Debug.Log($"[ManualActionController] Bed Interact 결과: {decision.Reasoning}");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[ManualActionController] BedInteractAgent 실행 실패: {ex.Message}");
+        }
+
+        await SimDelay.DelaySimMinutes(1);
     }
 
     /// <summary>

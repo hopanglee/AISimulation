@@ -46,7 +46,7 @@ public class IdAgent : GPT
             };
             
             // PromptLoader를 사용하여 프롬프트 로드 및 플레이스홀더 교체
-            var promptText = PromptLoader.LoadPromptWithReplacements("IdAgentPrompt", replacements);
+            var promptText = PromptLoader.LoadPromptWithReplacements("IdAgentPrompt.txt", replacements);
             
             messages.Add(new SystemChatMessage(promptText));
         }
