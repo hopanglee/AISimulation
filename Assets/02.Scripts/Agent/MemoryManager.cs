@@ -7,6 +7,7 @@ using UnityEngine;
 using Newtonsoft.Json;
 using Agent;
 using Cysharp.Threading.Tasks;
+using Memory;
 
 /// <summary>
 /// Short Term Memory 엔트리 구조
@@ -18,14 +19,16 @@ public class ShortTermMemoryEntry
     public string type; // "perception", "thinking", "action_start", "action_complete", "plan", "sensor_update", "action_interrupt"
     public string content;
     public string details; // 추가 세부 정보 (JSON 형태)
+    public Dictionary<string, float> emotions; // 감정과 강도
     
-    public ShortTermMemoryEntry(string type, string content, string details = null)
+    public ShortTermMemoryEntry(string type, string content, string details = null, Dictionary<string, float> emotions = null)
     {
         var timeService = Services.Get<ITimeService>();
         this.timestamp = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 0, 0);
         this.type = type;
         this.content = content;
         this.details = details;
+        this.emotions = emotions ?? new Dictionary<string, float>();
     }
 }
 
@@ -45,7 +48,7 @@ public class ShortTermMemoryData
 public class MemoryManager
 {
     // Enhanced Memory System Agents
-    public EnhancedMemoryAgent enhancedMemoryAgent;
+    public LocationMemoryManager locationMemoryAgent;
     public RelationshipAgent relationshipAgent;
     public LongTermMemoryConsolidationAgent consolidationAgent;
     public LongTermMemoryFilterAgent filterAgent;
@@ -59,7 +62,7 @@ public class MemoryManager
     
     // Long Term Memory 관리
     private string longTermMemoryPath;
-    private List<Dictionary<string, object>> longTermMemories;
+    private List<LongTermMemory> longTermMemories;
     
     public MemoryManager(Actor owner)
     {
@@ -77,7 +80,7 @@ public class MemoryManager
     {
         try
         {
-            enhancedMemoryAgent = new EnhancedMemoryAgent(owner);
+            locationMemoryAgent = new LocationMemoryManager(owner);
             relationshipAgent = new RelationshipAgent(owner);
             consolidationAgent = new LongTermMemoryConsolidationAgent(owner);
             filterAgent = new LongTermMemoryFilterAgent(owner);
@@ -158,9 +161,9 @@ public class MemoryManager
     /// <summary>
     /// Short Term Memory에 엔트리를 추가합니다.
     /// </summary>
-    public void AddShortTermMemory(string type, string content, string details = null)
+    public void AddShortTermMemory(string type, string content, string details = null, Dictionary<string, float> emotions = null)
     {
-        var entry = new ShortTermMemoryEntry(type, content, details);
+        var entry = new ShortTermMemoryEntry(type, content, details, emotions);
         shortTermMemory.entries.Add(entry);
         SaveShortTermMemory();
         
@@ -195,19 +198,19 @@ public class MemoryManager
             try
             {
                 string json = File.ReadAllText(longTermMemoryPath);
-                longTermMemories = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(json);
+                longTermMemories = JsonConvert.DeserializeObject<List<LongTermMemory>>(json);
                 if (longTermMemories == null)
-                    longTermMemories = new List<Dictionary<string, object>>();
+                    longTermMemories = new List<LongTermMemory>();
             }
             catch (Exception ex)
             {
                 Debug.LogWarning($"Long Term Memory 로드 실패: {ex.Message}");
-                longTermMemories = new List<Dictionary<string, object>>();
+                longTermMemories = new List<LongTermMemory>();
             }
         }
         else
         {
-            longTermMemories = new List<Dictionary<string, object>>();
+            longTermMemories = new List<LongTermMemory>();
         }
     }
     
@@ -231,15 +234,15 @@ public class MemoryManager
     /// <summary>
     /// Long Term Memory 목록을 반환합니다.
     /// </summary>
-    public List<Dictionary<string, object>> GetLongTermMemories()
+    public List<LongTermMemory> GetLongTermMemories()
     {
-        return longTermMemories ?? new List<Dictionary<string, object>>();
+        return longTermMemories ?? new List<LongTermMemory>();
     }
     
     /// <summary>
     /// Long Term Memory에 새 메모리를 추가합니다.
     /// </summary>
-    public void AddLongTermMemories(List<Dictionary<string, object>> memories)
+    public void AddLongTermMemories(List<LongTermMemory> memories)
     {
         if (memories != null && memories.Count > 0)
         {
@@ -252,7 +255,7 @@ public class MemoryManager
     /// <summary>
     /// Long Term Memory를 업데이트합니다.
     /// </summary>
-    public void UpdateLongTermMemories(List<Dictionary<string, object>> updatedMemories)
+    public void UpdateLongTermMemories(List<LongTermMemory> updatedMemories)
     {
         if (updatedMemories != null)
         {
@@ -276,7 +279,7 @@ public class MemoryManager
             situation_interpretation = perceptionResult.situation_interpretation
         });
         
-        AddShortTermMemory("perception", content, details);
+        AddShortTermMemory("perception", content, details, perceptionResult.emotions);
     }
     
     /// <summary>
@@ -355,9 +358,10 @@ public class MemoryManager
     /// <summary>
     /// 위치 메모리를 업데이트합니다.
     /// </summary>
-    public void UpdateLocationMemory(string locationKey, string locationName, List<object> objects, List<Actor> actors)
+    public void UpdateLocationMemory(string locationName, 
+        List<string> items, List<string> blocks, List<string> actors, List<string> buildings, List<string> connectedAreas)
     {
-        enhancedMemoryAgent?.UpdateLocationMemory(locationKey, locationName, objects, actors);
+        locationMemoryAgent?.UpdateLocationMemory(locationName, items, blocks, actors, buildings, connectedAreas);
     }
     
     // === Relationship Operations ===

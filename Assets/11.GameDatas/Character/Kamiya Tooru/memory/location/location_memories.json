@@ -1,51 +1,16 @@
 {
-  "areas": {
     "Kamiya Office": {
-      "description": "Kamiya의 사무실",
-      "memories": [
-        {
-          "type": "observation",
-          "entityName": "Laptop",
-          "locationKey": "Desk",
-          "description": "Kamiya의 노트북이 책상 위에 있다",
-          "lastSeen": "2024-01-01T09:00:00Z",
-          "isCurrentlyThere": true
-        },
-        {
-          "type": "observation",
-          "entityName": "Coffee Mug",
-          "locationKey": "Desk",
-          "description": "커피 머그잔이 책상 위에 있다",
-          "lastSeen": "2024-01-01T08:30:00Z",
-          "isCurrentlyThere": true
-        },
-        {
-          "type": "observation",
-          "entityName": "Notebook",
-          "locationKey": "Drawer",
-          "description": "메모장이 서랍에 있다",
-          "lastSeen": "2024-01-01T07:45:00Z",
-          "isCurrentlyThere": true
-        },
-        {
-          "type": "observation",
-          "entityName": "Phone",
-          "locationKey": "Pocket",
-          "description": "핸드폰이 주머니에 있다",
-          "lastSeen": "2024-01-01T08:00:00Z",
-          "isCurrentlyThere": true
-        },
-        {
-          "type": "observation",
-          "entityName": "Keys",
-          "locationKey": "Hook",
-          "description": "열쇠가 벽에 걸려있다",
-          "lastSeen": "2024-01-01T07:30:00Z",
-          "isCurrentlyThere": true
-        }
-      ],
-      "lastVisited": "2024-01-01T09:00:00Z"
+        "items": [
+            "노트북",
+            "커피 머그잔",
+            "메모장",
+            "핸드폰",
+            "열쇠"
+        ],
+        "blocks": [],
+        "actors": [],
+        "buildings": [],
+        "connectedAreas": [],
+        "lastSeen": "2024-01-01T09:00:00Z"
     }
-  },
-  "lastUpdated": "2024-01-01T09:00:00Z"
-} 
+}

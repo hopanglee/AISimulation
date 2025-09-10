@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 using OpenAI.Chat;
+using Memory;
 
 namespace Agent
 {
@@ -141,15 +142,18 @@ namespace Agent
             }
 
             // 분석할 경험 데이터 준비
-            var consolidatedMemories = new List<Dictionary<string, object>>();
+            var consolidatedMemories = new List<ConsolidatedMemory>();
             foreach (var chunk in filteredResult.ConsolidatedChunks)
             {
-                consolidatedMemories.Add(new Dictionary<string, object>
+                var consolidatedMemory = new ConsolidatedMemory
                 {
-                    ["summary"] = chunk.Summary,
-                    ["main_events"] = chunk.MainEvents,
-                    ["emotions"] = chunk.Emotions
-                });
+                    timestamp = new GameTime(2025, 1, 1, 0, 0), // 기본값
+                    summary = chunk.Summary,
+                    keyPoints = chunk.MainEvents ?? new List<string>(),
+                    emotions = chunk.Emotions ?? new Dictionary<string, float>(),
+                    relatedMemories = new List<string>() // 청크 ID를 사용할 수 있음
+                };
+                consolidatedMemories.Add(consolidatedMemory);
             }
 
             var experienceData = new
@@ -221,6 +225,6 @@ namespace Agent
             };
         }
     }
-
+    
     }
 }

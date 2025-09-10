@@ -152,9 +152,18 @@ public class SuperegoAgent : GPT
                                         ""type"": ""string""
                                     },
                                     ""description"": ""이성적 사고체인""
+                                },
+                                ""emotions"": {
+                                    ""type"": ""object"",
+                                    ""additionalProperties"": {
+                                        ""type"": ""number"",
+                                        ""minimum"": 0.0,
+                                        ""maximum"": 1.0
+                                    },
+                                    ""description"": ""감정과 강도 (0.0~1.0)""
                                 }
                             },
-                            ""required"": [""situation_interpretation"", ""thought_chain""]
+                            ""required"": [""situation_interpretation"", ""thought_chain"", ""emotions""]
                         }"
                     )
                 ),
@@ -217,4 +226,5 @@ public class SuperegoResult
 {
     public string situation_interpretation;    // 이성적 관점의 상황 인식
     public List<string> thought_chain;         // 이성적 사고체인
+    public Dictionary<string, float> emotions; // 감정과 강도
 }

@@ -5,6 +5,7 @@ using OpenAI.Chat;
 using UnityEngine;
 using Agent;
 using PlanStructures;
+using Memory;
 
 namespace Agent.Tools
 {
@@ -581,7 +582,7 @@ namespace Agent.Tools
                     }
                 }
 
-                var memories = mainActor.brain.memoryManager.GetLongTermMemories() ?? new List<Dictionary<string, object>>();
+                var memories = mainActor.brain.memoryManager.GetLongTermMemories() ?? new List<LongTermMemory>();
                 
                 // 검색 쿼리 필터링
                 var filteredMemories = memories.AsEnumerable();
@@ -590,10 +591,8 @@ namespace Agent.Tools
                 {
                     filteredMemories = filteredMemories.Where(m => 
                     {
-                        var content = m.GetValueOrDefault("memory", "").ToString();
-                        var summary = m.GetValueOrDefault("summary", "").ToString();
-                        return content.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
-                               summary.Contains(searchQuery, StringComparison.OrdinalIgnoreCase);
+                        var content = m.content ?? "";
+                        return content.Contains(searchQuery, StringComparison.OrdinalIgnoreCase);
                     });
                 }
                 
@@ -610,16 +609,10 @@ namespace Agent.Tools
 
                 var memoryTexts = resultMemories.Select(m => 
                 {
-                    var date = m.GetValueOrDefault("date", "Unknown").ToString();
-                    var content = m.GetValueOrDefault("memory", "No content").ToString();
-                    var summary = m.GetValueOrDefault("summary", "").ToString();
+                    var date = m.timestamp.ToString();
+                    var content = m.content ?? "No content";
                     
-                    var text = $"[{date}] {content}";
-                    if (!string.IsNullOrEmpty(summary))
-                    {
-                        text += $" (Summary: {summary})";
-                    }
-                    return text;
+                    return $"[{date}] {content}";
                 });
                 
                 return $"Long-term memories ({resultMemories.Count} found):\n\n{string.Join("\n\n", memoryTexts)}";
@@ -641,7 +634,7 @@ namespace Agent.Tools
                 }
 
                 var shortTermMemories = mainActor.brain.memoryManager.GetShortTermMemory() ?? new List<ShortTermMemoryEntry>();
-                var longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories() ?? new List<Dictionary<string, object>>();
+                var longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories() ?? new List<LongTermMemory>();
                 
                 // 단기 기억 통계
                 var stmStats = new Dictionary<string, int>();

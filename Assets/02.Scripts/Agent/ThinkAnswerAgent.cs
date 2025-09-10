@@ -17,6 +17,10 @@ namespace Agent
         public ThinkAnswerAgent(Actor actor)
         {
             this.actor = actor;
+            options = new ChatCompletionOptions
+            {
+                Temperature = 0.7f
+            };
         }
 
         /// <summary>
@@ -26,7 +30,7 @@ namespace Agent
         /// <param name="thinkScope">사색 범위</param>
         /// <param name="topic">사색 주제</param>
         /// <param name="memoryContext">관련 메모리 정보</param>
-        /// <returns>답변 내용</returns>
+        /// <returns>질문에 대한 답변</returns>
         public async UniTask<string> GenerateAnswerAsync(string question, string thinkScope, string topic, string memoryContext)
         {
             try
@@ -42,11 +46,6 @@ namespace Agent
                 // 질문을 user message로 추가
                 messages.Add(new UserChatMessage(question));
 
-                var options = new ChatCompletionOptions
-                {
-                    Temperature = 0.7f
-                };
-
                 // 메모리 툴 추가
                 Agent.Tools.ToolManager.AddToolSetToOptions(options, Agent.Tools.ToolManager.ToolSets.Memory);
 
@@ -54,10 +53,8 @@ namespace Agent
                 
                 if (string.IsNullOrEmpty(response))
                 {
-                    Debug.LogError($"[ThinkAnswerAgent] 답변 생성 실패: 응답이 비어있거나 null임");
-                    var fallback = GetFallbackAnswer(thinkScope, topic);
-                    messages.Add(new AssistantChatMessage(fallback));
-                    return fallback;
+                    Debug.LogError($"[ThinkAnswerAgent] 답변 생성 실패: 응답이 null임");
+                    return GetFallbackAnswer(thinkScope, topic);
                 }
 
                 return response;
@@ -126,7 +123,7 @@ namespace Agent
         }
 
         /// <summary>
-        /// 실패시 사용할 기본 답변들을 반환합니다
+        /// 실패시 사용할 기본 답변 결과를 반환합니다
         /// </summary>
         private string GetFallbackAnswer(string thinkScope, string topic)
         {
@@ -162,7 +159,9 @@ namespace Agent
             };
 
             var random = new System.Random();
-            return answers[random.Next(answers.Length)];
+            var answer = answers[random.Next(answers.Length)];
+            
+            return answer;
         }
     }
 }

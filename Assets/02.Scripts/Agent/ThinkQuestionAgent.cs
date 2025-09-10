@@ -17,6 +17,10 @@ namespace Agent
         public ThinkQuestionAgent(Actor actor)
         {
             this.actor = actor;
+            options = new ChatCompletionOptions
+            {
+                Temperature = 0.8f // 창의적인 질문을 위해 높은 온도
+            };
         }
 
         /// <summary>
@@ -41,22 +45,15 @@ namespace Agent
                     var initialUserMessage = LoadFirstUserMessage(topic, memoryContext);
                     messages.Add(new UserChatMessage(initialUserMessage));
 
-                    var initialOptions = new ChatCompletionOptions
-                    {
-                        Temperature = 0.8f // 창의적인 질문을 위해 높은 온도
-                    };
-
-                    var initialResponse = await SendGPTAsync<string>(messages, initialOptions);
+                    var initialResponse = await SendGPTAsync<string>(messages, options);
                     
                     if (string.IsNullOrEmpty(initialResponse))
                     {
-                        Debug.LogError($"[ThinkQuestionAgent] 첫 질문 생성 실패: 응답이 비어있거나 null임");
-                        var fallback = GetFallbackQuestion(thinkScope, topic);
-                        messages.Add(new AssistantChatMessage(fallback));
-                        return fallback;
+                        Debug.LogError($"[ThinkQuestionAgent] 첫 질문 생성 실패: 응답이 null임");
+                        return GetFallbackQuestion(thinkScope, topic);
                     }
 
-                    return initialResponse.Trim();
+                    return initialResponse;
                 }
 
                 // 이전 답변을 user message로 추가
@@ -65,22 +62,15 @@ namespace Agent
                     messages.Add(new UserChatMessage(previousAnswer));
                 }
 
-                var options = new ChatCompletionOptions
-                {
-                    Temperature = 0.8f // 창의적인 질문을 위해 높은 온도
-                };
-
                 var response = await SendGPTAsync<string>(messages, options);
                 
                 if (string.IsNullOrEmpty(response))
                 {
-                    Debug.LogError($"[ThinkQuestionAgent] 질문 생성 실패: 응답이 비어있거나 null임");
-                    var fallback = GetFallbackQuestion(thinkScope, topic);
-                    messages.Add(new AssistantChatMessage(fallback));
-                    return fallback;
+                    Debug.LogError($"[ThinkQuestionAgent] 질문 생성 실패: 응답이 null임");
+                    return GetFallbackQuestion(thinkScope, topic);
                 }
 
-                return response.Trim();
+                return response;
             }
             catch (Exception ex)
             {
@@ -170,7 +160,7 @@ namespace Agent
         }
 
         /// <summary>
-        /// 실패시 사용할 기본 질문들을 반환합니다
+        /// 실패시 사용할 기본 질문 결과를 반환합니다
         /// </summary>
         private string GetFallbackQuestion(string thinkScope, string topic)
         {
@@ -206,7 +196,9 @@ namespace Agent
             };
 
             var random = new System.Random();
-            return questions[random.Next(questions.Length)];
+            var question = questions[random.Next(questions.Length)];
+            
+            return question;
         }
     }
 }

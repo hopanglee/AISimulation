@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using OpenAI.Chat;
 using UnityEngine;
+using Memory;
 
 /// <summary>
 /// 통합된 메모리 청크
@@ -29,7 +30,7 @@ public class ConsolidatedMemoryChunk
     public List<string> PeopleInvolved { get; set; } = new List<string>();
     
     [JsonProperty("emotions")]
-    public List<string> Emotions { get; set; } = new List<string>();
+    public Dictionary<string, float> Emotions { get; set; } = new Dictionary<string, float>();
     
     [JsonProperty("original_entries_count")]
     public int OriginalEntriesCount { get; set; }
@@ -109,9 +110,13 @@ public class LongTermMemoryConsolidationAgent : GPT
                                                 ""description"": ""People involved in this chunk""
                                             },
                                             ""emotions"": {
-                                                ""type"": ""array"",
-                                                ""items"": { ""type"": ""string"" },
-                                                ""description"": ""Emotions experienced in this chunk""
+                                                ""type"": ""object"",
+                                                ""additionalProperties"": {
+                                                    ""type"": ""number"",
+                                                    ""minimum"": 0.0,
+                                                    ""maximum"": 1.0
+                                                },
+                                                ""description"": ""Emotions experienced in this chunk with intensity values""
                                             },
                                             ""original_entries_count"": {
                                                 ""type"": ""integer"",
@@ -226,23 +231,23 @@ public class LongTermMemoryConsolidationAgent : GPT
     /// <param name="consolidationResult">통합 결과</param>
     /// <param name="currentTime">현재 시간</param>
     /// <returns>Long Term Memory 엔트리들</returns>
-    public List<Dictionary<string, object>> ConvertToLongTermFormat(
+    public List<LongTermMemory> ConvertToLongTermFormat(
         MemoryConsolidationResult consolidationResult, 
         GameTime currentTime)
     {
-        var longTermEntries = new List<Dictionary<string, object>>();
+        var longTermEntries = new List<LongTermMemory>();
 
         foreach (var chunk in consolidationResult.ConsolidatedChunks)
         {
-            var entry = new Dictionary<string, object>
+            var entry = new LongTermMemory
             {
-                ["date"] = $"{currentTime.year}-{currentTime.month:D2}-{currentTime.day:D2} {GetDayOfWeek(currentTime)} {currentTime.hour:D2}:{currentTime.minute:D2}:00",
-                ["location"] = "Multiple", // 여러 위치가 포함될 수 있음
-                ["title"] = GenerateTitle(chunk.Summary),
-                ["people"] = chunk.PeopleInvolved,
-                ["emotion"] = chunk.Emotions.FirstOrDefault() ?? "neutral",
-                ["action"] = ExtractMainAction(chunk.MainEvents),
-                ["memory"] = chunk.Summary
+                timestamp = currentTime,
+                type = "consolidated",
+                category = "daily_summary",
+                content = chunk.Summary,
+                emotions = chunk.Emotions ?? new Dictionary<string, float>(),
+                relatedActors = chunk.PeopleInvolved ?? new List<string>(),
+                location = "Multiple" // 여러 위치가 포함될 수 있음
             };
 
             longTermEntries.Add(entry);
@@ -250,7 +255,7 @@ public class LongTermMemoryConsolidationAgent : GPT
 
         return longTermEntries;
     }
-
+    
     /// <summary>
     /// 요약에서 제목을 생성합니다.
     /// </summary>

@@ -1,51 +1,16 @@
 {
-    "areas": {
-        "Kamiya Office": {
-            "description": "카미야의 사무실",
-            "memories": [
-                {
-                    "type": "observation",
-                    "entityName": "노트북",
-                    "locationKey": "책상",
-                    "description": "카미ヤ의 노트북이 책상 위에 있다",
-                    "lastSeen": "2024-01-01T09:00:00Z",
-                    "isCurrentlyThere": true
-                },
-                {
-                    "type": "observation",
-                    "entityName": "커피 머그잔",
-                    "locationKey": "책상",
-                    "description": "커피 머그잔이 책상 위에 있다",
-                    "lastSeen": "2024-01-01T08:30:00Z",
-                    "isCurrentlyThere": true
-                },
-                {
-                    "type": "observation",
-                    "entityName": "메모장",
-                    "locationKey": "서랍",
-                    "description": "메모장이 서랍에 있다",
-                    "lastSeen": "2024-01-01T07:45:00Z",
-                    "isCurrentlyThere": true
-                },
-                {
-                    "type": "observation",
-                    "entityName": "핸드폰",
-                    "locationKey": "주머니",
-                    "description": "핸드폰이 주머니에 있다",
-                    "lastSeen": "2024-01-01T08:00:00Z",
-                    "isCurrentlyThere": true
-                },
-                {
-                    "type": "observation",
-                    "entityName": "열쇠",
-                    "locationKey": "고리",
-                    "description": "열쇠가 벽에 걸려있다",
-                    "lastSeen": "2024-01-01T07:30:00Z",
-                    "isCurrentlyThere": true
-                }
-            ],
-            "lastVisited": "2024-01-01T09:00:00Z"
-        }
-    },
-    "lastUpdated": "2024-01-01T09:00:00Z"
+    "Kamiya Office": {
+        "items": [
+            "노트북",
+            "커피 머그잔",
+            "메모장",
+            "핸드폰",
+            "열쇠"
+        ],
+        "blocks": [],
+        "actors": [],
+        "buildings": [],
+        "connectedAreas": [],
+        "lastSeen": "2024-01-01T09:00:00Z"
+    }
 }
