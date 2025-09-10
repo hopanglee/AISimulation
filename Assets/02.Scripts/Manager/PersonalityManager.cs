@@ -11,11 +11,11 @@ using UnityEngine;
 /// </summary>
 public class PersonalityManager
 {
-    private readonly string characterName;
+    private readonly Actor actor;
 
-    public PersonalityManager(string characterName)
+    public PersonalityManager(Actor actor)
     {
-        this.characterName = characterName;
+        this.actor = actor;
     }
 
     /// <summary>
@@ -29,18 +29,18 @@ public class PersonalityManager
         {
             if (!changeResult.has_personality_change)
             {
-                Debug.Log($"[PersonalityManager] {characterName}: 성격 변화 없음");
+                Debug.Log($"[PersonalityManager] {actor.Name}: 성격 변화 없음");
                 return true;
             }
 
             // CharacterMemoryManager를 통해 캐릭터 정보 로드
-            var memoryManager = new CharacterMemoryManager(characterName);
+            var memoryManager = new CharacterMemoryManager(actor);
             var characterInfo = memoryManager.GetCharacterInfo();
 
             // 현재 성격 특성 가져오기
             var currentPersonality = characterInfo.Personality ?? new List<string>();
 
-            Debug.Log($"[PersonalityManager] {characterName}: 현재 성격 특성: [{string.Join(", ", currentPersonality)}]");
+            Debug.Log($"[PersonalityManager] {actor.Name}: 현재 성격 특성: [{string.Join(", ", currentPersonality)}]");
 
             // CharacterInfo의 메서드를 사용하여 성격 특성 수정
             var traitsRemoved = new List<string>();
@@ -52,11 +52,11 @@ public class PersonalityManager
                 if (characterInfo.RemovePersonalityTrait(traitToRemove))
                 {
                     traitsRemoved.Add(traitToRemove);
-                    Debug.Log($"[PersonalityManager] {characterName}: 성격 특성 제거: {traitToRemove}");
+                    Debug.Log($"[PersonalityManager] {actor.Name}: 성격 특성 제거: {traitToRemove}");
                 }
                 else
                 {
-                    Debug.LogWarning($"[PersonalityManager] {characterName}: 제거하려는 특성이 없음: {traitToRemove}");
+                    Debug.LogWarning($"[PersonalityManager] {actor.Name}: 제거하려는 특성이 없음: {traitToRemove}");
                 }
             }
 
@@ -65,28 +65,28 @@ public class PersonalityManager
             {
                 characterInfo.AddPersonalityTrait(traitToAdd);
                 traitsAdded.Add(traitToAdd);
-                Debug.Log($"[PersonalityManager] {characterName}: 성격 특성 추가: {traitToAdd}");
+                Debug.Log($"[PersonalityManager] {actor.Name}: 성격 특성 추가: {traitToAdd}");
             }
 
             // 실제 변화가 있었는지 확인
             if (traitsRemoved.Count == 0 && traitsAdded.Count == 0)
             {
-                Debug.Log($"[PersonalityManager] {characterName}: 실제 성격 변화 없음");
+                Debug.Log($"[PersonalityManager] {actor.Name}: 실제 성격 변화 없음");
                 return true;
             }
 
             // CharacterMemoryManager를 통해 저장 (CharacterInfo의 메서드들이 이미 데이터를 수정함)
             var success = await memoryManager.SaveCharacterInfoAsync();
 
-            Debug.Log($"[PersonalityManager] {characterName}: 성격 변화 적용 완료");
-            Debug.Log($"[PersonalityManager] {characterName}: 새로운 성격 특성: [{string.Join(", ", characterInfo.Personality)}]");
-            Debug.Log($"[PersonalityManager] {characterName}: 변화 이유: {changeResult.reasoning}");
+            Debug.Log($"[PersonalityManager] {actor.Name}: 성격 변화 적용 완료");
+            Debug.Log($"[PersonalityManager] {actor.Name}: 새로운 성격 특성: [{string.Join(", ", characterInfo.Personality)}]");
+            Debug.Log($"[PersonalityManager] {actor.Name}: 변화 이유: {changeResult.reasoning}");
 
             return true;
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[PersonalityManager] {characterName}: 성격 변화 적용 실패: {ex.Message}");
+            Debug.LogError($"[PersonalityManager] {actor.Name}: 성격 변화 적용 실패: {ex.Message}");
             return false;
         }
     }
@@ -99,14 +99,14 @@ public class PersonalityManager
     {
         try
         {
-            var memoryManager = new CharacterMemoryManager(characterName);
+            var memoryManager = new CharacterMemoryManager(actor);
             var characterInfo = memoryManager.GetCharacterInfo();
 
             return characterInfo.Personality ?? new List<string>();
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[PersonalityManager] {characterName}: 성격 특성 로드 실패: {ex.Message}");
+            Debug.LogError($"[PersonalityManager] {actor.Name}: 성격 특성 로드 실패: {ex.Message}");
             return new List<string>();
         }
     }
@@ -119,14 +119,14 @@ public class PersonalityManager
     {
         try
         {
-            var memoryManager = new CharacterMemoryManager(characterName);
+            var memoryManager = new CharacterMemoryManager(actor);
             var characterInfo = memoryManager.GetCharacterInfo();
 
             return characterInfo.Temperament ?? new List<string>();
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[PersonalityManager] {characterName}: 기질 로드 실패: {ex.Message}");
+            Debug.LogError($"[PersonalityManager] {actor.Name}: 기질 로드 실패: {ex.Message}");
             return new List<string>();
         }
     }
@@ -148,7 +148,7 @@ public class PersonalityManager
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[PersonalityManager] {characterName}: 성격 요약 생성 실패: {ex.Message}");
+            Debug.LogError($"[PersonalityManager] {actor.Name}: 성격 요약 생성 실패: {ex.Message}");
             return "성격 정보를 가져올 수 없습니다.";
         }
     }

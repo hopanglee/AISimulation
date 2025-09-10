@@ -1,3 +1,31 @@
 {
-    "memory": "Kamiya Tooru is a boy who just met a girl named Hino Maori yesterday. He was immediately drawn to her when he saw her reading in the library. She is passionate about literature and writing. Yesterday, he discovered that she suffers from a condition where she loses her memories every day when she sleeps. He is determined to help her remember their connection and support her through this difficult situation."
+  "character_name": "Kamiya Tooru",
+  "age": 18,
+  "location": "School Library",
+  "relationship_type": "Friend",
+  "closeness": 70,
+  "trust": 80,
+  "last_interaction": "Met yesterday in the library, discovered her memory condition",
+  "interaction_history": [
+    "First meeting in the library",
+    "Discovered her memory loss condition",
+    "Promised to help her remember"
+  ],
+  "personality_traits": [
+    "Caring",
+    "Determined",
+    "Supportive",
+    "Understanding"
+  ],
+  "shared_interests": [
+    "Literature",
+    "Reading",
+    "Writing"
+  ],
+  "shared_memories": [
+    "Meeting in the library",
+    "Learning about her memory condition",
+    "Making a promise to help"
+  ],
+  "notes": "Kamiya Tooru is a boy who just met a girl named Hino Maori yesterday. He was immediately drawn to her when he saw her reading in the library. She is passionate about literature and writing. Yesterday, he discovered that she suffers from a condition where she loses her memories every day when she sleeps. He is determined to help her remember their connection and support her through this difficult situation."
 }

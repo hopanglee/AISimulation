@@ -27,8 +27,6 @@ public class RelationshipUpdate
 public class LocationMemoryManager
 {
     private Actor actor;
-    private MemoryAgent baseMemoryAgent; // 기존 MemoryAgent 활용
-    private CharacterMemoryManager memoryManager;
     
     
     // Location Memory 관리 (location.json) - SerializedDictionary<string, LocationData>
@@ -38,8 +36,6 @@ public class LocationMemoryManager
     public LocationMemoryManager(Actor actor)
     {
         this.actor = actor;
-        this.baseMemoryAgent = new MemoryAgent(actor);
-        this.memoryManager = new CharacterMemoryManager(actor.Name);
         
         InitializeMemoryPaths();
         LoadLocationMemory();
@@ -141,24 +137,5 @@ public class LocationMemoryManager
     {
         // LocationMemory가 단일 객체로 변경되어 이 메서드는 더 이상 필요하지 않음
         // 필요시 다른 방식으로 구현
-    }
-
-
-    /// <summary>
-    /// 기존 MemoryAgent의 기능들을 위임합니다.
-    /// </summary>
-    public async UniTask<MemoryAgent.MemoryReasoning> ProcessMemoryRequestAsync(string request)
-    {
-        return await baseMemoryAgent.ProcessMemoryRequestAsync(request);
-    }
-
-    public void ExecuteMemoryAction(MemoryAgent.MemoryAction action)
-    {
-        baseMemoryAgent.ExecuteMemoryAction(action);
-    }
-
-    public string GetMemorySummary()
-    {
-        return baseMemoryAgent.GetMemorySummary();
     }
 }

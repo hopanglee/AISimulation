@@ -49,7 +49,6 @@ public class MemoryManager
 {
     // Enhanced Memory System Agents
     public LocationMemoryManager locationMemoryAgent;
-    public RelationshipAgent relationshipAgent;
     public LongTermMemoryConsolidationAgent consolidationAgent;
     public LongTermMemoryFilterAgent filterAgent;
     public LongTermMemoryMaintenanceAgent maintenanceAgent;
@@ -81,7 +80,6 @@ public class MemoryManager
         try
         {
             locationMemoryAgent = new LocationMemoryManager(owner);
-            relationshipAgent = new RelationshipAgent(owner);
             consolidationAgent = new LongTermMemoryConsolidationAgent(owner);
             filterAgent = new LongTermMemoryFilterAgent(owner);
             maintenanceAgent = new LongTermMemoryMaintenanceAgent(owner);
@@ -364,50 +362,6 @@ public class MemoryManager
         locationMemoryAgent?.UpdateLocationMemory(locationName, items, blocks, actors, buildings, connectedAreas);
     }
     
-    // === Relationship Operations ===
-    
-    /// <summary>
-    /// 관계 업데이트를 처리합니다.
-    /// </summary>
-    public async UniTask ProcessRelationshipUpdatesAsync(PerceptionResult perceptionResult)
-    {
-        try
-        {
-            if (relationshipAgent == null)
-            {
-                Debug.LogWarning("[MemoryManager] RelationshipAgent is null");
-                return;
-            }
-            
-            // 현재 관계 정보 로드 (관계 파일에서)
-            var currentRelationships = LoadCurrentRelationships();
-            
-            var relationshipUpdates = await relationshipAgent.DecideRelationshipUpdatesAsync(perceptionResult, currentRelationships);
-            
-            if (relationshipUpdates != null && relationshipUpdates.ShouldUpdate && relationshipUpdates.Updates != null)
-            {
-                foreach (var update in relationshipUpdates.Updates)
-                {
-                    Debug.Log($"[MemoryManager] Relationship update: {update.Key} = {update.NewValue}");
-                    // 실제 관계 업데이트 로직을 여기에 구현
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"[MemoryManager] Failed to process relationship updates: {ex.Message}");
-        }
-    }
-    
-    /// <summary>
-    /// 현재 관계 정보를 로드합니다.
-    /// </summary>
-    private Dictionary<string, object> LoadCurrentRelationships()
-    {
-        // 실제 구현에서는 관계 파일에서 로드
-        // 임시로 빈 Dictionary 반환
-        return new Dictionary<string, object>();
-    }
     
     // === Long Term Memory Operations ===
     
@@ -485,7 +439,7 @@ public class MemoryManager
             // 성격 변화 적용
             if (changeResult.has_personality_change)
             {
-                var personalityManager = new PersonalityManager(owner.Name);
+                var personalityManager = new PersonalityManager(owner);
                 var success = await personalityManager.ApplyPersonalityChangeAsync(changeResult);
                 
                 if (success)
@@ -574,6 +528,96 @@ public class MemoryManager
         var ltmCount = GetLongTermMemories().Count;
         
         Debug.Log($"[MemoryManager] Memory Status - STM: {stmCount} entries, LTM: {ltmCount} memories");
+    }
+    
+    /// <summary>
+    /// 모든 메모리 파일을 백업합니다.
+    /// </summary>
+    public async UniTask<bool> BackupAllMemoriesAsync()
+    {
+        try
+        {
+            var backupPath = GetBackupPath();
+            if (!Directory.Exists(backupPath))
+            {
+                Directory.CreateDirectory(backupPath);
+            }
+
+            // Short Term Memory 백업
+            if (File.Exists(shortTermMemoryPath))
+            {
+                var fileName = Path.GetFileName(shortTermMemoryPath);
+                var backupFile = Path.Combine(backupPath, fileName);
+                await File.WriteAllTextAsync(backupFile, await File.ReadAllTextAsync(shortTermMemoryPath));
+            }
+
+            // Long Term Memory 백업
+            if (File.Exists(longTermMemoryPath))
+            {
+                var fileName = Path.GetFileName(longTermMemoryPath);
+                var backupFile = Path.Combine(backupPath, fileName);
+                await File.WriteAllTextAsync(backupFile, await File.ReadAllTextAsync(longTermMemoryPath));
+            }
+
+            Debug.Log($"[MemoryManager] {owner.Name}: All memories backed up successfully");
+            return true;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[MemoryManager] {owner.Name}: Failed to backup memories: {e.Message}");
+            return false;
+        }
+    }
+    
+    /// <summary>
+    /// 백업된 메모리 파일들을 복원합니다.
+    /// </summary>
+    public async UniTask<bool> RestoreAllMemoriesAsync()
+    {
+        try
+        {
+            var backupPath = GetBackupPath();
+            if (!Directory.Exists(backupPath))
+            {
+                Debug.LogWarning($"[MemoryManager] {owner.Name}: Backup directory not found: {backupPath}");
+                return false;
+            }
+
+            // Short Term Memory 복원
+            var shortTermBackupFile = Path.Combine(backupPath, Path.GetFileName(shortTermMemoryPath));
+            if (File.Exists(shortTermBackupFile))
+            {
+                await File.WriteAllTextAsync(shortTermMemoryPath, await File.ReadAllTextAsync(shortTermBackupFile));
+            }
+
+            // Long Term Memory 복원
+            var longTermBackupFile = Path.Combine(backupPath, Path.GetFileName(longTermMemoryPath));
+            if (File.Exists(longTermBackupFile))
+            {
+                await File.WriteAllTextAsync(longTermMemoryPath, await File.ReadAllTextAsync(longTermBackupFile));
+            }
+
+            // 메모리 다시 로드
+            LoadShortTermMemory();
+            LoadLongTermMemory();
+
+            Debug.Log($"[MemoryManager] {owner.Name}: All memories restored successfully");
+            return true;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[MemoryManager] {owner.Name}: Failed to restore memories: {e.Message}");
+            return false;
+        }
+    }
+    
+    /// <summary>
+    /// 백업 경로를 가져옵니다.
+    /// </summary>
+    private string GetBackupPath()
+    {
+        string basePath = Path.Combine(Application.dataPath, "11.GameDatas", "Character", owner.Name, "memory");
+        return Path.Combine(basePath, "Backup");
     }
 }
 

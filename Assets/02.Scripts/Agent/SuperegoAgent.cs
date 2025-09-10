@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using Agent;
 using OpenAI.Chat;
 using Agent.Tools;
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 
 /// <summary>
 /// 이성 에이전트 - 선한 특성을 가진 도덕적 판단 담당
@@ -32,27 +34,21 @@ public class SuperegoAgent : GPT
     {
         try
         {
-            var promptPath = "Assets/11.GameDatas/prompt/agent/kr/SuperegoAgentPrompt.txt";
-            if (System.IO.File.Exists(promptPath))
+            // 캐릭터 정보와 기억을 동적으로 로드
+            var characterInfo = LoadCharacterInfo();
+            var characterMemory = LoadCharacterMemory();
+            
+            // 플레이스홀더 교체를 위한 딕셔너리 생성
+            var replacements = new Dictionary<string, string>
             {
-                var promptText = System.IO.File.ReadAllText(promptPath);
-                
-                // 캐릭터 정보와 기억을 동적으로 로드
-                var characterInfo = LoadCharacterInfo();
-                var characterMemory = LoadCharacterMemory();
-                
-                // 프롬프트 텍스트의 플레이스홀더를 실제 데이터로 교체
-                promptText = promptText.Replace("{info}", characterInfo);
-                promptText = promptText.Replace("{memory}", characterMemory);
-                
-                messages.Add(new SystemChatMessage(promptText));
-            }
-            else
-            {
-                Debug.LogWarning($"[SuperegoAgent] 프롬프트 파일을 찾을 수 없음: {promptPath}");
-                Debug.LogError($"[SuperegoAgent] 프롬프트 파일이 없어서 에이전트를 초기화할 수 없습니다.");
-                throw new System.IO.FileNotFoundException($"프롬프트 파일을 찾을 수 없음: {promptPath}");
-            }
+                { "info", characterInfo },
+                { "memory", characterMemory }
+            };
+            
+            // PromptLoader를 사용하여 프롬프트 로드 및 플레이스홀더 교체
+            var promptText = PromptLoader.LoadPromptWithReplacements("SuperegoAgentPrompt", replacements);
+            
+            messages.Add(new SystemChatMessage(promptText));
         }
         catch (Exception ex)
         {
@@ -73,14 +69,11 @@ public class SuperegoAgent : GPT
                 return "캐릭터 정보를 찾을 수 없습니다.";
             }
 
-            var promptService = Services.Get<IPromptService>();
-            if (promptService != null)
+            var characterMemoryManager = new CharacterMemoryManager(actor);
+            var characterInfo = characterMemoryManager.GetCharacterInfo();
+            if (characterInfo != null)
             {
-                var infoJson = promptService.GetCharacterInfoJson(actor.Name);
-                if (!string.IsNullOrEmpty(infoJson))
-                {
-                    return $"캐릭터 정보:\n{infoJson}";
-                }
+                return $"캐릭터 정보:\n{JsonConvert.SerializeObject(characterInfo, Formatting.Indented)}";
             }
             
             var infoPath = $"Assets/11.GameDatas/Character/{actor.Name}/info/info.json";
@@ -111,11 +104,27 @@ public class SuperegoAgent : GPT
                 return "캐릭터 기억이 없습니다.";
             }
 
-            var memoryManager = new CharacterMemoryManager(actor.Name);
-            var memorySummary = memoryManager.GetMemorySummary();
-            
-            if (!string.IsNullOrEmpty(memorySummary))
+            // Brain의 MemoryManager를 통해 메모리 정보 가져오기
+            if (actor is MainActor mainActor && mainActor.brain?.memoryManager != null)
             {
+                var shortTermMemories = mainActor.brain.memoryManager.GetShortTermMemory();
+                var longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories();
+                
+                var memorySummary = $"단기 메모리 ({shortTermMemories.Count}개):\n";
+                foreach (var memory in shortTermMemories)
+                {
+                    memorySummary += $"- {memory.content}\n";
+                }
+                
+                if (longTermMemories.Count > 0)
+                {
+                    memorySummary += $"\n장기 메모리 ({longTermMemories.Count}개):\n";
+                    foreach (var memory in longTermMemories)
+                    {
+                        memorySummary += $"- {memory.content}\n";
+                    }
+                }
+                
                 return $"캐릭터 기억:\n{memorySummary}";
             }
             

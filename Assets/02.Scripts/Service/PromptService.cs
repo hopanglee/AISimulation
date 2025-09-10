@@ -7,8 +7,6 @@ public interface IPromptService : IService
     string GetPromptText(string promptName);
     string GetActionPromptJson(string actionPromptFile);
     string GetNpcPromptText(string npcPromptFile);
-    string GetCharacterInfoJson(string characterName);
-    string GetMemoryJson(string characterName, string memoryType, string memoryFileName);
 }
 
 public class PromptService : IPromptService
@@ -57,49 +55,6 @@ public class PromptService : IPromptService
         return ReadFirstExisting(locPath, enPath, rootPath);
     }
 
-    public string GetCharacterInfoJson(string characterName)
-    {
-        // localization이 null인 경우 직접 경로 사용
-        string locPath = null;
-        if (localization != null)
-        {
-            try
-            {
-                locPath = localization.GetCharacterInfoPath(characterName);
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogWarning($"[PromptService] localization.GetCharacterInfoPath 오류: {ex.Message}");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("[PromptService] localization이 null입니다. 직접 경로만 사용합니다.");
-        }
-        
-        var rootPath = $"Assets/11.GameDatas/Character/{characterName}/info/info.json";
-        return ReadFirstExisting(locPath, rootPath);
-    }
-
-    public string GetMemoryJson(string characterName, string memoryType, string memoryFileName)
-    {
-        string locPath = null;
-        if (localization != null)
-        {
-            try
-            {
-                locPath = localization.GetMemoryPath(characterName, memoryType, memoryFileName);
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogWarning($"[PromptService] localization.GetMemoryPath 오류: {ex.Message}");
-            }
-        }
-        
-        // 새로운 폴더 구조에 맞게 fallback 경로 수정
-        var rootPath = $"Assets/11.GameDatas/Character/{characterName}/memory/{memoryType}/{memoryFileName}";
-        return ReadFirstExisting(locPath, rootPath);
-    }
 
     public string GetActionPromptJson(string actionPromptFile)
     {
