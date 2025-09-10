@@ -108,7 +108,7 @@ namespace Agent
                 return "캐릭터 정보를 찾을 수 없습니다.";
             }
 
-            var memoryManager = new CharacterMemoryManager(actor.Name);
+            var memoryManager = new CharacterMemoryManager(actor);
             var characterInfo = memoryManager.GetCharacterInfo();
             var infoJson = JsonConvert.SerializeObject(characterInfo, Formatting.Indented);
             return infoJson;

@@ -30,8 +30,6 @@ using PlanStructures;
 public class Brain
 {
     public Actor actor;
-    public MemoryAgent memoryAgent;
-    private CharacterMemoryManager characterMemoryManager;
     
     // --- Enhanced Memory System ---
     public MemoryManager memoryManager;
@@ -80,10 +78,6 @@ public class Brain
         reactionDecisionAgent = new ReactionDecisionAgent(actor);
         reactionDecisionAgent.SetDayPlanner(dayPlanner); // DayPlanner 설정
 
-        // 메모리 관리 초기화
-        memoryAgent = new MemoryAgent(actor);
-        characterMemoryManager = new CharacterMemoryManager(actor.Name);
-        
         // Enhanced Memory System 초기화
         memoryManager = new MemoryManager(actor);
 
@@ -223,7 +217,8 @@ public class Brain
             memoryManager.AddPerceptionResult(perceptionResult);
 
             // RelationshipAgent: 관계 수정 여부 결정 및 적용
-            await ProcessRelationshipUpdatesAsync(perceptionResult);
+            var relationshipMemoryManager = new RelationshipMemoryManager(actor);
+            await relationshipMemoryManager.ProcessRelationshipUpdatesAsync(perceptionResult);
 
             // === 계획 유지/수정 결정 및 필요 시 재계획 (DayPlanner 내부로 캡슐화) ===
             await dayPlanner.DecideAndMaybeReplanAsync(perceptionResult); 
@@ -587,21 +582,6 @@ public class Brain
         await dayPlanner.PlanToday();
     }
     
-    // === Enhanced Memory System Methods ===
-    /// <summary>
-    /// MemoryManager를 사용하여 관계 업데이트를 처리합니다.
-    /// </summary>
-    private async UniTask ProcessRelationshipUpdatesAsync(PerceptionResult perceptionResult)
-    {
-        try
-        {
-            await memoryManager.ProcessRelationshipUpdatesAsync(perceptionResult);
-        }
-        catch (Exception ex)
-        {
-            Debug.LogWarning($"[{actor.Name}] 관계 업데이트 처리 실패: {ex.Message}");
-        }
-    }
     /// <summary>
     /// 하루가 끝날 때 Long Term Memory 통합 프로세스를 실행합니다.
     /// </summary>

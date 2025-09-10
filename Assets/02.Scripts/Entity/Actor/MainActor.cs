@@ -46,13 +46,13 @@ public abstract class MainActor : Actor
 	private int sleepinessThreshold = 80; // 강제 수면 임계값
 
 	[SerializeField]
-	private bool isSleeping = false;
+	protected bool isSleeping = false;
 
 	[SerializeField]
-	private GameTime sleepStartTime;
+	protected GameTime sleepStartTime;
 
 	[SerializeField]
-	private GameTime wakeUpTime;
+	protected GameTime wakeUpTime;
 
 	public bool IsSleeping => isSleeping;
 	public int SleepHour => sleepHour;
@@ -113,7 +113,7 @@ public abstract class MainActor : Actor
 	#endregion
 
 	#region Sleep System
-	public virtual async UniTask Sleep()
+	public virtual async UniTask Sleep(int? minutes = null)
 	{
 		if (isSleeping)
 		{
@@ -124,26 +124,37 @@ public abstract class MainActor : Actor
 		var timeService = Services.Get<ITimeService>();
 		sleepStartTime = timeService.CurrentTime;
 
-		// 기상 시간 계산 (다음 날 기상 시간)
+		// 기상 시간 계산
 		var currentTime = timeService.CurrentTime;
-		wakeUpTime = new GameTime(
-			currentTime.year,
-			currentTime.month,
-			currentTime.day + 1,
-			wakeUpHour,
-			0
-		);
-
-		// 월/연도 조정
-		int daysInMonth = GameTime.GetDaysInMonth(wakeUpTime.year, wakeUpTime.month);
-		if (wakeUpTime.day > daysInMonth)
+		
+		if (minutes.HasValue)
 		{
-			wakeUpTime.day = 1;
-			wakeUpTime.month++;
-			if (wakeUpTime.month > 12)
+			// 지정된 시간(분) 후에 일어나도록 설정
+			long totalMinutes = currentTime.ToMinutes() + minutes.Value;
+			wakeUpTime = GameTime.FromMinutes(totalMinutes);
+		}
+		else
+		{
+			// 기본 기상 시간으로 설정 (다음 날 기상 시간)
+			wakeUpTime = new GameTime(
+				currentTime.year,
+				currentTime.month,
+				currentTime.day + 1,
+				wakeUpHour,
+				0
+			);
+
+			// 월/연도 조정
+			int daysInMonth = GameTime.GetDaysInMonth(wakeUpTime.year, wakeUpTime.month);
+			if (wakeUpTime.day > daysInMonth)
 			{
-				wakeUpTime.month = 1;
-				wakeUpTime.year++;
+				wakeUpTime.day = 1;
+				wakeUpTime.month++;
+				if (wakeUpTime.month > 12)
+				{
+					wakeUpTime.month = 1;
+					wakeUpTime.year++;
+				}
 			}
 		}
 

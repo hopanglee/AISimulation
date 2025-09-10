@@ -402,11 +402,34 @@ namespace Agent.Tools
 
         private string GetUserMemory()
         {
-            try
+        try
+        {
+            // Brain의 MemoryManager를 통해 메모리 정보 가져오기
+            if (actor is MainActor mainActor && mainActor.brain?.memoryManager != null)
             {
-                var memoryManager = new CharacterMemoryManager(actor.Name);
-                return memoryManager.GetMemorySummary();
+                var shortTermMemories = mainActor.brain.memoryManager.GetShortTermMemory();
+                var longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories();
+                
+                var memorySummary = $"단기 메모리 ({shortTermMemories.Count}개):\n";
+                foreach (var memory in shortTermMemories)
+                {
+                    memorySummary += $"- {memory.content}\n";
+                }
+                
+                if (longTermMemories.Count > 0)
+                {
+                    memorySummary += $"\n장기 메모리 ({longTermMemories.Count}개):\n";
+                    foreach (var memory in longTermMemories)
+                    {
+                        memorySummary += $"- {memory.content}\n";
+                    }
+                }
+                
+                return memorySummary;
             }
+            
+            return "메모리 정보를 찾을 수 없습니다.";
+        }
             catch (Exception ex)
             {
                 return $"Error getting user memory: {ex.Message}";

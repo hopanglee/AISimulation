@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
@@ -28,8 +29,11 @@ public class RelationshipDecision
 [System.Serializable]
 public class RelationshipUpdateEntry
 {
-    [JsonProperty("key")]
-    public string Key { get; set; }
+    [JsonProperty("character_name")]
+    public string CharacterName { get; set; }
+    
+    [JsonProperty("field_key")]
+    public string FieldKey { get; set; }
     
     [JsonProperty("new_value")]
     public object NewValue { get; set; }
@@ -78,9 +82,13 @@ public class RelationshipAgent : GPT
                                         ""type"": ""object"",
                                         ""additionalProperties"": false,
                                         ""properties"": {
-                                            ""key"": {
+                                            ""character_name"": {
                                                 ""type"": ""string"",
-                                                ""description"": ""The relationship key to update""
+                                                ""description"": ""The name of the character to update relationship with""
+                                            },
+                                            ""field_key"": {
+                                                ""type"": ""string"",
+                                                ""description"": ""The specific field to update in the relationship (e.g., 'closeness', 'trust', etc.)""
                                             },
                                             ""new_value"": {
                                                 ""type"": [""string"", ""number"", ""boolean"", ""null""],
@@ -91,7 +99,7 @@ public class RelationshipAgent : GPT
                                                 ""description"": ""Reason for this specific change""
                                             }
                                         },
-                                        ""required"": [""key"", ""new_value"", ""change_reason""]
+                                        ""required"": [""character_name"", ""field_key"", ""new_value"", ""change_reason""]
                                     }
                                 }
                             },
@@ -105,51 +113,51 @@ public class RelationshipAgent : GPT
     }
 
     /// <summary>
-    /// Perception 결과를 바탕으로 관계 수정 여부를 결정합니다.
+    /// PerceptionResult를 기반으로 관계 업데이트를 처리합니다.
     /// </summary>
-    /// <param name="perceptionResult">Perception Agent의 결과</param>
-    /// <param name="currentRelationships">현재 관계 정보</param>
-    /// <returns>관계 수정 결정</returns>
-    public async UniTask<RelationshipDecision> DecideRelationshipUpdatesAsync(
-        PerceptionResult perceptionResult, 
-        Dictionary<string, object> currentRelationships)
+    public async UniTask<List<RelationshipUpdateEntry>> ProcessRelationshipUpdatesAsync(PerceptionResult perceptionResult)
     {
         try
         {
-            // 현재 관계 정보를 JSON으로 변환
-            string relationshipsJson = JsonConvert.SerializeObject(currentRelationships, Formatting.Indented);
+            var updates = new List<RelationshipUpdateEntry>();
             
             // 사용자 메시지 구성
             var localizationService = Services.Get<ILocalizationService>();
             var replacements = new Dictionary<string, string>
             {
                 { "situation_interpretation", perceptionResult.situation_interpretation },
-                { "thought_chain", string.Join(" -> ", perceptionResult.thought_chain) },
-                { "relationships_json", relationshipsJson }
+                { "thought_chain", string.Join(" -> ", perceptionResult.thought_chain ?? new List<string>()) },
+                { "emotions", string.Join(", ", perceptionResult.emotions?.Select(e => $"{e.Key}: {e.Value}") ?? new List<string>()) }
             };
             
             string userMessage = localizationService.GetLocalizedText("relationship_decision_prompt", replacements);
 
+            // 사용자 메시지 추가
             messages.Add(new UserChatMessage(userMessage));
 
             var response = await SendGPTAsync<RelationshipDecision>(messages, options);
             
-            // 메시지 기록을 위해 결과를 시스템 메시지로 추가 (컨텍스트 유지용)
-            messages.Add(new SystemChatMessage($"관계 수정 결정 완료: {JsonConvert.SerializeObject(response)}"));
-            
-            return response;
+            if (response != null)
+            {
+                try
+                {
+                    if (response.ShouldUpdate && response.Updates != null)
+                    {
+                        updates.AddRange(response.Updates);
+                    }
+                }
+                catch (JsonException ex)
+                {
+                    Debug.LogWarning($"[RelationshipAgent] JSON 파싱 실패: {ex.Message}");
+                }
+            }
+
+            return updates;
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[{actor.Name}] RelationshipAgent 오류: {ex.Message}");
-            
-            // 기본 응답 반환 (수정하지 않음)
-            return new RelationshipDecision
-            {
-                ShouldUpdate = false,
-                Reasoning = $"오류 발생으로 인한 기본 응답: {ex.Message}",
-                Updates = new List<RelationshipUpdateEntry>()
-            };
+            Debug.LogError($"[RelationshipAgent] 관계 업데이트 처리 실패: {ex.Message}");
+            return new List<RelationshipUpdateEntry>();
         }
     }
 
@@ -160,7 +168,8 @@ public class RelationshipAgent : GPT
     {
         try
         {
-            return PromptLoader.LoadPrompt("relationship_agent_prompt");
+            var localizationService = Services.Get<ILocalizationService>();
+            return localizationService.GetLocalizedText("relationship_agent_prompt");
         }
         catch (Exception ex)
         {

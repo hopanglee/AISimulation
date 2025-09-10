@@ -1,3 +1,31 @@
 {
-    "memory": "Hino Maori is a girl I just met yesterday. I was immediately drawn to her when I saw her reading in the library. She's passionate about literature and writing. Yesterday I discovered that she suffers from a condition where she loses her memories every day when she sleeps. I'm determined to help her remember our connection and support her through this difficult situation."
+  "character_name": "Hino Maori",
+  "age": 17,
+  "location": "School Library",
+  "relationship_type": "Friend",
+  "closeness": 60,
+  "trust": 70,
+  "last_interaction": "Met yesterday in the library, shared about memory condition",
+  "interaction_history": [
+    "First meeting in the library",
+    "Shared about memory loss condition",
+    "Received promise of help"
+  ],
+  "personality_traits": [
+    "Passionate about literature",
+    "Brave",
+    "Honest",
+    "Vulnerable"
+  ],
+  "shared_interests": [
+    "Literature",
+    "Reading",
+    "Writing"
+  ],
+  "shared_memories": [
+    "Meeting in the library",
+    "Sharing about memory condition",
+    "Receiving promise of help"
+  ],
+  "notes": "Hino Maori is a girl I just met yesterday. I was immediately drawn to her when I saw her reading in the library. She's passionate about literature and writing. Yesterday I discovered that she suffers from a condition where she loses her memories every day when she sleeps. I'm determined to help her remember our connection and support her through this difficult situation."
 }
