@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using OpenAI.Chat;
 using UnityEngine;
+using Memory;
 
 /// <summary>
 /// 기존 Long Term Memory 엔트리의 평가 결과
@@ -38,7 +39,7 @@ public class LongTermMemoryEvaluation
     public int? MergeTargetIndex { get; set; }
     
     [JsonProperty("modified_content")]
-    public Dictionary<string, object> ModifiedContent { get; set; }
+    public LongTermMemory ModifiedContent { get; set; }
     
     [JsonProperty("reasoning")]
     public string Reasoning { get; set; }
@@ -85,7 +86,7 @@ public class MergeOperation
     public List<int> SourceIndices { get; set; } = new List<int>();
     
     [JsonProperty("merged_content")]
-    public Dictionary<string, object> MergedContent { get; set; }
+    public LongTermMemory MergedContent { get; set; }
     
     [JsonProperty("merge_reasoning")]
     public string MergeReasoning { get; set; }
@@ -187,7 +188,7 @@ public class LongTermMemoryMaintenanceAgent : GPT
     /// <param name="currentTime">현재 시간 (최신성 계산용)</param>
     /// <returns>정리 결과</returns>
     public async UniTask<LongTermMemoryMaintenanceResult> MaintainMemoriesAsync(
-        List<Dictionary<string, object>> longTermMemories, 
+        List<LongTermMemory> longTermMemories, 
         GameTime currentTime)
     {
         try
@@ -215,13 +216,13 @@ public class LongTermMemoryMaintenanceAgent : GPT
                 var memoryReplacements = new Dictionary<string, string>
                 {
                     { "memory_index", index.ToString() },
-                    { "memory_date", GetValueOrDefault(memory, "date", "Unknown").ToString() },
-                    { "memory_location", GetValueOrDefault(memory, "location", "Unknown").ToString() },
-                    { "memory_title", GetValueOrDefault(memory, "title", "Untitled").ToString() },
-                    { "memory_people", FormatArrayValue(GetValueOrDefault(memory, "people", new List<object>())) },
-                    { "memory_emotion", GetValueOrDefault(memory, "emotion", "neutral").ToString() },
-                    { "memory_action", GetValueOrDefault(memory, "action", "Unknown").ToString() },
-                    { "memory_description", GetValueOrDefault(memory, "memory", "No description").ToString() }
+                    { "memory_date", memory.timestamp.ToString() },
+                    { "memory_location", memory.location ?? "Unknown" },
+                    { "memory_title", memory.type ?? "Untitled" },
+                    { "memory_people", string.Join(", ", memory.relatedActors ?? new List<string>()) },
+                    { "memory_emotion", string.Join(", ", memory.emotions?.Keys.ToList() ?? new List<string>()) },
+                    { "memory_action", memory.category ?? "Unknown" },
+                    { "memory_description", memory.content ?? "No description" }
                 };
                 
                 return localizationService.GetLocalizedText("memory_item_template", memoryReplacements);
@@ -283,18 +284,18 @@ public class LongTermMemoryMaintenanceAgent : GPT
     /// <param name="originalMemories">원본 메모리 목록</param>
     /// <param name="maintenanceResult">정리 결과</param>
     /// <returns>정리된 메모리 목록</returns>
-    public List<Dictionary<string, object>> ApplyMaintenanceResult(
-        List<Dictionary<string, object>> originalMemories,
+    public List<LongTermMemory> ApplyMaintenanceResult(
+        List<LongTermMemory> originalMemories,
         LongTermMemoryMaintenanceResult maintenanceResult)
     {
-        var resultMemories = new List<Dictionary<string, object>>();
+        var resultMemories = new List<LongTermMemory>();
 
         // 1. 보존할 메모리들 추가
         foreach (var keepIndex in maintenanceResult.MemoriesToKeep)
         {
             if (keepIndex >= 0 && keepIndex < originalMemories.Count)
             {
-                resultMemories.Add(new Dictionary<string, object>(originalMemories[keepIndex]));
+                resultMemories.Add(originalMemories[keepIndex]);
             }
         }
 
@@ -308,16 +309,12 @@ public class LongTermMemoryMaintenanceAgent : GPT
             {
                 var existingMemoryIndex = resultMemories.FindIndex(m => 
                     m == originalMemories[modifyIndex] || 
-                    (m.ContainsKey("date") && originalMemories[modifyIndex].ContainsKey("date") && 
-                     m["date"].ToString() == originalMemories[modifyIndex]["date"].ToString()));
+                    (m.timestamp.ToString() == originalMemories[modifyIndex].timestamp.ToString()));
 
                 if (existingMemoryIndex >= 0)
                 {
                     // 기존 메모리 업데이트
-                    foreach (var kvp in evaluation.ModifiedContent)
-                    {
-                        resultMemories[existingMemoryIndex][kvp.Key] = kvp.Value;
-                    }
+                    resultMemories[existingMemoryIndex] = evaluation.ModifiedContent;
                 }
             }
         }
@@ -327,7 +324,7 @@ public class LongTermMemoryMaintenanceAgent : GPT
         {
             if (mergeOp.MergedContent != null)
             {
-                resultMemories.Add(new Dictionary<string, object>(mergeOp.MergedContent));
+                resultMemories.Add(mergeOp.MergedContent);
             }
         }
 
@@ -339,7 +336,7 @@ public class LongTermMemoryMaintenanceAgent : GPT
     /// </summary>
     private void ValidateAndCorrectMaintenanceResult(
         LongTermMemoryMaintenanceResult result,
-        List<Dictionary<string, object>> originalMemories)
+        List<LongTermMemory> originalMemories)
     {
         var timeService = Services.Get<ITimeService>();
         var currentTime = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 0, 0);
@@ -382,10 +379,15 @@ public class LongTermMemoryMaintenanceAgent : GPT
             result.MergeOperations.Add(new MergeOperation
             {
                 SourceIndices = sourceIndices,
-                MergedContent = new Dictionary<string, object>
+                MergedContent = new LongTermMemory
                 {
-                    ["title"] = "Merged Memory",
-                    ["memory"] = $"병합된 메모리 (인덱스: {string.Join(", ", sourceIndices)})"
+                    timestamp = new GameTime(2025, 1, 1, 0, 0),
+                    type = "merged",
+                    category = "merged",
+                    content = $"병합된 메모리 (인덱스: {string.Join(", ", sourceIndices)})",
+                    emotions = new Dictionary<string, float>(),
+                    relatedActors = new List<string>(),
+                    location = "Unknown"
                 },
                 MergeReasoning = group.First().Reasoning
             });
@@ -399,7 +401,7 @@ public class LongTermMemoryMaintenanceAgent : GPT
     /// <summary>
     /// 휴리스틱 방법으로 메모리 점수를 계산합니다.
     /// </summary>
-    private void CalculateHeuristicScores(LongTermMemoryEvaluation evaluation, Dictionary<string, object> memory, GameTime currentTime)
+    private void CalculateHeuristicScores(LongTermMemoryEvaluation evaluation, LongTermMemory memory, GameTime currentTime)
     {
         // 1. 최신성 점수 계산 (날짜 기반 - 휴리스틱)
         evaluation.RecencyScore = CalculateRecencyScore(memory, currentTime);
@@ -418,29 +420,14 @@ public class LongTermMemoryMaintenanceAgent : GPT
     /// <summary>
     /// 최신성 점수를 계산합니다.
     /// </summary>
-    private float CalculateRecencyScore(Dictionary<string, object> memory, GameTime currentTime)
+    private float CalculateRecencyScore(LongTermMemory memory, GameTime currentTime)
     {
-        var dateStr = GetValueOrDefault(memory, "date", "").ToString();
-        if (string.IsNullOrEmpty(dateStr)) return 0.5f;
+        var memoryTime = memory.timestamp;
+        var daysDiff = CalculateDaysDifference(memoryTime, currentTime);
         
-        // 간단한 날짜 파싱 (yyyy-MM-dd 형식 가정)
-        var dateParts = dateStr.Split('-');
-        if (dateParts.Length >= 3)
-        {
-            if (int.TryParse(dateParts[0], out int year) && 
-                int.TryParse(dateParts[1], out int month) && 
-                int.TryParse(dateParts[2].Split(' ')[0], out int day)) // 시간 부분이 있을 수 있으므로 공백으로 한번 더 분리
-            {
-                var memoryTime = new GameTime(year, month, day, 0, 0);
-                var daysDiff = CalculateDaysDifference(memoryTime, currentTime);
-                
-                if (daysDiff <= 365) return 0.8f + (365 - daysDiff) / 365f * 0.2f; // 1년 이내: 0.8-1.0
-                if (daysDiff <= 1095) return 0.5f + (1095 - daysDiff) / 730f * 0.3f; // 1-3년: 0.5-0.8
-                return Math.Max(0.0f, 0.5f - (daysDiff - 1095) / 1095f * 0.5f); // 3년 이상: 0.0-0.5
-            }
-        }
-        
-        return 0.5f; // 날짜 파싱 실패 시 중간값
+        if (daysDiff <= 365) return 0.8f + (365 - daysDiff) / 365f * 0.2f; // 1년 이내: 0.8-1.0
+        if (daysDiff <= 1095) return 0.5f + (1095 - daysDiff) / 730f * 0.3f; // 1-3년: 0.5-0.8
+        return Math.Max(0.0f, 0.5f - (daysDiff - 1095) / 1095f * 0.5f); // 3년 이상: 0.0-0.5
     }
 
     /// <summary>
@@ -463,14 +450,6 @@ public class LongTermMemoryMaintenanceAgent : GPT
             return string.Join(", ", list.Select(item => item?.ToString() ?? ""));
         }
         return value?.ToString() ?? "";
-    }
-
-    /// <summary>
-    /// Dictionary에서 값을 안전하게 가져옵니다.
-    /// </summary>
-    private static object GetValueOrDefault(Dictionary<string, object> dict, string key, object defaultValue)
-    {
-        return dict.ContainsKey(key) ? dict[key] : defaultValue;
     }
 
     /// <summary>

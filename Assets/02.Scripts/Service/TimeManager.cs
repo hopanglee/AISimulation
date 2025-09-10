@@ -256,6 +256,50 @@ public struct GameTime
         // Zeller 공식의 결과를 DayOfWeek enum으로 변환
         return (DayOfWeek)((h + 5) % 7);
     }
+    
+    /// <summary>
+    /// GameTime을 DateTime으로 변환합니다.
+    /// </summary>
+    public DateTime ToDateTime()
+    {
+        try
+        {
+            return new DateTime(year, month, day, hour, minute, 0);
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            // 잘못된 날짜인 경우 기본값 반환
+            return new DateTime(2024, 1, 1, 0, 0, 0);
+        }
+    }
+    
+    /// <summary>
+    /// DateTime을 GameTime으로 변환합니다.
+    /// </summary>
+    public static GameTime FromDateTime(DateTime dateTime)
+    {
+        return new GameTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute);
+    }
+    
+    /// <summary>
+    /// ISO 8601 형식의 문자열을 GameTime으로 변환합니다.
+    /// </summary>
+    public static GameTime FromIsoString(string isoString)
+    {
+        if (DateTime.TryParse(isoString, out DateTime dateTime))
+        {
+            return FromDateTime(dateTime);
+        }
+        return new GameTime(2024, 1, 1, 0, 0);
+    }
+    
+    /// <summary>
+    /// GameTime을 ISO 8601 형식의 문자열로 변환합니다.
+    /// </summary>
+    public string ToIsoString()
+    {
+        return ToDateTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
+    }
 }
 
 public class TimeManager : ITimeService

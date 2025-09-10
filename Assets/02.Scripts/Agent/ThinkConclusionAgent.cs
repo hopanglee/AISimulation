@@ -17,6 +17,10 @@ namespace Agent
         public ThinkConclusionAgent(Actor actor)
         {
             this.actor = actor;
+            options = new ChatCompletionOptions
+            {
+                Temperature = 0.7f // 창의적이면서도 논리적인 결론
+            };
         }
 
         /// <summary>
@@ -25,7 +29,7 @@ namespace Agent
         /// <param name="topic">사색 주제</param>
         /// <param name="thoughtChain">전체 질문-답변 대화</param>
         /// <param name="insights">중간에 추출된 통찰들</param>
-        /// <returns>종합적인 최종 결론</returns>
+        /// <returns>최종 결론</returns>
         public async UniTask<string> GenerateFinalConclusionsAsync(string topic, List<string> thoughtChain, List<string> insights)
         {
             try
@@ -45,13 +49,13 @@ namespace Agent
                 };
 
                 var response = await SendGPTAsync<string>(messages, options);
-                var trimmedResponse = response?.Trim();
-                if (string.IsNullOrEmpty(trimmedResponse))
+                if (string.IsNullOrEmpty(response))
                 {
-                    Debug.LogError($"[ThinkConclusionAgent] 결론 생성 실패: 응답이 비어있거나 null임");
+                    Debug.LogError($"[ThinkConclusionAgent] 결론 생성 실패: 응답이 null임");
                     return GetFallbackConclusion(topic);
                 }
-                return trimmedResponse;
+
+                return response;
             }
             catch (Exception ex)
             {

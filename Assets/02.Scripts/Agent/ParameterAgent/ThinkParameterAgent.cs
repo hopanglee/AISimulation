@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using OpenAI.Chat;
 using UnityEngine;
 using Agent;
+using Memory;
 
 
 
@@ -142,12 +143,12 @@ public class ThinkParameterAgent : ParameterAgentBase
     {
         // MainActor인지 확인하고 메모리 정보 수집
         List<ShortTermMemoryEntry> shortTermMemories = new List<ShortTermMemoryEntry>();
-        List<Dictionary<string, object>> longTermMemories = new List<Dictionary<string, object>>();
+        List<LongTermMemory> longTermMemories = new List<LongTermMemory>();
         
         if (actor is MainActor mainActor && mainActor.brain?.memoryManager != null)
         {
             shortTermMemories = mainActor.brain.memoryManager.GetShortTermMemory() ?? new List<ShortTermMemoryEntry>();
-            longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories() ?? new List<Dictionary<string, object>>();
+            longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories() ?? new List<LongTermMemory>();
         }
 
         string result = thinkScope switch
@@ -155,16 +156,16 @@ public class ThinkParameterAgent : ParameterAgentBase
             "past_reflection" => 
                 // 과거 회상: Long Term Memory 중심
                 string.Join("\n", longTermMemories.TakeLast(10).Select(m => 
-                    $"[{m.GetValueOrDefault("date", "Unknown")}] {m.GetValueOrDefault("memory", "No content")}")),
+                    $"[{m.timestamp}] {m.content}")),
 
             "future_planning" => 
                 // 미래 계획: 최근 계획 관련 STM + 일부 LTM
                 string.Join("\n\n", new[] {
                     "최근 계획들:\n" + string.Join("\n", shortTermMemories.Where(m => m.type == "plan" || m.content.Contains("계획")).Select(m => $"[{m.type}] {m.content}")),
                     "과거 목표들:\n" + string.Join("\n", longTermMemories.Where(m => 
-                        m.GetValueOrDefault("memory", "").ToString().Contains("목표") || 
-                        m.GetValueOrDefault("memory", "").ToString().Contains("계획")).TakeLast(5).Select(m => 
-                        $"[{m.GetValueOrDefault("date", "Unknown")}] {m.GetValueOrDefault("memory", "No content")}"))
+                        m.content.Contains("목표") || 
+                        m.content.Contains("계획")).TakeLast(5).Select(m => 
+                        $"[{m.timestamp}] {m.content}"))
                 }),
 
             _ => // "current_analysis" and default
@@ -172,7 +173,7 @@ public class ThinkParameterAgent : ParameterAgentBase
                 string.Join("\n\n", new[] {
                     "최근 경험들:\n" + string.Join("\n", shortTermMemories.OrderByDescending(m => m.timestamp).Take(15).Select(m => $"[{m.type}] {m.content}")),
                     "관련 기억들:\n" + string.Join("\n", longTermMemories.TakeLast(5).Select(m => 
-                        $"[{m.GetValueOrDefault("date", "Unknown")}] {m.GetValueOrDefault("memory", "No content")}"))
+                        $"[{m.timestamp}] {m.content}"))
                 })
         };
 
@@ -186,12 +187,12 @@ public class ThinkParameterAgent : ParameterAgentBase
     {
         // MainActor인지 확인하고 메모리 정보 수집
         List<ShortTermMemoryEntry> shortTermMemories = new List<ShortTermMemoryEntry>();
-        List<Dictionary<string, object>> longTermMemories = new List<Dictionary<string, object>>();
+        List<LongTermMemory> longTermMemories = new List<LongTermMemory>();
         
         if (actor is MainActor mainActor && mainActor.brain?.memoryManager != null)
         {
             shortTermMemories = mainActor.brain.memoryManager.GetShortTermMemory() ?? new List<ShortTermMemoryEntry>();
-            longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories() ?? new List<Dictionary<string, object>>();
+            longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories() ?? new List<LongTermMemory>();
         }
         
         // 최근 Short Term Memory (최대 10개)
@@ -201,7 +202,7 @@ public class ThinkParameterAgent : ParameterAgentBase
         // 최근 Long Term Memory (최대 5개)
         var recentLTM = longTermMemories.TakeLast(5).ToList();
         var ltmText = string.Join("\n", recentLTM.Select(m => 
-            $"[{m.GetValueOrDefault("date", "Unknown")}] {m.GetValueOrDefault("memory", "No content")}"));
+            $"[{m.timestamp}] {m.content}"));
 
         var timeService = Services.Get<ITimeService>();
         var currentTime = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 0, 0);

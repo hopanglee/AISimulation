@@ -8,6 +8,7 @@ using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using OpenAI.Chat;
 using UnityEngine;
+using Memory;
 
 
 /// <summary>
@@ -30,6 +31,9 @@ public class ThinkResult
 
     [JsonProperty("conclusions")]
     public string Conclusions { get; set; }
+
+    [JsonProperty("emotions")]
+    public Dictionary<string, float> Emotions { get; set; } = new Dictionary<string, float>();
 }
 
 namespace Agent.ActionHandlers
@@ -120,42 +124,42 @@ namespace Agent.ActionHandlers
                 for (int round = 0; round < thinkingRounds && !token.IsCancellationRequested; round++)
                 {
                     // 질문 생성 (이전 답변을 기반으로)
-                    var question = await questionAgent.GenerateThinkingQuestionAsync(
+                    var questionResult = await questionAgent.GenerateThinkingQuestionAsync(
                         thinkScope,
                         topic,
                         previousAnswer,
                         memoryContext
                     );
 
-                    thoughtChain.Add(question); // "질문:" 접두사 제거
+                    thoughtChain.Add(questionResult);
 
                     // 답변 생성 (질문을 기반으로)
-                    var answer = await answerAgent.GenerateAnswerAsync(question, thinkScope, topic, memoryContext);
-                    thoughtChain.Add(answer); // "답변:" 접두사 제거
+                    var answerResult = await answerAgent.GenerateAnswerAsync(questionResult, thinkScope, topic, memoryContext);
+                    thoughtChain.Add(answerResult);
 
                     // 다음 라운드를 위해 현재 답변 저장
-                    previousAnswer = answer;
+                    previousAnswer = answerResult;
 
                     Debug.Log($"[{actor.Name}] Think Round {round + 1}: {thinkingTimeMinutes}분 깊이 생각 중...");
-                    Debug.Log($"[{actor.Name}] Q: {question}");
-                    Debug.Log($"[{actor.Name}] A: {answer}");
+                    Debug.Log($"[{actor.Name}] Q: {questionResult}");
+                    Debug.Log($"[{actor.Name}] A: {answerResult}");
                     
                     await SimDelay.DelaySimMinutes(thinkingTimeMinutes, token);
 
                     // 통찰 추출 (홀수 라운드마다, MainActor의 설정에 따라)
                     if (round % 2 == 1 && actor is MainActor mainActorForInsight && mainActorForInsight.useInsightAgent)
                     {
-                        var insight = await insightAgent.ExtractInsightAsync(string.Join("\n", thoughtChain.TakeLast(4)));
-                        if (!string.IsNullOrEmpty(insight))
+                        var insightResult = await insightAgent.ExtractInsightAsync(string.Join("\n", thoughtChain.TakeLast(4)));
+                        if (!string.IsNullOrEmpty(insightResult))
                         {
-                            insights.Add(insight);
-                            Debug.Log($"[{actor.Name}] Insight 추출: {insight}");
+                            insights.Add(insightResult);
+                            Debug.Log($"[{actor.Name}] Insight 추출: {insightResult}");
                         }
                     }
                 }
 
                 // 최종 결론 생성
-                var conclusions = await conclusionAgent.GenerateFinalConclusionsAsync(topic, thoughtChain, insights);
+                var conclusionResult = await conclusionAgent.GenerateFinalConclusionsAsync(topic, thoughtChain, insights);
 
                 return new ThinkResult
                 {
@@ -163,7 +167,8 @@ namespace Agent.ActionHandlers
                     FocusTopic = topic,
                     TimeScope = thinkScope,
                     Insights = insights,
-                    Conclusions = conclusions
+                    Conclusions = conclusionResult,
+                    Emotions = new Dictionary<string, float>() // 빈 감정 딕셔너리
                 };
             }
             catch (Exception ex)
@@ -194,7 +199,7 @@ namespace Agent.ActionHandlers
                 }
 
                 var shortTermMemories = mainActor.brain.memoryManager.GetShortTermMemory() ?? new List<ShortTermMemoryEntry>();
-                var longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories() ?? new List<Dictionary<string, object>>();
+                var longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories() ?? new List<LongTermMemory>();
 
                 var contextParts = new List<string>();
 
@@ -208,7 +213,7 @@ namespace Agent.ActionHandlers
                         {
                             contextParts.Add("=== 과거 기억 ===");
                             contextParts.AddRange(pastMemories.Select(m =>
-                                $"[{m.GetValueOrDefault("date", "Unknown")}] {m.GetValueOrDefault("memory", "No content")}"));
+                                $"[{m.timestamp}] {m.content}"));
                         }
                         break;
 

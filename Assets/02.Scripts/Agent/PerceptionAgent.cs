@@ -63,7 +63,8 @@ public class PerceptionAgent
             var finalResult = new PerceptionResult
             {
                 situation_interpretation = egoResult.situation_interpretation,
-                thought_chain = egoResult.thought_chain
+                thought_chain = egoResult.thought_chain,
+                emotions = egoResult.emotions ?? new Dictionary<string, float>()
             };
             
             Debug.Log($"[PerceptionAgent] 3-에이전트 해석 완료");
@@ -85,4 +86,5 @@ public class PerceptionResult
 {
     public string situation_interpretation;  // 최종 상황 인식 (타협된 결과)
     public List<string> thought_chain;       // 타협된 사고체인
+    public Dictionary<string, float> emotions; // 감정과 강도
 }

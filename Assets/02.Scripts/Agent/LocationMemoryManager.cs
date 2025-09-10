@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 using Agent;
+using Memory;
 
 
 
@@ -23,18 +24,18 @@ public class RelationshipUpdate
 /// <summary>
 /// Enhanced Memory Agent - Short Term Memory와 관계 관리 기능이 추가된 메모리 에이전트
 /// </summary>
-public class EnhancedMemoryAgent
+public class LocationMemoryManager
 {
     private Actor actor;
     private MemoryAgent baseMemoryAgent; // 기존 MemoryAgent 활용
     private CharacterMemoryManager memoryManager;
     
     
-    // Location Memory 관리 (location.json)
+    // Location Memory 관리 (location.json) - SerializedDictionary<string, LocationData>
     private string locationMemoryPath;
-    private Dictionary<string, object> locationMemory;
+    private Dictionary<string, LocationData> locationMemory;
 
-    public EnhancedMemoryAgent(Actor actor)
+    public LocationMemoryManager(Actor actor)
     {
         this.actor = actor;
         this.baseMemoryAgent = new MemoryAgent(actor);
@@ -69,17 +70,17 @@ public class EnhancedMemoryAgent
             try
             {
                 string json = File.ReadAllText(locationMemoryPath);
-                locationMemory = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                locationMemory = JsonConvert.DeserializeObject<Dictionary<string, LocationData>>(json);
             }
             catch (Exception ex)
             {
                 Debug.LogWarning($"Location Memory 로드 실패: {ex.Message}");
-                locationMemory = new Dictionary<string, object>();
+                locationMemory = new Dictionary<string, LocationData>();
             }
         }
         else
         {
-            locationMemory = new Dictionary<string, object>();
+            locationMemory = new Dictionary<string, LocationData>();
         }
     }
 
@@ -105,32 +106,30 @@ public class EnhancedMemoryAgent
     /// <summary>
     /// Sensor 정보를 바탕으로 location.json을 업데이트합니다.
     /// </summary>
-    public void UpdateLocationMemory(string locationKey, string locationName, List<object> objects, List<Actor> actors)
+    public void UpdateLocationMemory(string locationName, 
+        List<string> items, List<string> blocks, List<string> actors, List<string> buildings, List<string> connectedAreas)
     {
         // 현재 위치 정보 업데이트
         var timeService = Services.Get<ITimeService>();
         var currentTime = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 0, 0);
         
-        var locationData = new Dictionary<string, object>
-        {
-            ["name"] = locationName,
-            ["last_visited"] = currentTime,
-            ["objects"] = objects?.Select(obj => new {
-                name = obj.GetType().Name,
-                description = obj.ToString(),
-                state = "active" // 기본 상태, 실제 구현에서는 객체의 상태를 확인
-            }).Cast<object>().ToList() ?? new List<object>(),
-            ["actors"] = actors?.Select(a => new {
-                name = a.Name,
-                last_seen = currentTime,
-                status = "present"
-            }).Cast<object>().ToList() ?? new List<object>()
-        };
-
-        locationMemory[locationKey] = locationData;
-
-        // Actor 위치 고유성 보장: 다른 위치에서 이 Actor 제거
-        EnsureActorLocationUniqueness(actor.Name, locationKey);
+        // LocationMemory Dictionary 업데이트
+        if (locationMemory == null)
+            locationMemory = new Dictionary<string, LocationData>();
+            
+        // 해당 위치의 데이터 가져오기 또는 새로 생성
+        if (!locationMemory.ContainsKey(locationName))
+            locationMemory[locationName] = new LocationData();
+            
+        var locationData = locationMemory[locationName];
+        locationData.lastSeen = currentTime;
+        
+        // 분류된 데이터 업데이트
+        locationData.items = items ?? new List<string>();
+        locationData.blocks = blocks ?? new List<string>();
+        locationData.actors = actors ?? new List<string>();
+        locationData.buildings = buildings ?? new List<string>();
+        locationData.connectedAreas = connectedAreas ?? new List<string>();
 
         SaveLocationMemory();
     }
@@ -140,29 +139,8 @@ public class EnhancedMemoryAgent
     /// </summary>
     private void EnsureActorLocationUniqueness(string actorName, string currentLocationKey)
     {
-        foreach (var kvp in locationMemory.ToList())
-        {
-            if (kvp.Key == currentLocationKey) continue;
-            
-            if (kvp.Value is Dictionary<string, object> locationData && 
-                locationData.ContainsKey("actors") && 
-                locationData["actors"] is List<object> actors)
-            {
-                // 이 위치에서 해당 Actor 제거
-                actors.RemoveAll(actorObj => 
-                {
-                    if (actorObj is Dictionary<string, object> actorData && 
-                        actorData.ContainsKey("name"))
-                    {
-                        return actorData["name"].ToString() == actorName;
-                    }
-                    return false;
-                });
-                
-                locationData["actors"] = actors;
-                locationMemory[kvp.Key] = locationData;
-            }
-        }
+        // LocationMemory가 단일 객체로 변경되어 이 메서드는 더 이상 필요하지 않음
+        // 필요시 다른 방식으로 구현
     }
 
 

@@ -646,30 +646,51 @@ public class Sensor
                 
                 if (curArea != null)
                 {
-                    // 현재 위치의 객체들과 Actor들 수집
-                    var objects = new List<object>();
-                    var actors = new List<Actor>();
+                    // 분류된 데이터 수집
+                    var items = new List<string>();
+                    var blocks = new List<string>();
+                    var actors = new List<string>();
+                    var buildings = new List<string>();
+                    var connectedAreas = new List<string>();
                     
                     foreach (var kv in lookable)
                     {
                         if (kv.Value is Actor actor && actor != owner)
                         {
-                            actors.Add(actor);
+                            actors.Add(actor.Name);
                         }
-                        else if (kv.Value is Item || kv.Value is Prop || kv.Value is Building)
+                        else if (kv.Value is Item item)
                         {
-                            objects.Add(kv.Value);
+                            items.Add(item.GetSimpleKeyRelativeToActor(owner));
+                        }
+                        else if (kv.Value is Prop prop)
+                        {
+                            blocks.Add(prop.GetSimpleKeyRelativeToActor(owner));
+                        }
+                        else if (kv.Value is Building building)
+                        {
+                            buildings.Add(building.GetSimpleKeyRelativeToActor(owner));
+                        }
+                    }
+                    
+                    // Connected areas 정보 수집
+                    if (curArea.connectedAreas != null)
+                    {
+                        foreach (var connectedArea in curArea.connectedAreas)
+                        {
+                            connectedAreas.Add(connectedArea.locationName ?? connectedArea.LocationToString());
                         }
                     }
                     
                     // Enhanced Memory Agent를 통해 location memory 업데이트
-                    string locationKey = owner.curLocation?.LocationToString() ?? "Unknown";
-                    string locationName = curArea.locationName ?? locationKey;
+                    string locationName = curArea.LocationToString();
                     mainActor.brain.memoryManager.UpdateLocationMemory(
-                        locationKey, 
                         locationName, 
-                        objects, 
-                        actors
+                        items,
+                        blocks,
+                        actors,
+                        buildings,
+                        connectedAreas
                     );
                 }
             }

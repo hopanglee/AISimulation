@@ -17,13 +17,17 @@ namespace Agent
         public ThinkInsightAgent(Actor actor)
         {
             this.actor = actor;
+            options = new ChatCompletionOptions
+            {
+                Temperature = 0.6f // 균형있는 창의성
+            };
         }
 
         /// <summary>
         /// 최근 대화 내용에서 의미있는 통찰을 추출합니다
         /// </summary>
         /// <param name="recentThoughts">최근 질문-답변 내용</param>
-        /// <returns>한 문장으로 요약된 통찰</returns>
+        /// <returns>추출된 통찰</returns>
         public async UniTask<string> ExtractInsightAsync(string recentThoughts)
         {
             try
@@ -37,19 +41,14 @@ namespace Agent
                     new UserChatMessage(userMessage)
                 };
 
-                var options = new ChatCompletionOptions
-                {
-                    Temperature = 0.6f // 균형있는 창의성
-                };
-
                 var response = await SendGPTAsync<string>(messages, options);
-                var trimmedResponse = response?.Trim();
-                if (string.IsNullOrEmpty(trimmedResponse))
+                if (string.IsNullOrEmpty(response))
                 {
-                    Debug.LogError($"[ThinkInsightAgent] 통찰 생성 실패: 응답이 비어있거나 null임");
+                    Debug.LogError($"[ThinkInsightAgent] 통찰 생성 실패: 응답이 null임");
                     return GetFallbackInsight();
                 }
-                return trimmedResponse;
+
+                return response;
             }
             catch (Exception ex)
             {
@@ -75,7 +74,7 @@ namespace Agent
             }
             catch (Exception ex)
             {
-                Debug.LogWarning($"[ThinkInsightAgent] 시스템 프롬프트 로드 실패, 기본값 사용: {ex.Message}");
+                Debug.LogError($"[ThinkInsightAgent] 시스템 프롬프트 로드 실패, 기본값 사용: {ex.Message}");
                 return GetDefaultSystemPrompt();
             }
         }
@@ -97,7 +96,7 @@ namespace Agent
             }
             catch (Exception ex)
             {
-                Debug.LogWarning($"[ThinkInsightAgent] 사용자 메시지 로드 실패, 기본값 사용: {ex.Message}");
+                Debug.LogError($"[ThinkInsightAgent] 사용자 메시지 로드 실패, 기본값 사용: {ex.Message}");
                 return GetDefaultUserMessage(recentThoughts);
             }
         }
@@ -133,7 +132,9 @@ namespace Agent
             };
 
             var random = new System.Random();
-            return fallbacks[random.Next(fallbacks.Length)];
+            var insight = fallbacks[random.Next(fallbacks.Length)];
+            
+            return insight;
         }
     }
 }

@@ -159,7 +159,7 @@ public class LongTermMemoryFilterAgent : GPT
                     ["summary"] = chunk.Summary,
                     ["main_events"] = string.Join(", ", chunk.MainEvents),
                     ["people_involved"] = string.Join(", ", chunk.PeopleInvolved),
-                    ["emotions"] = string.Join(", ", chunk.Emotions)
+                    ["emotions"] = chunk.Emotions != null ? string.Join(", ", chunk.Emotions.Select(kv => $"{kv.Key}:{kv.Value:F1}")) : ""
                 };
                 
                 return localizationService.GetLocalizedText("memory_chunk_item_template", chunkReplacements);
