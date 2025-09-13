@@ -5,5 +5,10 @@
     "1-chome-5",
     "1-chome-6",
     "1-chome-9"
+  ],
+  "buildings": [
+    "Host Club",
+    "Konbini",
+    "Restaurant"
   ]
 }

@@ -11,6 +11,9 @@ public class AreaDataExporter : EditorWindow
     {
         [JsonProperty("connected_areas")]
         public List<string> connectedAreas = new List<string>();
+        
+        [JsonProperty("buildings")]
+        public List<string> buildings = new List<string>();
     }
 
     [MenuItem("Tools/Export Area Connected Areas")]
@@ -34,7 +37,8 @@ public class AreaDataExporter : EditorWindow
         GUILayout.Label("This tool will:");
         GUILayout.Label("1. Find all Area components in the scene");
         GUILayout.Label("2. Extract their connectedAreas information");
-        GUILayout.Label("3. Update corresponding info.json files in GameData/Area");
+        GUILayout.Label("3. Find buildings in each area");
+        GUILayout.Label("4. Update corresponding info.json files in GameData/Area");
     }
 
     private void ExportConnectedAreas()
@@ -64,9 +68,20 @@ public class AreaDataExporter : EditorWindow
                 }
             }
 
+            // 해당 Area에 있는 Building들 찾기
+            var buildings = Object.FindObjectsByType<Building>(FindObjectsSortMode.None);
+            foreach (var building in buildings)
+            {
+                // Building이 현재 Area의 하위에 있는지 확인
+                if (IsBuildingInArea(building, area))
+                {
+                    areaInfo.buildings.Add(building.name);
+                }
+            }
+
             areaDataMap[area.locationName] = areaInfo;
             Debug.Log(
-                $"Area '{area.locationName}' has {areaInfo.connectedAreas.Count} connected areas: {string.Join(", ", areaInfo.connectedAreas)}"
+                $"Area '{area.locationName}' has {areaInfo.connectedAreas.Count} connected areas: {string.Join(", ", areaInfo.connectedAreas)} and {areaInfo.buildings.Count} buildings: {string.Join(", ", areaInfo.buildings)}"
             );
         }
 
@@ -79,6 +94,21 @@ public class AreaDataExporter : EditorWindow
         }
 
         UpdateInfoJsonFiles(gameDataPath, areaDataMap);
+    }
+
+    /// <summary>
+    /// Building이 특정 Area에 속하는지 확인합니다.
+    /// Building이 Area의 하위 오브젝트이거나, Area의 범위 내에 있는지 확인합니다.
+    /// </summary>
+    private bool IsBuildingInArea(Building building, Area area)
+    {
+        // 방법 1: Building이 Area의 하위 오브젝트인지 확인
+        if (building.transform.IsChildOf(area.transform))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private void UpdateInfoJsonFiles(string basePath, Dictionary<string, AreaInfo> areaDataMap)
@@ -114,15 +144,16 @@ public class AreaDataExporter : EditorWindow
                     }
                 }
 
-                // connected_areas만 업데이트
+                // connected_areas와 buildings 업데이트
                 existingInfo.connectedAreas = areaInfo.connectedAreas;
+                existingInfo.buildings = areaInfo.buildings;
 
                 // JSON으로 저장
                 var updatedJson = JsonConvert.SerializeObject(existingInfo, Formatting.Indented);
                 File.WriteAllText(infoFile, updatedJson);
 
                 Debug.Log(
-                    $"Updated {infoFile} with {areaInfo.connectedAreas.Count} connected areas"
+                    $"Updated {infoFile} with {areaInfo.connectedAreas.Count} connected areas and {areaInfo.buildings.Count} buildings"
                 );
                 updatedCount++;
             }

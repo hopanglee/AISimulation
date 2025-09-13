@@ -327,47 +327,4 @@ public class DetailedPlannerAgent : GPT
         return localizationService.GetLocalizedText("detailed_plan_from_current_time_prompt", replacements);
     }
 
-    /// <summary>
-    private List<string> GetAvailableLocations()
-    {
-        try
-        {
-            var pathfindingService = Services.Get<IPathfindingService>();
-            var allAreas = pathfindingService.GetAllAreaInfo();
-
-            Debug.Log($"[DetailedPlannerAgent] 전체 Area 수: {allAreas.Count}");
-
-            // 실제 Area 컴포넌트들을 찾아서 LocationToString() 사용
-            var areas = UnityEngine.Object.FindObjectsByType<Area>(FindObjectsSortMode.None);
-            var locations = new List<string>();
-
-            foreach (var area in areas)
-            {
-                if (string.IsNullOrEmpty(area.locationName))
-                    continue;
-
-                // LocationToString()을 사용해 전체 계층 구조 경로 가져오기
-                var fullLocationPath = area.LocationToString();
-                locations.Add(fullLocationPath);
-                Debug.Log($"[DetailedPlannerAgent] Area 추가: {area.locationName} -> 전체 경로: {fullLocationPath}");
-            }
-
-            Debug.Log($"[DetailedPlannerAgent] 최종 사용 가능한 장소 목록 ({locations.Count}개): {string.Join(", ", locations)}");
-
-            if (locations.Count == 0)
-            {
-                Debug.LogError("[DetailedPlannerAgent] 사용 가능한 장소가 없습니다! 기본 장소를 사용합니다.");
-                return null;
-            }
-
-            return locations;
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"[DetailedPlannerAgent] 장소 목록 가져오기 실패: {ex.Message}");
-            throw new System.InvalidOperationException($"DetailedPlannerAgent 장소 목록 가져오기 실패: {ex.Message}");
-        }
-    }
-
-
 }
