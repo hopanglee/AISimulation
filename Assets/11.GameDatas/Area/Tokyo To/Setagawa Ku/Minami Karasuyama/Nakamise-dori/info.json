@@ -2,5 +2,8 @@
   "connected_areas": [
     "5-chome-4",
     "5-chome-8"
+  ],
+  "buildings": [
+    "Restaurant"
   ]
 }
