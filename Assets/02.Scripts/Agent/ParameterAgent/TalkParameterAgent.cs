@@ -21,11 +21,10 @@ namespace Agent
         }
 
         private readonly string systemPrompt;
-        private readonly List<string> characterList;
 
-        public TalkParameterAgent(List<string> npcList, GPT gpt)
+        public TalkParameterAgent(GPT gpt)
         {
-            this.characterList = npcList;
+            var characterList = GetCurrentAvailableCharacters();
             systemPrompt = PromptLoader.LoadPrompt("TalkParameterAgentPrompt.txt", "You are a Talk parameter generator.");
             this.options = new ChatCompletionOptions
             {
@@ -67,7 +66,6 @@ namespace Agent
 
         public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
-            UpdateResponseFormatBeforeGPT();
             
             var param = await GenerateParametersAsync(new CommonContext
             {
@@ -85,45 +83,6 @@ namespace Agent
                     { "message", param.Message }
                 }
             };
-        }
-
-        /// <summary>
-        /// 최신 주변 상황을 반영해 ResponseFormat을 동적으로 갱신합니다.
-        /// </summary>
-        protected override void UpdateResponseFormatSchema()
-        {
-            try
-            {
-                // 현재 사용 가능한 캐릭터 목록을 동적으로 가져와서 enum 업데이트
-                var currentCharacterList = GetCurrentAvailableCharacters();
-                
-                options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "talk_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
-                            ""type"": ""object"",
-                            ""additionalProperties"": false,
-                            ""properties"": {{
-                                ""CharacterName"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": {Newtonsoft.Json.JsonConvert.SerializeObject(currentCharacterList)},
-                                    ""description"": ""One of the available characters to talk to""
-                                }},
-                                ""Message"": {{
-                                    ""type"": ""string"",
-                                    ""description"": ""Message to say to the character""
-                                }}
-                            }},
-                            ""required"": [""CharacterName"", ""Message""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                );
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[TalkParameterAgent] ResponseFormat 갱신 실패: {ex.Message}");
-            }
         }
 
         /// <summary>
@@ -168,7 +127,7 @@ namespace Agent
             {
                 { "reasoning", context.Reasoning },
                 { "intention", context.Intention },
-                { "characters", string.Join(", ", characterList) },
+                { "characters", string.Join(", ", GetCurrentAvailableCharacters()) },
                 { "feedback", !string.IsNullOrEmpty(context.PreviousFeedback) ? context.PreviousFeedback : "" }
             };
             

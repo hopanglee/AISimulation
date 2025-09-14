@@ -1,15 +1,7 @@
 {
   "name": "UseObject",
-  "displayName": "Use Object",
   "description": "Use or operate the item currently held in the Actor's Hand.",
-  "usage": "Use this action when you want to use the item you are currently holding for its intended purpose.",
   "parameters": [],
-  "examples": [
-    "Using a phone to make a call",
-    "Using a computer to check emails",
-    "Using a kitchen appliance to cook",
-    "Using furniture to sit or rest"
-  ],
   "requirements": [
     "Actor must have an item in their Hand",
     "The held item must be usable (implements IUsable interface)"
@@ -19,7 +11,6 @@
     "Want to operate a device or appliance you're carrying",
     "Need to use furniture or tool for its intended purpose",
     "Want to interact with the item in your hand"
-  ],
-  "category": "interaction"
+  ]
 }
 

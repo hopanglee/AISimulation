@@ -1,8 +1,6 @@
 {
   "name": "InteractWithObject",
-  "displayName": "물체와 상호작용하기",
   "description": "물체를 조사하거나, 조작하거나, 사용하기 위해 상호작용합니다.",
-  "usage": "일반적인 방식으로 물체와 상호작용하고 싶을 때 이 행동을 사용하세요.",
   "parameters": [
   {
   "name": "object_name",
@@ -10,12 +8,6 @@
   "description": "상호작용할 물체의 이름",
   "required": true
   }
-  ],
-  "examples": [
-  "책 살펴보기",
-  "문 열기",
-  "버튼 누르기",
-  "장치 조작하기"
   ],
   "requirements": [
   "물체는 근처에 있고 상호작용 가능해야 합니다",
@@ -26,6 +18,5 @@
   "물체를 조작해야 할 때",
   "상호작용 가능한 요소와 반응하고 싶을 때",
   "환경에 있는 물체를 사용해야 할 때"
-  ],
-  "category": "interaction"
+  ]
   }

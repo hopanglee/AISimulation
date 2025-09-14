@@ -17,11 +17,10 @@ namespace Agent
         }
 
         private readonly string systemPrompt;
-        private readonly List<string> movableAreas;
 
-        public MoveToAreaParameterAgent(List<string> movableAreas, GPT gpt)
+        public MoveToAreaParameterAgent(GPT gpt)
         {
-            this.movableAreas = movableAreas;
+            var movableAreas = GetCurrentMovableAreaKeys();
             // 프롬프트 로드
             systemPrompt = PromptLoader.LoadPrompt("MoveToAreaParameterAgentPrompt.txt", "You are a MoveToArea parameter generator.");
             this.options = new ChatCompletionOptions
@@ -59,9 +58,7 @@ namespace Agent
         }
 
         public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
-        {
-            UpdateResponseFormatBeforeGPT();
-            
+        {            
             var param = await GenerateParametersAsync(new CommonContext
             {
                 Reasoning = request.Reasoning,
@@ -77,36 +74,6 @@ namespace Agent
                     { "area_name", param.area_name }
                 }
             };
-        }
-
-        protected override void UpdateResponseFormatSchema()
-        {
-            try
-            {
-                var dynamicAreas = GetCurrentMovableAreaKeys();
-                options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "move_to_area_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
-                            ""type"": ""object"",
-                            ""additionalProperties"": false,
-                            ""properties"": {{
-                                ""area_name"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": {JsonConvert.SerializeObject(dynamicAreas)},
-                                    ""description"": ""One of the available locations to move to (Areas or Buildings)""
-                                }}
-                            }},
-                            ""required"": [""area_name""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                );
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[MoveToAreaParameterAgent] ResponseFormat 갱신 실패: {ex.Message}");
-            }
         }
 
         private List<string> GetCurrentMovableAreaKeys()
@@ -130,7 +97,16 @@ namespace Agent
 
         private string BuildUserMessage(CommonContext context)
         {
-            return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableAreas: {string.Join(", ", movableAreas)}";
+            var localizationService = Services.Get<ILocalizationService>();
+            
+            var replacements = new Dictionary<string, string>
+            {
+                {"reasoning", context.Reasoning},
+                {"intention", context.Intention},
+                {"available_areas", string.Join(", ", GetCurrentMovableAreaKeys())}
+            };
+            
+            return localizationService.GetLocalizedText("move_to_area_parameter_message", replacements);
         }
     }
 } 

@@ -296,20 +296,29 @@ namespace Agent
             try
             {
                 var actionInfos = new List<string>();
+                var promptService = Services.Get<IPromptService>();
+                
                 foreach (var action in availableActions)
                 {
                     string actionFileName = $"{action}.json";
-                    string actionPath = System.IO.Path.Combine("Assets/11.GameDatas/prompt/actions", actionFileName);
                     
-                    if (System.IO.File.Exists(actionPath))
+                    try
                     {
-                        string jsonContent = System.IO.File.ReadAllText(actionPath);
-                        var actionDesc = JsonUtility.FromJson<ActionDescription>(jsonContent);
-                        actionInfos.Add($"- **{actionDesc.displayName}**: {actionDesc.description}");
+                        string jsonContent = promptService.GetActionPromptJson(actionFileName);
+                        if (!string.IsNullOrEmpty(jsonContent))
+                        {
+                            var actionDesc = JsonUtility.FromJson<ActionDescription>(jsonContent);
+                            actionInfos.Add($"- {actionDesc.name}: {actionDesc.description}");
+                        }
+                        else
+                        {
+                            actionInfos.Add($"- {action}: Description not available.");
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        actionInfos.Add($"- **{action}**: Description not available.");
+                        Debug.LogWarning($"[ActSelectorAgent] 액션 설명 로드 실패 ({action}): {ex.Message}");
+                        actionInfos.Add($"- {action}: Description not available.");
                     }
                 }
                 
@@ -344,10 +353,7 @@ namespace Agent
         private class ActionDescription
         {
             public string name;
-            public string displayName;
             public string description;
-            public string usage;
-            public string category;
         }
     }
 } 

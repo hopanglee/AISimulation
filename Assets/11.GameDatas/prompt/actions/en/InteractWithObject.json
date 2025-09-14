@@ -1,8 +1,6 @@
 {
   "name": "InteractWithObject",
-  "displayName": "Interact with Object",
   "description": "Interact with an object to examine, manipulate, or engage with it.",
-  "usage": "Use this action when you want to interact with an object in a general way.",
   "parameters": [
     {
       "name": "object_name",
@@ -10,12 +8,6 @@
       "description": "The name of the object to interact with",
       "required": true
     }
-  ],
-  "examples": [
-    "Examining a book",
-    "Opening a door",
-    "Pressing a button",
-    "Manipulating a device"
   ],
   "requirements": [
     "Object must be nearby and interactable",
@@ -26,7 +18,6 @@
     "Need to manipulate an object",
     "Want to interact with interactive elements",
     "Need to engage with objects in the environment"
-  ],
-  "category": "interaction"
+  ]
 }
 

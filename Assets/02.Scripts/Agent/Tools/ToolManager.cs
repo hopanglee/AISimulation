@@ -37,15 +37,7 @@ namespace Agent.Tools
                 )
             );
 
-            public static readonly ChatTool GetActionDescription = ChatTool.CreateFunctionTool(
-                functionName: nameof(GetActionDescription),
-                functionDescription: "Get detailed description of a specific action type"
-            );
 
-            public static readonly ChatTool GetAllActions = ChatTool.CreateFunctionTool(
-                functionName: nameof(GetAllActions),
-                functionDescription: "Get list of all available actions with basic information"
-            );
 
             public static readonly ChatTool GetWorldAreaInfo = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetWorldAreaInfo),
@@ -144,7 +136,7 @@ namespace Agent.Tools
             /// <summary>
             /// 액션 정보 관련 도구들
             /// </summary>
-            public static readonly ChatTool[] ActionInfo = { ToolDefinitions.GetActionDescription, ToolDefinitions.GetAllActions };
+            public static readonly ChatTool[] ActionInfo = { };
 
             /// <summary>
             /// 월드 정보 관련 도구들
@@ -164,7 +156,7 @@ namespace Agent.Tools
             /// <summary>
             /// 모든 도구들
             /// </summary>
-            public static readonly ChatTool[] All = { ToolDefinitions.SwapInventoryToHand, ToolDefinitions.GetActionDescription, ToolDefinitions.GetAllActions, ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetUserMemory, ToolDefinitions.GetShortTermMemory, ToolDefinitions.GetLongTermMemory, ToolDefinitions.GetMemoryStats, ToolDefinitions.GetCurrentTime, ToolDefinitions.GetCurrentPlan };
+            public static readonly ChatTool[] All = { ToolDefinitions.SwapInventoryToHand, ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetUserMemory, ToolDefinitions.GetShortTermMemory, ToolDefinitions.GetLongTermMemory, ToolDefinitions.GetMemoryStats, ToolDefinitions.GetCurrentTime, ToolDefinitions.GetCurrentPlan };
         }
 
         /// <summary>
@@ -213,10 +205,6 @@ namespace Agent.Tools
             {
                 case nameof(SwapInventoryToHand):
                     return SwapInventoryToHand(toolCall.FunctionArguments);
-                case nameof(GetActionDescription):
-                    return GetActionDescription(toolCall.FunctionArguments);
-                case nameof(GetAllActions):
-                    return GetAllActions();
                 case nameof(GetWorldAreaInfo):
                     return GetWorldAreaInfo();
                 case nameof(GetUserMemory):
@@ -314,78 +302,8 @@ namespace Agent.Tools
             }
         }
 
-        private string GetActionDescription(System.BinaryData arguments)
-        {
-            try
-            {
-                using var argumentsJson = System.Text.Json.JsonDocument.Parse(arguments.ToString());
-                if (!argumentsJson.RootElement.TryGetProperty("actionType", out var actionTypeElement))
-                {
-                    return "Error: actionType parameter is required";
-                }
 
-                string actionType = actionTypeElement.GetString();
-                string actionFileName = $"{actionType}.json";
-                string actionPath = System.IO.Path.Combine("Assets/11.GameDatas/prompt/actions", actionFileName);
-                
-                if (System.IO.File.Exists(actionPath))
-                {
-                    string jsonContent = System.IO.File.ReadAllText(actionPath);
-                    var actionDesc = JsonUtility.FromJson<ActionDescription>(jsonContent);
-                    return $"**{actionDesc.displayName}**: {actionDesc.description}\n\nUsage: {actionDesc.usage}\n\nCategory: {actionDesc.category}";
-                }
-                else
-                {
-                    return $"Action description for '{actionType}' not found.";
-                }
-            }
-            catch (Exception ex)
-            {
-                return $"Error getting action description: {ex.Message}";
-            }
-        }
 
-        private string GetAllActions()
-        {
-            try
-            {
-                var allActions = System.Enum.GetValues(typeof(ActionType)).Cast<ActionType>().ToList();
-                
-                var actionInfos = new List<string>();
-                foreach (var action in allActions)
-                {
-                    string actionFileName = $"{action}.json";
-                    string actionPath = System.IO.Path.Combine("Assets/11.GameDatas/prompt/actions", actionFileName);
-                    
-                    if (System.IO.File.Exists(actionPath))
-                    {
-                        string jsonContent = System.IO.File.ReadAllText(actionPath);
-                        var actionDesc = JsonUtility.FromJson<ActionDescription>(jsonContent);
-                        actionInfos.Add($"- **{actionDesc.displayName}**: {actionDesc.description}");
-                    }
-                    else
-                    {
-                        actionInfos.Add($"- **{action}**: Description not available.");
-                    }
-                }
-                
-                return $"All Available Actions:\n\n{string.Join("\n", actionInfos)}";
-            }
-            catch (Exception ex)
-            {
-                return $"Error getting all actions: {ex.Message}";
-            }
-        }
-
-        [System.Serializable]
-        private class ActionDescription
-        {
-            public string name;
-            public string displayName;
-            public string description;
-            public string usage;
-            public string category;
-        }
 
         private string GetWorldAreaInfo()
         {

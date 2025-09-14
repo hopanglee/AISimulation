@@ -1,8 +1,6 @@
 {
   "name": "PerformActivity",
-  "displayName": "활동 수행하기",
   "description": "시뮬레이션 월드에서 특정 활동이나 작업을 수행합니다.",
-  "usage": "특정한 활동이나 작업을 수행하고 싶을 때 이 행동을 사용하세요.",
   "parameters": [
   {
   "name": "activity_name",
@@ -10,13 +8,6 @@
   "description": "수행할 활동의 이름",
   "required": true
   }
-  ],
-  "examples": [
-  "아침 스트레칭 수행하기",
-  "식사 요리하기",
-  "책 읽기",
-  "운동하기",
-  "프로젝트 작업하기"
   ],
   "requirements": [
   "활동은 현재 상황에서 가능하고 적절해야 합니다",
@@ -28,6 +19,5 @@
   "무언가에 대해 작업하고 싶을 때",
   "일상적인 활동을 수행해야 할 때",
   "취미나 업무에 참여하고 싶을 때"
-  ],
-  "category": "activity"
+  ]
   }

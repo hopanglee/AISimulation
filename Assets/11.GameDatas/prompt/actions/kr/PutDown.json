@@ -1,23 +1,18 @@
 {
-  "action": "PutDown",
+  "name": "PutDown",
   "description": "손에 든 아이템을 특정 위치에 내려놓습니다.",
-  "usage": "손에 든 아이템을 특정 위치(테이블, 선반, 바닥 등)에 놓고 싶을 때 사용하세요.",
-  "parameters": {
-  "target_key": "아이템을 내려놓을 위치의 키 (예: 'table', 'shelf', 'floor')",
-  "parameters": ["아이템을 놓을 구체적인 위치나 표면"]
-  },
-  "examples": [
+  "parameters": [
   {
-  "scenario": "카페에서 커피를 마신 후 테이블 위에 커피잔을 내려놓는 상황",
-  "action": "PutDown",
-  "target_key": "table",
-  "parameters": ["커피잔을 놓을 테이블 위치"]
+  "name": "target_key",
+  "type": "string",
+  "description": "아이템을 내려놓을 위치의 키 (예: 'table', 'shelf', 'floor')",
+  "required": true
   },
   {
-  "scenario": "편의점에서 구매한 물건을 카운터 위에 내려놓는 상황",
-  "action": "PutDown",
-  "target_key": "counter",
-  "parameters": ["물건을 놓을 카운터 위치"]
+  "name": "parameters",
+  "type": "array",
+  "description": "아이템을 놓을 구체적인 위치나 표면",
+  "required": true
   }
   ],
   "requirements": [
@@ -25,7 +20,7 @@
   "목표 위치는 접근 가능해야 합니다",
   "해당 위치에 아이템을 놓을 수 있어야 합니다"
   ],
-  "when_to_use": [
+  "whenToUse": [
   "들고 있는 아이템을 특정 위치에 보관하고 싶을 때",
   "아이템 사용 후 정리하고 싶을 때",
   "다른 사람에게 건네주기 전에 아이템을 잠시 내려놓고 싶을 때"

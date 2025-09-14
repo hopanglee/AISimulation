@@ -18,11 +18,10 @@ namespace Agent
         }
 
         private readonly string systemPrompt;
-        private readonly List<string> entityList;
 
-        public MoveToEntityParameterAgent(List<string> entityList, GPT gpt)
+        public MoveToEntityParameterAgent(GPT gpt)
         {
-            this.entityList = entityList;
+            var entityList = GetCurrentEntityNames();
             systemPrompt = PromptLoader.LoadPrompt("MoveToEntityParameterAgentPrompt.txt", "You are a MoveToEntity parameter generator.");
             this.options = new ChatCompletionOptions
             {
@@ -60,7 +59,6 @@ namespace Agent
 
         public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
-            UpdateResponseFormatBeforeGPT();
             
             var param = await GenerateParametersAsync(new CommonContext
             {
@@ -77,36 +75,6 @@ namespace Agent
                     { "entity_name", param.entity_name }
                 }
             };
-        }
-
-        protected override void UpdateResponseFormatSchema()
-        {
-            try
-            {
-                var dynamicEntities = GetCurrentEntityNames();
-                options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "move_to_entity_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
-                            ""type"": ""object"",
-                            ""additionalProperties"": false,
-                            ""properties"": {{
-                                ""entity_name"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": {JsonConvert.SerializeObject(dynamicEntities)},
-                                    ""description"": ""One of the available entities to move to""
-                                }}
-                            }},
-                            ""required"": [""entity_name""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                );
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[MoveToEntityParameterAgent] ResponseFormat 갱신 실패: {ex.Message}");
-            }
         }
 
         private List<string> GetCurrentEntityNames()
@@ -130,7 +98,16 @@ namespace Agent
 
         private string BuildUserMessage(CommonContext context)
         {
-            var message = $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}\nAvailableEntities: {string.Join(", ", entityList)}";
+            var localizationService = Services.Get<ILocalizationService>();
+            
+            var replacements = new Dictionary<string, string>
+            {
+                {"reasoning", context.Reasoning},
+                {"intention", context.Intention},
+                {"available_entities", string.Join(", ", GetCurrentEntityNames())}
+            };
+            
+            var message = localizationService.GetLocalizedText("move_to_entity_parameter_message", replacements);
             
             // 피드백이 있으면 추가
             if (!string.IsNullOrEmpty(context.PreviousFeedback))

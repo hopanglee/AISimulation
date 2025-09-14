@@ -20,12 +20,11 @@ namespace Agent
         }
 
         private readonly string systemPrompt;
-        private readonly List<string> characterList;
 
 
-        public GiveItemParameterAgent(List<string> characterList, GPT gpt)
+        public GiveItemParameterAgent(GPT gpt)
         {
-            this.characterList = characterList;
+            var characterList = GetCurrentNearbyCharacterNames();
             
             // 프롬프트 로드
             systemPrompt = PromptLoader.LoadPrompt("GiveItemParameterAgentPrompt.txt", "You are a GiveItem parameter generator.");
@@ -43,7 +42,7 @@ namespace Agent
                                 ""target_character"": {{
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(characterList)},
-                                    ""description"": ""The name of the character to give the item to""
+                                    ""description"": ""아이템을 받을 캐릭터의 이름""
                                 }}
                             }},
                             ""required"": [""target_character""]
@@ -70,9 +69,7 @@ namespace Agent
         }
 
         public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
-        {
-            UpdateResponseFormatBeforeGPT();
-            
+        {            
             var param = await GenerateParametersAsync(new CommonContext
             {
                 Reasoning = request.Reasoning,
@@ -88,36 +85,6 @@ namespace Agent
                     { "target_character", param.target_character }
                 }
             };
-        }
-
-        protected override void UpdateResponseFormatSchema()
-        {
-            try
-            {
-                var dynamicCharacters = GetCurrentNearbyCharacterNames();
-                options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "give_item_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
-                            ""type"": ""object"",
-                            ""additionalProperties"": false,
-                            ""properties"": {{
-                                ""target_character"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": {JsonConvert.SerializeObject(dynamicCharacters)},
-                                    ""description"": ""The name of the character to give the item to""
-                                }}
-                            }},
-                            ""required"": [""target_character""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                );
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[GiveItemParameterAgent] ResponseFormat 갱신 실패: {ex.Message}");
-            }
         }
 
         private List<string> GetCurrentNearbyCharacterNames()
@@ -151,7 +118,7 @@ namespace Agent
             {
                 { "reasoning", context.Reasoning },
                 { "intention", context.Intention },
-                { "characters", string.Join(", ", characterList) },
+                { "characters", string.Join(", ", GetCurrentNearbyCharacterNames()) },
                 { "handItem", handItem },
                 { "inventoryItems", string.Join(", ", inventoryItems) }
             };

@@ -126,7 +126,7 @@ public class DrinkDispenser : ItemDispenser
             }
 
             // ItemDispenserParameterAgent를 사용하여 지능적인 음료 선택
-            var agent = new ItemDispenserParameterAgent(availableDrinkKeys, new GPT());
+            var agent = new ItemDispenserParameterAgent(availableDrinkKeys);
             agent.SetActor(actor);
 
             // ActorManager에서 원본 reasoning과 intention 가져오기
