@@ -88,7 +88,7 @@ public class BedInteractAgent : GPT
                 { "wake_up_hour", (actor is MainActor mainActor3 ? mainActor3.WakeUpHour : 6).ToString() }
             };
             
-            string userMessage = localizationService.GetLocalizedText("bed_interact_prompt.txt", replacements);
+            string userMessage = localizationService.GetLocalizedText("bed_interact_prompt", replacements);
 
             // 사용자 메시지 추가
             messages.Add(new UserChatMessage(userMessage));
@@ -129,8 +129,7 @@ public class BedInteractAgent : GPT
     {
         try
         {
-            var localizationService = Services.Get<ILocalizationService>();
-            return localizationService.GetLocalizedText("bed_interact_agent_prompt.txt");
+            return PromptLoader.LoadPrompt("bed_interact_agent_prompt.txt");
         }
         catch (Exception ex)
         {

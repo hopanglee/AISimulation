@@ -15,7 +15,7 @@ public interface ILocalizationService : IService
     string GetNpcPromptPath(string npcPromptFile);
     string GetMemoryPath(string characterName, string memoryType, string memoryFileName);
     string GetCharacterInfoPath(string characterName);
-    
+
     // Template localization helpers
     string GetLocalizedText(string templateName, Dictionary<string, string> replacements = null);
     bool TemplateExists(string templateName);
@@ -74,7 +74,7 @@ public class LocalizationService : ILocalizationService
         // Character 폴더 구조에 맞게 경로 생성
         // Assets/11.GameDatas/Character/{characterName}/memory/{memoryType}/{langFolder}/{memoryFileName}
         var localized = $"Assets/11.GameDatas/Character/{characterName}/memory/{memoryType}/{memoryFileName}";
-        
+
         // Fallback path without language subfolder (기존 구조와의 호환성을 위해)
         var fallback = $"Assets/11.GameDatas/Character/{characterName}/memory/{memoryType}/{memoryFileName}";
 
@@ -164,8 +164,8 @@ public class LocalizationService : ILocalizationService
         try
         {
             var langFolder = currentLanguage == Language.KR ? "kr" : "en";
-            var templatePath = $"Assets/11.GameDatas/Localization/{langFolder}/{templateName}.txt";
-            
+            var templatePath = $"Assets/11.GameDatas/Template/{langFolder}/{templateName}.txt";
+
             // 파일이 존재하는지 확인
             if (!File.Exists(templatePath))
             {
@@ -190,7 +190,7 @@ public class LocalizationService : ILocalizationService
         var placeholders = new List<string>();
         var regex = new System.Text.RegularExpressions.Regex(@"\{([^}]+)\}");
         var matches = regex.Matches(template);
-        
+
         foreach (System.Text.RegularExpressions.Match match in matches)
         {
             if (!placeholders.Contains(match.Value))
@@ -198,7 +198,7 @@ public class LocalizationService : ILocalizationService
                 placeholders.Add(match.Value);
             }
         }
-        
+
         return placeholders.Count > 0 ? string.Join(", ", placeholders) : "None";
     }
 }

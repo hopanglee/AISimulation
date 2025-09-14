@@ -38,8 +38,12 @@ namespace Agent
             this.toolExecutor = new ActorToolExecutor(actor);
             SetActorName(actor.Name);
             
-            // ActSelectorAgent 프롬프트 로드 및 초기화
-            string systemPrompt = PromptLoader.LoadPrompt("ActSelectorAgentPrompt.txt", "You are an AI agent responsible for selecting appropriate actions.");
+            // ActSelectorAgent 프롬프트 로드 및 초기화 (CharacterName 플레이스홀더 치환)
+            string systemPrompt = PromptLoader.LoadPromptWithReplacements("ActSelectorAgentPrompt.txt", 
+                new Dictionary<string, string>
+                {
+                    { "CharacterName", actor.Name }
+                });
             messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
             
             // Options 초기화
@@ -296,7 +300,7 @@ namespace Agent
             try
             {
                 var actionInfos = new List<string>();
-                var promptService = Services.Get<IPromptService>();
+                var localizationService = Services.Get<ILocalizationService>();
                 
                 foreach (var action in availableActions)
                 {
@@ -304,7 +308,19 @@ namespace Agent
                     
                     try
                     {
-                        string jsonContent = promptService.GetActionPromptJson(actionFileName);
+                        // LocalizationService를 통해 액션 JSON 파일 경로 가져오기
+                        string actionPath = localizationService.GetActionPromptPath(actionFileName);
+                        string jsonContent = "";
+                        
+                        if (File.Exists(actionPath))
+                        {
+                            jsonContent = File.ReadAllText(actionPath);
+                        }
+                        else
+                        {
+                            Debug.LogError($"[ActSelectorAgent] 액션 JSON 파일을 찾을 수 없습니다: {actionFileName}");
+                        }
+                        
                         if (!string.IsNullOrEmpty(jsonContent))
                         {
                             var actionDesc = JsonUtility.FromJson<ActionDescription>(jsonContent);
