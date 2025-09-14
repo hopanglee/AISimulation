@@ -60,18 +60,6 @@ public static class PromptLoader
     }
 
     /// <summary>
-    /// ActionAgent용 프롬프트를 로드합니다.
-    /// </summary>
-    /// <returns>ActionAgent 시스템 프롬프트</returns>
-    public static string LoadActionAgentPrompt()
-    {
-        return LoadPrompt(
-            "ActionAgentPrompt",
-            "당신은 Unity 시뮬레이션 환경에서 작동하는 AI 에이전트입니다."
-        );
-    }
-
-    /// <summary>
     /// MemoryAgent용 프롬프트를 로드합니다.
     /// </summary>
     /// <returns>MemoryAgent 시스템 프롬프트</returns>
@@ -118,18 +106,6 @@ public static class PromptLoader
         return LoadPrompt(
             "SpecificPlannerAgentPrompt",
             "당신은 구체적 행동을 계획하는 전문화된 AI 에이전트입니다."
-        );
-    }
-
-    /// <summary>
-    /// NPCActionAgent용 프롬프트를 로드합니다.
-    /// </summary>
-    /// <returns>NPCActionAgent 시스템 프롬프트</returns>
-    public static string LoadNPCActionAgentPrompt()
-    {
-        return LoadPrompt(
-            "NPC/npc_system_prompt.txt",
-            "You are an intelligent NPC action decision agent. Analyze events and choose appropriate actions."
         );
     }
 

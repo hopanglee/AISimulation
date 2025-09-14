@@ -1,10 +1,10 @@
-=== Short Term Memory Entries to Consolidate ===
+=== 통합할 단기 기억 엔트리들 ===
 총 {entry_count}개의 메모리 엔트리가 있습니다.
 
 {entries_text}
 
-=== Task ===
-위의 Short Term Memory 엔트리들을 분석하여 의미있는 덩어리(chunk)로 묶어서 요약해주세요.
+=== 작업 ===
+위의 단기 기억 엔트리들을 분석하여 의미있는 덩어리(chunk)로 묶어서 요약해주세요.
 
 통합 지침:
 1. 연관된 행동들을 하나로 묶기 (예: "A 행동 시작" + "A 행동 완료" → "A 행동을 했다")

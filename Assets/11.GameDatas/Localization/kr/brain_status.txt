@@ -1,21 +1,21 @@
-Current time: {currentTime}
-You are at {location}.
+현재 시간: {currentTime}
+당신은 {location}에 있습니다.
 
-=== Your Current Items ===
-Hand: {handItem}
+=== 현재 소지품 ===
+손에 든 것: {handItem}
 
-Inventory: {inventory}
-Sleep status: {sleepStatus}
-Current state: Hunger({hunger}), Thirst({thirst}), Stamina({stamina}), Stress({stress}), Sleepiness({sleepiness})
+인벤토리: {inventory}
+수면 상태: {sleepStatus}
+현재 상태: 배고픔({hunger}), 목마름({thirst}), 체력({stamina}), 스트레스({stress}), 졸림({sleepiness})
 
-=== Lookable Entities ===
+=== 볼 수 있는 개체들 ===
 {lookableEntities}
 
-=== Collectible Entities ===
+=== 수집 가능한 개체들 ===
 {collectibleEntities}
 
-=== Interactable Entities ===
+=== 상호작용 가능한 개체들 ===
 {interactableEntities}
 
-=== Movable Positions ===
+=== 이동 가능한 위치들 ===
 {movablePositions}
