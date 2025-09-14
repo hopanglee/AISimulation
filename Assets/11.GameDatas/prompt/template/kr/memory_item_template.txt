@@ -1,8 +1,8 @@
-=== Memory {memory_index}: ===
-Date: {memory_date}
-Location: {memory_location}
-Title: {memory_title}
-People: {memory_people}
-Emotion: {memory_emotion}
-Action: {memory_action}
-Memory: {memory_description}
+=== 메모리 {memory_index}: ===
+날짜: {memory_date}
+위치: {memory_location}
+제목: {memory_title}
+사람들: {memory_people}
+감정: {memory_emotion}
+행동: {memory_action}
+기억: {memory_description}

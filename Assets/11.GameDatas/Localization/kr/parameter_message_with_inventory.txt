@@ -1,5 +1,5 @@
-Reasoning: {reasoning}
-Intention: {intention}
-Available Characters: {characters}
-Hand Item: {handItem}
-Inventory Items: {inventoryItems}
+추론: {reasoning}
+의도: {intention}
+사용 가능한 캐릭터들: {characters}
+손에 든 아이템: {handItem}
+인벤토리 아이템들: {inventoryItems}

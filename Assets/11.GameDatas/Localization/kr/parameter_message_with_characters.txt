@@ -1,3 +1,3 @@
-Reasoning: {reasoning}
-Intention: {intention}
-Available Characters: {characters}
+추론: {reasoning}
+의도: {intention}
+사용 가능한 캐릭터들: {characters}

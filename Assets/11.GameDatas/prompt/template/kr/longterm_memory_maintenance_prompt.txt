@@ -1,24 +1,24 @@
-=== Current Long Term Memories ===
-총 {memory_count}개의 Long Term Memory가 있습니다.
+=== 현재 장기 기억 ===
+총 {memory_count}개의 장기 기억이 있습니다.
 현재 날짜: {current_date}
 
 {memories_text}
 
-=== Maintenance Task ===
-위의 Long Term Memory들을 다음 기준으로 평가하고 정리해주세요:
+=== 유지보수 작업 ===
+위의 장기 기억들을 다음 기준으로 평가하고 정리해주세요:
 
 각 메모리에 대해 다음을 평가하세요:
 
-1. 중요도 (Importance Score 0.0-1.0):
+1. 중요도 (중요도 점수 0.0-1.0):
    - 인생에 미치는 영향력
    - 성격이나 가치관 형성에 기여
    - 인간관계에 미치는 영향
 
-2. 의외성 (Surprise Score 0.0-1.0):
+2. 의외성 (놀라움 점수 0.0-1.0):
    - 예상치 못한 사건: 높은 점수
    - 일상적 사건: 낮은 점수
 
-3. 관련성 (Relevance Score 0.0-1.0):
+3. 관련성 (관련성 점수 0.0-1.0):
    - 현재 삶과의 연관성
    - 미래 결정에 영향을 줄 가능성
 

@@ -1,19 +1,19 @@
-=== Memory Chunks to Evaluate ===
+=== 평가할 메모리 청크들 ===
 총 {chunk_count}개의 메모리 청크가 있습니다.
-목표: 상위 {target_keep_count}개 ({retention_rate}%) 정도를 선별하여 Long Term Memory로 보존
+목표: 상위 {target_keep_count}개 ({retention_rate}%) 정도를 선별하여 장기 기억으로 보존
 
 {chunks_text}
 
-=== Evaluation Task ===
+=== 평가 작업 ===
 각 메모리 청크를 다음 기준으로 평가해주세요:
 
-1. 중요도 (Importance Score 0.0-1.0):
+1. 중요도 (중요도 점수 0.0-1.0):
    - 인생에 미치는 장기적 영향
    - 성격이나 가치관에 미치는 영향
    - 인간관계에 미치는 영향
    - 목표나 계획에 미치는 영향
 
-2. 의외성 (Surprise Score 0.0-1.0):
+2. 의외성 (놀라움 점수 0.0-1.0):
    - 예상치 못한 사건이나 결과
    - 새로운 발견이나 깨달음
    - 평소와 다른 경험
