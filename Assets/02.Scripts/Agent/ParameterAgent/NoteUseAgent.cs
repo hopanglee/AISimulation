@@ -30,7 +30,7 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public NoteUseAgent(GPT gpt)
+        public NoteUseAgent()
         {
             systemPrompt = PromptLoader.LoadPrompt("NoteUseAgentPrompt.txt", "You are a Note use parameter generator.");
             this.options = new ChatCompletionOptions

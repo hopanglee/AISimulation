@@ -12,7 +12,7 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public UseObjectParameterAgent(GPT gpt)
+        public UseObjectParameterAgent()
         {
             systemPrompt = PromptLoader.LoadPrompt("UseObjectParameterAgentPrompt.txt", "You are a UseObject parameter generator.");
             this.options = new ChatCompletionOptions

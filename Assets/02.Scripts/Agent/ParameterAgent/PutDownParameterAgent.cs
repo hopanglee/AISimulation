@@ -14,7 +14,7 @@ public class PutDownParameterAgent : ParameterAgentBase
 {
     private readonly string systemPrompt;
 
-    public PutDownParameterAgent(GPT gpt)
+    public PutDownParameterAgent()
         : base()
     {
         var locationList = GetCurrentAvailableLocations();
@@ -42,16 +42,9 @@ public class PutDownParameterAgent : ParameterAgentBase
                                 ""type"": ""string"",
                                 ""enum"": {Newtonsoft.Json.JsonConvert.SerializeObject(locationList)},
                                 ""description"": ""The location key to put the item down on""
-                            }},
-                            ""parameters"": {{
-                                ""type"": ""array"",
-                                ""items"": {{
-                                    ""type"": ""string""
-                                }},
-                                ""description"": ""Additional parameters for the location""
                             }}
                         }},
-                        ""required"": [""target_key"", ""parameters""]
+                        ""required"": [""target_key""]
                     }}"
                 )),
                 jsonSchemaIsStrict: true
@@ -110,8 +103,7 @@ public class PutDownParameterAgent : ParameterAgentBase
             ActType = request.ActType,
             Parameters = new Dictionary<string, object>
             {
-                { "target_key", param.target_key },
-                { "parameters", param.parameters }
+                { "target_key", param.target_key }
             }
         };
     }
@@ -135,7 +127,7 @@ public class PutDownParameterAgent : ParameterAgentBase
                 // Props에서 위치 가능한 곳들 추가
                 foreach (var prop in interactableEntities.props.Values)
                 {
-                    if (prop != null)
+                    if (prop != null || prop is ILocation)
                     {
                         locationNames.Add(prop.GetSimpleKeyRelativeToActor(actor));
                     }
@@ -173,5 +165,4 @@ public class PutDownParameterAgent : ParameterAgentBase
 public class PutDownParameter
 {
     public string target_key = "";
-    public List<string> parameters = new List<string>();
 }

@@ -29,7 +29,7 @@ public class WhiteBoard : InteractableProp
         try
         {
             // WhiteBoardParameterAgent를 사용하여 지능적인 화이트보드 액션 결정
-            var agent = new WhiteBoardParameterAgent(currentText, new GPT());
+            var agent = new WhiteBoardParameterAgent(currentText);
             agent.SetActor(actor);
 
             // ActorManager에서 원본 reasoning과 intention 가져오기

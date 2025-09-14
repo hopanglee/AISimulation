@@ -22,7 +22,7 @@ namespace Agent
         private readonly string systemPrompt;
 
 
-        public GiveItemParameterAgent(GPT gpt)
+        public GiveItemParameterAgent()
         {
             var characterList = GetCurrentNearbyCharacterNames();
             

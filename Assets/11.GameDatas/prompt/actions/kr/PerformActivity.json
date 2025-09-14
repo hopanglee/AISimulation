@@ -1,6 +1,6 @@
 {
   "name": "PerformActivity",
-  "description": "시뮬레이션 월드에서 특정 활동이나 작업을 수행합니다.",
+  "description": "가능한 활동 외의 활동이나 작업을 수행합니다.",
   "parameters": [
     {
       "name": "activity_name",

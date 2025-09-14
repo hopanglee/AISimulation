@@ -20,7 +20,7 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public PickUpItemParameterAgent(GPT gpt)
+        public PickUpItemParameterAgent()
         {
             var itemList = GetCurrentCollectibleItemKeys();
             systemPrompt = PromptLoader.LoadPrompt("PickUpItemParameterAgentPrompt.txt", "You are a PickUpItem parameter generator.");

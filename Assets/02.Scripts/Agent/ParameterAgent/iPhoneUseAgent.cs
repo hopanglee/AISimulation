@@ -28,7 +28,7 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public iPhoneUseAgent(GPT gpt)
+        public iPhoneUseAgent()
         {
             systemPrompt = PromptLoader.LoadPrompt("iPhoneUseAgentPrompt.txt", "You are an iPhone use parameter generator.");
             this.options = new ChatCompletionOptions

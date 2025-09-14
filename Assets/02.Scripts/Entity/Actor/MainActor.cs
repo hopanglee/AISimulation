@@ -166,12 +166,7 @@ public abstract class MainActor : Actor
 		await ProcessDayEndMemoryAsync();
 		
 		// STM 초기화 후 수면 시작을 새로운 STM에 추가
-		brain?.memoryManager?.AddActionStart(ActionType.PerformActivity, new Dictionary<string, object>
-		{
-			["activity_type"] = "수면",
-			["sleep_start_time"] = sleepStartTime.ToString(),
-			["expected_wake_time"] = wakeUpTime.ToString()
-		});
+		brain?.memoryManager?.AddActionStart("수면", null);
 	}
 	
 	/// <summary>
@@ -209,7 +204,7 @@ public abstract class MainActor : Actor
 		Debug.Log($"[{Name}] Woke up at {currentTime}. Stamina restored to {Stamina}");
 		
 		// Enhanced Memory System: 기상을 STM에 추가
-		brain?.memoryManager?.AddActionComplete(ActionType.PerformActivity, 
+		brain?.memoryManager?.AddActionComplete("수면", 
 			$"수면 완료 - 잠에서 깨어남. 체력 {Stamina}로 회복됨", true);
 		
 		// DayPlan 생성 (await)

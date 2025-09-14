@@ -20,7 +20,7 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public GiveMoneyParameterAgent(GPT gpt)
+        public GiveMoneyParameterAgent()
         {
             var characterList = GetCurrentNearbyCharacterNames();
             

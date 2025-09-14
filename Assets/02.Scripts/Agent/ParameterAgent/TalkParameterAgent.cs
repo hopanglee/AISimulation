@@ -22,7 +22,7 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public TalkParameterAgent(GPT gpt)
+        public TalkParameterAgent()
         {
             var characterList = GetCurrentAvailableCharacters();
             systemPrompt = PromptLoader.LoadPrompt("TalkParameterAgentPrompt.txt", "You are a Talk parameter generator.");
