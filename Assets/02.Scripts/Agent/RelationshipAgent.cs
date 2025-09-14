@@ -168,8 +168,7 @@ public class RelationshipAgent : GPT
     {
         try
         {
-            var localizationService = Services.Get<ILocalizationService>();
-            return localizationService.GetLocalizedText("relationship_agent_prompt");
+            return PromptLoader.LoadPrompt("relationship_agent_prompt.txt");
         }
         catch (Exception ex)
         {

@@ -22,7 +22,6 @@ public class BootStrapper : MonoBehaviour
         var actorManager = new ActorManager();
         var externalEventService = new ExternalEventService();
         var localizationService = new LocalizationService();
-        var promptService = new PromptService();
 
         // 언어 설정은 SimulationController에서 처리됨
 
@@ -35,7 +34,6 @@ public class BootStrapper : MonoBehaviour
         Services.Provide<IActorService>(actorManager);
         Services.Provide<IExternalEventService>(externalEventService);
         Services.Provide<ILocalizationService>(localizationService);
-        Services.Provide<IPromptService>(promptService);
         Debug.Log("[BootStrapper] 모든 서비스가 성공적으로 등록되었습니다");
         
         // 서비스 초기화
@@ -55,8 +53,6 @@ public class BootStrapper : MonoBehaviour
         Debug.Log("[BootStrapper] ExternalEventService가 성공적으로 초기화되었습니다");
         localizationService.Initialize();
         Debug.Log("[BootStrapper] LocalizationService가 성공적으로 초기화되었습니다");
-        promptService.Initialize();
-        Debug.Log("[BootStrapper] PromptService가 성공적으로 초기화되었습니다");
 
         Debug.Log("[BootStrapper] 모든 서비스가 성공적으로 초기화되었습니다");
     }

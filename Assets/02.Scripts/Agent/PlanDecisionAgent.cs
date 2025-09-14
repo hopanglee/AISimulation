@@ -165,19 +165,22 @@ public class PlanDecisionAgent : GPT
 	}
 
 	/// <summary>
-	/// 시스템 프롬프트 로드
+	/// 시스템 프롬프트 로드 (CharacterName 플레이스홀더 치환)
 	/// </summary>
 	private string GetSystemPrompt()
 	{
 		try
 		{
-			var localizationService = Services.Get<ILocalizationService>();
-			return localizationService.GetLocalizedText("PlanDecisionAgentPrompt");
+			return PromptLoader.LoadPromptWithReplacements("PlanDecisionAgentSystemPrompt.txt", 
+				new Dictionary<string, string>
+				{
+					{ "CharacterName", actor.Name }
+				});
 		}
 		catch (Exception ex)
 		{
 			Debug.LogError($"[PlanDecisionAgent] 시스템 프롬프트 로드 실패: {ex.Message}");
-			throw new FileNotFoundException("PlanDecisionAgent 프롬프트 파일을 찾을 수 없습니다.");
+			throw new FileNotFoundException("PlanDecisionAgent 시스템 프롬프트 파일을 찾을 수 없습니다.");
 		}
 	}
 
