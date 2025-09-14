@@ -12,7 +12,7 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public WaitParameterAgent(GPT gpt)
+        public WaitParameterAgent()
         {
             systemPrompt = PromptLoader.LoadPrompt("WaitParameterAgentPrompt.txt", "You are a Wait parameter generator.");
             this.options = new ChatCompletionOptions

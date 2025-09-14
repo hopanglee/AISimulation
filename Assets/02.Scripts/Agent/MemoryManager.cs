@@ -20,7 +20,7 @@ public class ShortTermMemoryEntry
     public string content;
     public string details; // 추가 세부 정보 (JSON 형태)
     public Dictionary<string, float> emotions; // 감정과 강도
-    
+
     public ShortTermMemoryEntry(string type, string content, string details = null, Dictionary<string, float> emotions = null)
     {
         var timeService = Services.Get<ITimeService>();
@@ -52,17 +52,17 @@ public class MemoryManager
     public LongTermMemoryConsolidationAgent consolidationAgent;
     public LongTermMemoryFilterAgent filterAgent;
     public LongTermMemoryMaintenanceAgent maintenanceAgent;
-    
+
     private readonly Actor owner;
-    
+
     // Short Term Memory 관리
     private string shortTermMemoryPath;
     private ShortTermMemoryData shortTermMemory;
-    
+
     // Long Term Memory 관리
     private string longTermMemoryPath;
     private List<LongTermMemory> longTermMemories;
-    
+
     public MemoryManager(Actor owner)
     {
         this.owner = owner;
@@ -71,7 +71,7 @@ public class MemoryManager
         LoadLongTermMemory();
         InitializeAgents();
     }
-    
+
     /// <summary>
     /// 모든 메모리 Agent들을 초기화합니다.
     /// </summary>
@@ -83,7 +83,7 @@ public class MemoryManager
             consolidationAgent = new LongTermMemoryConsolidationAgent(owner);
             filterAgent = new LongTermMemoryFilterAgent(owner);
             maintenanceAgent = new LongTermMemoryMaintenanceAgent(owner);
-            
+
             Debug.Log($"[MemoryManager] All memory agents initialized for {owner.name}");
         }
         catch (Exception ex)
@@ -91,29 +91,29 @@ public class MemoryManager
             Debug.LogError($"[MemoryManager] Failed to initialize memory agents: {ex.Message}");
         }
     }
-    
+
     // === Short Term Memory Path & IO ===
-    
+
     /// <summary>
     /// 메모리 파일 경로들을 초기화합니다.
     /// </summary>
     private void InitializeMemoryPaths()
     {
         string basePath = Path.Combine(Application.dataPath, "11.GameDatas", "Character", owner.Name, "memory");
-        
+
         // Short Term Memory 경로
         string shortTermDir = Path.Combine(basePath, "short term");
         if (!Directory.Exists(shortTermDir))
             Directory.CreateDirectory(shortTermDir);
         shortTermMemoryPath = Path.Combine(shortTermDir, "short_term.json");
-        
+
         // Long Term Memory 경로
         string longTermDir = Path.Combine(basePath, "long term");
         if (!Directory.Exists(longTermDir))
             Directory.CreateDirectory(longTermDir);
         longTermMemoryPath = Path.Combine(longTermDir, "long_term.json");
     }
-    
+
     /// <summary>
     /// Short Term Memory를 로드합니다.
     /// </summary>
@@ -137,7 +137,7 @@ public class MemoryManager
             shortTermMemory = new ShortTermMemoryData();
         }
     }
-    
+
     /// <summary>
     /// Short Term Memory를 저장합니다.
     /// </summary>
@@ -155,7 +155,7 @@ public class MemoryManager
             Debug.LogError($"Short Term Memory 저장 실패: {ex.Message}");
         }
     }
-    
+
     /// <summary>
     /// Short Term Memory에 엔트리를 추가합니다.
     /// </summary>
@@ -164,10 +164,10 @@ public class MemoryManager
         var entry = new ShortTermMemoryEntry(type, content, details, emotions);
         shortTermMemory.entries.Add(entry);
         SaveShortTermMemory();
-        
+
         Debug.Log($"[{owner.Name}] Short Term Memory 추가: [{type}] {content}");
     }
-    
+
     /// <summary>
     /// Short Term Memory 목록을 반환합니다.
     /// </summary>
@@ -175,7 +175,7 @@ public class MemoryManager
     {
         return shortTermMemory?.entries ?? new List<ShortTermMemoryEntry>();
     }
-    
+
     /// <summary>
     /// Short Term Memory를 초기화합니다.
     /// </summary>
@@ -185,7 +185,7 @@ public class MemoryManager
         SaveShortTermMemory();
         Debug.Log($"[{owner.Name}] Short Term Memory 초기화됨");
     }
-    
+
     /// <summary>
     /// Long Term Memory를 로드합니다.
     /// </summary>
@@ -211,7 +211,7 @@ public class MemoryManager
             longTermMemories = new List<LongTermMemory>();
         }
     }
-    
+
     /// <summary>
     /// Long Term Memory를 저장합니다.
     /// </summary>
@@ -228,7 +228,7 @@ public class MemoryManager
             Debug.LogError($"Long Term Memory 저장 실패: {ex.Message}");
         }
     }
-    
+
     /// <summary>
     /// Long Term Memory 목록을 반환합니다.
     /// </summary>
@@ -236,7 +236,7 @@ public class MemoryManager
     {
         return longTermMemories ?? new List<LongTermMemory>();
     }
-    
+
     /// <summary>
     /// Long Term Memory에 새 메모리를 추가합니다.
     /// </summary>
@@ -249,7 +249,7 @@ public class MemoryManager
             Debug.Log($"[{owner.Name}] Long Term Memory 추가: {memories.Count}개");
         }
     }
-    
+
     /// <summary>
     /// Long Term Memory를 업데이트합니다.
     /// </summary>
@@ -262,68 +262,98 @@ public class MemoryManager
             Debug.Log($"[{owner.Name}] Long Term Memory 업데이트 완료: {longTermMemories.Count}개");
         }
     }
-    
+
     // === Short Term Memory Operations ===
-    
+
     /// <summary>
     /// Perception Agent 결과를 Short Term Memory에 추가합니다.
     /// </summary>
     public void AddPerceptionResult(PerceptionResult perceptionResult)
     {
         string content = $"상황 인식: {perceptionResult.situation_interpretation}";
-        string details = JsonConvert.SerializeObject(new 
+        string details = JsonConvert.SerializeObject(new
         {
             thought_chain = perceptionResult.thought_chain,
             situation_interpretation = perceptionResult.situation_interpretation
         });
-        
+
         AddShortTermMemory("perception", content, details, perceptionResult.emotions);
     }
-    
+
     /// <summary>
     /// ActSelector Agent 결과를 Short Term Memory에 추가합니다.
     /// </summary>
     public void AddActSelectorResult(ActSelectorAgent.ActSelectionResult actSelection)
     {
         string content = $"행동 결정: {actSelection.ActType} - {actSelection.Reasoning}";
-        string details = JsonConvert.SerializeObject(new 
+        string details = JsonConvert.SerializeObject(new
         {
             act_type = actSelection.ActType.ToString(),
             reasoning = actSelection.Reasoning,
             intention = actSelection.Intention
         });
-        
+
         AddShortTermMemory("thinking", content, details);
     }
-    
+
     /// <summary>
     /// 행동 시작을 Short Term Memory에 추가합니다.
     /// </summary>
     public void AddActionStart(ActionType actionType, Dictionary<string, object> parameters)
     {
         string content = $"행동 시작: {actionType}";
-        string details = JsonConvert.SerializeObject(new 
+        string details = JsonConvert.SerializeObject(new
         {
             action_type = actionType.ToString(),
             parameters = parameters
         });
-        
+
         AddShortTermMemory("action_start", content, details);
     }
-    
+
+    public void AddActionStart(string actionType, Dictionary<string, object> parameters)
+    {
+        string content = $"행동 시작: {actionType}";
+
+        string details = null;
+
+        if (parameters != null)
+        {
+            details = JsonConvert.SerializeObject(new
+            {
+                action_type = actionType,
+                parameters = parameters
+            });
+        }
+        AddShortTermMemory("action_start", content, details);
+    }
+
     /// <summary>
     /// 행동 완료를 Short Term Memory에 추가합니다.
     /// </summary>
     public void AddActionComplete(ActionType actionType, string result, bool isSuccess = true)
     {
         string content = $"행동 완료: {actionType} - {result}";
-        string details = JsonConvert.SerializeObject(new 
+        string details = JsonConvert.SerializeObject(new
         {
             action_type = actionType.ToString(),
             result = result,
             success = isSuccess
         });
-        
+
+        AddShortTermMemory("action_complete", content, details);
+    }
+
+    public void AddActionComplete(string actionType, string result, bool isSuccess = true)
+    {
+        string content = $"행동 완료: {actionType} - {result}";
+        string details = JsonConvert.SerializeObject(new
+        {
+            action_type = actionType,
+            result = result,
+            success = isSuccess
+        });
+
         AddShortTermMemory("action_complete", content, details);
     }
 
@@ -333,15 +363,15 @@ public class MemoryManager
     public void AddActionInterrupted(ActionType actionType)
     {
         string content = $"행동 중단: {actionType}";
-        string details = JsonConvert.SerializeObject(new 
+        string details = JsonConvert.SerializeObject(new
         {
             action_type = actionType.ToString(),
             interruption_reason = "외부 이벤트"
         });
-        
+
         AddShortTermMemory("action_interrupt", content, details);
     }
-    
+
     /// <summary>
     /// 계획 생성을 Short Term Memory에 추가합니다.
     /// </summary>
@@ -350,21 +380,21 @@ public class MemoryManager
         string content = $"계획 생성: {planDescription}";
         AddShortTermMemory("plan", content);
     }
-    
+
     // === Location Memory Operations ===
-    
+
     /// <summary>
     /// 위치 메모리를 업데이트합니다.
     /// </summary>
-    public void UpdateLocationMemory(string locationName, 
+    public void UpdateLocationMemory(string locationName,
         List<string> items, List<string> blocks, List<string> actors, List<string> buildings, List<string> connectedAreas)
     {
         locationMemoryAgent?.UpdateLocationMemory(locationName, items, blocks, actors, buildings, connectedAreas);
     }
-    
-    
+
+
     // === Long Term Memory Operations ===
-    
+
     /// <summary>
     /// 하루 종료 시 Long Term Memory 처리를 수행합니다.
     /// </summary>
@@ -374,12 +404,12 @@ public class MemoryManager
         {
             var timeService = Services.Get<ITimeService>();
             var currentTime = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 8, 0);
-            
+
             Debug.Log($"[MemoryManager] Starting day-end memory processing at {currentTime.year}-{currentTime.month:D2}-{currentTime.day:D2}");
-            
+
             // 0. Long Term Memory 유지보수 (기존 LTM 정리)
             await PerformLongTermMemoryMaintenanceAsync();
-            
+
             // 1. Short Term Memory 통합
             var consolidationResult = await consolidationAgent.ConsolidateMemoriesAsync(GetShortTermMemory());
             if (consolidationResult?.ConsolidatedChunks == null || consolidationResult.ConsolidatedChunks.Count == 0)
@@ -387,7 +417,7 @@ public class MemoryManager
                 Debug.Log("[MemoryManager] No memories to consolidate");
                 return;
             }
-            
+
             // 2. 필터링 (상위 70% 선별)
             var filterResult = await filterAgent.FilterMemoriesAsync(consolidationResult.ConsolidatedChunks);
             if (filterResult?.KeptChunks == null || filterResult.KeptChunks.Count == 0)
@@ -395,7 +425,7 @@ public class MemoryManager
                 Debug.Log("[MemoryManager] No memories passed filtering");
                 return;
             }
-            
+
             // 3. Long Term Memory로 변환 및 저장
             var keptChunks = filterAgent.GetKeptChunks(consolidationResult.ConsolidatedChunks, filterResult);
             var filteredConsolidationResult = new MemoryConsolidationResult
@@ -403,18 +433,18 @@ public class MemoryManager
                 ConsolidatedChunks = keptChunks,
                 ConsolidationReasoning = consolidationResult.ConsolidationReasoning
             };
-            
+
             var newLongTermMemories = consolidationAgent.ConvertToLongTermFormat(filteredConsolidationResult, currentTime);
-            
+
             // 3.1. Long Term Memory 저장
             AddLongTermMemories(newLongTermMemories);
-            
+
             // 4. 성격 변화 처리 (STM 초기화 전에 수행)
             await ProcessPersonalityChangeAsync(filteredConsolidationResult);
-            
+
             // 5. Short Term Memory 초기화
             ClearShortTermMemory();
-            
+
             Debug.Log($"[MemoryManager] Day-end processing completed. Saved {newLongTermMemories.Count} new long-term memories");
         }
         catch (Exception ex)
@@ -422,7 +452,7 @@ public class MemoryManager
             Debug.LogError($"[MemoryManager] Failed to process day-end memory: {ex.Message}");
         }
     }
-    
+
     /// <summary>
     /// 성격 변화를 처리합니다.
     /// </summary>
@@ -431,23 +461,23 @@ public class MemoryManager
         try
         {
             Debug.Log($"[MemoryManager] {owner.Name}: 성격 변화 분석 시작");
-            
+
             // 성격 변화 분석 (필터링된 메모리 직접 전달)
             var personalityChangeAgent = new PersonalityChangeAgent(owner);
             var changeResult = await personalityChangeAgent.AnalyzePersonalityChangeAsync(filteredResult);
-            
+
             // 성격 변화 적용
             if (changeResult.has_personality_change)
             {
                 var personalityManager = new PersonalityManager(owner);
                 var success = await personalityManager.ApplyPersonalityChangeAsync(changeResult);
-                
+
                 if (success)
                 {
                     Debug.Log($"[MemoryManager] {owner.Name}: 성격 변화 적용 완료");
-                    
+
                     // 성격 변화를 새로운 STM에 기록
-                    AddShortTermMemory("personality_change", 
+                    AddShortTermMemory("personality_change",
                         $"성격 변화 발생: 제거된 특성 [{string.Join(", ", changeResult.traits_to_remove)}], " +
                         $"추가된 특성 [{string.Join(", ", changeResult.traits_to_add)}]",
                         JsonConvert.SerializeObject(changeResult));
@@ -469,7 +499,7 @@ public class MemoryManager
     }
 
 
-    
+
     /// <summary>
     /// Long Term Memory 유지보수를 수행합니다.
     /// </summary>
@@ -479,26 +509,26 @@ public class MemoryManager
         {
             var timeService = Services.Get<ITimeService>();
             var currentTime = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 8, 0);
-            
+
             Debug.Log("[MemoryManager] Starting long-term memory maintenance");
-            
+
             // Long Term Memory 로드
             var currentLongTermMemories = GetLongTermMemories();
-            
+
             if (currentLongTermMemories == null || currentLongTermMemories.Count == 0)
             {
                 Debug.Log("[MemoryManager] No long-term memories to maintain");
                 return;
             }
-            
+
             var maintenanceResult = await maintenanceAgent.MaintainMemoriesAsync(currentLongTermMemories, currentTime);
             if (maintenanceResult != null)
             {
                 var updatedMemories = maintenanceAgent.ApplyMaintenanceResult(currentLongTermMemories, maintenanceResult);
-                
+
                 // Long Term Memory 저장
                 UpdateLongTermMemories(updatedMemories);
-                
+
                 Debug.Log($"[MemoryManager] Memory maintenance completed. " +
                          $"Original: {maintenanceResult.OriginalCount}, Final: {maintenanceResult.FinalCount}");
             }
@@ -508,9 +538,9 @@ public class MemoryManager
             Debug.LogError($"[MemoryManager] Failed to perform memory maintenance: {ex.Message}");
         }
     }
-    
+
     // === Utility Methods ===
-    
+
     /// <summary>
     /// 현재 Short Term Memory 엔트리 개수를 반환합니다.
     /// </summary>
@@ -518,7 +548,7 @@ public class MemoryManager
     {
         return GetShortTermMemory().Count;
     }
-    
+
     /// <summary>
     /// 메모리 시스템의 상태를 로그로 출력합니다.
     /// </summary>
@@ -526,10 +556,10 @@ public class MemoryManager
     {
         var stmCount = GetShortTermMemoryCount();
         var ltmCount = GetLongTermMemories().Count;
-        
+
         Debug.Log($"[MemoryManager] Memory Status - STM: {stmCount} entries, LTM: {ltmCount} memories");
     }
-    
+
     /// <summary>
     /// 모든 메모리 파일을 백업합니다.
     /// </summary>
@@ -568,7 +598,7 @@ public class MemoryManager
             return false;
         }
     }
-    
+
     /// <summary>
     /// 백업된 메모리 파일들을 복원합니다.
     /// </summary>
@@ -610,7 +640,7 @@ public class MemoryManager
             return false;
         }
     }
-    
+
     /// <summary>
     /// 백업 경로를 가져옵니다.
     /// </summary>

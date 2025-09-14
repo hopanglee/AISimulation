@@ -30,12 +30,12 @@ namespace Agent
             var gpt = new GPT();
             
             // iPhone 전용 Agent
-            var iPhoneAgent = new iPhoneUseAgent(gpt);
+            var iPhoneAgent = new iPhoneUseAgent();
             iPhoneAgent.SetActor(actor);
             itemTypeAgents[typeof(iPhone)] = iPhoneAgent;
             
             // Note 전용 Agent
-            var noteAgent = new NoteUseAgent(gpt);
+            var noteAgent = new NoteUseAgent();
             noteAgent.SetActor(actor);
             itemTypeAgents[typeof(Note)] = noteAgent;
         }

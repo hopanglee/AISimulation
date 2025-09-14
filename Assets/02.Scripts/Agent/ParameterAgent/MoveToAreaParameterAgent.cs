@@ -18,7 +18,7 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public MoveToAreaParameterAgent(GPT gpt)
+        public MoveToAreaParameterAgent()
         {
             var movableAreas = GetCurrentMovableAreaKeys();
             // 프롬프트 로드

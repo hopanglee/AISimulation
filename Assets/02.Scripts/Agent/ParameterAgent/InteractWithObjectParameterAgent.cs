@@ -19,7 +19,7 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public InteractWithObjectParameterAgent(GPT gpt)
+        public InteractWithObjectParameterAgent()
         {
             var objectList = GetCurrentAvailableObjects();
             systemPrompt = PromptLoader.LoadPrompt("InteractWithObjectParameterAgentPrompt.txt", "You are an InteractWithObject parameter generator.");
@@ -96,6 +96,14 @@ namespace Agent
                         if (prop != null && prop is IInteractable)
                         {
                             objectNames.Add(prop.GetSimpleKeyRelativeToActor(actor));
+                        }
+                    }
+
+                    foreach (var item in interactableEntities.items.Values)
+                    {
+                        if (item != null && item is IInteractable)
+                        {
+                            objectNames.Add(item.GetSimpleKeyRelativeToActor(actor));
                         }
                     }
                     

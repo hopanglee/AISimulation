@@ -102,32 +102,32 @@ namespace Agent
             switch (actionType)
             {
                 case ActionType.MoveToArea:
-                    agent = new MoveToAreaParameterAgent(gpt);
+                    agent = new MoveToAreaParameterAgent();
                     break;
                 case ActionType.MoveToEntity:
-                    agent = new MoveToEntityParameterAgent(gpt);
+                    agent = new MoveToEntityParameterAgent();
                     break;
                 case ActionType.SpeakToCharacter:
-                    agent = new TalkParameterAgent(gpt);
+                    agent = new TalkParameterAgent();
                     break;
                 case ActionType.PickUpItem:
-                    agent = new PickUpItemParameterAgent(gpt);
+                    agent = new PickUpItemParameterAgent();
                     break;
                 case ActionType.InteractWithObject:
-                    agent = new InteractWithObjectParameterAgent(gpt);
+                    agent = new InteractWithObjectParameterAgent();
                     break;
                 case ActionType.PutDown:
-                    agent = new PutDownParameterAgent(gpt);
+                    agent = new PutDownParameterAgent();
                     break;
                 case ActionType.GiveMoney:
-                    agent = new GiveMoneyParameterAgent(gpt);
+                    agent = new GiveMoneyParameterAgent();
                     break;
                 case ActionType.GiveItem:
-                    agent = new GiveItemParameterAgent(gpt);
+                    agent = new GiveItemParameterAgent();
                     break;
-                case ActionType.PerformActivity:
-                    agent = new PerformActivityParameterAgent(gpt);
-                    break;
+                // case ActionType.PerformActivity:
+                //     agent = new PerformActivityParameterAgent(gpt);
+                //     break;
                 case ActionType.Think:
                     agent = new ThinkParameterAgent(actor);
                     break;
