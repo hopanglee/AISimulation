@@ -1,0 +1,3 @@
+Reasoning: {reasoning}
+Intention: {intention}
+Available Locations: {available_locations}

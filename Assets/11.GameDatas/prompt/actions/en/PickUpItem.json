@@ -1,8 +1,6 @@
 {
   "name": "PickUpItem",
-  "displayName": "Pick Up Item",
   "description": "Pick up an item from the environment and add it to your inventory.",
-  "usage": "Use this action when you want to take an item and carry it with you.",
   "parameters": [
     {
       "name": "item_name",
@@ -10,12 +8,6 @@
       "description": "The name of the item to pick up",
       "required": true
     }
-  ],
-  "examples": [
-    "Picking up food items",
-    "Taking books or documents",
-    "Collecting tools or equipment",
-    "Gathering materials"
   ],
   "requirements": [
     "Item must be nearby and interactable",
@@ -27,7 +19,6 @@
     "Want to collect resources",
     "Need to take something to another location",
     "Want to store items for later use"
-  ],
-  "category": "interaction"
+  ]
 }
 

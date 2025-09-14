@@ -22,13 +22,11 @@ namespace Agent
         }
 
         private readonly string systemPrompt;
-        private readonly List<string> availableItems;
-        private readonly List<string> boxItems;
 
-        public InventoryBoxParameterAgent(List<string> availableItems, List<string> boxItems, GPT gpt)
+        public InventoryBoxParameterAgent()
         {
-            this.availableItems = availableItems;
-            this.boxItems = boxItems;
+            var availableItems = GetCurrentAvailableItems();
+            var boxItems = GetCurrentBoxItems();
             systemPrompt = PromptLoader.LoadPrompt("InventoryBoxParameterAgentPrompt.txt", "You are an InventoryBox parameter generator.");
             
             // 초기 enum 설정 - 각각 분리
@@ -75,9 +73,7 @@ namespace Agent
         }
 
         public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
-        {
-            UpdateResponseFormatBeforeGPT();
-            
+        {           
             var param = await GenerateParametersAsync(new CommonContext
             {
                 Reasoning = request.Reasoning,
@@ -94,54 +90,6 @@ namespace Agent
                     { "remove_item_name", param.RemoveItemName }
                 }
             };
-        }
-
-        protected override void UpdateResponseFormatSchema()
-        {
-            try
-            {
-                // 현재 사용 가능한 아이템과 박스 아이템을 동적으로 가져와서 업데이트
-                var currentAvailableItems = GetCurrentAvailableItems();
-                var currentBoxItems = GetCurrentBoxItems();
-                
-                // enum이 비어있으면 기본값 설정
-                if (currentAvailableItems.Count == 0)
-                {
-                    currentAvailableItems = new List<string> {};
-                }
-                if (currentBoxItems.Count == 0)
-                {
-                    currentBoxItems = new List<string> {};
-                }
-                
-                options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "inventory_box_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
-                            ""type"": ""object"",
-                            ""additionalProperties"": false,
-                            ""properties"": {{
-                                ""add_item_name"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": {JsonConvert.SerializeObject(currentAvailableItems)},
-                                    ""description"": ""Name of item to add to the box (must be from actor's available items)""
-                                }},
-                                ""remove_item_name"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": {JsonConvert.SerializeObject(currentBoxItems)},
-                                    ""description"": ""Name of item to remove from the box (must be from box's current items)""
-                                }}
-                            }},
-                            ""required"": [""add_item_name"", ""remove_item_name""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                );
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[InventoryBoxParameterAgent] ResponseFormat 갱신 실패: {ex.Message}");
-            }
         }
 
         private List<string> GetCurrentAvailableItems()
@@ -198,9 +146,9 @@ namespace Agent
                 
                 // 현재 상호작용 중인 InventoryBox의 아이템들 가져오기
                 // 이는 ProcessInventoryBoxInteraction에서 전달받은 boxItems를 사용
-                if (this.boxItems != null)
+                if (GetCurrentBoxItems() != null)
                 {
-                    boxItemNames.AddRange(this.boxItems);
+                    boxItemNames.AddRange(GetCurrentBoxItems());
                 }
                 
                 // Sensor를 통해 주변 InventoryBox들의 아이템들도 추가

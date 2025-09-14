@@ -1,9 +1,11 @@
 {
-  "actionName": "RemoveClothing",
+  "name": "RemoveClothing",
   "description": "Remove clothing from the actor's body",
   "parameters": [],
-  "constraints": [
+  "requirements": [
     "Actor must be wearing clothing to remove"
   ],
-  "examples": []
+  "whenToUse": [
+    "When you want to remove clothing"
+  ]
 }

@@ -47,6 +47,7 @@ namespace Agent
                                 }},
                                 ""TargetActor"": {{
                                     ""type"": ""string"",
+                                    ""enum"": {JsonConvert.SerializeObject(GetCurrentAvailableActors())},
                                     ""description"": ""Target actor name for the command""
                                 }},
                                 ""Message"": {{
@@ -78,9 +79,7 @@ namespace Agent
         }
 
         public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
-        {
-            UpdateResponseFormatBeforeGPT();
-            
+        {            
             var param = await GenerateParametersAsync(new CommonContext
             {
                 Reasoning = request.Reasoning,
@@ -99,54 +98,6 @@ namespace Agent
                     { "message_count", param.MessageCount }
                 }
             };
-        }
-
-        /// <summary>
-        /// 최신 주변 상황을 반영해 ResponseFormat을 동적으로 갱신합니다.
-        /// </summary>
-        protected override void UpdateResponseFormatSchema()
-        {
-            try
-            {
-                // 현재 사용 가능한 Actor 목록을 동적으로 가져와서 TargetActor enum 업데이트
-                var currentActorList = GetCurrentAvailableActors();
-                
-                options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "iphone_use_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
-                            ""type"": ""object"",
-                            ""additionalProperties"": false,
-                            ""properties"": {{
-                                ""Command"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": [""chat"", ""read"", ""continue""],
-                                    ""description"": ""The command to execute on iPhone""
-                                }},
-                                ""TargetActor"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": {Newtonsoft.Json.JsonConvert.SerializeObject(currentActorList)},
-                                    ""description"": ""Target actor name for the command""
-                                }},
-                                ""Message"": {{
-                                    ""type"": ""string"",
-                                    ""description"": ""Message to send (only for chat command)""
-                                }},
-                                ""MessageCount"": {{
-                                    ""type"": ""integer"",
-                                    ""description"": ""Number of messages to read (only for read/continue commands)""
-                                }}
-                            }},
-                            ""required"": [""Command"", ""TargetActor""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                );
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[iPhoneUseAgent] ResponseFormat 갱신 실패: {ex.Message}");
-            }
         }
 
         /// <summary>
@@ -184,7 +135,15 @@ namespace Agent
 
         private string BuildUserMessage(CommonContext context)
         {
-            var message = $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}";
+            var localizationService = Services.Get<ILocalizationService>();
+            
+            var replacements = new Dictionary<string, string>
+            {
+                {"reasoning", context.Reasoning},
+                {"intention", context.Intention}
+            };
+            
+            var message = localizationService.GetLocalizedText("iphone_use_parameter_message", replacements);
             
             if (!string.IsNullOrEmpty(context.PreviousFeedback))
             {

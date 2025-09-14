@@ -81,8 +81,6 @@ namespace Agent
 
         public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
-            // GPT에 물어보기 전에 responseformat 동적 갱신
-            UpdateResponseFormatBeforeGPT();
             
             var param = await GenerateParametersAsync(new CommonContext
             {
@@ -104,25 +102,17 @@ namespace Agent
             };
         }
 
-        /// <summary>
-        /// 최신 주변 상황을 반영해 ResponseFormat을 동적으로 갱신합니다.
-        /// </summary>
-        protected override void UpdateResponseFormatSchema()
-        {
-            try
-            {
-                // Note Agent는 기본 스키마를 사용하므로 동적 업데이트 불필요
-                // 필요시 여기에 페이지 번호 범위 등을 동적으로 설정할 수 있음
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[NoteUseAgent] ResponseFormat 갱신 실패: {ex.Message}");
-            }
-        }
-
         private string BuildUserMessage(CommonContext context)
         {
-            var message = $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}";
+            var localizationService = Services.Get<ILocalizationService>();
+            
+            var replacements = new Dictionary<string, string>
+            {
+                {"reasoning", context.Reasoning},
+                {"intention", context.Intention}
+            };
+            
+            var message = localizationService.GetLocalizedText("note_use_parameter_message", replacements);
             
             if (!string.IsNullOrEmpty(context.PreviousFeedback))
             {

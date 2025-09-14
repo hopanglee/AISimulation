@@ -1,8 +1,6 @@
 {
   "name": "MoveToArea",
-  "displayName": "Move to Area",
   "description": "Move to a specific area or building in the simulation world.",
-  "usage": "Use this action when you need to change your location to another area or building.",
   "parameters": [
     {
       "name": "area_name",
@@ -10,11 +8,6 @@
       "description": "The name of the target area or building to move to",
       "required": true
     }
-  ],
-  "examples": [
-    "Moving from Living Room to Kitchen",
-    "Entering a building like Cafe, School, or Hospital",
-    "Moving between different rooms in the same building"
   ],
   "requirements": [
     "Target area/building must be accessible from current location",
@@ -25,7 +18,6 @@
     "Need to access resources in another location",
     "Want to change environment for activities",
     "Moving to meet someone in a specific place"
-  ],
-  "category": "movement"
+  ]
 }
 

@@ -1,0 +1,2 @@
+추론: {reasoning}
+의도: {intention}

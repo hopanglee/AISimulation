@@ -36,7 +36,6 @@ public class Brain
 
     // --- AI Agent Components ---
     private ActSelectorAgent actSelectorAgent;
-    private Dictionary<ActionType, ParameterAgentBase> parameterAgents;
     private PerceptionAgent perceptionAgent;
     private ReactionDecisionAgent reactionDecisionAgent; // 외부 이벤트 반응 결정 Agent
     private GPT gpt;
@@ -73,7 +72,6 @@ public class Brain
         // AI Agent 초기화
         actSelectorAgent = new ActSelectorAgent(actor);
         actSelectorAgent.SetDayPlanner(dayPlanner); // DayPlanner 설정
-        parameterAgents = ParameterAgentFactory.CreateAllParameterAgents(actor);
         perceptionAgent = new PerceptionAgent(actor);
         reactionDecisionAgent = new ReactionDecisionAgent(actor);
         reactionDecisionAgent.SetDayPlanner(dayPlanner); // DayPlanner 설정
@@ -325,8 +323,9 @@ public class Brain
             return await useActionManager.ExecuteUseActionAsync(request);
         }
         
-        // 다른 액션들은 기존 ParameterAgent를 통해 처리
-        if (parameterAgents.TryGetValue(selection.ActType, out var parameterAgent))
+        // 다른 액션들은 필요할 때마다 ParameterAgent를 생성하여 처리
+        var parameterAgent = ParameterAgentFactory.CreateParameterAgent(selection.ActType, actor);
+        if (parameterAgent != null)
         {
             var request = new ActParameterRequest
             {

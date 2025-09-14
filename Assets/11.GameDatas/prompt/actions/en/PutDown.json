@@ -1,23 +1,18 @@
 {
-  "action": "PutDown",
+  "name": "PutDown",
   "description": "Put down an item from hand to a specific location",
-  "usage": "Use when you want to place an item from your hand to a specific location (table, shelf, floor, etc.).",
-  "parameters": {
-    "target_key": "Key of the location to put the item down (e.g., 'table', 'shelf', 'floor')",
-    "parameters": ["Specific location or surface to place the item"]
-  },
-  "examples": [
+  "parameters": [
     {
-      "scenario": "Putting down a coffee cup on the table after drinking coffee at a cafe",
-      "action": "PutDown",
-      "target_key": "table",
-      "parameters": ["Table location to place the coffee cup"]
+      "name": "target_key",
+      "type": "string",
+      "description": "Key of the location to put the item down (e.g., 'table', 'shelf', 'floor')",
+      "required": true
     },
     {
-      "scenario": "Putting down purchased items on the counter at a convenience store",
-      "action": "PutDown",
-      "target_key": "counter",
-      "parameters": ["Counter location to place the items"]
+      "name": "parameters",
+      "type": "array",
+      "description": "Specific location or surface to place the item",
+      "required": true
     }
   ],
   "requirements": [
@@ -25,7 +20,7 @@
     "Target location must be accessible",
     "Must be able to place the item at that location"
   ],
-  "when_to_use": [
+  "whenToUse": [
     "When you want to store an item you're holding at a specific location",
     "When you want to clean up after using an item",
     "When you want to temporarily place an item before passing it to someone else"

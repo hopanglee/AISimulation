@@ -19,11 +19,10 @@ namespace Agent
         }
 
         private readonly string systemPrompt;
-        private readonly List<string> itemList;
 
-        public PickUpItemParameterAgent(List<string> itemList, GPT gpt)
+        public PickUpItemParameterAgent(GPT gpt)
         {
-            this.itemList = itemList;
+            var itemList = GetCurrentCollectibleItemKeys();
             systemPrompt = PromptLoader.LoadPrompt("PickUpItemParameterAgentPrompt.txt", "You are a PickUpItem parameter generator.");
             this.options = new ChatCompletionOptions
             {
@@ -61,7 +60,6 @@ namespace Agent
 
         public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
-            UpdateResponseFormatBeforeGPT();
             
             var param = await GenerateParametersAsync(new CommonContext
             {
@@ -78,36 +76,6 @@ namespace Agent
                     { "item_name", param.ItemName }
                 }
             };
-        }
-
-        protected override void UpdateResponseFormatSchema()
-        {
-            try
-            {
-                var dynamicItems = GetCurrentCollectibleItemKeys();
-                options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "pick_up_item_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
-                            ""type"": ""object"",
-                            ""additionalProperties"": false,
-                            ""properties"": {{
-                                ""item_name"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": {JsonConvert.SerializeObject(dynamicItems)},
-                                    ""description"": ""One of the available items to pick up""
-                                }}
-                            }},
-                            ""required"": [""item_name""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                );
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[PickUpItemParameterAgent] ResponseFormat 갱신 실패: {ex.Message}");
-            }
         }
 
         private List<string> GetCurrentCollectibleItemKeys()
@@ -138,7 +106,7 @@ namespace Agent
             {
                 { "reasoning", context.Reasoning },
                 { "intention", context.Intention },
-                { "items", string.Join(", ", itemList) }
+                { "items", string.Join(", ", GetCurrentCollectibleItemKeys()) }
             };
             
             return localizationService.GetLocalizedText("parameter_message_with_items", replacements);

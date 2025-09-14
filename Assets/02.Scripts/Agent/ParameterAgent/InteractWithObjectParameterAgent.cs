@@ -18,11 +18,10 @@ namespace Agent
         }
 
         private readonly string systemPrompt;
-        private readonly List<string> objectList;
 
-        public InteractWithObjectParameterAgent(List<string> objectList, GPT gpt)
+        public InteractWithObjectParameterAgent(GPT gpt)
         {
-            this.objectList = objectList;
+            var objectList = GetCurrentAvailableObjects();
             systemPrompt = PromptLoader.LoadPrompt("InteractWithObjectParameterAgentPrompt.txt", "You are an InteractWithObject parameter generator.");
             this.options = new ChatCompletionOptions
             {
@@ -35,7 +34,7 @@ namespace Agent
                             ""properties"": {{
                                 ""object_name"": {{
                                     ""type"": ""string"",
-                                    ""enum"": {JsonConvert.SerializeObject(objectList)},
+                                    ""enum"": {JsonConvert.SerializeObject(GetCurrentAvailableObjects())},
                                     ""description"": ""One of the available objects to interact with""
                                 }}
                             }},
@@ -60,7 +59,6 @@ namespace Agent
 
         public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
-            UpdateResponseFormatBeforeGPT();
             
             var param = await GenerateParametersAsync(new CommonContext
             {
@@ -77,41 +75,6 @@ namespace Agent
                     { "object_name", param.object_name }
                 }
             };
-        }
-
-        /// <summary>
-        /// 최신 주변 상황을 반영해 ResponseFormat을 동적으로 갱신합니다.
-        /// </summary>
-        protected override void UpdateResponseFormatSchema()
-        {
-            try
-            {
-                // 현재 사용 가능한 객체 목록을 동적으로 가져와서 enum 업데이트
-                var currentObjectList = GetCurrentAvailableObjects();
-                
-                options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "interact_with_object_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
-                            ""type"": ""object"",
-                            ""additionalProperties"": false,
-                            ""properties"": {{
-                                ""object_name"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": {Newtonsoft.Json.JsonConvert.SerializeObject(currentObjectList)},
-                                    ""description"": ""One of the available objects to interact with""
-                                }}
-                            }},
-                            ""required"": [""object_name""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                );
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[InteractWithObjectParameterAgent] ResponseFormat 갱신 실패: {ex.Message}");
-            }
         }
 
         /// <summary>
@@ -175,7 +138,7 @@ namespace Agent
             {
                 { "reasoning", context.Reasoning },
                 { "intention", context.Intention },
-                { "objects", string.Join(", ", objectList) }
+                { "objects", string.Join(", ", GetCurrentAvailableObjects()) }
             };
             
             return localizationService.GetLocalizedText("parameter_message_with_objects", replacements);

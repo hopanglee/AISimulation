@@ -1,8 +1,6 @@
 {
   "name": "GiveMoney",
-  "displayName": "Give Money",
   "description": "Give money to another character.",
-  "usage": "Use this action when you want to give money to another character.",
   "parameters": [
     {
       "name": "target_character",
@@ -17,12 +15,6 @@
       "required": true
     }
   ],
-  "examples": [
-    "Giving money to a friend",
-    "Paying for a service",
-    "Sharing money with someone in need",
-    "Giving a gift of money"
-  ],
   "requirements": [
     "Target character must be nearby and interactable",
     "Actor must have enough money to give",
@@ -33,7 +25,6 @@
     "Need to pay for something",
     "Want to share resources",
     "Need to give a monetary gift"
-  ],
-  "category": "interaction"
+  ]
 }
 

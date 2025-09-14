@@ -50,7 +50,15 @@ namespace Agent
 
         private string BuildUserMessage(CommonContext context)
         {
-            return $"Reasoning: {context.Reasoning}\nIntention: {context.Intention}";
+            var localizationService = Services.Get<ILocalizationService>();
+            
+            var replacements = new Dictionary<string, string>
+            {
+                {"reasoning", context.Reasoning},
+                {"intention", context.Intention}
+            };
+            
+            return localizationService.GetLocalizedText("use_object_parameter_message", replacements);
         }
     }
 } 

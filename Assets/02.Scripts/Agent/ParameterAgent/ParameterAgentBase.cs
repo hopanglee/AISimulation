@@ -68,26 +68,6 @@ namespace Agent
         {
             ToolManager.AddToolSetToOptions(options, toolSet);
         }
-
-        /// <summary>
-        /// 최신 주변 상황을 반영해 ResponseFormat을 동적으로 갱신하는 가상 메서드
-        /// 하위 클래스에서 오버라이드하여 구현
-        /// </summary>
-        protected virtual void UpdateResponseFormatSchema()
-        {
-            // 기본 구현은 아무것도 하지 않음
-            // 하위 클래스에서 필요한 경우 오버라이드
-        }
-
-        /// <summary>
-        /// GPT에 물어보기 전에 responseformat을 동적으로 갱신하는 헬퍼 메서드
-        /// </summary>
-        protected void UpdateResponseFormatBeforeGPT()
-        {
-            UpdateResponseFormatSchema();
-        }
-
-
     }
 
     // DTOs for parameter agent requests and results
@@ -106,34 +86,92 @@ namespace Agent
     }
 
     /// <summary>
-    /// Factory for creating all ParameterAgents for a given actor.
+    /// Factory for creating ParameterAgents for a given actor and action type.
     /// </summary>
     public static class ParameterAgentFactory
     {
-        public static Dictionary<ActionType, ParameterAgentBase> CreateAllParameterAgents(Actor actor)
+        /// <summary>
+        /// 특정 ActionType에 대한 ParameterAgent를 생성합니다.
+        /// 현재 주변 캐릭터 정보를 반영하여 생성됩니다.
+        /// </summary>
+        public static ParameterAgentBase CreateParameterAgent(ActionType actionType, Actor actor)
         {
             var gpt = new GPT();
-            ParameterAgentBase SetActor(ParameterAgentBase agent)
+            ParameterAgentBase agent = null;
+            
+            switch (actionType)
+            {
+                case ActionType.MoveToArea:
+                    agent = new MoveToAreaParameterAgent(gpt);
+                    break;
+                case ActionType.MoveToEntity:
+                    agent = new MoveToEntityParameterAgent(gpt);
+                    break;
+                case ActionType.SpeakToCharacter:
+                    agent = new TalkParameterAgent(gpt);
+                    break;
+                case ActionType.PickUpItem:
+                    agent = new PickUpItemParameterAgent(gpt);
+                    break;
+                case ActionType.InteractWithObject:
+                    agent = new InteractWithObjectParameterAgent(gpt);
+                    break;
+                case ActionType.PutDown:
+                    agent = new PutDownParameterAgent(gpt);
+                    break;
+                case ActionType.GiveMoney:
+                    agent = new GiveMoneyParameterAgent(gpt);
+                    break;
+                case ActionType.GiveItem:
+                    agent = new GiveItemParameterAgent(gpt);
+                    break;
+                case ActionType.PerformActivity:
+                    agent = new PerformActivityParameterAgent(gpt);
+                    break;
+                case ActionType.Think:
+                    agent = new ThinkParameterAgent(actor);
+                    break;
+                default:
+                    Debug.LogWarning($"[ParameterAgentFactory] 지원되지 않는 ActionType: {actionType}");
+                    return null;
+            }
+            
+            if (agent != null)
             {
                 agent.SetActor(actor);
-                return agent;
-            }           
-            return new Dictionary<ActionType, ParameterAgentBase>
+            }
+            
+            return agent;
+        }
+        
+        /// <summary>
+        /// 액터 주변의 캐릭터 목록을 가져옵니다.
+        /// </summary>
+        private static List<string> GetNearbyCharacters(Actor actor)
+        {
+            try
             {
-                { ActionType.MoveToArea, SetActor(new MoveToAreaParameterAgent(new List<string>(), gpt)) },
-                { ActionType.MoveToEntity, SetActor(new MoveToEntityParameterAgent(new List<string>(), gpt)) },
-                { ActionType.SpeakToCharacter, SetActor(new TalkParameterAgent(new List<string>(), gpt)) },
-                //{ ActionType.UseObject, SetActor(new UseObjectParameterAgent(gpt)) },
-                { ActionType.PickUpItem, SetActor(new PickUpItemParameterAgent(new List<string>(), gpt)) },
-                { ActionType.InteractWithObject, SetActor(new InteractWithObjectParameterAgent(new List<string>(), gpt)) },
-                { ActionType.PutDown, SetActor(new PutDownParameterAgent(new List<string>(), gpt)) }, 
-                { ActionType.GiveMoney, SetActor(new GiveMoneyParameterAgent(new List<string>(), gpt)) },
-                { ActionType.GiveItem, SetActor(new GiveItemParameterAgent(new List<string>(), gpt)) },
-                //{ ActionType.RemoveClothing, SetActor(new RemoveClothingParameterAgent(actor)) }, // 파라미터 없음 - Wait과 같이 직접 실행
-                //{ ActionType.Wait, SetActor(new WaitParameterAgent(gpt)) },
-                { ActionType.PerformActivity, SetActor(new PerformActivityParameterAgent(new List<string>(), gpt)) },
-                { ActionType.Think, SetActor(new ThinkParameterAgent(actor)) },
-            };
+                var characterList = new List<string>();
+                
+                // Sensor의 InteractableActors에서 캐릭터들을 가져옵니다
+                if (actor.sensor?.GetInteractableEntities().actors != null)
+                {
+                    foreach (var interactableActor in actor.sensor.GetInteractableEntities().actors)
+                    {
+                        if (interactableActor.Value != actor) // 자기 자신은 제외
+                        {
+                            characterList.Add(interactableActor.Key);
+                        }   
+                    }
+                }
+                
+                return characterList;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[ParameterAgentFactory] 주변 캐릭터 목록 가져오기 실패: {ex.Message}");
+                return new List<string>();
+            }
         }
     }
 } 
