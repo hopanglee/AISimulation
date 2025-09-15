@@ -8,27 +8,17 @@
 Chat 명령어
 목적: 다른 행동 주체에게 메시지 보내기
 필수 항목: target_actor, message
-예시: 친구에게 안부 메시지 보내기
 
 Read 명령어
 목적: 대화의 최근 메시지 읽기
 필수 항목: target_actor
 선택 항목: message_count (기본값: 10)
-예시: 대화의 최근 메시지 확인하기
 
 Continue 명령어
 목적: 이전에 읽었던 부분부터 추가 메시지 읽기
 필수 항목: target_actor
 선택 항목: message_count (기본값: 10)
-예시: 진행 중인 대화에서 더 많은 메시지 읽기
 
-출력 형식 (JSON)
-{
-"Command": "<chat|read|continue>",
-"TargetActor": "<대상_행동주체_이름>",
-"Message": "<보낼_메시지>",
-"MessageCount": <숫자>
-}
 예시
 근거: 친구에게서 온 새 메시지가 있는지 확인하고 싶다.
 의도: 최근 메시지를 읽어 대화 내용을 파악할 계획이다.

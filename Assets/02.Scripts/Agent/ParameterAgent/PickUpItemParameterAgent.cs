@@ -36,7 +36,7 @@ namespace Agent
                                 ""item_name"": {{
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(itemList)},
-                                    ""description"": ""One of the available items to pick up""
+                                    ""description"": ""주울 아이템 이름""
                                 }}
                             }},
                             ""required"": [""item_name""]

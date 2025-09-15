@@ -89,23 +89,23 @@ public class LongTermMemoryFilterAgent : GPT
                                         ""properties"": {
                                             ""chunk_id"": {
                                                 ""type"": ""string"",
-                                                ""description"": ""ID of the memory chunk being evaluated""
+                                                ""description"": ""평가 중인 메모리 청크의 ID""
                                             },
                                             ""importance_score"": {
                                                 ""type"": ""number"",
                                                 ""minimum"": 0.0,
                                                 ""maximum"": 1.0,
-                                                ""description"": ""Importance score (0.0 - 1.0)""
+                                                ""description"": ""중요도 점수 (0.0 - 1.0)""
                                             },
                                             ""surprise_score"": {
                                                 ""type"": ""number"",
                                                 ""minimum"": 0.0,
                                                 ""maximum"": 1.0,
-                                                ""description"": ""Surprise/unexpectedness score (0.0 - 1.0)""
+                                                ""description"": ""놀라움/예상치못함 점수 (0.0 - 1.0)""
                                             },
                                             ""reasoning"": {
                                                 ""type"": ""string"",
-                                                ""description"": ""Reasoning for the scores""
+                                                ""description"": ""점수에 대한 추론""
                                             }
                                         },
                                         ""required"": [""chunk_id"", ""importance_score"", ""surprise_score"", ""reasoning""]
@@ -113,7 +113,7 @@ public class LongTermMemoryFilterAgent : GPT
                                 },
                                 ""filter_reasoning"": {
                                     ""type"": ""string"",
-                                    ""description"": ""Overall reasoning for filtering decisions""
+                                    ""description"": ""필터링 결정에 대한 전체적인 추론""
                                 }
                             },
                             ""required"": [""evaluations"", ""filter_reasoning""]

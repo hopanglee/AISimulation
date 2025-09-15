@@ -17,11 +17,3 @@
 {character_name} 정보
 - 성격: {personality}
 - 정보: {info}
-
----
-
-출력 형식 (JSON)
-{
-"character_name": "<대화할_캐릭터_이름>",
-"message": "<말할_메시지>"
-}

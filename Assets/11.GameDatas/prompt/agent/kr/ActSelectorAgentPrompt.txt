@@ -7,7 +7,7 @@
 {character_name} 정보
 - 성격: {personality}
 - 정보: {info}
-
+- 기억: {memory}
 ---
 가능한 행동 목록
 {available_act}

@@ -21,7 +21,7 @@ public class PlanDecisionAgent : GPT
 	{
 		this.actor = actor;
 		this.toolExecutor = new ActorToolExecutor(actor);
-		
+
 		SetActorName(actor.Name);
 		InitializeOptions();
 	}
@@ -135,7 +135,7 @@ public class PlanDecisionAgent : GPT
 
 			// 프롬프트 생성
 			string prompt = GenerateDecisionPrompt(input);
-			
+
 			// 메시지 구성
 			var messages = new List<ChatMessage>
 			{
@@ -171,7 +171,7 @@ public class PlanDecisionAgent : GPT
 	{
 		try
 		{
-			return PromptLoader.LoadPromptWithReplacements("PlanDecisionAgentSystemPrompt.txt", 
+			return PromptLoader.LoadPromptWithReplacements("PlanDecisionAgentSystemPrompt.txt",
 				new Dictionary<string, string>
 				{
 					{ "CharacterName", actor.Name }
@@ -191,10 +191,10 @@ public class PlanDecisionAgent : GPT
 	{
 		var localizationService = Services.Get<ILocalizationService>();
 		var timeService = Services.Get<ITimeService>();
-		
+
 		// 현재 계획 정보 포맷팅
 		var planInfo = FormatPlanInfo(input.currentPlan);
-		
+
 		// 프롬프트 치환 정보
 		var replacements = new Dictionary<string, string>
 		{
@@ -215,13 +215,13 @@ public class PlanDecisionAgent : GPT
 		if (plan == null) return "No current plan";
 
 		var planInfo = new List<string>();
-		
+
 		if (plan.HighLevelTasks != null && plan.HighLevelTasks.Count > 0)
 		{
 			foreach (var hlt in plan.HighLevelTasks)
 			{
 				planInfo.Add($"• {hlt.TaskName} ({hlt.DurationMinutes}분)");
-				
+
 				if (hlt.DetailedActivities != null)
 				{
 					foreach (var da in hlt.DetailedActivities)

@@ -89,25 +89,25 @@ public class LongTermMemoryConsolidationAgent : GPT
                                         ""properties"": {
                                             ""chunk_id"": {
                                                 ""type"": ""string"",
-                                                ""description"": ""Unique identifier for this memory chunk""
+                                                ""description"": ""이 메모리 청크의 고유 식별자""
                                             },
                                             ""summary"": {
                                                 ""type"": ""string"",
-                                                ""description"": ""Comprehensive summary of this memory chunk""
+                                                ""description"": ""이 메모리 청크의 포괄적인 요약""
                                             },
                                             ""time_range"": {
                                                 ""type"": ""string"",
-                                                ""description"": ""Time range this chunk covers""
+                                                ""description"": ""이 청크가 다루는 시간 범위""
                                             },
                                             ""main_events"": {
                                                 ""type"": ""array"",
                                                 ""items"": { ""type"": ""string"" },
-                                                ""description"": ""Key events in this chunk""
+                                                ""description"": ""이 청크의 주요 사건들""
                                             },
                                             ""people_involved"": {
                                                 ""type"": ""array"",
                                                 ""items"": { ""type"": ""string"" },
-                                                ""description"": ""People involved in this chunk""
+                                                ""description"": ""이 청크에 관련된 사람들""
                                             },
                                             ""emotions"": {
                                                 ""type"": ""object"",
@@ -116,11 +116,11 @@ public class LongTermMemoryConsolidationAgent : GPT
                                                     ""minimum"": 0.0,
                                                     ""maximum"": 1.0
                                                 },
-                                                ""description"": ""Emotions experienced in this chunk with intensity values""
+                                                ""description"": ""이 청크에서 경험한 감정들과 강도 값""
                                             },
                                             ""original_entries_count"": {
                                                 ""type"": ""integer"",
-                                                ""description"": ""Number of original entries consolidated into this chunk""
+                                                ""description"": ""이 청크로 통합된 원본 항목의 수""
                                             }
                                         },
                                         ""required"": [""chunk_id"", ""summary"", ""time_range"", ""main_events"", ""original_entries_count""]
@@ -128,15 +128,15 @@ public class LongTermMemoryConsolidationAgent : GPT
                                 },
                                 ""consolidation_reasoning"": {
                                     ""type"": ""string"",
-                                    ""description"": ""Reasoning behind the consolidation decisions""
+                                    ""description"": ""통합 결정에 대한 추론""
                                 },
                                 ""total_original_entries"": {
                                     ""type"": ""integer"",
-                                    ""description"": ""Total number of original entries processed""
+                                    ""description"": ""처리된 원본 항목의 총 수""
                                 },
                                 ""total_consolidated_chunks"": {
                                     ""type"": ""integer"",
-                                    ""description"": ""Total number of consolidated chunks created""
+                                    ""description"": ""생성된 통합 청크의 총 수""
                                 }
                             },
                             ""required"": [""consolidated_chunks"", ""consolidation_reasoning"", ""total_original_entries"", ""total_consolidated_chunks""]

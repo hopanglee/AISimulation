@@ -20,13 +20,6 @@
 필수 항목: action, page_number, line_number, text
 예시: 1페이지의 2번째 줄을 새로운 내용으로 다시 쓰기
 
-출력 형식 (JSON)
-{
-"Action": "<write|read|rewrite>",
-"PageNumber": <page_number>,
-"LineNumber": <line_number>,
-"Text": "<작성할_텍스트>"
-}
 예시
 근거: 회의에 대한 내 생각을 적어둬야겠다.
 의도: 중요한 점들을 기억하기 위해 새로운 노트 항목을 생성할 계획이다.

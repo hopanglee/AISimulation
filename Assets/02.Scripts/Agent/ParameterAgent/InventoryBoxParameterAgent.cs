@@ -45,12 +45,12 @@ namespace Agent
                                 ""add_item_name"": {{
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(availableItemNames)},
-                                    ""description"": ""Name of item to add to the box (must be from actor's available items)""
+                                    ""description"": ""박스에 추가할 아이템 이름""
                                 }},
                                 ""remove_item_name"": {{
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(boxItemNames)},
-                                    ""description"": ""Name of item to remove from the box (must be from box's current items)""
+                                    ""description"": ""박스에서 제거할 아이템 이름""
                                 }}
                             }},
                             ""required"": [""add_item_name"", ""remove_item_name""]

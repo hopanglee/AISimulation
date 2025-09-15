@@ -86,9 +86,9 @@ public class HighLevelPlannerAgent : GPT
                                         ""type"": ""object"",
                                         ""additionalProperties"": false,
                                         ""properties"": {{
-                                            ""task_name"": {{ ""type"": ""string"" }},
-                                            ""description"": {{ ""type"": ""string"" }},
-                                            ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 1 }}
+                                            ""task_name"": {{ ""type"": ""string"", ""description"": ""태스크의 이름 (예: '저녁 준비', '업무 마무리') "" }},
+                                            ""description"": {{ ""type"": ""string"", ""description"": ""태스크의 목적 및 주요 활동에 대한 설명"" }},
+                                            ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 1, ""description"": ""해당 태스크에 할당된 시간 (분 단위, 최소 1분 이상)"" }}
                                         }},
                                         ""required"": [""task_name"", ""description"", ""duration_minutes""]
                                     }},

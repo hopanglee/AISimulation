@@ -41,7 +41,7 @@ public class PutDownParameterAgent : ParameterAgentBase
                             ""target_key"": {{
                                 ""type"": ""string"",
                                 ""enum"": {Newtonsoft.Json.JsonConvert.SerializeObject(locationList)},
-                                ""description"": ""The location key to put the item down on""
+                                ""description"": ""놓을 위치 키""
                             }}
                         }},
                         ""required"": [""target_key""]

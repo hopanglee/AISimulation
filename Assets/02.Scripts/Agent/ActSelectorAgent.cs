@@ -191,15 +191,15 @@ namespace Agent
                                     ""act_type"": {{
                                         ""type"": ""string"",
                                         ""enum"": [ {string.Join(", ", GetCurrentAvailableActions().Select(a => $"\"{a}\""))} ],
-                                        ""description"": ""Type of action to perform""
+                                        ""description"": ""수행할 행동의 유형""
                                     }},
                                     ""reasoning"": {{
                                         ""type"": ""string"",
-                                        ""description"": ""Reason for selecting this action""
+                                        ""description"": ""이 행동을 선택한 이유""
                                     }},
                                     ""intention"": {{
                                         ""type"": ""string"",
-                                        ""description"": ""What the agent intends to achieve with this action""
+                                        ""description"": ""이 행동으로 달성하려는 의도""
                                     }}
                                 }},
                                 ""required"": [""act_type"", ""reasoning"", ""intention""]

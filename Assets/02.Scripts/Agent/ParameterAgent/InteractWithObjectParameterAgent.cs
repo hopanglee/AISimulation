@@ -35,7 +35,7 @@ namespace Agent
                                 ""object_name"": {{
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(GetCurrentAvailableObjects())},
-                                    ""description"": ""One of the available objects to interact with""
+                                    ""description"": ""상호작용할 물건 이름""
                                 }}
                             }},
                             ""required"": [""object_name""]

@@ -35,7 +35,7 @@ namespace Agent
                                 ""entity_name"": {{
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(entityList)},
-                                    ""description"": ""One of the available entities to move to""
+                                    ""description"": ""이동할_개체_이름""
                                 }}
                             }},
                             ""required"": [""entity_name""]

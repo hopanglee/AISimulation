@@ -44,11 +44,11 @@ namespace Agent
                                 ""action_type"": {
                                     ""type"": ""string"",
                                     ""enum"": [""write"", ""erase"", ""update""],
-                                    ""description"": ""The action to perform on the whiteboard""
+                                    ""description"": ""화이트보드에 수행할 액션""
                                 },
                                 ""content"": {
                                     ""type"": ""string"",
-                                    ""description"": ""The content to write or update on the whiteboard (required for write/update actions)""
+                                    ""description"": ""쓰거나 업데이트할 내용 (쓰기/업데이트 행동 시 필수)""
                                 }
                             },
                             ""required"": [""action_type""]

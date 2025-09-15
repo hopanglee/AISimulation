@@ -43,16 +43,16 @@ namespace Agent
                                 ""properties"": {
                                     ""should_react"": {
                                         ""type"": ""boolean"",
-                                        ""description"": ""Whether the agent should react to the external event""
+                                        ""description"": ""현재 활동을 중단하려면 true, 계속하려면 false""
                                     },
                                     ""reasoning"": {
                                         ""type"": ""string"",
-                                        ""description"": ""Reason for the decision""
+                                        ""description"": ""판단 근거와 상황 분석""
                                     },
                                     ""priority_level"": {
                                         ""type"": ""string"",
                                         ""enum"": [""low"", ""medium"", ""high"", ""critical""],
-                                        ""description"": ""Priority level of the external event""
+                                        ""description"": ""외부 이벤트의 우선순위""
                                     }
                                 },
                                 ""required"": [""should_react"", ""reasoning"", ""priority_level""]

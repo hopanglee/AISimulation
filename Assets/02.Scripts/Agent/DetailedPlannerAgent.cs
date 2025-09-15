@@ -96,9 +96,9 @@ public class DetailedPlannerAgent : GPT
                                         ""type"": ""object"",
                                         ""additionalProperties"": false,
                                         ""properties"": {{
-                                            ""activity_name"": {{ ""type"": ""string"" }},
-                                            ""description"": {{ ""type"": ""string"" }},
-                                            ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 1 }},
+                                            ""activity_name"": {{ ""type"": ""string"", ""description"": ""세부 활동의 이름 (예: '양치질하기', '옷 입기')"" }},
+                                            ""description"": {{ ""type"": ""string"", ""description"": ""세부 활동의 목적 및 수행 방식 설명"" }},
+                                            ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 1, ""description"": ""활동에 소요되는 시간 (분 단위, 5~30분)"" }},
                                         }},
                                         ""required"": [""activity_name"", ""description"", ""duration_minutes"", ""location""]
                                     }},

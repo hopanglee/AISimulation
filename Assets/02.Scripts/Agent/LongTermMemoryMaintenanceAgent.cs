@@ -126,42 +126,42 @@ public class LongTermMemoryMaintenanceAgent : GPT
                                         ""properties"": {
                                             ""memory_index"": {
                                                 ""type"": ""integer"",
-                                                ""description"": ""Index of the memory being evaluated""
+                                                ""description"": ""평가 중인 메모리의 인덱스""
                                             },
                                             ""surprise_score"": {
                                                 ""type"": ""number"",
                                                 ""minimum"": 0.0,
                                                 ""maximum"": 1.0,
-                                                ""description"": ""How surprising or unexpected this memory is""
+                                                ""description"": ""이 메모리가 얼마나 놀랍거나 예상치 못한지""
                                             },
                                             ""importance_score"": {
                                                 ""type"": ""number"",
                                                 ""minimum"": 0.0,
                                                 ""maximum"": 1.0,
-                                                ""description"": ""How important this memory is""
+                                                ""description"": ""이 메모리가 얼마나 중요한지""
                                             },
                                             ""relevance_score"": {
                                                 ""type"": ""number"",
                                                 ""minimum"": 0.0,
                                                 ""maximum"": 1.0,
-                                                ""description"": ""How relevant this memory is to current life""
+                                                ""description"": ""이 메모리가 현재 삶에 얼마나 관련이 있는지""
                                             },
                                             ""action"": {
                                                 ""type"": ""string"",
                                                 ""enum"": [""keep"", ""remove"", ""merge_with"", ""modify""],
-                                                ""description"": ""Action to take for this memory""
+                                                ""description"": ""이 메모리에 취할 행동""
                                             },
                                             ""merge_target_index"": {
                                                 ""type"": [""integer"", ""null""],
-                                                ""description"": ""Index to merge with (only for merge_with action)""
+                                                ""description"": ""병합할 대상 인덱스 (merge_with 행동에만 해당)""
                                             },
                                             ""modified_content"": {
                                                 ""type"": [""object"", ""null""],
-                                                ""description"": ""Modified content (only for modify action)""
+                                                ""description"": ""수정된 내용 (modify 행동에만 해당)""
                                             },
                                             ""reasoning"": {
                                                 ""type"": ""string"",
-                                                ""description"": ""Reasoning for the action""
+                                                ""description"": ""행동에 대한 추론""
                                             }
                                         },
                                         ""required"": [""memory_index"", ""surprise_score"", ""importance_score"", ""relevance_score"", ""action"", ""reasoning""]
@@ -169,7 +169,7 @@ public class LongTermMemoryMaintenanceAgent : GPT
                                 },
                                 ""maintenance_reasoning"": {
                                     ""type"": ""string"",
-                                    ""description"": ""Overall reasoning for maintenance decisions""
+                                    ""description"": ""정리 결정에 대한 전체적인 추론""
                                 }
                             },
                             ""required"": [""evaluations"", ""maintenance_reasoning""]

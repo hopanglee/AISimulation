@@ -38,12 +38,12 @@ namespace Agent
                                 ""target_character"": {{
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(characterList)},
-                                    ""description"": ""The name of the character to give money to""
+                                    ""description"": ""돈을 줄 캐릭터 이름""
                                 }},
                                 ""amount"": {{
                                     ""type"": ""integer"",
                                     ""minimum"": 1,
-                                    ""description"": ""The amount of money to give""
+                                    ""description"": ""줄 돈의 액수""
                                 }}
                             }},
                             ""required"": [""target_character"", ""amount""]
