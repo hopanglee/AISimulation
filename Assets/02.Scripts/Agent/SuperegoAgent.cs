@@ -160,7 +160,7 @@ public class SuperegoAgent : GPT
                                     ""items"": {
                                         ""type"": ""string""
                                     },
-                                    ""description"": ""이성적 사고체인""
+                                    ""description"": ""상황을 인식하는 사고체인""
                                 },
                                 ""emotions"": {
                                     ""type"": ""object"",

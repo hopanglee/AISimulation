@@ -45,19 +45,19 @@ namespace Agent
                                 ""Action"": {{
                                     ""type"": ""string"",
                                     ""enum"": [""write"", ""read"", ""rewrite""],
-                                    ""description"": ""The action to perform on the note""
+                                    ""description"": ""노트에 수행할 액션""
                                 }},
                                 ""PageNumber"": {{
                                     ""type"": ""integer"",
-                                    ""description"": ""Page number to work with""
+                                    ""description"": ""작업할 페이지 번호""
                                 }},
                                 ""LineNumber"": {{
                                     ""type"": ""integer"",
-                                    ""description"": ""Line number for rewrite action""
+                                    ""description"": ""수정할 줄 번호 (rewrite 명령어일 때만 사용)""
                                 }},
                                 ""Text"": {{
                                     ""type"": ""string"",
-                                    ""description"": ""Text to write or rewrite""
+                                    ""description"": ""쓰거나 수정할 텍스트""
                                 }}
                             }},
                             ""required"": [""Action"", ""PageNumber""]

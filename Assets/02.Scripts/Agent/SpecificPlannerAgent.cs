@@ -74,15 +74,10 @@ public class SpecificPlannerAgent : GPT
                                         ""type"": ""object"",
                                         ""additionalProperties"": false,
                                         ""properties"": {{
-                                            ""action_type"": {{ ""type"": ""string"", ""enum"": [{actionTypeValues}] }},
-                                            ""description"": {{ ""type"": ""string"" }},
-                                            ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 1 }},
-                                            ""parameters"": {{
-                                                ""type"": ""object"",
-                                                ""description"": ""Parameters for the action (e.g., target location, object name)"",
-                                                ""additionalProperties"": false
-                                            }},
-                                            ""location"": {{ ""type"": ""string"" }}
+                                            ""action_type"": {{ ""type"": ""string"", ""enum"": [{actionTypeValues}], ""description"": ""실행가능한 활동의 이름"" }},
+                                            ""description"": {{ ""type"": ""string"", ""description"": ""실행가능한 활동의 목적 및 파라미터 등 설명 "" }},
+                                            ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 1, ""description"": ""활동에 소요되는 시간 (분 단위, 1~5분)"" }},
+                                            ""location"": {{ ""type"": ""string"", ""description"": ""활동이 일어나는 장소 (시스템에서 제공된 전체 경로 형식 사용. 예: '아파트:부엌')"" }}
                                         }},
                                         ""required"": [""action_type"", ""description"", ""duration_minutes"", ""location""]
                                     }},

@@ -45,7 +45,7 @@ namespace Agent
                                 ""selected_item_key"": {{
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(itemNames)},
-                                    ""description"": ""The key of the selected item to generate""
+                                    ""description"": ""선택된 아이템의 키""
                                 }}
                             }},
                             ""required"": [""selected_item_key""]

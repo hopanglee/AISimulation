@@ -70,11 +70,11 @@ public class RelationshipAgent : GPT
                             ""properties"": {
                                 ""should_update"": {
                                     ""type"": ""boolean"",
-                                    ""description"": ""Whether any relationship should be updated""
+                                    ""description"": ""수정 필요 여부""
                                 },
                                 ""reasoning"": {
                                     ""type"": ""string"",
-                                    ""description"": ""Reasoning for the decision""
+                                    ""description"": ""판단 근거와 상황 분석""
                                 },
                                 ""updates"": {
                                     ""type"": ""array"",
@@ -84,21 +84,22 @@ public class RelationshipAgent : GPT
                                         ""properties"": {
                                             ""character_name"": {
                                                 ""type"": ""string"",
-                                                ""description"": ""The name of the character to update relationship with""
+                                                ""description"": ""관계를 수정할 캐릭터 이름""
                                             },
                                             ""field_key"": {
                                                 ""type"": ""string"",
-                                                ""description"": ""The specific field to update in the relationship (e.g., 'closeness', 'trust', etc.)""
+                                                ""description"": ""관계를 수정할 항목 (예: 'closeness', 'trust', 등)""
                                             },
                                             ""new_value"": {
                                                 ""type"": [""string"", ""number"", ""boolean"", ""null""],
-                                                ""description"": ""The new value for the relationship""
+                                                ""description"": ""관계를 수정할 새로운 값""
                                             },
                                             ""change_reason"": {
                                                 ""type"": ""string"",
-                                                ""description"": ""Reason for this specific change""
+                                                ""description"": ""이 변경의 근거와 상황 분석""
                                             }
                                         },
+                                        ""description"": ""수정할 항목들 (수정이 필요한 경우만)"",
                                         ""required"": [""character_name"", ""field_key"", ""new_value"", ""change_reason""]
                                     }
                                 }

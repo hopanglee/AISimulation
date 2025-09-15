@@ -7,7 +7,7 @@
 {character_name} 정보
 - 성격: {personality}
 - 정보: {info}
-
+- 기억: {memory}
 ---
 고려사항
 - 시간대: (낮/밤, 수면 시간대와의 거리)

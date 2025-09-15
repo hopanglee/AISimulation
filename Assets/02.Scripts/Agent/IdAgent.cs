@@ -153,14 +153,14 @@ public class IdAgent : GPT
                             ""properties"": {
                                 ""situation_interpretation"": {
                                     ""type"": ""string"",
-                                    ""description"": ""본능적 관점의 상황 인식""
+                                    ""description"": ""본능적 관점에서 본 상황 인식""
                                 },
                                 ""thought_chain"": {
                                     ""type"": ""array"",
                                     ""items"": {
                                         ""type"": ""string""
                                     },
-                                    ""description"": ""본능적 사고체인""
+                                    ""description"": ""본능적 사고체인 (즉각적 욕구와 감정 기반)""
                                 },
                                 ""emotions"": {
                                     ""type"": ""object"",

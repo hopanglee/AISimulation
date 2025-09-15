@@ -46,15 +46,15 @@ public class BedInteractAgent : GPT
                             ""properties"": {
                                 ""should_sleep"": {
                                     ""type"": ""boolean"",
-                                    ""description"": ""Whether the actor should sleep""
+                                    ""description"": ""캐릭터가 잠을 자야 하는지 여부""
                                 },
                                 ""sleep_duration_minutes"": {
                                     ""type"": ""integer"",
-                                    ""description"": ""Duration of sleep in minutes (0 if not sleeping)""
+                                    ""description"": ""수면 시간(분) (잠을 자지 않을 경우 0)""
                                 },
                                 ""reasoning"": {
                                     ""type"": ""string"",
-                                    ""description"": ""Reasoning for the sleep decision""
+                                    ""description"": ""수면 결정에 대한 추론""
                                 }
                             },
                             ""required"": [""should_sleep"", ""sleep_duration_minutes"", ""reasoning""]

@@ -60,20 +60,6 @@ public static class PromptLoader
     }
 
     /// <summary>
-    /// MemoryAgent용 프롬프트를 로드합니다.
-    /// </summary>
-    /// <returns>MemoryAgent 시스템 프롬프트</returns>
-    public static string LoadMemoryAgentPrompt()
-    {
-        return LoadPrompt(
-            "MemoryAgentPrompt",
-            "당신은 캐릭터의 위치 기억을 관리하는 AI 에이전트입니다. 각 area에 어떤 물건이 어디에 있었는지, 존재 여부를 기억하고 관리합니다."
-        );
-    }
-
-    
-
-    /// <summary>
     /// HighLevelPlannerAgent용 프롬프트를 로드합니다.
     /// </summary>
     /// <returns>HighLevelPlannerAgent 시스템 프롬프트</returns>

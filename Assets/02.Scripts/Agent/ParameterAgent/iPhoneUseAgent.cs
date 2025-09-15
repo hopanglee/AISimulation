@@ -43,20 +43,20 @@ namespace Agent
                                 ""Command"": {{
                                     ""type"": ""string"",
                                     ""enum"": [""chat"", ""read"", ""continue""],
-                                    ""description"": ""The command to execute on iPhone""
+                                    ""description"": ""아이폰에 수행할 명령어""
                                 }},
                                 ""TargetActor"": {{
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(GetCurrentAvailableActors())},
-                                    ""description"": ""Target actor name for the command""
+                                    ""description"": ""대상 행동주체 이름""
                                 }},
                                 ""Message"": {{
                                     ""type"": ""string"",
-                                    ""description"": ""Message to send (only for chat command)""
+                                    ""description"": ""보낼 메시지 (chat 명령어일 때만 사용)""
                                 }},
                                 ""MessageCount"": {{
                                     ""type"": ""integer"",
-                                    ""description"": ""Number of messages to read (only for read/continue commands)""
+                                    ""description"": ""읽을 메시지 개수 (read/continue 명령어일 때만 사용)""
                                 }}
                             }},
                             ""required"": [""Command"", ""TargetActor""]

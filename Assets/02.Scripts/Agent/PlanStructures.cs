@@ -64,7 +64,7 @@ namespace PlanStructures
         [JsonProperty("action_type")] public string ActionType { get; set; } = "";
         [JsonProperty("description")] public string Description { get; set; } = "";
         [JsonProperty("duration_minutes")] public int DurationMinutes { get; set; } = 0;
-        [JsonProperty("parameters")] public Dictionary<string, object> Parameters { get; set; } = new Dictionary<string, object>();
+        // [JsonProperty("parameters")] public Dictionary<string, object> Parameters { get; set; } = new Dictionary<string, object>();
         /// <summary>
         /// 이 행동이 속한 세부 활동에 대한 참조 (런타임용, JSON 직렬화 제외)
         /// </summary>

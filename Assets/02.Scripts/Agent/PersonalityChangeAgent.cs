@@ -20,8 +20,6 @@ namespace Agent
         public List<string> traits_to_remove = new List<string>();
         public List<string> traits_to_add = new List<string>();
         public string reasoning;
-        public string emotional_impact;
-        public float change_intensity; // 0.0 ~ 1.0
     }
 
     private Actor actor;
@@ -53,20 +51,10 @@ namespace Agent
                             },
                             ""reasoning"": {
                                 ""type"": ""string"",
-                                ""description"": ""변화의 이유나 변화가 없는 이유""
+                                ""description"": ""구체적인 변화 이유와 경험 분석""
                             },
-                            ""emotional_impact"": {
-                                ""type"": ""string"",
-                                ""description"": ""감정적 영향의 정도""
-                            },
-                            ""change_intensity"": {
-                                ""type"": ""number"",
-                                ""minimum"": 0.0,
-                                ""maximum"": 1.0,
-                                ""description"": ""변화의 강도 (0.0-1.0)""
-                            }
                         },
-                        ""required"": [""has_personality_change"", ""traits_to_remove"", ""traits_to_add"", ""reasoning"", ""emotional_impact"", ""change_intensity""]
+                        ""required"": [""has_personality_change"", ""traits_to_remove"", ""traits_to_add"", ""reasoning""]
                     }"
                 )
             ),
@@ -176,7 +164,8 @@ namespace Agent
             {
                 { "experience_data", JsonConvert.SerializeObject(experienceData, Formatting.Indented) }
             };
-            var requestContent = PromptLoader.LoadPromptWithReplacements("personality_change_analysis_prompt.txt", replacements);
+            var localizationService = Services.Get<ILocalizationService>();
+            var requestContent = localizationService.GetLocalizedText("personality_change_analysis_prompt", replacements);
 
             // 새로운 대화 시작
             var systemPrompt = LoadSystemPrompt();
@@ -210,7 +199,6 @@ namespace Agent
                 Debug.Log($"[PersonalityChangeAgent] 제거할 특성: [{string.Join(", ", result.traits_to_remove)}]");
                 Debug.Log($"[PersonalityChangeAgent] 추가할 특성: [{string.Join(", ", result.traits_to_add)}]");
                 Debug.Log($"[PersonalityChangeAgent] 변화 이유: {result.reasoning}");
-                Debug.Log($"[PersonalityChangeAgent] 변화 강도: {result.change_intensity:F2}");
             }
             
             return result;

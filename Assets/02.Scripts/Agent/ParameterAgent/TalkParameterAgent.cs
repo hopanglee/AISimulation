@@ -38,11 +38,11 @@ namespace Agent
                                 ""character_name"": {{
                                     ""type"": ""string"",
                                     ""enum"": {JsonConvert.SerializeObject(characterList)},
-                                    ""description"": ""One of the available characters to speak to""
+                                    ""description"": ""대화할_캐릭터_이름""
                                 }},
                                 ""message"": {{
                                     ""type"": ""string"",
-                                    ""description"": ""The message to say to the character""
+                                    ""description"": ""대화할 캐릭터에게 말할 메시지""
                                 }}
                             }},
                             ""required"": [""character_name"", ""message""]
