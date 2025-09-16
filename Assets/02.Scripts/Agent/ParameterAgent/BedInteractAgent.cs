@@ -78,16 +78,17 @@ public class BedInteractAgent : GPT
             // 사용자 메시지 구성
             var localizationService = Services.Get<ILocalizationService>();
             var timeService = Services.Get<ITimeService>();
-            var currentTime = timeService.CurrentTime;
-            
+            var year = timeService.CurrentTime.year;
+            var month = timeService.CurrentTime.month;
+            var day = timeService.CurrentTime.day;
+            var dayOfWeek = timeService.CurrentTime.GetDayOfWeek();
+            var hour = timeService.CurrentTime.hour;
+            var minute = timeService.CurrentTime.minute;
             var replacements = new Dictionary<string, string>
             {
-                { "current_time", $"{currentTime.hour:D2}:{currentTime.minute:D2}" },
-                { "current_stamina", actor.Stamina.ToString() },
-                { "current_sleepiness", actor.Sleepiness.ToString() },
-                { "is_sleeping", (actor is MainActor mainActor ? mainActor.IsSleeping : false).ToString() },
-                { "sleep_hour", (actor is MainActor mainActor2 ? mainActor2.SleepHour : 22).ToString() },
-                { "wake_up_hour", (actor is MainActor mainActor3 ? mainActor3.WakeUpHour : 6).ToString() }
+                { "character_name", actor.Name },
+                { "current_time", $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}" },
+                { "current_situation", actor.LoadActorSituation() }
             };
             
             string userMessage = localizationService.GetLocalizedText("bed_interact_prompt", replacements);

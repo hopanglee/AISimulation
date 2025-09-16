@@ -1,5 +1,8 @@
+현재시간: {current_time}
+
 === Perception Result ===
-상황 해석: {situation_interpretation}
+상황 해석:
+{situation_interpretation}
 
 생각 체인: {thought_chain}
 

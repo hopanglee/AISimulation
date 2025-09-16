@@ -17,7 +17,7 @@ using PlanStructures;
 /// </summary>
 public class SpecificPlannerAgent : GPT
 {
-    private Actor actor;
+    private MainActor actor;
     private IToolExecutor toolExecutor;
 
     /// <summary>
@@ -45,22 +45,13 @@ public class SpecificPlannerAgent : GPT
     public SpecificPlannerAgent(Actor actor)
         : base()
     {
-        this.actor = actor;
+        this.actor = actor as MainActor;
         this.toolExecutor = new ActorToolExecutor(actor);
 
         // Actor 이름 설정 (로깅용)
         SetActorName(actor.Name);
 
-        // SpecificPlannerAgent 프롬프트 로드 및 초기화
-        string systemPrompt = PromptLoader.LoadPromptWithReplacements("SpecificPlannerAgentPrompt.txt",
-            new Dictionary<string, string>
-            {
-                { "character_name", actor.Name },
-                { "personality", actor.LoadPersonality() },
-                { "info", actor.LoadCharacterInfo() },
-                { "memory", actor.LoadCharacterMemory() }
-            });
-        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+
 
         // ActionType enum 값들을 동적으로 가져와서 JSON schema에 포함
         var actionTypeValues = string.Join(", ", Enum.GetNames(typeof(ActionType)).Select(name => $"\"{name}\""));
@@ -135,6 +126,17 @@ public class SpecificPlannerAgent : GPT
     /// </summary>
     public async UniTask<List<SpecificAction>> CreateActionPlanAsync(DetailedActivity detailedPlan)
     {
+        // SpecificPlannerAgent 프롬프트 로드 및 초기화
+        string systemPrompt = PromptLoader.LoadPromptWithReplacements("SpecificPlannerAgentPrompt.txt",
+            new Dictionary<string, string>
+            {
+                { "character_name", actor.Name },
+                { "personality", actor.LoadPersonality() },
+                { "info", actor.LoadCharacterInfo() },
+                { "memory", actor.LoadCharacterMemory() },
+                { "character_situation", actor.LoadActorSituation() }
+            });
+        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
         string prompt = GenerateActionPlanPrompt(detailedPlan);
         messages.Add(new UserChatMessage(prompt));
 
@@ -160,21 +162,26 @@ public class SpecificPlannerAgent : GPT
     {
         var timeService = Services.Get<ITimeService>();
         var localizationService = Services.Get<ILocalizationService>();
-        var currentTime = $"{timeService.CurrentTime.hour:D2}:{timeService.CurrentTime.minute:D2}";
+        var year = timeService.CurrentTime.year;
+        var month = timeService.CurrentTime.month;
+        var day = timeService.CurrentTime.day;
+        var hour = timeService.CurrentTime.hour;
+        var minute = timeService.CurrentTime.minute;
+        var dayOfWeek = timeService.CurrentTime.GetDayOfWeek();
 
         // 통합 치환 정보
         var replacements = new Dictionary<string, string>
         {
-            { "hunger", actor.Hunger.ToString() },
-            { "thirst", actor.Thirst.ToString() },
-            { "stamina", actor.Stamina.ToString() },
-            { "stress", actor.Stress.ToString() },
-            { "sleepiness", (actor as MainActor)?.Sleepiness.ToString() ?? "0" },
-            { "location", actor.curLocation.LocationToString() },
-            { "currentTime", currentTime },
+            {"current_time", $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}" },
+            { "character_name", actor.Name },
+            { "interpretation", actor.brain.recentPerceptionResult.situation_interpretation },
             { "activityName", detailedPlan.ActivityName },
-            { "description", detailedPlan.Description },
-            { "durationMinutes", detailedPlan.DurationMinutes.ToString() }
+            { "activityDescription", detailedPlan.Description },
+            { "activityDuration", detailedPlan.DurationMinutes.ToString() },
+            {"taskName", detailedPlan.ParentHighLevelTask.TaskName },
+            { "taskDescription", detailedPlan.ParentHighLevelTask.Description },
+            { "taskDuration", detailedPlan.ParentHighLevelTask.DurationMinutes.ToString() },
+            {"today_plan", actor.brain.dayPlanner.GetCurrentDayPlan().ToString() }
         };
 
         return localizationService.GetLocalizedText("action_plan_prompt", replacements);

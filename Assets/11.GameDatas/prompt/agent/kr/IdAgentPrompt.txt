@@ -9,6 +9,10 @@
 {character_name} 정보
 - 성격: {personality}
 - 정보: {info}
+
+{character_name}의 현재 상태
+{character_situation}
+
 {memory}
 ---
 

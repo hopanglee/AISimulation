@@ -1,0 +1,13 @@
+이성 에이전트 결과:
+느낀 감정: {superego_emotion}
+{superego_result}
+
+생각 체인:
+{superego_thought_chain}
+-------------------------
+본능 에이전트 결과:
+느낀 감정: {id_emotion}
+{id_result}
+
+생각 체인:
+{id_thought_chain}

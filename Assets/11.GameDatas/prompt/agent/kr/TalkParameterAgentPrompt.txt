@@ -8,11 +8,16 @@
 {character_name} 정보
 - 성격: {personality}
 - 정보: {info}
+
+{character_name}의 현재 상태
+{character_situation}
+
 {memory}
 ---
 
 행동 근거(Reasoning, 왜 선택했는지), 의도(Intention, 목적), 그리고 사용 가능한 NPC 목록(AvailableNPCs)을 기반으로, 대화 내용(Content)과 대상 NPC(npc_name)를 생성합니다.
 
 성격과 기억, 기존 말투를 고려하여 {character_name}답고 자연스럽고 일관성 있는 대화를 생성해야 합니다.
+특히, 대화를 이어나가려면, 단기기억을 확인하고 자연스럽게 이어나가세요.
 
 대상을 따로 지정하지 않을 경우, character_name을 null로 지정하세요.

@@ -314,7 +314,6 @@ public class HierarchicalPlanner
     public async UniTask<HierarchicalPlan> ReplanFromCurrentStateAsync(
         HierarchicalPlan currentPlan,
         GameTime currentTime,
-        PerceptionResult perception,
         PlanDecisionAgent.PlanDecisionResult decision)
     {
         try
@@ -340,7 +339,6 @@ public class HierarchicalPlanner
             // 2단계: 새로운 고수준 계획 생성 (perception과 modification_summary 포함)
             var highLevelPlannerAgent = new HighLevelPlannerAgent(actor);
             var newHighLevelPlan = await highLevelPlannerAgent.CreateHighLevelPlanWithContextAsync(
-                perception, 
                 decision.modification_summary, 
                 currentPlan);
 

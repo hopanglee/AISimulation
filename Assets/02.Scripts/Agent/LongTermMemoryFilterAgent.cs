@@ -15,19 +15,19 @@ public class MemoryEvaluation
 {
     [JsonProperty("chunk_id")]
     public string ChunkId { get; set; }
-    
+
     [JsonProperty("importance_score")]
     public float ImportanceScore { get; set; } // 0.0 ~ 1.0
-    
+
     [JsonProperty("surprise_score")]
     public float SurpriseScore { get; set; } // 0.0 ~ 1.0
-    
+
     [JsonProperty("overall_score")]
     public float OverallScore { get; set; } // 0.0 ~ 1.0
-    
+
     [JsonProperty("reasoning")]
     public string Reasoning { get; set; }
-    
+
     [JsonProperty("should_keep")]
     public bool ShouldKeep { get; set; }
 }
@@ -40,16 +40,16 @@ public class MemoryFilterResult
 {
     [JsonProperty("evaluations")]
     public List<MemoryEvaluation> Evaluations { get; set; } = new List<MemoryEvaluation>();
-    
+
     [JsonProperty("kept_chunks")]
     public List<string> KeptChunks { get; set; } = new List<string>();
-    
+
     [JsonProperty("filtered_chunks")]
     public List<string> FilteredChunks { get; set; } = new List<string>();
-    
+
     [JsonProperty("filter_reasoning")]
     public string FilterReasoning { get; set; }
-    
+
     [JsonProperty("retention_percentage")]
     public float RetentionPercentage { get; set; }
 }
@@ -68,8 +68,7 @@ public class LongTermMemoryFilterAgent : GPT
         this.actor = actor;
         SetActorName(actor.Name);
 
-        string systemPrompt = LoadFilterPrompt();
-        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+
 
         options = new()
         {
@@ -125,6 +124,20 @@ public class LongTermMemoryFilterAgent : GPT
         };
     }
 
+    private string FormatEmotions(Dictionary<string, float> emotions)
+    {
+        if (emotions == null || emotions.Count == 0)
+            return "감정 없음";
+
+        var emotionList = new List<string>();
+        foreach (var emotion in emotions)
+        {
+            emotionList.Add($"{emotion.Key}: {emotion.Value:F1}");
+        }
+
+        return string.Join(", ", emotionList);
+    }
+
     /// <summary>
     /// 통합된 메모리 청크들을 평가하고 필터링합니다.
     /// </summary>
@@ -132,6 +145,9 @@ public class LongTermMemoryFilterAgent : GPT
     /// <returns>필터링 결과</returns>
     public async UniTask<MemoryFilterResult> FilterMemoriesAsync(List<ConsolidatedMemoryChunk> consolidatedChunks)
     {
+        string systemPrompt = LoadFilterPrompt();
+        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+
         try
         {
             if (consolidatedChunks == null || consolidatedChunks.Count == 0)
@@ -149,22 +165,22 @@ public class LongTermMemoryFilterAgent : GPT
 
             // 메모리 청크들을 템플릿을 사용하여 텍스트로 변환
             var localizationService = Services.Get<ILocalizationService>();
-            var chunkTexts = consolidatedChunks.Select((chunk, index) => 
+            var chunkTexts = consolidatedChunks.Select((chunk, index) =>
             {
                 var chunkReplacements = new Dictionary<string, string>
                 {
-                    ["chunk_number"] = (index + 1).ToString(),
+                    ["chunk_number"] = (index).ToString(),
                     ["chunk_id"] = chunk.ChunkId,
                     ["time_range"] = chunk.TimeRange,
                     ["summary"] = chunk.Summary,
                     ["main_events"] = string.Join(", ", chunk.MainEvents),
                     ["people_involved"] = string.Join(", ", chunk.PeopleInvolved),
-                    ["emotions"] = chunk.Emotions != null ? string.Join(", ", chunk.Emotions.Select(kv => $"{kv.Key}:{kv.Value:F1}")) : ""
+                    ["emotions"] = FormatEmotions(chunk.Emotions)
                 };
-                
+
                 return localizationService.GetLocalizedText("memory_chunk_item_template", chunkReplacements);
             });
-            
+
             var chunksText = string.Join("\n\n", chunkTexts);
 
             int targetKeepCount = Math.Max(1, (int)(consolidatedChunks.Count * TARGET_RETENTION_RATE));
@@ -183,18 +199,18 @@ public class LongTermMemoryFilterAgent : GPT
             messages.Add(new UserChatMessage(userMessage));
 
             var response = await SendGPTAsync<MemoryFilterResult>(messages, options);
-            
+
             // 결과 검증 및 보정
             ValidateAndCorrectFilterResult(response, consolidatedChunks, targetKeepCount);
 
             Debug.Log($"[{actor.Name}] 메모리 필터링 완료: {consolidatedChunks.Count}개 → {response.KeptChunks.Count}개 보존 ({response.RetentionPercentage * 100:F1}%)");
-            
+
             return response;
         }
         catch (Exception ex)
         {
             Debug.LogError($"[{actor.Name}] 메모리 필터링 실패: {ex.Message}");
-            
+
             // 기본 응답: 모든 청크 보존
             return new MemoryFilterResult
             {
@@ -219,12 +235,12 @@ public class LongTermMemoryFilterAgent : GPT
     /// 필터링 결과를 검증하고 보정합니다.
     /// </summary>
     private void ValidateAndCorrectFilterResult(
-        MemoryFilterResult result, 
-        List<ConsolidatedMemoryChunk> originalChunks, 
+        MemoryFilterResult result,
+        List<ConsolidatedMemoryChunk> originalChunks,
         int targetKeepCount)
     {
         // 누락된 평가가 있는지 확인
-        var missingChunks = originalChunks.Where(chunk => 
+        var missingChunks = originalChunks.Where(chunk =>
             !result.Evaluations.Any(eval => eval.ChunkId == chunk.ChunkId)).ToList();
 
         foreach (var missingChunk in missingChunks)
@@ -246,7 +262,7 @@ public class LongTermMemoryFilterAgent : GPT
 
         // 점수 순으로 정렬하여 상위 N개 선별
         var sortedEvaluations = result.Evaluations.OrderByDescending(e => e.OverallScore).ToList();
-        
+
         // 보존할 청크 휴리스틱 계산
         result.KeptChunks = new List<string>();
         result.FilteredChunks = new List<string>();
@@ -255,9 +271,9 @@ public class LongTermMemoryFilterAgent : GPT
         {
             var evaluation = sortedEvaluations[i];
             bool shouldKeep = i < targetKeepCount;
-            
+
             evaluation.ShouldKeep = shouldKeep;
-            
+
             if (shouldKeep)
             {
                 result.KeptChunks.Add(evaluation.ChunkId);
@@ -269,7 +285,7 @@ public class LongTermMemoryFilterAgent : GPT
         }
 
         // 보존 비율 휴리스틱 계산
-        result.RetentionPercentage = originalChunks.Count > 0 ? 
+        result.RetentionPercentage = originalChunks.Count > 0 ?
             (float)result.KeptChunks.Count / originalChunks.Count : 0f;
     }
 
@@ -280,7 +296,7 @@ public class LongTermMemoryFilterAgent : GPT
     /// <param name="filterResult">필터링 결과</param>
     /// <returns>보존할 청크들</returns>
     public List<ConsolidatedMemoryChunk> GetKeptChunks(
-        List<ConsolidatedMemoryChunk> originalChunks, 
+        List<ConsolidatedMemoryChunk> originalChunks,
         MemoryFilterResult filterResult)
     {
         return originalChunks.Where(chunk => filterResult.KeptChunks.Contains(chunk.ChunkId)).ToList();
@@ -300,6 +316,7 @@ public class LongTermMemoryFilterAgent : GPT
                     { "personality", actor.LoadPersonality() },
                     { "info", actor.LoadCharacterInfo() },
                     { "memory", actor.LoadLongTermMemory() },
+                    { "character_situation", actor.LoadActorSituation() }
                 });
         }
         catch (Exception ex)

@@ -31,5 +31,10 @@
         "parents",
         "literature club friends",
         "Kamiya Tooru"
-    ]
+    ],
+    "emotions": {
+        "행복": 0.6,
+        "사랑": 0.8,
+        "불안": 0.5
+    }
 }

@@ -28,6 +28,8 @@ namespace Agent
 
         private readonly string systemPrompt;
 
+        iPhone iphone;
+
         public iPhoneUseAgent(Actor actor) : base(actor)
         {
             systemPrompt = PromptLoader.LoadPromptWithReplacements("iPhoneUseAgentPrompt.txt",
@@ -37,6 +39,7 @@ namespace Agent
                     { "personality", actor.LoadPersonality() },
                     { "info", actor.LoadCharacterInfo() },
                     { "memory", actor.LoadCharacterMemory() },
+                    { "character_situation", actor.LoadActorSituation() }
                 });
             this.options = new ChatCompletionOptions
             {
@@ -143,11 +146,18 @@ namespace Agent
         private string BuildUserMessage(CommonContext context)
         {
             var localizationService = Services.Get<ILocalizationService>();
-            
+            var timeService = Services.Get<ITimeService>();
+            var year = timeService.CurrentTime.year;
+            var month = timeService.CurrentTime.month;
+            var day = timeService.CurrentTime.day;
+            var hour = timeService.CurrentTime.hour;
+            var minute = timeService.CurrentTime.minute;
+            var dayOfWeek = timeService.CurrentTime.GetDayOfWeek();
             var replacements = new Dictionary<string, string>
             {
                 {"reasoning", context.Reasoning},
-                {"intention", context.Intention}
+                {"intention", context.Intention},
+                {"current_time", $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}"}
             };
             
             var message = localizationService.GetLocalizedText("iphone_use_parameter_message", replacements);

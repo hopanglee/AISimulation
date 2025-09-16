@@ -31,5 +31,10 @@
         "parents",
         "literature club friends",
         "Hino Maori"
-    ]
+    ],
+    "emotions": {
+        "행복": 0.7,
+        "사랑": 0.9,
+        "신뢰": 0.8
+    }
 }

@@ -22,8 +22,8 @@ public class SuperegoAgent : GPT
     {
         this.actor = actor;
         this.toolExecutor = new ActorToolExecutor(actor);
-        
-        LoadSystemPrompt();
+
+
         InitializeOptions();
     }
 
@@ -37,19 +37,20 @@ public class SuperegoAgent : GPT
             // 캐릭터 정보와 기억을 동적으로 로드
             var characterInfo = LoadCharacterInfo();
             var characterMemory = LoadCharacterMemory();
-            
+
             // 플레이스홀더 교체를 위한 딕셔너리 생성
             var replacements = new Dictionary<string, string>
             {
                 { "character_name", actor.Name },
                 { "personality", actor.LoadPersonality() },
                 { "info", characterInfo },
-                { "memory", characterMemory }
+                { "memory", characterMemory },
+                { "character_situation", actor.LoadActorSituation() }
             };
-            
+
             // PromptLoader를 사용하여 프롬프트 로드 및 플레이스홀더 교체
             var promptText = PromptLoader.LoadPromptWithReplacements("SuperegoAgentPrompt.txt", replacements);
-            
+
             messages.Add(new SystemChatMessage(promptText));
         }
         catch (Exception ex)
@@ -77,14 +78,14 @@ public class SuperegoAgent : GPT
             {
                 return $"캐릭터 정보:\n{JsonConvert.SerializeObject(characterInfo, Formatting.Indented)}";
             }
-            
+
             var infoPath = $"Assets/11.GameDatas/Character/{actor.Name}/info/info.json";
             if (System.IO.File.Exists(infoPath))
             {
                 var infoText = System.IO.File.ReadAllText(infoPath);
                 return $"캐릭터 정보:\n{infoText}";
             }
-            
+
             return "캐릭터 정보를 찾을 수 없습니다.";
         }
         catch (Exception ex)
@@ -111,13 +112,13 @@ public class SuperegoAgent : GPT
             {
                 var shortTermMemories = mainActor.brain.memoryManager.GetShortTermMemory();
                 var longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories();
-                
+
                 var memorySummary = $"단기 메모리 ({shortTermMemories.Count}개):\n";
                 foreach (var memory in shortTermMemories)
                 {
                     memorySummary += $"- {memory.content}\n";
                 }
-                
+
                 if (longTermMemories.Count > 0)
                 {
                     memorySummary += $"\n장기 메모리 ({longTermMemories.Count}개):\n";
@@ -126,10 +127,10 @@ public class SuperegoAgent : GPT
                         memorySummary += $"- {memory.content}\n";
                     }
                 }
-                
+
                 return $"캐릭터 기억:\n{memorySummary}";
             }
-            
+
             return "캐릭터 기억이 없습니다.";
         }
         catch (Exception ex)
@@ -212,8 +213,16 @@ public class SuperegoAgent : GPT
     {
         try
         {
+            LoadSystemPrompt();
+            
+            var timeService = Services.Get<ITimeService>();
+            var year = timeService.CurrentTime.year;
+            var month = timeService.CurrentTime.month;
+            var day = timeService.CurrentTime.day;
+            var hour = timeService.CurrentTime.hour;
+            var minute = timeService.CurrentTime.minute;
             // 사용자 메시지 구성
-            var userMessage = $"현재 시각정보:\n{string.Join("\n", visualInformation)}";
+            var userMessage = $"현재 시간: \n{year}년 {month}월 {day}일 {hour:D2}:{minute:D2}\n\n현재 시각정보:\n{string.Join("\n", visualInformation)}";
             messages.Add(new UserChatMessage(userMessage));
 
             // GPT 호출

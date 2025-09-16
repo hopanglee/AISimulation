@@ -145,7 +145,6 @@ namespace Agent
             
             var replacements = new Dictionary<string, string>
             {
-                { "actor_name", actor.Name },
                 { "hand_item", actor.HandItem != null ? actor.HandItem.Name : localizationService.GetLocalizedText("none") },
                 { "inventory_status", GetInventoryStatus() },
                 { "reasoning", request.Reasoning },

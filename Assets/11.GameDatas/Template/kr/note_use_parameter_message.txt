@@ -1,2 +1,5 @@
+현재시간
+{current_time}
+
 추론: {reasoning}
 의도: {intention}

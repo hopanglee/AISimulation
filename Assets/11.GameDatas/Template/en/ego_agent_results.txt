@@ -1,0 +1,13 @@
+Superego Agent Result:
+Emotions: {superego_emotion}
+{superego_result}
+
+Thought Chain:
+{superego_thought_chain}
+-------------------------
+Id Agent Result:
+Emotions: {id_emotion}
+{id_result}
+
+Thought Chain:
+{id_thought_chain}

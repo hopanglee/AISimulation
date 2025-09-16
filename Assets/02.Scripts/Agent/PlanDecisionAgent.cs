@@ -177,7 +177,8 @@ public class PlanDecisionAgent : GPT
 					{ "character_name", actor.Name },
 					{ "personality", actor.LoadPersonality() },
 					{ "info", actor.LoadCharacterInfo() },
-					{ "memory", actor.LoadCharacterMemory() }
+					{ "memory", actor.LoadCharacterMemory() },
+					{ "character_situation", actor.LoadActorSituation() }
 				});
 		}
 		catch (Exception ex)
@@ -193,52 +194,16 @@ public class PlanDecisionAgent : GPT
 	private string GenerateDecisionPrompt(PlanDecisionInput input)
 	{
 		var localizationService = Services.Get<ILocalizationService>();
-		var timeService = Services.Get<ITimeService>();
-
-		// 현재 계획 정보 포맷팅
-		var planInfo = FormatPlanInfo(input.currentPlan);
 
 		// 프롬프트 치환 정보
 		var replacements = new Dictionary<string, string>
 		{
 			{ "perception_situation", input.perception.situation_interpretation },
-			{ "perception_thoughts", string.Join("\n", input.perception.thought_chain) },
-			{ "current_time", $"{input.currentTime.hour:D2}:{input.currentTime.minute:D2}" },
-			{ "current_plan", planInfo }
+			{ "perception_thoughts", string.Join("->", input.perception.thought_chain) },
+			{ "current_time", $"{input.currentTime.year}년 {input.currentTime.month}월 {input.currentTime.day}일 {input.currentTime.GetDayOfWeek()} {input.currentTime.hour:D2}:{input.currentTime.minute:D2}" },
+			{ "current_plan", input.currentPlan.ToString() }
 		};
 
 		return localizationService.GetLocalizedText("PlanDecisionAgentPrompt", replacements);
-	}
-
-	/// <summary>
-	/// 계획 정보를 문자열로 포맷팅
-	/// </summary>
-	private string FormatPlanInfo(HierarchicalPlan plan)
-	{
-		if (plan == null) return "No current plan";
-
-		var planInfo = new List<string>();
-
-		if (plan.HighLevelTasks != null && plan.HighLevelTasks.Count > 0)
-		{
-			foreach (var hlt in plan.HighLevelTasks)
-			{
-				planInfo.Add($"• {hlt.TaskName} ({hlt.DurationMinutes}분)");
-
-				if (hlt.DetailedActivities != null)
-				{
-					foreach (var da in hlt.DetailedActivities)
-					{
-						planInfo.Add($"  - {da.ActivityName} ({da.DurationMinutes}분)");
-					}
-				}
-			}
-		}
-		else
-		{
-			planInfo.Add("No tasks planned");
-		}
-
-		return string.Join("\n", planInfo);
 	}
 }

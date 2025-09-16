@@ -27,7 +27,7 @@ public abstract class MainActor : Actor
 	
 	[Header("Sleep System")]
 	[SerializeField, Range(0, 23)]
-	private int wakeUpHour = 6; // 기상 시간
+	private int wakeUpHour = 7; // 기상 시간
 	public int WakeUpHour => wakeUpHour;
 	public int wakeUpMinute = 0;
 	private bool hasAwokenToday = false;

@@ -16,22 +16,22 @@ public class ConsolidatedMemoryChunk
 {
     [JsonProperty("chunk_id")]
     public string ChunkId { get; set; }
-    
+
     [JsonProperty("summary")]
     public string Summary { get; set; }
-    
+
     [JsonProperty("time_range")]
     public string TimeRange { get; set; }
-    
+
     [JsonProperty("main_events")]
     public List<string> MainEvents { get; set; } = new List<string>();
-    
+
     [JsonProperty("people_involved")]
     public List<string> PeopleInvolved { get; set; } = new List<string>();
-    
+
     [JsonProperty("emotions")]
     public Dictionary<string, float> Emotions { get; set; } = new Dictionary<string, float>();
-    
+
     [JsonProperty("original_entries_count")]
     public int OriginalEntriesCount { get; set; }
 }
@@ -44,13 +44,13 @@ public class MemoryConsolidationResult
 {
     [JsonProperty("consolidated_chunks")]
     public List<ConsolidatedMemoryChunk> ConsolidatedChunks { get; set; } = new List<ConsolidatedMemoryChunk>();
-    
+
     [JsonProperty("consolidation_reasoning")]
     public string ConsolidationReasoning { get; set; }
-    
+
     [JsonProperty("total_original_entries")]
     public int TotalOriginalEntries { get; set; }
-    
+
     [JsonProperty("total_consolidated_chunks")]
     public int TotalConsolidatedChunks { get; set; }
 }
@@ -67,9 +67,6 @@ public class LongTermMemoryConsolidationAgent : GPT
     {
         this.actor = actor;
         SetActorName(actor.Name);
-
-        string systemPrompt = LoadConsolidationPrompt();
-        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
 
         options = new()
         {
@@ -148,6 +145,20 @@ public class LongTermMemoryConsolidationAgent : GPT
         };
     }
 
+    private string FormatEmotions(Dictionary<string, float> emotions)
+    {
+        if (emotions == null || emotions.Count == 0)
+            return "감정 없음";
+
+        var emotionList = new List<string>();
+        foreach (var emotion in emotions)
+        {
+            emotionList.Add($"{emotion.Key}: {emotion.Value:F1}");
+        }
+
+        return string.Join(", ", emotionList);
+    }
+
     /// <summary>
     /// Short Term Memory를 통합하여 요약합니다.
     /// </summary>
@@ -155,6 +166,9 @@ public class LongTermMemoryConsolidationAgent : GPT
     /// <returns>통합된 메모리 결과</returns>
     public async UniTask<MemoryConsolidationResult> ConsolidateMemoriesAsync(List<ShortTermMemoryEntry> shortTermEntries)
     {
+        string systemPrompt = LoadConsolidationPrompt();
+        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+
         try
         {
             if (shortTermEntries == null || shortTermEntries.Count == 0)
@@ -178,15 +192,17 @@ public class LongTermMemoryConsolidationAgent : GPT
             {
                 var entryReplacements = new Dictionary<string, string>
                 {
-                    ["entry_number"] = (index + 1).ToString(),
+                    ["emotions"] = FormatEmotions(entry.emotions),
+                    ["entry_number"] = index.ToString(),
                     ["timestamp"] = $"{entry.timestamp.year}-{entry.timestamp.month:D2}-{entry.timestamp.day:D2} {entry.timestamp.hour:D2}:{entry.timestamp.minute:D2}",
                     ["entry_type"] = entry.type,
-                    ["content"] = entry.content
+                    ["content"] = entry.content,
+                    ["details"] = entry.details
                 };
-                
+
                 return localizationService.GetLocalizedText("memory_entry_item_template", entryReplacements);
             });
-            
+
             var entriesText = string.Join("\n", entryTexts);
 
             // 템플릿과 replacement를 사용하여 사용자 메시지 생성
@@ -201,19 +217,19 @@ public class LongTermMemoryConsolidationAgent : GPT
             messages.Add(new UserChatMessage(userMessage));
 
             var response = await SendGPTAsync<MemoryConsolidationResult>(messages, options);
-            
+
             // 통계 검증 및 보정
             response.TotalOriginalEntries = sortedEntries.Count;
             response.TotalConsolidatedChunks = response.ConsolidatedChunks.Count;
 
             Debug.Log($"[{actor.Name}] 메모리 통합 완료: {sortedEntries.Count}개 → {response.ConsolidatedChunks.Count}개 chunk");
-            
+
             return response;
         }
         catch (Exception ex)
         {
             Debug.LogError($"[{actor.Name}] 메모리 통합 실패: {ex.Message}");
-            
+
             // 기본 응답 반환
             return new MemoryConsolidationResult
             {
@@ -232,7 +248,7 @@ public class LongTermMemoryConsolidationAgent : GPT
     /// <param name="currentTime">현재 시간</param>
     /// <returns>Long Term Memory 엔트리들</returns>
     public List<LongTermMemory> ConvertToLongTermFormat(
-        MemoryConsolidationResult consolidationResult, 
+        MemoryConsolidationResult consolidationResult,
         GameTime currentTime)
     {
         var longTermEntries = new List<LongTermMemory>();
@@ -255,7 +271,7 @@ public class LongTermMemoryConsolidationAgent : GPT
 
         return longTermEntries;
     }
-    
+
     /// <summary>
     /// 요약에서 제목을 생성합니다.
     /// </summary>
@@ -274,7 +290,7 @@ public class LongTermMemoryConsolidationAgent : GPT
     {
         if (mainEvents == null || mainEvents.Count == 0)
             return "various activities";
-        
+
         // 첫 번째 주요 사건을 메인 액션으로 사용
         return mainEvents.First();
     }
@@ -316,7 +332,7 @@ public class LongTermMemoryConsolidationAgent : GPT
                     { "personality", actor.LoadPersonality() },
                     { "info", actor.LoadCharacterInfo() },
                     { "memory", actor.LoadLongTermMemory() },
-                }); 
+                });
         }
         catch (Exception ex)
         {

@@ -15,6 +15,45 @@ namespace PlanStructures
     {
         [JsonProperty("high_level_tasks")]
         public List<HighLevelTask> HighLevelTasks { get; set; } = new List<HighLevelTask>();
+
+        /// <summary>
+        /// 계획을 읽기 쉬운 형태로 반환합니다.
+        /// </summary>
+        public override string ToString()
+        {
+            if (HighLevelTasks == null || HighLevelTasks.Count == 0)
+                return "계획 없음";
+
+            var result = new System.Text.StringBuilder();
+            result.AppendLine("=== 계층적 계획 ===");
+            
+            foreach (var hlt in HighLevelTasks)
+            {
+                result.AppendLine($"• {hlt.TaskName} ({hlt.DurationMinutes}분)");
+                result.AppendLine($"  설명: {hlt.Description}");
+                
+                if (hlt.DetailedActivities != null && hlt.DetailedActivities.Count > 0)
+                {
+                    foreach (var activity in hlt.DetailedActivities)
+                    {
+                        result.AppendLine($"  - {activity.ActivityName} ({activity.DurationMinutes}분)");
+                        result.AppendLine($"    설명: {activity.Description}");
+                        
+                        if (activity.SpecificActions != null && activity.SpecificActions.Count > 0)
+                        {
+                            foreach (var action in activity.SpecificActions)
+                            {
+                                result.AppendLine($"    * {action.ActionType} ({action.DurationMinutes}분)");
+                                result.AppendLine($"      설명: {action.Description}");
+                            }
+                        }
+                    }
+                }
+                result.AppendLine();
+            }
+            
+            return result.ToString();
+        }
     }
 
     /// <summary>

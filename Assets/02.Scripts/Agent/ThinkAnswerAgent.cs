@@ -97,11 +97,24 @@ namespace Agent
             try
             {
                 var localizationService = Services.Get<ILocalizationService>();
+                var timeService = Services.Get<ITimeService>();
+                var year = timeService.CurrentTime.year;
+                var month = timeService.CurrentTime.month;
+                var day = timeService.CurrentTime.day;
+                var dayOfWeek = timeService.CurrentTime.GetDayOfWeek();
+                var hour = timeService.CurrentTime.hour;
+                var minute = timeService.CurrentTime.minute;
+
                 var replacements = new Dictionary<string, string>
                 {
-                    ["actor_name"] = actor.Name,
+                    ["current_time"] = $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}",
+                    ["character_name"] = actor.Name,
                     ["topic"] = topic,
-                    ["think_scope"] = thinkScope
+                    ["think_scope"] = thinkScope,
+                    ["personality"] = actor.LoadPersonality(),
+                    ["info"] = actor.LoadCharacterInfo(),
+                    ["character_situation"] = actor.LoadActorSituation(),
+                    ["memory"] = actor.LoadCharacterMemory()
                 };
 
                 return localizationService.GetLocalizedText("think_answer_system_prompt", replacements);

@@ -1,3 +1,11 @@
+현재 시간 : {current_time}
+
+{character_name}의 상황 인식
+{interpretation}
+
+생각 체인
+{thought_chain}
+
 === 현재 행동 맥락 ===
 상위 활동: {parent_activity}
 상위 작업: {parent_task}

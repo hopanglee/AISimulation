@@ -23,8 +23,11 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public InventoryBoxParameterAgent(Actor actor) : base(actor)
+        InventoryBox inventoryBox;
+
+        public InventoryBoxParameterAgent(Actor actor, InventoryBox inventoryBox) : base(actor)
         {
+            this.inventoryBox = inventoryBox;
             var availableItems = GetCurrentAvailableItems();
             var boxItems = GetCurrentBoxItems();
             systemPrompt = PromptLoader.LoadPrompt("InventoryBoxParameterAgentPrompt.txt", "You are an InventoryBox parameter generator.");
@@ -116,18 +119,18 @@ namespace Agent
                     }
                 }
                 
-                // Sensor를 통해 주변 수집 가능한 아이템들 추가
-                if (actor?.sensor != null)
-                {
-                    var collectible = actor.sensor.GetCollectibleEntities();
-                    foreach (var key in collectible.Keys)
-                    {
-                        if (!availableItems.Contains(key))
-                        {
-                            availableItems.Add(key);
-                        }
-                    }
-                }
+                // // Sensor를 통해 주변 수집 가능한 아이템들 추가
+                // if (actor?.sensor != null)
+                // {
+                //     var collectible = actor.sensor.GetCollectibleEntities();
+                //     foreach (var key in collectible.Keys)
+                //     {
+                //         if (!availableItems.Contains(key))
+                //         {
+                //             availableItems.Add(key);
+                //         }
+                //     }
+                // }
                 
                 return availableItems.Distinct().ToList();
             }
@@ -140,44 +143,7 @@ namespace Agent
 
         private List<string> GetCurrentBoxItems()
         {
-            try
-            {
-                var boxItemNames = new List<string>();
-                
-                // 현재 상호작용 중인 InventoryBox의 아이템들 가져오기
-                // 이는 ProcessInventoryBoxInteraction에서 전달받은 boxItems를 사용
-                if (GetCurrentBoxItems() != null)
-                {
-                    boxItemNames.AddRange(GetCurrentBoxItems());
-                }
-                
-                // Sensor를 통해 주변 InventoryBox들의 아이템들도 추가
-                if (actor?.sensor != null)
-                {
-                    var interactableEntities = actor.sensor.GetInteractableEntities();
-                    
-                    foreach (var prop in interactableEntities.props.Values)
-                    {
-                        if (prop != null && prop is InventoryBox inventoryBox)
-                        {
-                            foreach (var item in inventoryBox.items)
-                            {
-                                if (item != null && !boxItemNames.Contains(item.Name))
-                                {
-                                    boxItemNames.Add(item.Name);
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                return boxItemNames.Distinct().ToList();
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[InventoryBoxParameterAgent] 박스 아이템 목록 가져오기 실패: {ex.Message}");
-                throw new System.InvalidOperationException($"InventoryBoxParameterAgent 박스 아이템 목록 가져오기 실패: {ex.Message}");
-            }
+            return inventoryBox.GetBoxItemsList();
         }
 
         private string BuildUserMessage(CommonContext context)
