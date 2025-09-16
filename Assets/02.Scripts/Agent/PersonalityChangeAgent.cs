@@ -71,8 +71,10 @@ namespace Agent
         {
             var replacements = new Dictionary<string, string>
             {
-                {"actor_name", actor?.Name ?? "Unknown"},
-                {"info", LoadCharacterInfo()}
+                {"character_name", actor?.Name ?? "Unknown"},
+                {"info", LoadCharacterInfo()},
+                {"memory", actor.LoadShortTermMemory()},
+                {"personality", actor.LoadPersonality()}
             };
 
             return PromptLoader.LoadPromptWithReplacements("personality_change_system_prompt.txt", replacements);

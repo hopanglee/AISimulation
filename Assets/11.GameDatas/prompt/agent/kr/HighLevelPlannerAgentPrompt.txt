@@ -7,7 +7,7 @@
 {character_name} 정보  
 - 성격: {personality}  
 - 정보: {info}  
-- 기억: {memory}
+{memory}
 ---
 계획 원칙  
 - 전략적 사고: 큰 그림의 목표와 우선순위에 집중합니다.  

@@ -30,51 +30,34 @@ using PlanStructures;
 public class Brain
 {
     public Actor actor;
-    
+
     // --- Enhanced Memory System ---
     public MemoryManager memoryManager;
 
     // --- AI Agent Components ---
-    private ActSelectorAgent actSelectorAgent;
-    private PerceptionAgent perceptionAgent;
-    private ReactionDecisionAgent reactionDecisionAgent; // 외부 이벤트 반응 결정 Agent
-    private GPT gpt;
-    
+    //private ActSelectorAgent actSelectorAgent;
+    //private PerceptionAgent perceptionAgent;
+    //private ReactionDecisionAgent reactionDecisionAgent; // 외부 이벤트 반응 결정 Agent
+    //private GPT gpt;
+
     // --- Refactored Components ---
     public DayPlanner dayPlanner;
     private Thinker thinker;
     private ActionPerformer actionPerformer;
-    private UseActionManager useActionManager; // Use Action 전용 매니저 추가
-    
+    //private UseActionManager useActionManager; // Use Action 전용 매니저 추가
+
     /// <summary>
     /// Thinker 컴포넌트에 대한 외부 접근을 위한 프로퍼티
     /// </summary>
     public Thinker Thinker => thinker;
-    
-    /// <summary>
-    /// UseActionManager에 대한 외부 접근을 위한 프로퍼티
-    /// </summary>
-    public UseActionManager UseActionManager => useActionManager;
-
-    /// <summary>
-    /// PerceptionAgent에 대한 외부 접근을 위한 프로퍼티
-    /// </summary>
-    public PerceptionAgent PerceptionAgent => perceptionAgent;
 
     public Brain(Actor actor)
     {
         this.actor = actor;
 
         // GPT 인스턴스 초기화
-        gpt = new GPT();
-        gpt.SetActorName(actor.Name);
-
-        // AI Agent 초기화
-        actSelectorAgent = new ActSelectorAgent(actor);
-        actSelectorAgent.SetDayPlanner(dayPlanner); // DayPlanner 설정
-        perceptionAgent = new PerceptionAgent(actor);
-        reactionDecisionAgent = new ReactionDecisionAgent(actor);
-        reactionDecisionAgent.SetDayPlanner(dayPlanner); // DayPlanner 설정
+        //gpt = new GPT();
+        //gpt.SetActorName(actor.Name);
 
         // Enhanced Memory System 초기화
         memoryManager = new MemoryManager(actor);
@@ -83,7 +66,7 @@ public class Brain
         dayPlanner = new DayPlanner(actor);
         thinker = new Thinker(actor, this);
         actionPerformer = new ActionPerformer(actor);
-        useActionManager = new UseActionManager(actor);
+        //useActionManager = new UseActionManager(actor);
     }
 
     /// <summary>
@@ -93,7 +76,7 @@ public class Brain
     {
         Debug.Log($"[{actor.Name}] DayPlan 시작");
         await dayPlanner.PlanToday();
-        
+
         // Enhanced Memory System: 계획 생성을 Short Term Memory에 추가
         var dayPlan = dayPlanner.GetCurrentDayPlan();
         if (dayPlan?.HighLevelTasks != null && dayPlan.HighLevelTasks.Count > 0)
@@ -141,12 +124,14 @@ public class Brain
             thinker.OnExternalEventAsync();
             // 1. PerceptionAgent를 통해 외부 이벤트 인식
             // var perceptionResult = await InterpretVisualInformationAsync();
-            
+
             // 2. Perception 직후 계획 유지/수정 결정 및 필요 시 재계획
             //await dayPlanner.DecideAndMaybeReplanAsync(perceptionResult);
-            
+
             // 3. React 기능 (현재 비활성화)
             /*
+            reactionDecisionAgent = new ReactionDecisionAgent(actor);
+            reactionDecisionAgent.SetDayPlanner(dayPlanner); // DayPlanner 설정
             var reactionDecision = await reactionDecisionAgent.DecideReactionAsync(perceptionResult);
             
             Debug.Log($"[{actor.Name}] 반응 결정: {reactionDecision.ShouldReact}, 우선순위: {reactionDecision.PriorityLevel}, 이유: {reactionDecision.Reasoning}");
@@ -184,10 +169,10 @@ public class Brain
             if (!actor.UseGPT)
             {
                 Debug.Log($"[{actor.Name}] GPT 비활성화됨 - Think 프로세스 건너뜀, Wait 액션 반환");
-                
+
                 // 기본 Wait 액션 결과 생성
-                var defaultSelection = new ActSelectorAgent.ActSelectionResult 
-                { 
+                var defaultSelection = new ActSelectorAgent.ActSelectionResult
+                {
                     ActType = ActionType.Wait,
                     Reasoning = "GPT 비활성화로 인한 기본 대기",
                     Intention = "수동 제어 모드에서 대기"
@@ -197,20 +182,20 @@ public class Brain
                     ActType = ActionType.Wait,
                     Parameters = new Dictionary<string, object>()
                 };
-                
+
                 // 기본 PerceptionResult 생성
                 var defaultPerceptionResult = new PerceptionResult
                 {
                     situation_interpretation = "GPT 비활성화로 인한 기본 상황 해석",
                     thought_chain = new List<string> { "GPT 비활성화", "기본 대기 모드" }
                 };
-                
+
                 return (defaultSelection, defaultParamResult);
             }
-            
+
             // PerceptionAgent를 통해 시각정보 해석
             var perceptionResult = await InterpretVisualInformationAsync();
-            
+
             // Enhanced Memory System: Perception 결과를 Short Term Memory에 추가
             memoryManager.AddPerceptionResult(perceptionResult);
 
@@ -219,24 +204,27 @@ public class Brain
             await relationshipMemoryManager.ProcessRelationshipUpdatesAsync(perceptionResult);
 
             // === 계획 유지/수정 결정 및 필요 시 재계획 (DayPlanner 내부로 캡슐화) ===
-            await dayPlanner.DecideAndMaybeReplanAsync(perceptionResult); 
-            
+            await dayPlanner.DecideAndMaybeReplanAsync(perceptionResult);
+
             // 상황 설명 생성 (기존 방식과 PerceptionAgent 결과를 결합)
             var situationDescription = GenerateSituationDescription();
             var enhancedDescription = $"{situationDescription}\n\n=== Perception Analysis ===\n{perceptionResult.situation_interpretation}\n\nThought Chain: {string.Join(" -> ", perceptionResult.thought_chain)}";
-            
+
             // ActSelectorAgent를 통해 행동 선택 (Tool을 통해 동적으로 액션 정보 제공)
+            // AI Agent 초기화
+            var actSelectorAgent = new ActSelectorAgent(actor);
+            actSelectorAgent.SetDayPlanner(dayPlanner); // DayPlanner 설정
             var selection = await actSelectorAgent.SelectActAsync(enhancedDescription);
-            
+
             // Enhanced Memory System: ActSelector 결과를 Short Term Memory에 추가 (일단 보류)
             //memoryManager.AddActSelectorResult(selection);
-            
+
             // ActSelectResult를 ActorManager에 저장
             Services.Get<IActorService>().StoreActResult(actor, selection);
-            
+
             // 선택된 행동에 대한 파라미터 생성
             var paramResult = await GenerateActionParameters(selection);
-            
+
             return (selection, paramResult);
         }
         catch (Exception ex)
@@ -255,7 +243,7 @@ public class Brain
         {
             // Enhanced Memory System: 행동 시작 기록
             memoryManager.AddActionStart(paramResult.ActType, paramResult.Parameters);
-            
+
             // AgentAction으로 변환
             var action = new AgentAction
             {
@@ -266,7 +254,7 @@ public class Brain
             // ActionPerformer를 통해 액션 실행
             bool isSuccess = true;
             string completionReason = "성공적으로 완료";
-            
+
             try
             {
                 await actionPerformer.ExecuteAction(action, token);
@@ -310,7 +298,7 @@ public class Brain
         {
             return GetParametersFromInspector(mainActor, selection.ActType);
         }
-        
+
         // Use Action은 UseActionManager를 통해 처리
         if (selection.ActType == ActionType.UseObject)
         {
@@ -320,9 +308,10 @@ public class Brain
                 Intention = selection.Intention,
                 ActType = selection.ActType
             };
+            var useActionManager = new UseActionManager(actor);
             return await useActionManager.ExecuteUseActionAsync(request);
         }
-        
+
         // 다른 액션들은 필요할 때마다 ParameterAgent를 생성하여 처리
         var parameterAgent = ParameterAgentFactory.CreateParameterAgent(selection.ActType, actor);
         if (parameterAgent != null)
@@ -346,7 +335,7 @@ public class Brain
             };
         }
     }
-    
+
     /// <summary>
     /// MainActor의 Inspector에서 파라미터를 가져옵니다.
     /// </summary>
@@ -363,29 +352,29 @@ public class Brain
                 Parameters = new Dictionary<string, object>()
             };
         }
-        
+
         var parameters = GetInspectorParameters(manualController);
-        
+
         Debug.Log($"[{mainActor.Name}] Inspector에서 파라미터 사용: {actionType} with parameters: [{string.Join(", ", parameters.Select(kvp => $"{kvp.Key}={kvp.Value}"))}]");
-        
+
         return new ActParameterResult
         {
             ActType = actionType,
             Parameters = parameters
         };
     }
-    
+
     /// <summary>
     /// MainActor에서 ManualActionController를 가져옵니다.
     /// </summary>
     private ManualActionController GetManualActionController(MainActor mainActor)
     {
         // Reflection을 사용하여 private field에 접근
-        var field = typeof(MainActor).GetField("manualActionController", 
+        var field = typeof(MainActor).GetField("manualActionController",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         return field?.GetValue(mainActor) as ManualActionController;
     }
-    
+
     /// <summary>
     /// ManualActionController에서 파라미터를 가져옵니다.
     /// </summary>
@@ -402,9 +391,10 @@ public class Brain
         if (actor is MainActor mainActor)
         {
             var visualInformation = mainActor.sensor.GetLookableEntityDescriptions();
+            var perceptionAgent = new PerceptionAgent(actor);
             return await perceptionAgent.InterpretVisualInformationAsync(visualInformation);
         }
-        
+
         Debug.LogError($"[{actor.Name}] MainActor가 아닌 Actor에서 시각정보 해석을 시도했습니다.");
         throw new System.InvalidOperationException($"{actor.Name}은 MainActor가 아니므로 시각정보 해석을 수행할 수 없습니다.");
     }
@@ -417,7 +407,7 @@ public class Brain
         var timeService = Services.Get<ITimeService>();
         var localizationService = Services.Get<ILocalizationService>();
         var currentTime = timeService.CurrentTime;
-        
+
         // 기본 정보 준비
         var handItem = actor.HandItem?.Name ?? "Empty";
         var inventoryItems = new List<string>();
@@ -437,7 +427,7 @@ public class Brain
         if (actor is MainActor thinkingActor)
         {
             var sleepStatus = thinkingActor.IsSleeping ? "Sleeping" : "Awake";
-            
+
             // 주변 엔티티 정보 수집
             var lookable = thinkingActor.sensor.GetLookableEntities();
             var collectible = thinkingActor.sensor.GetCollectibleEntities();
@@ -502,7 +492,7 @@ public class Brain
 
             return localizationService.GetLocalizedText("brain_status", replacements);
         }
-        
+
         // NPC는 Brain이 없으므로 여기까지 오면 안 됨
         throw new System.InvalidOperationException("Brain should only be used with MainActor");
     }
@@ -513,51 +503,16 @@ public class Brain
     private string FormatTime(GameTime time)
     {
         return $"{time.hour:D2}:{time.minute:D2}";
-    }
-
-    // === Public API Methods (for backward compatibility) ===
-    /// <summary>
-    /// 현재 DayPlan을 반환합니다.
-    /// </summary>
-    public HierarchicalPlan GetCurrentDayPlan()
-    {
-        return dayPlanner.GetCurrentDayPlan();
-    }
-
-    /// <summary>
-    /// 강제로 새 DayPlan을 생성하도록 설정합니다.
-    /// </summary>
-    public void SetForceNewDayPlan(bool force)
-    {
-        dayPlanner.SetForceNewDayPlan(force);
-    }
-
-    /// <summary>
-    /// 강제 새 DayPlan 설정 여부를 반환합니다.
-    /// </summary>
-    public bool IsForceNewDayPlan()
-    {
-        return dayPlanner.IsForceNewDayPlan();
-    }
-
-    /// <summary>
-    /// 저장된 모든 DayPlan 목록을 출력합니다.
-    /// </summary>
-    public void ListAllSavedDayPlans()
-    {
-        dayPlanner.ListAllSavedDayPlans();
-    }
-
-    /// <summary>
+    }    /// <summary>
     /// 로깅 활성화 여부를 설정합니다.
     /// </summary>
     public void SetLoggingEnabled(bool enabled)
     {
         // GPT 로깅 설정
-        if (gpt != null)
-        {
-            // GPT 클래스에 로깅 설정 메서드가 있다면 호출
-        }
+        // if (gpt != null)
+        // {
+        //     // GPT 클래스에 로깅 설정 메서드가 있다면 호출
+        // }
     }
 
     // === Legacy Methods (for backward compatibility) ===
@@ -580,7 +535,7 @@ public class Brain
     {
         await dayPlanner.PlanToday();
     }
-    
+
     /// <summary>
     /// 하루가 끝날 때 Long Term Memory 통합 프로세스를 실행합니다.
     /// </summary>
@@ -589,7 +544,7 @@ public class Brain
         try
         {
             Debug.Log($"[{actor.Name}] 하루 종료 - Long Term Memory 통합 시작");
-            
+
             await memoryManager.ProcessDayEndMemoryAsync();
         }
         catch (Exception ex)
@@ -597,7 +552,7 @@ public class Brain
             Debug.LogError($"[{actor.Name}] Day End Memory 처리 실패: {ex.Message}");
         }
     }
-    
+
     /// <summary>
     /// Long Term Memory 정기 정리를 실행합니다.
     /// </summary>
@@ -606,7 +561,7 @@ public class Brain
         try
         {
             Debug.Log($"[{actor.Name}] Long Term Memory 정기 정리 시작");
-            
+
             await memoryManager.PerformLongTermMemoryMaintenanceAsync();
         }
         catch (Exception ex)

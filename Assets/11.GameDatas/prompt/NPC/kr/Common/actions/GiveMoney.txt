@@ -1,9 +1,11 @@
 GiveMoney: 대상 캐릭터에게 이동하여 지정된 금액의 돈을 건네줍니다.
 
-파라미터: [target_character_name, amount] - 대상 캐릭터 이름과 금액
+target_key: 대상 이름 - 돈을 받을 캐릭터의 이름
+
+parameters: [amount] - 금액
 
 요구사항: 충분한 돈을 가지고 있어야 합니다
 
 예시:
-parameters: ["하나", "500"] - "하나"에게 500원 주기
-parameters: ["레드", "1000"] - "레드"에게 1000원 주기
+target_key: "하나", parameters: ["500"] - "하나"에게 500원 주기
+target_key: "레드", parameters: ["1000"] - "레드"에게 1000원 주기

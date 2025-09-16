@@ -1,9 +1,11 @@
 GiveItem: 들고 있는 아이템을 근처 캐릭터에게 건네줍니다.
 
-파라미터: [target_character_name] - 아이템을 받을 캐릭터의 이름
+target_key: 대상 이름 - 아이템을 받을 캐릭터의 이름
+
+parameters: 없음
 
 요구사항: 손에 아이템을 들고 있어야 합니다
 
 예시:
-parameters: ["그로인"] - "그로인"에게 사과 주기
-parameters: ["레드"] - "레드"에게 도구 건네기
+target_key: "그로인", parameters: null - "그로인"에게 사과 주기
+target_key: "레드", parameters: null - "레드"에게 도구 건네기

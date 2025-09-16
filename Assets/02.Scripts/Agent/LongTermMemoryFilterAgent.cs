@@ -293,7 +293,14 @@ public class LongTermMemoryFilterAgent : GPT
     {
         try
         {
-            return PromptLoader.LoadPrompt("longterm_memory_filter_prompt.txt");
+            return PromptLoader.LoadPromptWithReplacements("longterm_memory_filter_prompt.txt",
+                new Dictionary<string, string>
+                {
+                    { "character_name", actor.Name },
+                    { "personality", actor.LoadPersonality() },
+                    { "info", actor.LoadCharacterInfo() },
+                    { "memory", actor.LoadLongTermMemory() },
+                });
         }
         catch (Exception ex)
         {

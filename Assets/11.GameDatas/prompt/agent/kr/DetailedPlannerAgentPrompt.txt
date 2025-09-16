@@ -8,7 +8,7 @@
 {character_name} 정보  
 - 성격: {personality}  
 - 정보: {info}  
-- 기억: {memory}
+{memory}
 ---
 계획 원칙  
 - 분해: 주어진 상위 수준 태스크를 1~3개의 세부 활동으로 나눕니다.  

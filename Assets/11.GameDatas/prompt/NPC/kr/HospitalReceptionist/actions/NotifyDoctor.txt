@@ -1,6 +1,8 @@
 NotifyDoctor: 담당 의사에게 지정된 메시지를 보냅니다.
 
-파라미터: [message] - 알릴 내용
+target_key: 없음
+
+parameters: [message] - 알릴 내용
 
 요구사항: 연결된 HospitalDoctor가 있어야 합니다
 

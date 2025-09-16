@@ -27,7 +27,7 @@ namespace Agent
         private readonly string systemPrompt;
         private readonly string currentBoardContent;
 
-        public WhiteBoardParameterAgent(string currentBoardContent)
+        public WhiteBoardParameterAgent(Actor actor, string currentBoardContent) : base(actor)
         {
             this.currentBoardContent = currentBoardContent ?? "";
             systemPrompt = PromptLoader.LoadPrompt("WhiteBoardParameterAgentPrompt.txt", "You are a WhiteBoard parameter generator.");

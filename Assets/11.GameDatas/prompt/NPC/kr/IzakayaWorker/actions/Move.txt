@@ -1,6 +1,8 @@
 Move: 주어진 키와 일치하는 위치로 이동합니다.
 
-파라미터: [location_key] - 이동할 위치의 키
+target_key: 없음
+
+parameters: [location_key] - 이동할 위치의 키
 
 요구사항: 존재하는 위치 키여야 합니다
 

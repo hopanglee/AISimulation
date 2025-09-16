@@ -29,7 +29,9 @@ public class BedInteractAgent : GPT
     public BedInteractAgent(Actor actor) : base()
     {
         this.actor = actor;
+        
         SetActorName(actor.Name);
+        //toolExecutor = new ActorToolExecutor(actor);
 
         string systemPrompt = LoadBedInteractAgentPrompt();
         messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
@@ -129,7 +131,14 @@ public class BedInteractAgent : GPT
     {
         try
         {
-            return PromptLoader.LoadPrompt("bed_interact_agent_prompt.txt");
+            return  PromptLoader.LoadPromptWithReplacements("bed_interact_agent_prompt.txt", 
+                new Dictionary<string, string>
+                {
+                    { "character_name", actor.Name },
+                    { "personality", actor.LoadPersonality() },
+                    { "info", actor.LoadCharacterInfo() },
+                    { "memory", actor.LoadCharacterMemory() },
+                });
         }
         catch (Exception ex)
         {

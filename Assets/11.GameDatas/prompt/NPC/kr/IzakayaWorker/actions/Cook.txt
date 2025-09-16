@@ -1,6 +1,8 @@
 Cook: 키와 일치하는 요리 프리팹을 생성하고 손에 들거나 인벤토리에 보관합니다.
 
-파라미터: [dish_key] - 요리할 음식의 키 (인스펙터의 cookablePrefabs에 등록된 키와 일치해야 함)
+target_key: 없음
+
+parameters: [dish_key] - 요리할 음식의 키 (인스펙터의 cookablePrefabs에 등록된 키와 일치해야 함)
 
 요구사항: cookablePrefabs에 등록된 키여야 합니다
 

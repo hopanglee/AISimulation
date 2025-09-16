@@ -18,6 +18,16 @@ namespace Agent
         protected Actor actor;
         protected IToolExecutor toolExecutor;
         
+        /// <summary>
+        /// ParameterAgentBase 생성자 - 자식 클래스에서 :base()로 호출
+        /// </summary>
+        protected ParameterAgentBase(Actor actor)
+        {
+            SetActorName(actor.Name);
+            this.actor = actor;
+            this.toolExecutor = new ActorToolExecutor(actor);
+        }
+        
         public class CommonContext
         {
             public string Reasoning { get; set; }
@@ -29,13 +39,6 @@ namespace Agent
         /// Act, Reasoning, Intention을 받아 파라미터를 생성하는 추상 메서드
         /// </summary>
         public abstract UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request);
-
-        // --- 추가: actor 설정용 가상 메서드 ---
-        public virtual void SetActor(Actor actor) 
-        { 
-            this.actor = actor; 
-            this.toolExecutor = new ActorToolExecutor(actor);
-        }
 
         /// <summary>
         /// 도구 호출을 처리하는 가상 메서드 (하위 클래스에서 오버라이드 가능)
@@ -102,31 +105,31 @@ namespace Agent
             switch (actionType)
             {
                 case ActionType.MoveToArea:
-                    agent = new MoveToAreaParameterAgent();
+                    agent = new MoveToAreaParameterAgent(actor);
                     break;
                 case ActionType.MoveToEntity:
-                    agent = new MoveToEntityParameterAgent();
+                    agent = new MoveToEntityParameterAgent(actor);
                     break;
                 case ActionType.SpeakToCharacter:
-                    agent = new TalkParameterAgent();
+                    agent = new TalkParameterAgent(actor);
                     break;
                 case ActionType.PickUpItem:
-                    agent = new PickUpItemParameterAgent();
+                    agent = new PickUpItemParameterAgent(actor);
                     break;
                 case ActionType.InteractWithObject:
-                    agent = new InteractWithObjectParameterAgent();
+                    agent = new InteractWithObjectParameterAgent(actor);
                     break;
                 case ActionType.PutDown:
-                    agent = new PutDownParameterAgent();
+                    agent = new PutDownParameterAgent(actor);
                     break;
                 case ActionType.GiveMoney:
-                    agent = new GiveMoneyParameterAgent();
+                    agent = new GiveMoneyParameterAgent(actor);
                     break;
                 case ActionType.GiveItem:
-                    agent = new GiveItemParameterAgent();
+                    agent = new GiveItemParameterAgent(actor);
                     break;
                 // case ActionType.PerformActivity:
-                //     agent = new PerformActivityParameterAgent(gpt);
+                //     agent = new PerformActivityParameterAgent(actor);
                 //     break;
                 case ActionType.Think:
                     agent = new ThinkParameterAgent(actor);
@@ -134,11 +137,6 @@ namespace Agent
                 default:
                     Debug.LogWarning($"[ParameterAgentFactory] 지원되지 않는 ActionType: {actionType}");
                     return null;
-            }
-            
-            if (agent != null)
-            {
-                agent.SetActor(actor);
             }
             
             return agent;

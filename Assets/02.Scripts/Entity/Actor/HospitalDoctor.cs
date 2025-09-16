@@ -246,51 +246,51 @@ public class HospitalDoctor : NPC
         };
     }
 
-    /// <summary>
-    /// AI Agent를 통해 이벤트에 대한 적절한 액션을 결정하고 실행 (HospitalDoctor 전용)
-    /// </summary>
-    public override async UniTask ProcessEventWithAgent()
-    {
-        if (actionAgent == null)
-        {
+    // /// <summary>
+    // /// AI Agent를 통해 이벤트에 대한 적절한 액션을 결정하고 실행 (HospitalDoctor 전용)
+    // /// </summary>
+    // public override async UniTask ProcessEventWithAgent()
+    // {
+    //     if (actionAgent == null)
+    //     {
 
-            return;
-        }
+    //         return;
+    //     }
 
-        try
-        {
-            Debug.Log($"[{Name}] AI Agent로 이벤트 처리 시작");
+    //     try
+    //     {
+    //         Debug.Log($"[{Name}] AI Agent로 이벤트 처리 시작");
 
-            // Agent를 통해 액션 결정
-            NPCActionDecision decision = await actionAgent.DecideAction();
+    //         // Agent를 통해 액션 결정
+    //         NPCActionDecision decision = await actionAgent.DecideAction();
 
-            // 결정된 액션을 실제 INPCAction으로 변환
-            INPCAction action = actionAgent.GetActionFromDecision(decision);
+    //         // 결정된 액션을 실제 INPCAction으로 변환
+    //         INPCAction action = actionAgent.GetActionFromDecision(decision);
 
-            // Talk 액션은 일반적인 방식으로 처리 (HandleTalkWithDecision 제거됨)
+    //         // Talk 액션은 일반적인 방식으로 처리 (HandleTalkWithDecision 제거됨)
 
-            // Examine 액션의 경우 target_key를 활용한 처리 (HospitalDoctor 전용)
-            if (action.ActionName == "Examine")
-            {
-                await HandleExamineWithDecision(decision);
-                Debug.Log($"[{Name}] AI Agent 이벤트 처리 완료 - Examine 액션 (대상: {decision.target_key ?? "없음"})");
-                return;
-            }
+    //         // Examine 액션의 경우 target_key를 활용한 처리 (HospitalDoctor 전용)
+    //         if (action.ActionName == "Examine")
+    //         {
+    //             await HandleExamineWithDecision(decision);
+    //             Debug.Log($"[{Name}] AI Agent 이벤트 처리 완료 - Examine 액션 (대상: {decision.target_key ?? "없음"})");
+    //             return;
+    //         }
 
-            // 다른 액션들은 기존 방식으로 처리
-            object[] parameters = decision.GetParameters();
+    //         // 다른 액션들은 기존 방식으로 처리
+    //         object[] parameters = decision.GetParameters();
 
-            // 우선순위에 따라 즉시 실행하거나 대기열에 추가
-            await ProcessActionWithPriority(action, parameters);
+    //         // 우선순위에 따라 즉시 실행하거나 대기열에 추가
+    //         await ProcessActionWithPriority(action, parameters);
 
-            Debug.Log($"[{Name}] AI Agent 이벤트 처리 완료 - 선택된 액션: {action.ActionName}");
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"[{Name}] AI Agent 이벤트 처리 실패: {ex.Message}");
+    //         Debug.Log($"[{Name}] AI Agent 이벤트 처리 완료 - 선택된 액션: {action.ActionName}");
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         Debug.LogError($"[{Name}] AI Agent 이벤트 처리 실패: {ex.Message}");
 
-            // 실패 시 기본 대기 액션을 대기열에 추가
-            EnqueueAction(NPCAction.Wait, null);
-        }
-    }
+    //         // 실패 시 기본 대기 액션을 대기열에 추가
+    //         EnqueueAction(NPCAction.Wait, null);
+    //     }
+    // }
 }

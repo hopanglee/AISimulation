@@ -2,14 +2,14 @@
 
 ---
 유저 메세지로 {character_name}이 인식한 현재 상황이 주어집니다.
-이 상황을 바탕으로 {character_name}가 생각하는 주변 인물들에 대한 인식을 관리하는 것이 당신의 역할입니다.
+이 상황을 바탕으로 {character_name}가 생각하는 주변 인물들에 관한 기억과 인식을 관리하는 것이 당신의 역할입니다.
 
 ---
 
 {character_name} 정보
 - 성격: {personality}
 - 정보: {info}
-
+{memory}
 ---
 현재 관계 정보
 {relationships}

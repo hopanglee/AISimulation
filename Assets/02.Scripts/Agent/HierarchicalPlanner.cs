@@ -14,9 +14,9 @@ using PlanStructures;
 public class HierarchicalPlanner
 {
     private Actor actor;
-    private HighLevelPlannerAgent highLevelPlannerAgent;
-    private DetailedPlannerAgent detailedPlannerAgent;
-    private SpecificPlannerAgent specificPlannerAgent;
+    // private HighLevelPlannerAgent highLevelPlannerAgent;
+    // private DetailedPlannerAgent detailedPlannerAgent;
+    // private SpecificPlannerAgent specificPlannerAgent;
     private Func<GameTime> getPlanStartTime; // 계획 시작 시간을 가져오는 델리게이트
 
     // Plan 관련 클래스들은 PlanStructures.cs로 이동됨
@@ -26,9 +26,9 @@ public class HierarchicalPlanner
         this.actor = actor;
         
         // 3개의 분리된 Agent 초기화
-        highLevelPlannerAgent = new HighLevelPlannerAgent(actor);
-        detailedPlannerAgent = new DetailedPlannerAgent(actor);
-        specificPlannerAgent = new SpecificPlannerAgent(actor);
+        // highLevelPlannerAgent = new HighLevelPlannerAgent(actor);
+        // detailedPlannerAgent = new DetailedPlannerAgent(actor);
+        // specificPlannerAgent = new SpecificPlannerAgent(actor);
     }
 
     /// <summary>
@@ -50,6 +50,7 @@ public class HierarchicalPlanner
         {
             // 1단계: 고수준 계획 생성만 수행
             Debug.Log($"[HierarchicalPlanner] 1단계: 고수준 계획 생성 중...");
+            var highLevelPlannerAgent = new HighLevelPlannerAgent(actor);
             var highLevelPlan = await highLevelPlannerAgent.CreateHighLevelPlanAsync();
             
             // DetailedActivity는 빈 리스트로 초기화 (나중에 필요시 생성)
@@ -337,6 +338,7 @@ public class HierarchicalPlanner
             Debug.Log($"[HierarchicalPlanner] 보존된 활동: {preservedPlan.HighLevelTasks.Count}개 HLT");
 
             // 2단계: 새로운 고수준 계획 생성 (perception과 modification_summary 포함)
+            var highLevelPlannerAgent = new HighLevelPlannerAgent(actor);
             var newHighLevelPlan = await highLevelPlannerAgent.CreateHighLevelPlanWithContextAsync(
                 perception, 
                 decision.modification_summary, 
@@ -484,6 +486,7 @@ public class HierarchicalPlanner
         try
         {
             // DetailedPlannerAgent를 사용하여 세부 활동 생성
+            var detailedPlannerAgent = new DetailedPlannerAgent(actor);
             var detailedActivities = await detailedPlannerAgent.CreateDetailedPlanAsync(highLevelTask);
             
             Debug.Log($"[HierarchicalPlanner] DetailedActivity 생성 완료: {detailedActivities.Count}개");
@@ -512,6 +515,7 @@ public class HierarchicalPlanner
         try
         {
             // SpecificPlannerAgent를 사용하여 구체적 행동 생성
+            var specificPlannerAgent = new SpecificPlannerAgent(actor);
             var specificActions = await specificPlannerAgent.CreateActionPlanAsync(detailedActivity);
 
             Debug.Log($"[HierarchicalPlanner] SpecificAction 생성 완료: {specificActions.Count}개");

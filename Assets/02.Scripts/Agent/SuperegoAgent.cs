@@ -41,6 +41,8 @@ public class SuperegoAgent : GPT
             // 플레이스홀더 교체를 위한 딕셔너리 생성
             var replacements = new Dictionary<string, string>
             {
+                { "character_name", actor.Name },
+                { "personality", actor.LoadPersonality() },
                 { "info", characterInfo },
                 { "memory", characterMemory }
             };

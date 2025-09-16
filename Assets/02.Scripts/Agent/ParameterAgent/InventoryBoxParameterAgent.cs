@@ -23,7 +23,7 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public InventoryBoxParameterAgent()
+        public InventoryBoxParameterAgent(Actor actor) : base(actor)
         {
             var availableItems = GetCurrentAvailableItems();
             var boxItems = GetCurrentBoxItems();

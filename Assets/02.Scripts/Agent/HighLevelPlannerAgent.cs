@@ -67,7 +67,14 @@ public class HighLevelPlannerAgent : GPT
         SetActorName(actor.Name);
 
         // HighLevelPlannerAgent 프롬프트 로드 및 초기화
-        string systemPrompt = PromptLoader.LoadHighLevelPlannerAgentPrompt();
+        string systemPrompt = PromptLoader.LoadPromptWithReplacements("HighLevelPlannerAgentPrompt.txt",
+            new Dictionary<string, string>
+            {
+                { "character_name", actor.Name },
+                { "personality", actor.LoadPersonality() },
+                { "info", actor.LoadCharacterInfo() },
+                { "memory", actor.LoadCharacterMemory() },
+            });
         messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
 
         options = new()

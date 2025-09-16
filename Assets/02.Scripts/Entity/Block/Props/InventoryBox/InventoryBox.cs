@@ -237,8 +237,7 @@ public abstract class InventoryBox : InteractableProp
         try
         {
             // InventoryBoxAgent 생성 및 파라미터 생성
-            var agent = new Agent.InventoryBoxParameterAgent();
-            agent.SetActor(actor);
+            var agent = new Agent.InventoryBoxParameterAgent(actor);
             
             // ActorManager에서 SelectAct에서 생성된 원본 reasoning과 intention을 가져옴
             var actResult = Services.Get<IActorService>().GetActResult(actor);

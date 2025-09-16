@@ -309,7 +309,14 @@ public class LongTermMemoryConsolidationAgent : GPT
     {
         try
         {
-            return PromptLoader.LoadPrompt("longterm_memory_consolidation_prompt.txt");
+            return PromptLoader.LoadPromptWithReplacements("longterm_memory_consolidation_prompt.txt",
+                new Dictionary<string, string>
+                {
+                    { "character_name", actor.Name },
+                    { "personality", actor.LoadPersonality() },
+                    { "info", actor.LoadCharacterInfo() },
+                    { "memory", actor.LoadLongTermMemory() },
+                }); 
         }
         catch (Exception ex)
         {

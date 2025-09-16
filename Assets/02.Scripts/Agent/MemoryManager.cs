@@ -48,10 +48,10 @@ public class ShortTermMemoryData
 public class MemoryManager
 {
     // Enhanced Memory System Agents
-    public LocationMemoryManager locationMemoryAgent;
-    public LongTermMemoryConsolidationAgent consolidationAgent;
-    public LongTermMemoryFilterAgent filterAgent;
-    public LongTermMemoryMaintenanceAgent maintenanceAgent;
+    public LocationMemoryManager locationMemoryManager;
+    // public LongTermMemoryConsolidationAgent consolidationAgent;
+    // public LongTermMemoryFilterAgent filterAgent;
+    // public LongTermMemoryMaintenanceAgent maintenanceAgent;
 
     private readonly Actor owner;
 
@@ -79,10 +79,10 @@ public class MemoryManager
     {
         try
         {
-            locationMemoryAgent = new LocationMemoryManager(owner);
-            consolidationAgent = new LongTermMemoryConsolidationAgent(owner);
-            filterAgent = new LongTermMemoryFilterAgent(owner);
-            maintenanceAgent = new LongTermMemoryMaintenanceAgent(owner);
+            locationMemoryManager = new LocationMemoryManager(owner);
+            //consolidationAgent = new LongTermMemoryConsolidationAgent(owner);
+            //filterAgent = new LongTermMemoryFilterAgent(owner);
+            //maintenanceAgent = new LongTermMemoryMaintenanceAgent(owner);
 
             Debug.Log($"[MemoryManager] All memory agents initialized for {owner.name}");
         }
@@ -389,7 +389,7 @@ public class MemoryManager
     public void UpdateLocationMemory(string locationName,
         List<string> items, List<string> blocks, List<string> actors, List<string> buildings, List<string> connectedAreas)
     {
-        locationMemoryAgent?.UpdateLocationMemory(locationName, items, blocks, actors, buildings, connectedAreas);
+        locationMemoryManager?.UpdateLocationMemory(locationName, items, blocks, actors, buildings, connectedAreas);
     }
 
 
@@ -411,6 +411,7 @@ public class MemoryManager
             await PerformLongTermMemoryMaintenanceAsync();
 
             // 1. Short Term Memory 통합
+            var consolidationAgent = new LongTermMemoryConsolidationAgent(owner);
             var consolidationResult = await consolidationAgent.ConsolidateMemoriesAsync(GetShortTermMemory());
             if (consolidationResult?.ConsolidatedChunks == null || consolidationResult.ConsolidatedChunks.Count == 0)
             {
@@ -419,6 +420,7 @@ public class MemoryManager
             }
 
             // 2. 필터링 (상위 70% 선별)
+            var filterAgent = new LongTermMemoryFilterAgent(owner);
             var filterResult = await filterAgent.FilterMemoriesAsync(consolidationResult.ConsolidatedChunks);
             if (filterResult?.KeptChunks == null || filterResult.KeptChunks.Count == 0)
             {
@@ -521,6 +523,7 @@ public class MemoryManager
                 return;
             }
 
+            var maintenanceAgent = new LongTermMemoryMaintenanceAgent(owner);
             var maintenanceResult = await maintenanceAgent.MaintainMemoriesAsync(currentLongTermMemories, currentTime);
             if (maintenanceResult != null)
             {

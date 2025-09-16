@@ -1,6 +1,8 @@
 Wait: 잠시 멈추고 기다립니다.
 
-파라미터: 없음
+target_key: 없음
+
+parameters: 없음
 
 요구사항: 없음
 

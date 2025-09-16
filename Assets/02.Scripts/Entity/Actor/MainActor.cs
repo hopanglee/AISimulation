@@ -58,9 +58,6 @@ public abstract class MainActor : Actor
 	public int SleepHour => sleepHour;
 	public int SleepinessThreshold => sleepinessThreshold;
 	
-	// DayPlanner 프로퍼티 - Brain의 dayPlanner 반환
-	public DayPlanner DayPlanner => brain?.dayPlanner;
-	
 	[Header("Activity System")]
 	[SerializeField]
 	private string currentActivity = "Idle"; // 현재 수행 중인 활동

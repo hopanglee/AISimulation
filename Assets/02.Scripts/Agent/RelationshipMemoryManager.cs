@@ -83,6 +83,8 @@ public class RelationshipMemoryManager
         return relationships.Values.ToList();
     }
 
+    
+
     public async UniTask SaveRelationshipAsync(string characterName, RelationshipMemory relationship)
     {
         try
@@ -100,6 +102,10 @@ public class RelationshipMemoryManager
             }
             
             await File.WriteAllTextAsync(filePath, json);
+            
+            // info.json의 relationships 필드에 새 관계 추가
+            await UpdateCharacterInfoRelationshipsAsync(characterName, true);
+            
             Debug.Log($"[RelationshipMemoryManager] Saved relationship with {characterName}");
         }
         catch (Exception e)
@@ -109,7 +115,7 @@ public class RelationshipMemoryManager
         }
     }
 
-    public void RemoveRelationship(string characterName)
+    public async void RemoveRelationship(string characterName)
     {
         if (relationships.Remove(characterName))
         {
@@ -118,6 +124,68 @@ public class RelationshipMemoryManager
             {
                 File.Delete(filePath);
             }
+            
+            // info.json의 relationships 필드에서 관계 제거
+            await UpdateCharacterInfoRelationshipsAsync(characterName, false);
+        }
+    }
+
+    /// <summary>
+    /// 캐릭터의 info.json 파일에서 relationships 필드를 업데이트합니다.
+    /// </summary>
+    private async UniTask UpdateCharacterInfoRelationshipsAsync(string characterName, bool isAdding)
+    {
+        try
+        {
+            // CharacterMemoryManager를 통해 CharacterInfo 가져오기
+            var characterMemoryManager = new CharacterMemoryManager(actor);
+            var characterInfo = characterMemoryManager.GetCharacterInfo();
+            
+            if (characterInfo == null)
+            {
+                Debug.LogError($"[RelationshipMemoryManager] Failed to get character info for {actor.Name}");
+                return;
+            }
+            
+            // relationships 리스트 초기화 (null인 경우)
+            if (characterInfo.Relationships == null)
+            {
+                characterInfo.Relationships = new List<string>();
+            }
+            
+            bool wasUpdated = false;
+            
+            if (isAdding)
+            {
+                // 관계 추가 (중복 방지)
+                if (!characterInfo.Relationships.Contains(characterName))
+                {
+                    characterInfo.Relationships.Add(characterName);
+                    wasUpdated = true;
+                    Debug.Log($"[RelationshipMemoryManager] Added {characterName} to {actor.Name}'s relationships");
+                }
+            }
+            else
+            {
+                // 관계 제거
+                if (characterInfo.Relationships.Remove(characterName))
+                {
+                    wasUpdated = true;
+                    Debug.Log($"[RelationshipMemoryManager] Removed {characterName} from {actor.Name}'s relationships");
+                }
+            }
+            
+            // 변경사항이 있을 때만 저장
+            if (wasUpdated)
+            {
+                // CharacterMemoryManager의 내부 characterInfo를 직접 수정하고 저장
+                await characterMemoryManager.SaveCharacterInfoAsync();
+                Debug.Log($"[RelationshipMemoryManager] Updated {actor.Name}'s info.json relationships");
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[RelationshipMemoryManager] Failed to update character info relationships: {e.Message}");
         }
     }
 
@@ -229,8 +297,8 @@ public class RelationshipMemoryManager
                     if (int.TryParse(update.NewValue?.ToString(), out int age))
                         relationship.Age = age;
                     break;
-                case "location":
-                    relationship.Location = update.NewValue?.ToString();
+                case "house_location":
+                    relationship.HouseLocation = update.NewValue?.ToString();
                     break;
                 case "relationship_type":
                     relationship.RelationshipType = update.NewValue?.ToString();

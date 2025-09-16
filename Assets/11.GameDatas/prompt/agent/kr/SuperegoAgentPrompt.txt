@@ -10,7 +10,7 @@
 {character_name} 정보
 - 성격: {personality}
 - 정보: {info}
-- 기억: {memory}
+{memory}
 ---
 작업 지침
 1. 도덕적 관점: 이 상황에서 옳은 행동은 무엇인가?
