@@ -1,9 +1,11 @@
-Cook: 키와 일치하는 요리 프리팹을 생성하고, 가급적 손에 들고, 그렇지 않으면 인벤토리에 보관하기
+Cook: 키와 일치하는 요리 프리팹을 생성하고 손에 들거나 인벤토리에 보관합니다.
 
-파라미터: ["dish_key"]
+파라미터: [dish_key] - 요리할 음식의 키 (인스펙터의 cookablePrefabs에 등록된 키와 일치해야 함)
 
-규칙:
-dish_key는 인스펙터의 cookablePrefabs에 등록된 키와 일치해야 합니다.
-손이 가득 차 있으면 인벤토리에 보관하고, 모든 것이 가득 차 있으면 현재 위치에 놓습니다.
+요구사항: cookablePrefabs에 등록된 키여야 합니다
 
-예시: ["Yakitori"], ["Oden"], ["Karaage"], ["Edamame"]
+예시:
+parameters: ["Yakitori"] - 야키토리 요리
+parameters: ["Oden"] - 오뎅 요리
+parameters: ["Karaage"] - 가라아게 요리
+parameters: ["Edamame"] - 에다마메 요리
