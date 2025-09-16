@@ -25,7 +25,7 @@ namespace Agent
         private readonly string systemPrompt;
         private readonly List<string> availableItemKeys;
 
-        public ItemDispenserParameterAgent(List<string> availableItemKeys)
+        public ItemDispenserParameterAgent(Actor actor, List<string> availableItemKeys) : base(actor)
         {
             this.availableItemKeys = availableItemKeys ?? new List<string>();
             systemPrompt = PromptLoader.LoadPrompt("ItemDispenserParameterAgentPrompt.txt", "You are an ItemDispenser parameter generator.");

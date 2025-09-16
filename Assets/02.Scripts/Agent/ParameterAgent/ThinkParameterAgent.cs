@@ -35,7 +35,7 @@ public class ThinkParameterAgent : ParameterAgentBase
 {
     private readonly string systemPrompt;
 
-    public ThinkParameterAgent(Actor actor) : base()
+    public ThinkParameterAgent(Actor actor) : base(actor)
     {
         this.actor = actor;
         

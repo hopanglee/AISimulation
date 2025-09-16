@@ -28,9 +28,16 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public iPhoneUseAgent()
+        public iPhoneUseAgent(Actor actor) : base(actor)
         {
-            systemPrompt = PromptLoader.LoadPrompt("iPhoneUseAgentPrompt.txt", "You are an iPhone use parameter generator.");
+            systemPrompt = PromptLoader.LoadPromptWithReplacements("iPhoneUseAgentPrompt.txt",
+                new Dictionary<string, string>
+                {
+                    { "character_name", actor.Name },
+                    { "personality", actor.LoadPersonality() },
+                    { "info", actor.LoadCharacterInfo() },
+                    { "memory", actor.LoadCharacterMemory() },
+                });
             this.options = new ChatCompletionOptions
             {
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(

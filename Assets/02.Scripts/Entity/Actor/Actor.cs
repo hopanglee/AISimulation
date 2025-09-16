@@ -151,8 +151,8 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 {
                     // 착용 의상은 비활성화하고 보관 트랜스폼에 부착, 위치 등록
                     SetItemVisibility(_currentOutfit, false);
-                    if(_currentOutfit.curLocation == null)
-                        _currentOutfit.curLocation = this;  
+                    if (_currentOutfit.curLocation == null)
+                        _currentOutfit.curLocation = this;
                     if (_currentClothesRoot != null)
                     {
                         _currentOutfit.transform.SetParent(_currentClothesRoot, false);
@@ -427,7 +427,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         {
             // 새로 착용한 의상 아이템을 보이지 않게 처리
             SetItemVisibility(clothing, false);
-            
+
             // 착용된 의상의 위치를 Actor로 설정
             clothing.curLocation = this;
 
@@ -508,7 +508,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         if (_currentOutfit == clothing)
         {
             _currentOutfit = null;
-            
+
             // 공통 로직으로 의상 처리
             ProcessRemovedClothing(clothing);
 
@@ -629,7 +629,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 _characterRenderer.sharedMaterials = newRenderer.sharedMaterials;
                 _characterRenderer.updateWhenOffscreen = true;
                 _characterRenderer.enabled = true;
-                
+
                 Debug.Log($"[{Name}] FBX 교체 완료: {fbxPrefab.name}");
                 return true;
             }
@@ -648,7 +648,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     private void ApplyNakedFbx()
     {
         Debug.Log($"[{Name}] ApplyNakedFbx 호출됨. _nakedFbx = {(_nakedFbx != null ? _nakedFbx.name : "null")}");
-        
+
         if (_nakedFbx == null)
         {
             Debug.LogWarning($"[{Name}] 나체 FBX가 설정되지 않았습니다. Inspector에서 Naked FBX를 할당해주세요.");
@@ -1095,4 +1095,265 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         var lookRotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
         transform.rotation = Quaternion.Euler(0f, lookRotation.eulerAngles.y, 0f);
     }
+
+    public string LoadCharacterInfo()
+    {
+        if (this is MainActor mainActor)
+        {
+            return LoadMainCharacterInfo();
+        }
+        else if (this is NPC npc)
+        {
+            return LoadNPCCharacterInfo();
+        }
+        return "";
+    }
+
+    private string LoadNPCCharacterInfo()
+    {
+        var characterMemoryManager = new CharacterMemoryManager(this);
+        var characterInfo = characterMemoryManager.GetCharacterInfo();
+        var name = characterInfo.Name;
+        var age = characterInfo.Age;
+        var gender = characterInfo.Gender;
+        var job = characterInfo.Job;
+        var additionalInfo = characterInfo.AdditionalInfo;
+        
+        var infoText = $"이름은 {name}이고, {age}세 {gender}입니다. ";
+
+        if (!string.IsNullOrEmpty(job))
+        {
+            infoText += $"당신의 직업은 {job}입니다. ";
+        }
+
+         // 추가설정 정보 추가
+        if (!string.IsNullOrEmpty(additionalInfo))
+        {
+            infoText += $"중요한 정보: {additionalInfo} ";
+        }
+
+
+        return infoText;
+    }
+
+    private string LoadMainCharacterInfo()
+    {
+        var characterMemoryManager = new CharacterMemoryManager(this);
+        var characterInfo = characterMemoryManager.GetCharacterInfo();
+        var name = characterInfo.Name;
+        var age = characterInfo.Age;
+        var gender = characterInfo.Gender;
+        var relationships = characterInfo.Relationships;
+        var dailySchedule = characterInfo.DailySchedule;
+        var additionalInfo = characterInfo.AdditionalInfo;
+
+        var infoText = $"이름은 {name}이고, {age}세 {gender}입니다. ";
+
+        if (relationships != null && relationships.Count > 0)
+        {
+            infoText += $"주요 관계는 {string.Join(", ", relationships)}입니다. ";
+        }
+
+        // 추가설정 정보 추가
+        if (!string.IsNullOrEmpty(additionalInfo))
+        {
+            infoText += $"중요한 정보: {additionalInfo} ";
+        }
+
+        if (!string.IsNullOrEmpty(dailySchedule))
+        {
+            infoText += $"하루 스케줄은 다음과 같습니다: {dailySchedule}";
+        }
+
+
+
+        return infoText;
+    }
+
+    public string LoadCharacterMemory()
+    {
+        if (this is MainActor mainActor)
+        {
+            var memoryText = "";
+
+            memoryText += LoadShortTermMemory();
+
+            memoryText += LoadLongTermMemory();
+
+            return memoryText.Trim();
+        }
+        return "캐릭터 기억이 없습니다.";
+    }
+
+    public string LoadShortTermMemory()
+    {
+        if (this is MainActor mainActor)
+        {
+            Debug.Log($"[Actor] MainActor 캐스팅 성공 - mainActor: {mainActor != null}");
+
+            if (mainActor.brain == null)
+            {
+                Debug.LogError("[Actor] mainActor.brain이 null입니다!");
+                return "brain이 null입니다.";
+            }
+            Debug.Log($"[Actor] mainActor.brain 확인 완료 - brain 타입: {mainActor.brain.GetType().Name}");
+
+            if (mainActor.brain.memoryManager == null)
+            {
+                Debug.LogError("[Actor] mainActor.brain.memoryManager가 null입니다!");
+                return "memoryManager가 null입니다.";
+            }
+            Debug.Log($"[Actor] mainActor.brain.memoryManager 확인 완료 - memoryManager 타입: {mainActor.brain.memoryManager.GetType().Name}");
+
+            var shortTermMemories = mainActor.brain.memoryManager.GetShortTermMemory();
+
+            var memoryText = "";
+
+            if (shortTermMemories == null)
+            {
+                Debug.LogWarning("[Actor] shortTermMemories가 null입니다!");
+                return "단기 기억이 null입니다.";
+            }
+
+            Debug.Log($"[Actor] shortTermMemories Count: {shortTermMemories.Count}");
+
+            if (shortTermMemories.Count > 0)
+            {
+                memoryText += "- 단기 기억들:\n";
+                foreach (var memory in shortTermMemories)
+                {
+                    var timestamp = memory.timestamp != null ? memory.timestamp.ToString() : "시간 미상";
+                    var emotions = memory.emotions != null && memory.emotions.Count > 0
+                        ? string.Join(", ", memory.emotions.Select(e => $"{e.Key}:{e.Value:F1}"))
+                        : "감정 없음";
+                    var details = !string.IsNullOrEmpty(memory.details) ? $" ({memory.details})" : "";
+
+                    memoryText += $"[{timestamp}] <감정: {emotions}> {memory.content} ({details})\n";
+                }
+            }
+
+            return memoryText.Trim();
+        }
+        return "";
+    }
+
+    public string LoadLongTermMemory()
+    {
+        if (this is MainActor mainActor)
+        {
+            var longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories();
+
+            var memoryText = "";
+
+            if (longTermMemories != null && longTermMemories.Count > 0)
+            {
+                memoryText += "- 장기 기억들:\n";
+                foreach (var memory in longTermMemories)
+                {
+                    var timestamp = memory.timestamp != null ? memory.timestamp.ToString() : "시간 미상";
+                    var emotions = memory.emotions != null && memory.emotions.Count > 0
+                        ? string.Join(", ", memory.emotions.Select(e => $"{e.Key}:{e.Value:F1}"))
+                        : "감정 없음";
+                    var relatedActors = memory.relatedActors != null && memory.relatedActors.Count > 0
+                        ? $" [관련인물: {string.Join(", ", memory.relatedActors)}]"
+                        : "";
+                    var location = !string.IsNullOrEmpty(memory.location)
+                        ? $" [장소: {memory.location}]"
+                        : "";
+
+                    memoryText += $"[{timestamp}] <감정: {emotions}> <장소: {location}> {memory.content} ({relatedActors})\n";
+                }
+            }
+
+            return memoryText.Trim();
+        }
+        return "";
+    }
+
+    public string LoadPersonality()
+    {
+        var characterMemoryManager = new CharacterMemoryManager(this);
+        var characterInfo = characterMemoryManager.GetCharacterInfo();
+
+        var temperament = characterInfo.Temperament;
+        var personality = characterInfo.Personality;
+
+        var personalityText = "";
+
+        if (temperament != null && temperament.Count > 0)
+        {
+            personalityText += $"기질은 {string.Join(", ", temperament)}입니다. ";
+        }
+
+        if (personality != null && personality.Count > 0)
+        {
+            personalityText += $"성격은 {string.Join(", ", personality)}입니다.";
+        }
+
+        return personalityText;
+    }
+
+    public string LoadRelationships()
+    {
+        var characterMemoryManager = new CharacterMemoryManager(this);
+        var characterInfo = characterMemoryManager.GetCharacterInfo();
+        var relationships = characterInfo.Relationships;
+        var relationshipMemoryManager = new RelationshipMemoryManager(this);
+
+        var relationshipText = "";
+
+        if (relationships != null && relationships.Count > 0)
+        {
+            foreach (var relationshipName in relationships)
+            {
+                var relationshipMemory = relationshipMemoryManager.GetRelationship(relationshipName);
+                if (relationshipMemory != null)
+                {
+                    relationshipText += $"- {relationshipMemory.Name} ({relationshipMemory.RelationshipType})\n";
+                    relationshipText += $"  나이: {relationshipMemory.Age}세\n";
+                    relationshipText += $"  사는 곳: {relationshipMemory.HouseLocation}\n";
+                    relationshipText += $"  친밀도: {relationshipMemory.Closeness:F1}, 신뢰도: {relationshipMemory.Trust:F1}\n";
+                    relationshipText += $"  마지막 상호작용: {relationshipMemory.LastInteraction}\n";
+
+                    if (relationshipMemory.PersonalityTraits != null && relationshipMemory.PersonalityTraits.Count > 0)
+                    {
+                        relationshipText += $"  성격 특성: {string.Join(", ", relationshipMemory.PersonalityTraits)}\n";
+                    }
+
+                    if (relationshipMemory.SharedInterests != null && relationshipMemory.SharedInterests.Count > 0)
+                    {
+                        relationshipText += $"  공통 관심사: {string.Join(", ", relationshipMemory.SharedInterests)}\n";
+                    }
+
+                    if (relationshipMemory.SharedMemories != null && relationshipMemory.SharedMemories.Count > 0)
+                    {
+                        relationshipText += $"  공유 기억: {string.Join(", ", relationshipMemory.SharedMemories)}\n";
+                    }
+
+                    if (relationshipMemory.InteractionHistory != null && relationshipMemory.InteractionHistory.Count > 0)
+                    {
+                        relationshipText += $"  상호작용 이력: {string.Join(", ", relationshipMemory.InteractionHistory)}\n";
+                    }
+
+                    if (relationshipMemory.Notes != null && relationshipMemory.Notes.Count > 0)
+                    {
+                        relationshipText += $"  메모: {string.Join(", ", relationshipMemory.Notes)}\n";
+                    }
+
+                    relationshipText += "\n";
+                }
+                else
+                {
+                    relationshipText += $"- {relationshipName}: 관계 정보 없음\n";
+                }
+            }
+        }
+        else
+        {
+            relationshipText = "현재 특별한 관계가 없습니다.";
+        }
+
+        return relationshipText.Trim();
+    }
+
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 /// <summary>
@@ -39,13 +40,25 @@ public class NPCActionDecision
     
     /// <summary>
     /// 매개변수를 object 배열로 반환
+    /// target_key가 있으면 parameters 배열의 맨 앞에 추가
     /// </summary>
     public object[] GetParameters()
     {
-        if (parameters == null || parameters.Length == 0)
-            return null;
+        List<object> result = new List<object>();
         
-        return Array.ConvertAll(parameters, param => (object)param);
+        // target_key가 있으면 맨 앞에 추가
+        if (!string.IsNullOrEmpty(target_key))
+        {
+            result.Add(target_key);
+        }
+        
+        // 기존 parameters 추가
+        if (parameters != null && parameters.Length > 0)
+        {
+            result.AddRange(Array.ConvertAll(parameters, param => (object)param));
+        }
+        
+        return result.Count > 0 ? result.ToArray() : null;
     }
     
     public override string ToString()

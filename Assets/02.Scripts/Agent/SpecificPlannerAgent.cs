@@ -52,7 +52,14 @@ public class SpecificPlannerAgent : GPT
         SetActorName(actor.Name);
 
         // SpecificPlannerAgent 프롬프트 로드 및 초기화
-        string systemPrompt = PromptLoader.LoadSpecificPlannerAgentPrompt();
+        string systemPrompt = PromptLoader.LoadPromptWithReplacements("SpecificPlannerAgentPrompt.txt",
+            new Dictionary<string, string>
+            {
+                { "character_name", actor.Name },
+                { "personality", actor.LoadPersonality() },
+                { "info", actor.LoadCharacterInfo() },
+                { "memory", actor.LoadCharacterMemory() }
+            });
         messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
 
         // ActionType enum 값들을 동적으로 가져와서 JSON schema에 포함

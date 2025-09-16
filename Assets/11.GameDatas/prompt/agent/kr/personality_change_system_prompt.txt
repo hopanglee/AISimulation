@@ -9,7 +9,7 @@
 {character_name} 정보
 - 성격: {personality}
 - 정보: {info}
-
+{memory}
 ---
 
 성격 변화를 유발하는 주요 요소들

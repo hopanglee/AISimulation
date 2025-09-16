@@ -14,8 +14,8 @@ namespace Memory
         [JsonProperty("age")]
         public int Age { get; set; }
 
-        [JsonProperty("location")]
-        public string Location { get; set; }
+        [JsonProperty("house_location")]
+        public string HouseLocation { get; set; }
 
         [JsonProperty("relationship_type")]
         public string RelationshipType { get; set; }  // "friend", "family", "acquaintance" 등

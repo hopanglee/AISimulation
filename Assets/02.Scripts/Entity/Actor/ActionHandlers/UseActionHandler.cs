@@ -13,11 +13,11 @@ namespace Agent.ActionHandlers
     /// </summary>
     public class UseActionHandler
     {
-        private readonly Actor actor;
+        private readonly MainActor actor;
 
         public UseActionHandler(Actor actor)
         {
-            this.actor = actor;
+            this.actor = actor as MainActor;
         }
 
         /// <summary>
@@ -92,6 +92,7 @@ namespace Agent.ActionHandlers
                 // Clothing.Use() 메서드 호출 (Wear 호출)
                 var result = clothing.Use(actor, null);
                 Debug.Log($"[{actor.Name}] Clothing 착용 결과: {result}");
+                actor.brain.memoryManager.AddShortTermMemory("action", $"착용 완료: {clothing.Name} - {result}");
                 
                 // 옷 착용에는 1분 소요
                 await SimDelay.DelaySimMinutes(1, token);
@@ -170,6 +171,8 @@ namespace Agent.ActionHandlers
                     // iPhone의 Use 메서드 호출 (Chat 명령)
                     var result = iphone.Use(actor, new object[] { "Chat", target, message });
                     Debug.Log($"[{actor.Name}] iPhone Chat 결과: {result}");
+                    actor.brain.memoryManager.AddShortTermMemory("action", $"iPhone 메시지 전송: {result}");
+                    
                     await SimDelay.DelaySimMinutes(3);
                 }
                 else
@@ -197,6 +200,8 @@ namespace Agent.ActionHandlers
                     // iPhone의 Use 메서드 호출 (Read 명령)
                     var result = iphone.Use(actor, new object[] { "Read", readTargetActor, count });
                     Debug.Log($"[{actor.Name}] iPhone Read 결과: {result}");
+                    actor.brain.memoryManager.AddShortTermMemory("action",$"iPhone 메시지 읽기: {result}");
+                    
                     await SimDelay.DelaySimMinutes(2);
                 }
             }
@@ -220,6 +225,8 @@ namespace Agent.ActionHandlers
                     // iPhone의 Use 메서드 호출 (Continue 명령)
                     var result = iphone.Use(actor, new object[] { "Continue", continueTargetActor, continueCount });
                     Debug.Log($"[{actor.Name}] iPhone Continue 결과: {result}");
+                    actor.brain.memoryManager.AddShortTermMemory("action",$"iPhone 메시지 계속 읽기: {result}");
+                    
                     await SimDelay.DelaySimMinutes(2);
                 }
             }
@@ -244,6 +251,7 @@ namespace Agent.ActionHandlers
                 // Note의 기본 Use 메서드 호출
                 var result = note.Use(actor, parameters);
                 Debug.Log($"[{actor.Name}] Note 사용 결과: {result}");
+                actor.brain.memoryManager.AddShortTermMemory("action", $"Note 사용 완료: {action} - {result}");
 
                 // 통일된 SimDelay (2분)
                 await SimDelay.DelaySimMinutes(2);
@@ -278,6 +286,7 @@ namespace Agent.ActionHandlers
                 // Book의 기본 Use 메서드 호출
                 var result = book.Use(actor, parameters);
                 Debug.Log($"[{actor.Name}] Book 사용 결과: {result}");
+                actor.brain.memoryManager.AddShortTermMemory("action", $"Book 사용 완료: {action} - {result}");
 
                 switch (action.ToLower())
                 {

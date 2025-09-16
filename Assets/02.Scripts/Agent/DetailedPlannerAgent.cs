@@ -77,7 +77,14 @@ public class DetailedPlannerAgent : GPT
         SetActorName(actor.Name);
 
         // DetailedPlannerAgent 프롬프트 로드 및 초기화
-        string systemPrompt = PromptLoader.LoadDetailedPlannerAgentPrompt();
+        string systemPrompt = PromptLoader.LoadPromptWithReplacements("DetailedPlannerAgentPrompt.txt",
+            new Dictionary<string, string>
+            {
+                { "character_name", actor.Name },
+                { "personality", actor.LoadPersonality() },
+                { "info", actor.LoadCharacterInfo() },
+                { "memory", actor.LoadCharacterMemory() },
+            });
         messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
 
         options = new()

@@ -20,7 +20,7 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public PickUpItemParameterAgent()
+        public PickUpItemParameterAgent(Actor actor) : base(actor)
         {
             var itemList = GetCurrentCollectibleItemKeys();
             systemPrompt = PromptLoader.LoadPrompt("PickUpItemParameterAgentPrompt.txt", "You are a PickUpItem parameter generator.");

@@ -379,7 +379,7 @@ namespace Agent.Tools
                 }
 
                 // DayPlanner를 통해 현재 계획 정보 조회
-                var dayPlanner = mainActor.DayPlanner;
+                var dayPlanner = mainActor.brain.dayPlanner;
                 if (dayPlanner == null)
                 {
                     return "No plan available (DayPlanner not found)";

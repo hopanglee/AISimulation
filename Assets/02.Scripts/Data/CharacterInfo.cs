@@ -21,14 +21,17 @@ public class CharacterInfo
     [JsonProperty("personality")]
     public List<string> Personality { get; set; } = new List<string>();
 
-    [JsonProperty("personality_interests")]
-    public List<string> PersonalityInterests { get; set; } = new List<string>();
-
-    [JsonProperty("personality_fears")]
-    public List<string> PersonalityFears { get; set; } = new List<string>();
-
     [JsonProperty("relationships")]
     public List<string> Relationships { get; set; } = new List<string>();
+
+    [JsonProperty("job")]
+    public string Job { get; set; }
+
+    [JsonProperty("daily_schedule")]
+    public string DailySchedule { get; set; }
+
+    [JsonProperty("additional_info")]
+    public string AdditionalInfo { get; set; }
 
     [JsonProperty("last_updated")]
     public DateTime LastUpdated { get; set; } = DateTime.Now;

@@ -1,10 +1,12 @@
 Examine: 환자에 대한 의학적 검사를 수행합니다.
 
-파라미터: [patient_name, examination_details] - 누구를 검사할지와 어떤 종류의 검사를 수행할지
+target_key: 환자 이름 - 검사할 환자의 이름
+
+parameters: [examination_details] - 어떤 종류의 검사를 수행할지
 
 요구사항: 검사할 환자가 있어야 합니다
 
 예시:
-parameters: ["레드", "혈압과 맥박을 측정하고, 심장 소리를 청진함"]
-parameters: ["Mr.Kim", "목 상태를 확인하고 체온을 측정함"]
-parameters: ["Ms.Lee", "복부를 촉진하고 반사 신경을 테스트함"]
+target_key: "레드", parameters: ["혈압과 맥박을 측정하고, 심장 소리를 청진함"]
+target_key: "Mr.Kim", parameters: ["목 상태를 확인하고 체온을 측정함"]
+target_key: "Ms.Lee", parameters: ["복부를 촉진하고 반사 신경을 테스트함"]

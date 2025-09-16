@@ -9,7 +9,7 @@
 {character_name} 정보
 - 성격: {personality}
 - 정보: {info}
-- 기억: {memory}
+{memory}
 ---
 
 작업 지침

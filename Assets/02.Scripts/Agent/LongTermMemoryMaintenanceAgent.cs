@@ -459,7 +459,13 @@ public class LongTermMemoryMaintenanceAgent : GPT
     {
         try
         {
-            return PromptLoader.LoadPrompt("longterm_memory_maintenance_prompt.txt", "");
+            return PromptLoader.LoadPromptWithReplacements("longterm_memory_maintenance_prompt.txt",
+                new Dictionary<string, string>
+                {
+                    { "character_name", actor.Name },
+                    { "personality", actor.LoadPersonality() },
+                    { "info", actor.LoadCharacterInfo() },
+                });
         }
         catch (Exception ex)
         {

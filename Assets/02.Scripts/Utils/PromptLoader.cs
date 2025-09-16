@@ -101,7 +101,19 @@ public static class PromptLoader
     /// <param name="npcRole">NPC의 역할</param>
     /// <param name="availableActions">사용 가능한 액션 목록</param>
     /// <returns>커스터마이징된 시스템 프롬프트</returns>
-    public static string LoadNPCRoleSystemPrompt(NPCRole npcRole, INPCAction[] availableActions)
+    public static string LoadNPCRoleSystemPrompt(NPCRole npcRole)
+    {
+        return LoadNPCRoleSystemPrompt(npcRole,  null);
+    }
+
+    /// <summary>
+    /// 특정 NPCRole에 맞는 system prompt를 로드하고 플레이스홀더를 교체합니다.
+    /// </summary>
+    /// <param name="npcRole">NPC의 역할</param>
+    /// <param name="availableActions">사용 가능한 액션 목록</param>
+    /// <param name="replacements">교체할 플레이스홀더와 값들</param>
+    /// <returns>커스터마이징된 시스템 프롬프트</returns>
+    public static string LoadNPCRoleSystemPrompt(NPCRole npcRole, Dictionary<string, string> replacements)
     {
         string roleFolder = GetNPCRoleFolder(npcRole);
         string basePrompt;
@@ -166,12 +178,18 @@ public static class PromptLoader
                 // Debug.LogWarning($"프롬프트 파일을 찾을 수 없습니다: {fullRolePath} 또는 {fullCommonPath}. 기본 시스템 프롬프트를 사용합니다.");
             }
         }
+    
         
-        // 사용 가능한 액션들의 설명 로드
-        string actionsDescription = LoadAvailableActionsDescription(npcRole, availableActions);
+        // 추가 replacements 적용
+        if (replacements != null)
+        {
+            foreach (var replacement in replacements)
+            {
+                basePrompt = basePrompt.Replace($"{{{replacement.Key}}}", replacement.Value);
+            }
+        }
         
-        // {AVAILABLE_ACTIONS} 플레이스홀더를 실제 액션 설명으로 교체
-        return basePrompt.Replace("{AVAILABLE_ACTIONS}", actionsDescription);
+        return basePrompt;
     }
 
     /// <summary>
@@ -194,7 +212,7 @@ public static class PromptLoader
     /// <summary>
     /// 사용 가능한 액션들의 설명을 로드합니다.
     /// </summary>
-    private static string LoadAvailableActionsDescription(NPCRole npcRole, INPCAction[] availableActions)
+    public static string LoadAvailableActionsDescription(NPCRole npcRole, INPCAction[] availableActions)
     {
         if (availableActions == null || availableActions.Length == 0)
             return "No actions available.";

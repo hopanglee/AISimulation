@@ -19,7 +19,7 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public MoveToEntityParameterAgent()
+        public MoveToEntityParameterAgent(Actor actor) : base(actor)
         {
             var entityList = GetCurrentEntityNames();
             systemPrompt = PromptLoader.LoadPrompt("MoveToEntityParameterAgentPrompt.txt", "You are a MoveToEntity parameter generator.");

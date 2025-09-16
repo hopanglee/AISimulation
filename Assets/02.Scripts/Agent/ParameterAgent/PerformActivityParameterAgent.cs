@@ -19,7 +19,7 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public PerformActivityParameterAgent()
+        public PerformActivityParameterAgent(Actor actor) : base(actor)
         {
             systemPrompt = PromptLoader.LoadPrompt("PerformActivityParameterAgentPrompt.txt", "You are a PerformActivity parameter generator.");
             this.options = new ChatCompletionOptions

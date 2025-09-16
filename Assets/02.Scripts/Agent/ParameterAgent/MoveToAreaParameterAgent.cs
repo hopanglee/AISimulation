@@ -18,7 +18,7 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public MoveToAreaParameterAgent()
+        public MoveToAreaParameterAgent(Actor actor) : base(actor)
         {
             var movableAreas = GetCurrentMovableAreaKeys();
             // 프롬프트 로드

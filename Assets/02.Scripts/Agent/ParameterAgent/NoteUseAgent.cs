@@ -30,9 +30,16 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public NoteUseAgent()
+        public NoteUseAgent(Actor actor) : base(actor)
         {
-            systemPrompt = PromptLoader.LoadPrompt("NoteUseAgentPrompt.txt", "You are a Note use parameter generator.");
+            systemPrompt = PromptLoader.LoadPromptWithReplacements("NoteUseAgentPrompt.txt",
+                new Dictionary<string, string>
+                {
+                    { "character_name", actor.Name },
+                    { "personality", actor.LoadPersonality() },
+                    { "info", actor.LoadCharacterInfo() },
+                    { "memory", actor.LoadCharacterMemory() },
+                });
             this.options = new ChatCompletionOptions
             {
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(

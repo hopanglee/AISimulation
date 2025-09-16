@@ -15,12 +15,12 @@ public class NPCActionAgent : GPT
     private readonly INPCAction[] availableActions;
     private readonly Actor owner; // NPC 또는 MainActor 참조
     private IToolExecutor toolExecutor; // 도구 실행자 추가
-    
+
     /// <summary>
     /// 액션을 자연스러운 메시지로 변환하는 커스텀 함수
     /// </summary>
     public System.Func<NPCActionDecision, string> CustomMessageConverter { get; set; }
-    
+
     /// <summary>
     /// NPCActionAgent 생성자
     /// </summary>
@@ -32,11 +32,17 @@ public class NPCActionAgent : GPT
         this.owner = owner;
         this.availableActions = availableActions;
         this.toolExecutor = new ActorToolExecutor(owner); // 도구 실행자 초기화
-        
-        // NPCRole별 System prompt 로드
-        string systemPrompt = PromptLoader.LoadNPCRoleSystemPrompt(npcRole, availableActions);
+
+        // NPCRole별 System prompt 로드 (replacements 포함)
+        string systemPrompt = PromptLoader.LoadNPCRoleSystemPrompt(npcRole,
+        new Dictionary<string, string>
+                {
+                    {"npc_name", owner.Name },
+                    {"npc_info", owner.LoadCharacterInfo() },
+                    {"AVAILABLE_ACTIONS", PromptLoader.LoadAvailableActionsDescription(npcRole, availableActions) },
+                });
         messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
-        
+
         // Options 초기화 - JSON 스키마 포맷 설정 (최초 1회)
         options = new ChatCompletionOptions
         {
@@ -50,13 +56,13 @@ public class NPCActionAgent : GPT
                 jsonSchemaIsStrict: true
             )
         };
-        
+
         // 도구 추가 - ItemManagement 도구 세트 추가
         ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.ItemManagement);
-        
+
         Debug.Log($"[NPCActionAgent] 생성됨 - 소유자: {owner?.Name}, 액션 수: {availableActions?.Length ?? 0}");
     }
-    
+
     /// <summary>
     /// JSON 스키마 생성
     /// </summary>
@@ -64,11 +70,11 @@ public class NPCActionAgent : GPT
     {
         var actionNames = availableActions?.Select(a => $"\"{a.ActionName}\"") ?? new[] { "\"Wait\"" };
         string actionEnum = string.Join(", ", actionNames);
-        
+
         // 주변 Actor들의 key 목록 생성 (null 포함)
         var nearbyActorKeys = GetNearbyActorKeys();
         string actorKeysEnum = string.Join(", ", nearbyActorKeys.Select(key => $"\"{key}\""));
-        
+
         return $@"{{
             ""type"": ""object"",
             ""additionalProperties"": false,
@@ -76,32 +82,32 @@ public class NPCActionAgent : GPT
                 ""actionType"": {{
                     ""type"": ""string"",
                     ""enum"": [ {actionEnum} ],
-                    ""description"": ""Type of action to perform""
+                    ""description"": ""수행할 액션의 유형""
                 }},
                 ""target_key"": {{
                     ""type"": [""string"", ""null""],
                     ""enum"": [ null, {actorKeysEnum} ],
-                    ""description"": ""Key of the target actor to interact with (null if no target needed)""
+                    ""description"": ""상호작용할 대상 액터의 키 (대상이 필요없으면 null)""
                 }},
                 ""parameters"": {{
                     ""type"": ""array"",
                     ""items"": {{
                         ""type"": ""string""
                     }},
-                    ""description"": ""Parameters for the action (null if no parameters needed)""
+                    ""description"": ""액션에 대한 파라미터들 (파라미터가 필요없으면 null)""
                 }}
             }},
             ""required"": [""actionType""]
         }}";
     }
-    
+
     /// <summary>
     /// 주변 Actor들의 key 목록을 반환합니다.
     /// </summary>
     private List<string> GetNearbyActorKeys()
     {
         var keys = new List<string>();
-        
+
         try
         {
             // 모든 Actor가 Sensor를 보유하므로 Sensor 기반으로만 수집
@@ -115,11 +121,11 @@ public class NPCActionAgent : GPT
         {
             Debug.LogWarning($"[NPCActionAgent] 주변 Actor key 가져오기 실패: {ex.Message}");
         }
-        
+
         // 중복 제거 및 정렬
         return keys.Distinct().OrderBy(k => k).ToList();
     }
-    
+
     /// <summary>
     /// AI Agent를 통해 액션을 결정합니다
     /// 호출 전에 AddUserMessage 또는 AddSystemMessage를 통해 이벤트 정보를 추가해야 합니다
@@ -151,13 +157,13 @@ public class NPCActionAgent : GPT
 
             // 현재 상황 정보를 system 메시지로 자동 추가
             AddCurrentSituationInfo();
-            
+
             // GPT API 호출 전 메시지 수 기록
             int messageCountBeforeGPT = messages.Count;
-            
+
             // GPT API 호출 (이미 messages에 필요한 메시지들이 추가되어 있어야 함)
             var response = await SendGPTAsync<NPCActionDecision>(messages, options);
-            
+
             // GPT 응답 후 원시 AssistantMessage 제거 (JSON 형태 응답)
             if (messages.Count > messageCountBeforeGPT)
             {
@@ -169,14 +175,14 @@ public class NPCActionAgent : GPT
                     Debug.Log($"[NPCActionAgent] GPT 원시 응답 제거됨: {ExtractMessageContent(((AssistantChatMessage)lastMessage).Content)}");
                 }
             }
-            
+
             // 자연스러운 형태의 AssistantMessage 추가
             string naturalMessage = ConvertActionToNaturalMessage(response);
             if (!string.IsNullOrEmpty(naturalMessage))
             {
                 AddAssistantMessage(naturalMessage);
             }
-            
+
             Debug.Log($"[NPCActionAgent] 액션 결정: {response}");
             return response;
         }
@@ -186,46 +192,46 @@ public class NPCActionAgent : GPT
             throw new System.InvalidOperationException($"NPCActionAgent 액션 결정 실패: {ex.Message}");
         }
     }
-    
+
     /// <summary>
     /// 현재 상황 정보를 system 메시지로 추가합니다.
     /// </summary>
     private void AddCurrentSituationInfo()
     {
         if (owner == null) return;
-        
+
         try
         {
             var situationInfo = new List<string>();
-            
+
             // 1. 시간 정보
             var timeInfo = GetCurrentTimeInfo();
             if (!string.IsNullOrEmpty(timeInfo))
             {
                 situationInfo.Add($"현재 시간: {timeInfo}");
             }
-            
+
             // 2. NPC 상태 정보 (배고픔, 졸림, 스트레스 등)
             var statusInfo = GetNPCStatusInfo();
             if (!string.IsNullOrEmpty(statusInfo))
             {
                 situationInfo.Add($"NPC 상태: {statusInfo}");
             }
-            
+
             // 3. 주변 인물 정보
             var nearbyInfo = GetNearbyActorsInfo();
             if (!string.IsNullOrEmpty(nearbyInfo))
             {
                 situationInfo.Add($"주변 인물: {nearbyInfo}");
             }
-            
+
             // 4. 현재 위치 정보
             var locationInfo = GetCurrentLocationInfo();
             if (!string.IsNullOrEmpty(locationInfo))
             {
                 situationInfo.Add($"현재 위치: {locationInfo}");
             }
-            
+
             // 상황 정보가 있으면 system 메시지로 추가
             if (situationInfo.Count > 0)
             {
@@ -239,7 +245,7 @@ public class NPCActionAgent : GPT
             Debug.LogWarning($"[NPCActionAgent] 상황 정보 추가 실패: {ex.Message}");
         }
     }
-    
+
     /// <summary>
     /// 현재 시간 정보를 반환합니다.
     /// </summary>
@@ -250,8 +256,8 @@ public class NPCActionAgent : GPT
             var timeService = Services.Get<ITimeService>();
             if (timeService != null)
             {
-                            var currentTime = timeService.CurrentTime;
-            var dayOfWeek = GetDayOfWeekString(currentTime.GetDayOfWeek());
+                var currentTime = timeService.CurrentTime;
+                var dayOfWeek = GetDayOfWeekString(currentTime.GetDayOfWeek());
                 return $"{currentTime.year}년 {currentTime.month}월 {currentTime.day}일 {dayOfWeek} {currentTime.hour:00}:{currentTime.minute:00}";
             }
         }
@@ -261,7 +267,7 @@ public class NPCActionAgent : GPT
         }
         return null;
     }
-    
+
     /// <summary>
     /// 요일을 한글로 반환합니다.
     /// </summary>
@@ -279,7 +285,7 @@ public class NPCActionAgent : GPT
             _ => "알 수 없음"
         };
     }
-    
+
     /// <summary>
     /// NPC의 현재 상태 정보를 반환합니다.
     /// </summary>
@@ -288,7 +294,7 @@ public class NPCActionAgent : GPT
         if (owner is Actor actor)
         {
             var statusList = new List<string>();
-            
+
             // 기본 상태 정보
             if (actor.Hunger > 0) statusList.Add($"배고픔: {actor.Hunger}/100");
             if (actor.Thirst > 0) statusList.Add($"갈증: {actor.Thirst}/100");
@@ -296,26 +302,26 @@ public class NPCActionAgent : GPT
             if (actor.Sleepiness > 0) statusList.Add($"졸림: {actor.Sleepiness}/100");
             if (actor.Stress > 0) statusList.Add($"스트레스: {actor.Stress}/100");
             if (actor.MentalPleasure > 0) statusList.Add($"만족감: {actor.MentalPleasure}");
-            
+
             // MainActor의 경우 추가 정보
             if (actor is MainActor mainActor)
             {
                 if (mainActor.IsSleeping) statusList.Add("상태: 수면 중");
                 if (mainActor.IsPerformingActivity) statusList.Add($"활동: {mainActor.CurrentActivity}");
             }
-            
+
             return statusList.Count > 0 ? string.Join(", ", statusList) : "정상";
         }
         return null;
     }
-    
+
     /// <summary>
     /// 주변 Actor들의 정보를 반환합니다.
     /// </summary>
     private string GetNearbyActorsInfo()
     {
         var actorsInfo = new List<string>();
-        
+
         try
         {
             if (owner != null)
@@ -336,7 +342,7 @@ public class NPCActionAgent : GPT
         {
             Debug.LogWarning($"[NPCActionAgent] 주변 Actor 정보 가져오기 실패: {ex.Message}");
         }
-        
+
         return actorsInfo.Count > 0 ? string.Join(", ", actorsInfo) : "없음";
     }
 
@@ -362,36 +368,36 @@ public class NPCActionAgent : GPT
             Debug.LogWarning($"[NPCActionAgent] ResponseFormat 갱신 실패: {ex.Message}");
         }
     }
-    
+
     /// <summary>
     /// Actor의 간단한 상태를 반환합니다.
     /// </summary>
     private string GetActorBriefStatus(Actor actor)
     {
         if (actor == null) return "알 수 없음";
-        
+
         var statusList = new List<string>();
-        
+
         // MainActor의 경우 특별한 상태 표시
         if (actor is MainActor mainActor)
         {
             if (mainActor.IsSleeping) statusList.Add("수면");
             if (mainActor.IsPerformingActivity) statusList.Add("활동중");
         }
-        
+
         // 기본 상태 (중요한 것만)
         if (actor.Sleepiness > 80) statusList.Add("매우졸림");
         else if (actor.Sleepiness > 60) statusList.Add("졸림");
-        
+
         if (actor.Hunger > 80) statusList.Add("매우배고픔");
         else if (actor.Hunger > 60) statusList.Add("배고픔");
-        
+
         if (actor.Stress > 80) statusList.Add("매우스트레스");
         else if (actor.Stress > 60) statusList.Add("스트레스");
-        
+
         return statusList.Count > 0 ? string.Join(",", statusList) : "정상";
     }
-    
+
     /// <summary>
     /// 현재 위치 정보를 반환합니다.
     /// </summary>
@@ -418,11 +424,11 @@ public class NPCActionAgent : GPT
         }
         return null;
     }
-    
+
     /// <summary>
     /// 근무 상태 정보를 반환합니다.
     /// </summary>
-    
+
     /// <summary>
     /// 사용자 메시지를 대화 기록에 추가
     /// </summary>
@@ -435,7 +441,7 @@ public class NPCActionAgent : GPT
             Debug.Log($"[NPCActionAgent] 사용자 메시지 추가: {userMessage}");
         }
     }
-    
+
     /// <summary>
     /// Tool 호출 처리 (현재는 사용하지 않음)
     /// </summary>
@@ -452,7 +458,7 @@ public class NPCActionAgent : GPT
             Debug.LogWarning($"[NPCActionAgent] Tool executor가 없어서 도구를 실행할 수 없습니다: {toolCall.FunctionName}");
         }
     }
-    
+
     /// <summary>
     /// 시스템 메시지를 대화 기록에 추가
     /// </summary>
@@ -465,7 +471,7 @@ public class NPCActionAgent : GPT
             Debug.Log($"[NPCActionAgent] 시스템 메시지 추가: {systemMessage}");
         }
     }
-    
+
     /// <summary>
     /// 어시스턴트 메시지를 대화 기록에 추가
     /// </summary>
@@ -478,7 +484,7 @@ public class NPCActionAgent : GPT
             Debug.Log($"[NPCActionAgent] 어시스턴트 메시지 추가: {assistantMessage}");
         }
     }
-    
+
     /// <summary>
     /// 액션 결정을 자연스러운 메시지로 변환
     /// CustomMessageConverter가 설정되어 있으면 그것을 사용하고, 없으면 기본 구현을 사용
@@ -489,13 +495,13 @@ public class NPCActionAgent : GPT
     {
         if (decision == null || string.IsNullOrEmpty(decision.actionType))
             return "";
-        
+
         // 커스텀 변환 함수가 있으면 그것을 사용
         if (CustomMessageConverter != null)
         {
             return CustomMessageConverter(decision);
         }
-        
+
         // 기본 구현: Talk과 Wait만 처리
         string currentTime = GetFormattedCurrentTime();
         switch (decision.actionType.ToLower())
@@ -510,15 +516,15 @@ public class NPCActionAgent : GPT
                     }
                 }
                 return $"{currentTime} 말을 한다";
-                
+
             case "wait":
                 return $"{currentTime} 기다린다";
-                
+
             default:
                 return $"{currentTime} {decision.actionType}을 한다";
         }
     }
-    
+
     /// <summary>
     /// 현재 시간을 포맷팅된 문자열로 반환
     /// </summary>
@@ -530,7 +536,7 @@ public class NPCActionAgent : GPT
             var timeService = Services.Get<ITimeService>();
             if (timeService == null)
                 return "[시간불명]";
-                
+
             var currentTime = timeService.CurrentTime;
             return $"[{currentTime.hour:00}:{currentTime.minute:00}]";
         }
@@ -539,7 +545,7 @@ public class NPCActionAgent : GPT
             return "[시간불명]";
         }
     }
-    
+
     /// <summary>
     /// ChatMessageContent에서 실제 텍스트 내용을 추출하는 헬퍼 메서드
     /// </summary>
@@ -567,7 +573,7 @@ public class NPCActionAgent : GPT
 
         return textParts.Count > 0 ? string.Join("\n", textParts) : "[Empty content]";
     }
-    
+
     /// <summary>
     /// 대화 기록을 초기화 (디버깅용)
     /// </summary>
@@ -578,12 +584,12 @@ public class NPCActionAgent : GPT
             // 시스템 프롬프트만 남기고 나머지 메시지 제거
             var systemPrompt = messages.FirstOrDefault(m => m is SystemChatMessage);
             messages.Clear();
-            
+
             if (systemPrompt != null)
             {
                 messages.Add(systemPrompt);
             }
-            
+
             Debug.Log($"[NPCActionAgent] 대화 기록 초기화됨 (시스템 프롬프트 유지)");
         }
     }

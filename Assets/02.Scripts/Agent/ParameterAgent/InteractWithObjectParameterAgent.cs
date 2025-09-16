@@ -19,7 +19,7 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public InteractWithObjectParameterAgent()
+        public InteractWithObjectParameterAgent(Actor actor) : base(actor)
         {
             var objectList = GetCurrentAvailableObjects();
             systemPrompt = PromptLoader.LoadPrompt("InteractWithObjectParameterAgentPrompt.txt", "You are an InteractWithObject parameter generator.");

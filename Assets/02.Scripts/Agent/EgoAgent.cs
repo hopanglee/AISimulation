@@ -35,12 +35,14 @@ public class EgoAgent : GPT
         try
         {
             // 캐릭터 정보와 기억을 동적으로 로드
-            var characterInfo = LoadCharacterInfo();
-            var characterMemory = LoadCharacterMemory();
+            var characterInfo = actor.LoadCharacterInfo();
+            var characterMemory = actor.LoadCharacterMemory();
             
             // 플레이스홀더 교체를 위한 딕셔너리 생성
             var replacements = new Dictionary<string, string>
             {
+                { "character_name", actor.Name },
+                { "personality", actor.LoadPersonality() },
                 { "info", characterInfo },
                 { "memory", characterMemory }
             };
@@ -54,86 +56,6 @@ public class EgoAgent : GPT
         {
             Debug.LogError($"[EgoAgent] 프롬프트 로드 실패: {ex.Message}");
             throw new System.IO.FileNotFoundException($"프롬프트 파일 로드 실패: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// 캐릭터 정보를 로드합니다.
-    /// </summary>
-    private string LoadCharacterInfo()
-    {
-        try
-        {
-            if (actor == null || string.IsNullOrEmpty(actor.Name))
-            {
-                return "캐릭터 정보를 찾을 수 없습니다.";
-            }
-
-            var characterMemoryManager = new CharacterMemoryManager(actor);
-            var characterInfo = characterMemoryManager.GetCharacterInfo();
-            if (characterInfo != null)
-            {
-                return $"캐릭터 정보:\n{JsonConvert.SerializeObject(characterInfo, Formatting.Indented)}";
-            }
-            
-            var infoPath = $"Assets/11.GameDatas/Character/{actor.Name}/info/info.json";
-            if (System.IO.File.Exists(infoPath))
-            {
-                var infoText = System.IO.File.ReadAllText(infoPath);
-                return $"캐릭터 정보:\n{infoText}";
-            }
-            
-            return "캐릭터 정보를 찾을 수 없습니다.";
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"[EgoAgent] 캐릭터 정보 로드 실패: {ex.Message}");
-            return "캐릭터 정보 로드 중 오류가 발생했습니다.";
-        }
-    }
-
-    /// <summary>
-    /// 캐릭터 기억을 로드합니다.
-    /// </summary>
-    private string LoadCharacterMemory()
-    {
-        try
-        {
-            if (actor == null || string.IsNullOrEmpty(actor.Name))
-            {
-                return "캐릭터 기억이 없습니다.";
-            }
-
-            // Brain의 MemoryManager를 통해 메모리 정보 가져오기
-            if (actor is MainActor mainActor && mainActor.brain?.memoryManager != null)
-            {
-                var shortTermMemories = mainActor.brain.memoryManager.GetShortTermMemory();
-                var longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories();
-                
-                var memorySummary = $"단기 메모리 ({shortTermMemories.Count}개):\n";
-                foreach (var memory in shortTermMemories)
-                {
-                    memorySummary += $"- {memory.content}\n";
-                }
-                
-                if (longTermMemories.Count > 0)
-                {
-                    memorySummary += $"\n장기 메모리 ({longTermMemories.Count}개):\n";
-                    foreach (var memory in longTermMemories)
-                    {
-                        memorySummary += $"- {memory.content}\n";
-                    }
-                }
-                
-                return $"캐릭터 기억:\n{memorySummary}";
-            }
-            
-            return "캐릭터 기억이 없습니다.";
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"[EgoAgent] 캐릭터 기억 로드 실패: {ex.Message}");
-            return "캐릭터 기억 로드 중 오류가 발생했습니다.";
         }
     }
 

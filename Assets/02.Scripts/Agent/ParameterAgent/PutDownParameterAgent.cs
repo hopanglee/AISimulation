@@ -14,8 +14,8 @@ public class PutDownParameterAgent : ParameterAgentBase
 {
     private readonly string systemPrompt;
 
-    public PutDownParameterAgent()
-        : base()
+    public PutDownParameterAgent(Actor actor)
+        : base(actor)
     {
         var locationList = GetCurrentAvailableLocations();
 

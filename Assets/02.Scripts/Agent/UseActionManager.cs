@@ -26,17 +26,13 @@ namespace Agent
         }
 
         private void InitializeItemTypeAgents()
-        {
-            var gpt = new GPT();
-            
+        {            
             // iPhone 전용 Agent
-            var iPhoneAgent = new iPhoneUseAgent();
-            iPhoneAgent.SetActor(actor);
+            var iPhoneAgent = new iPhoneUseAgent(actor);
             itemTypeAgents[typeof(iPhone)] = iPhoneAgent;
             
             // Note 전용 Agent
-            var noteAgent = new NoteUseAgent();
-            noteAgent.SetActor(actor);
+            var noteAgent = new NoteUseAgent(actor);
             itemTypeAgents[typeof(Note)] = noteAgent;
         }
 
@@ -160,15 +156,6 @@ namespace Agent
 - 훑어보기: action='skim' (1분 소요)
 - 북마크: action='bookmark' (1분 소요)
 - 책 닫기: action='close' (1분 소요)";
-        }
-
-        /// <summary>
-        /// 특정 아이템 타입에 대한 Agent를 등록합니다.
-        /// </summary>
-        public void RegisterItemTypeAgent<T>(ParameterAgentBase agent) where T : Item
-        {
-            itemTypeAgents[typeof(T)] = agent;
-            agent.SetActor(actor);
         }
     }
 }

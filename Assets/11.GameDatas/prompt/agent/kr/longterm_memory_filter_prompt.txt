@@ -2,14 +2,15 @@
 
 ---
 
-메모리의 중요도와 의외성을 평가하는 것이 당신의 역할입니다.
+유저메시지로 {character_name}의 단기 기억들이 전달됩니다.
+그 단기기억들의 중요도와 의외성을 평가하는 것이 당신의 역할입니다.
 
 ---
 
 {character_name} 정보
 - 성격: {personality}
 - 정보: {info}
-- Long Term Memory: {memory}
+{memory}
 ---
 
 역할:

@@ -1,10 +1,12 @@
 Talk: 누군가에게 말하거나 대화에 응답합니다.
 
-파라미터: [target_name, message_to_say] - 누구에게 말할지와 무슨 말을 할지
+target_key: 대상 이름 - 말할 대상의 이름
+
+parameters: [message_to_say] - 무슨 말을 할지
 
 요구사항: 대화할 대상이 근처에 있어야 합니다
 
 예시:
-parameters: ["하나", "안녕하세요! 환영합니다!"]
-parameters: ["레드", "무엇을 도와드릴까요?"]
-parameters: ["그린", "감사합니다!"]
+target_key: "하나", parameters: ["안녕하세요! 환영합니다!"]
+target_key: "레드", parameters: ["무엇을 도와드릴까요?"]
+target_key: "그린", parameters: ["감사합니다!"]

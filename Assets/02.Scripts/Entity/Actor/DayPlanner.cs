@@ -24,7 +24,7 @@ public class DayPlanner
 {
     private readonly Actor actor;
     private readonly HierarchicalPlanner hierarchicalPlanner;
-    private readonly PlanDecisionAgent planDecisionAgent;
+    //private readonly PlanDecisionAgent planDecisionAgent;
 
     private bool forceNewDayPlan = false;
 
@@ -35,7 +35,7 @@ public class DayPlanner
     {
         this.actor = actor;
         this.hierarchicalPlanner = new HierarchicalPlanner(actor);
-        this.planDecisionAgent = new PlanDecisionAgent(actor);
+        //this.planDecisionAgent = new PlanDecisionAgent(actor);
         
         // HierarchicalPlanner에 계획 시작 시간 프로바이더 설정
         this.hierarchicalPlanner.SetPlanStartTimeProvider(() => this.planStartTime);
@@ -228,6 +228,7 @@ public class DayPlanner
             currentTime = currentTime
         };
 
+        var planDecisionAgent = new PlanDecisionAgent(actor);
         var decision = await planDecisionAgent.DecideAsync(decisionInput);
         if (decision.decision == PlanDecisionAgent.Decision.Revise)
         {

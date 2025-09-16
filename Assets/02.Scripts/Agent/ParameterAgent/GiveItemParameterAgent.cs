@@ -22,7 +22,7 @@ namespace Agent
         private readonly string systemPrompt;
 
 
-        public GiveItemParameterAgent()
+        public GiveItemParameterAgent(Actor actor) : base(actor)
         {
             var characterList = GetCurrentNearbyCharacterNames();
             

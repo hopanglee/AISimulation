@@ -20,7 +20,7 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public GiveMoneyParameterAgent()
+        public GiveMoneyParameterAgent(Actor actor) : base(actor)
         {
             var characterList = GetCurrentNearbyCharacterNames();
             

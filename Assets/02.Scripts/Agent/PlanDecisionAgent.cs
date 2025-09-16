@@ -174,7 +174,10 @@ public class PlanDecisionAgent : GPT
 			return PromptLoader.LoadPromptWithReplacements("PlanDecisionAgentSystemPrompt.txt",
 				new Dictionary<string, string>
 				{
-					{ "CharacterName", actor.Name }
+					{ "character_name", actor.Name },
+					{ "personality", actor.LoadPersonality() },
+					{ "info", actor.LoadCharacterInfo() },
+					{ "memory", actor.LoadCharacterMemory() }
 				});
 		}
 		catch (Exception ex)

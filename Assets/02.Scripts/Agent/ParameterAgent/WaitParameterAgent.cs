@@ -12,7 +12,7 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public WaitParameterAgent()
+        public WaitParameterAgent(Actor actor) : base(actor)
         {
             systemPrompt = PromptLoader.LoadPrompt("WaitParameterAgentPrompt.txt", "You are a Wait parameter generator.");
             this.options = new ChatCompletionOptions

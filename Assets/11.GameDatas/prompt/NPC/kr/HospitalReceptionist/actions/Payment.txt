@@ -1,6 +1,8 @@
 Payment: 진료/약제비 결제를 처리합니다.
 
-파라미터: [item_name] - 결제할 아이템 이름 (예: "consultation fee", "medication")
+target_key: 없음
+
+parameters: [item_name] - 결제할 아이템 이름 (예: "consultation fee", "medication")
 
 요구사항: 결제할 아이템이 가격표에 있어야 합니다
 

@@ -22,10 +22,17 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public TalkParameterAgent()
+        public TalkParameterAgent(Actor actor) : base(actor)
         {
             var characterList = GetCurrentAvailableCharacters();
-            systemPrompt = PromptLoader.LoadPrompt("TalkParameterAgentPrompt.txt", "You are a Talk parameter generator.");
+            systemPrompt = PromptLoader.LoadPromptWithReplacements("TalkParameterAgentPrompt.txt",
+                new Dictionary<string, string>
+                {
+                    { "character_name", actor.Name },
+                    { "personality", actor.LoadPersonality() },
+                    { "info", actor.LoadCharacterInfo() },
+                    { "memory", actor.LoadCharacterMemory() }
+                });
             this.options = new ChatCompletionOptions
             {
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(

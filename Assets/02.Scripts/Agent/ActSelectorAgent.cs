@@ -32,6 +32,8 @@ namespace Agent
         private IToolExecutor toolExecutor;
         private DayPlanner dayPlanner; // DayPlanner 참조 추가
 
+        
+
         public ActSelectorAgent(Actor actor) : base()
         {
             this.actor = actor;
@@ -42,7 +44,11 @@ namespace Agent
             string systemPrompt = PromptLoader.LoadPromptWithReplacements("ActSelectorAgentPrompt.txt", 
                 new Dictionary<string, string>
                 {
-                    { "CharacterName", actor.Name }
+                    { "character_name", actor.Name },
+                    { "personality", actor.LoadPersonality() },
+                    { "info", actor.LoadCharacterInfo() },
+                    { "memory", actor.LoadCharacterMemory() },
+                    {"available_act", FormatAvailableActionsToString(GetCurrentAvailableActions())}
                 });
             messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
             
@@ -240,48 +246,48 @@ namespace Agent
                // availableActions.Add(ActionType.PerformActivity);
                 availableActions.Add(ActionType.Think);
                 
-                // 상황에 따른 제한 사항들
-                if (actor is MainActor thinkingActor)
-                {
-                    if (thinkingActor.IsSleeping)
-                    {
-                        availableActions.Clear();
-                        availableActions.Add(ActionType.Wait);
-                    }
+                // // 상황에 따른 제한 사항들
+                // if (actor is MainActor thinkingActor)
+                // {
+                //     if (thinkingActor.IsSleeping)
+                //     {
+                //         availableActions.Clear();
+                //         availableActions.Add(ActionType.Wait);
+                //     }
                     
-                    // 이동 가능한 위치가 없으면 MoveToArea 제한
-                    var movablePositions = thinkingActor.sensor.GetMovablePositions();
-                    if (movablePositions.Count == 0)
-                    {
-                        availableActions.Remove(ActionType.MoveToArea);
-                        availableActions.Remove(ActionType.MoveToEntity);
-                    }
+                //     // 이동 가능한 위치가 없으면 MoveToArea 제한
+                //     var movablePositions = thinkingActor.sensor.GetMovablePositions();
+                //     if (movablePositions.Count == 0)
+                //     {
+                //         availableActions.Remove(ActionType.MoveToArea);
+                //         availableActions.Remove(ActionType.MoveToEntity);
+                //     }
                     
-                    // 상호작용 가능한 엔티티가 없으면 관련 액션 제한
-                    var interactable = thinkingActor.sensor.GetInteractableEntities();
-                    if (interactable.actors.Count == 0)
-                    {
-                        availableActions.Remove(ActionType.SpeakToCharacter);
-                    }
-                    if (interactable.props.Count == 0 && interactable.items.Count == 0)
-                    {
-                        availableActions.Remove(ActionType.UseObject);
-                        availableActions.Remove(ActionType.PickUpItem);
-                        availableActions.Remove(ActionType.InteractWithObject);
-                    }
+                //     // 상호작용 가능한 엔티티가 없으면 관련 액션 제한
+                //     var interactable = thinkingActor.sensor.GetInteractableEntities();
+                //     if (interactable.actors.Count == 0)
+                //     {
+                //         availableActions.Remove(ActionType.SpeakToCharacter);
+                //     }
+                //     if (interactable.props.Count == 0 && interactable.items.Count == 0)
+                //     {
+                //         availableActions.Remove(ActionType.UseObject);
+                //         availableActions.Remove(ActionType.PickUpItem);
+                //         availableActions.Remove(ActionType.InteractWithObject);
+                //     }
                     
-                    // 손에 아이템이 없으면 PutDown 제한
-                    if (thinkingActor.HandItem == null)
-                    {
-                        availableActions.Remove(ActionType.PutDown);
-                    }
+                //     // 손에 아이템이 없으면 PutDown 제한
+                //     if (thinkingActor.HandItem == null)
+                //     {
+                //         availableActions.Remove(ActionType.PutDown);
+                //     }
                     
-                    if (interactable.actors.Count == 0)
-                    {
-                        availableActions.Remove(ActionType.GiveMoney);
-                        availableActions.Remove(ActionType.GiveItem);
-                    }
-                }
+                //     if (interactable.actors.Count == 0)
+                //     {
+                //         availableActions.Remove(ActionType.GiveMoney);
+                //         availableActions.Remove(ActionType.GiveItem);
+                //     }
+                // }
                 
                 return availableActions;
             }
@@ -324,7 +330,20 @@ namespace Agent
                         if (!string.IsNullOrEmpty(jsonContent))
                         {
                             var actionDesc = JsonUtility.FromJson<ActionDescription>(jsonContent);
-                            actionInfos.Add($"- {actionDesc.name}: {actionDesc.description}");
+                            
+                            var actionInfo = $"- {actionDesc.name}: {actionDesc.description}";
+                            
+                            if (actionDesc.requirements != null && actionDesc.requirements.Length > 0)
+                            {
+                                actionInfo += $"\n  요구사항: {string.Join(", ", actionDesc.requirements)}";
+                            }
+                            
+                            if (actionDesc.whenToUse != null && actionDesc.whenToUse.Length > 0)
+                            {
+                                actionInfo += $"\n  사용 시기: {string.Join(", ", actionDesc.whenToUse)}";
+                            }
+                            
+                            actionInfos.Add(actionInfo);
                         }
                         else
                         {
@@ -370,6 +389,18 @@ namespace Agent
         {
             public string name;
             public string description;
+            public Parameter[] parameters;
+            public string[] requirements;
+            public string[] whenToUse;
+        }
+
+        [System.Serializable]
+        private class Parameter
+        {
+            public string name;
+            public string type;
+            public string description;
+            public bool required;
         }
     }
 } 
