@@ -1,9 +1,9 @@
-Payment: 진료/약제비 결제 처리하기
+Payment: 진료/약제비 결제를 처리합니다.
 
-사용 시점: 환자가 접수/진료/결제를 요청할 때
+파라미터: [item_name] - 결제할 아이템 이름 (예: "consultation fee", "medication")
 
-파라미터: [item_name] (문자열) - 예: "consultation fee", "medication"
+요구사항: 결제할 아이템이 가격표에 있어야 합니다
 
-참고사항:
-만약 아이템이 가격표에 없다면, 정중하게 알리고 비용을 청구하지 마세요.
-성공 시, 병원 자금과 수익을 업데이트하세요.
+예시:
+parameters: ["consultation fee"] - 진료비 결제
+parameters: ["medication"] - 약제비 결제

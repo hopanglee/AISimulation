@@ -1,9 +1,11 @@
-Move: 주어진 키와 일치하는 위치로 이동하기
+Move: 주어진 키와 일치하는 위치로 이동합니다.
 
-파라미터: ["location_key"]
+파라미터: [location_key] - 이동할 위치의 키
 
-예시: ["VIP_Area"], ["Bar"], ["Stage"], ["Private_Room"]
+요구사항: 존재하는 위치 키여야 합니다
 
-제약 조건: 존재하는 위치 키만 사용하세요. 불분명할 경우, Wait를 선택하세요.
-
-참고사항: 호스트 클럽 직원으로서, 고객과 상호작용하거나 임무를 수행할 수 있는 구역으로 이동하는 것을 우선시하세요.
+예시:
+parameters: ["VIP_Area"] - VIP 구역으로 이동
+parameters: ["Bar"] - 바로 이동
+parameters: ["Stage"] - 무대로 이동
+parameters: ["Private_Room"] - 개인실로 이동

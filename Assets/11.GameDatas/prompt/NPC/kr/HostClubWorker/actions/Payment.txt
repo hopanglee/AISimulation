@@ -1,7 +1,9 @@
 Payment: 특정 아이템에 대한 고객 결제를 처리합니다.
 
-사용 시점: 고객이 무언가를 구매하려 할 때, 계산 과정, 금전 거래 처리 시
+파라미터: [itemKey] - 결제를 처리할 아이템의 키 (예: "drink", "table charge")
 
-파라미터: itemKey (문자열) - 결제를 처리할 아이템의 키 (예: "drink", "table charge")
+요구사항: 고객이 구매하려는 아이템이 있어야 합니다
 
-참고사항: 성공 시 수익을 업데이트합니다.
+예시:
+parameters: ["drink"] - 음료 결제
+parameters: ["table charge"] - 테이블 요금 결제

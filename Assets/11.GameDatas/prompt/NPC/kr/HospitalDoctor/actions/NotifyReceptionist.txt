@@ -1,11 +1,9 @@
-NotifyReceptionist: 접수원에게 지정된 메시지 보내기
+NotifyReceptionist: 접수원에게 지정된 메시지를 보냅니다.
 
-사용 시점: 접수원이 정보를 전달하거나 환자를 준비시켜야 할 때
+파라미터: [message] - 접수원에게 전달할 메시지
 
-효과: 연결된 HospitalReceptionist (인스펙터 참조)에게 원격으로 지정된 Talk를 수행합니다
-
-파라미터: [message] (문자열)
+요구사항: 연결된 HospitalReceptionist가 있어야 합니다
 
 예시:
-["다음 환자분을 안내해 주세요"]
-["진료 준비가 끝났으니 환자분을 들여보내 주세요"]
+parameters: ["다음 환자분을 안내해 주세요"]
+parameters: ["진료 준비가 끝났으니 환자분을 들여보내 주세요"]

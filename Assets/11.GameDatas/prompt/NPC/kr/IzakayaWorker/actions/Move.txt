@@ -1,7 +1,10 @@
-Move: 주어진 키와 일치하는 위치로 이동하기
+Move: 주어진 키와 일치하는 위치로 이동합니다.
 
-파라미터: ["location_key"]
+파라미터: [location_key] - 이동할 위치의 키
 
-예시: ["Kitchen"], ["Counter"], ["Table_3"]
+요구사항: 존재하는 위치 키여야 합니다
 
-제약 조건: 존재하는 위치 키만 사용하세요. 불분명할 경우, Wait를 선택하세요.
+예시:
+parameters: ["Kitchen"] - 주방으로 이동
+parameters: ["Counter"] - 카운터로 이동
+parameters: ["Table_3"] - 3번 테이블로 이동
