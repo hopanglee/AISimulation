@@ -51,6 +51,8 @@ public class Brain
     /// </summary>
     public Thinker Thinker => thinker;
 
+    public PerceptionResult recentPerceptionResult;
+
     public Brain(Actor actor)
     {
         this.actor = actor;
@@ -74,6 +76,8 @@ public class Brain
     /// </summary>
     public async UniTask StartDayPlan()
     {
+        // PerceptionAgent를 통해 시각정보 해석
+        var perceptionResult = await InterpretVisualInformationAsync();
         Debug.Log($"[{actor.Name}] DayPlan 시작");
         await dayPlanner.PlanToday();
 
@@ -204,17 +208,16 @@ public class Brain
             await relationshipMemoryManager.ProcessRelationshipUpdatesAsync(perceptionResult);
 
             // === 계획 유지/수정 결정 및 필요 시 재계획 (DayPlanner 내부로 캡슐화) ===
-            await dayPlanner.DecideAndMaybeReplanAsync(perceptionResult);
+            await dayPlanner.DecideAndMaybeReplanAsync();
 
             // 상황 설명 생성 (기존 방식과 PerceptionAgent 결과를 결합)
-            var situationDescription = GenerateSituationDescription();
-            var enhancedDescription = $"{situationDescription}\n\n=== Perception Analysis ===\n{perceptionResult.situation_interpretation}\n\nThought Chain: {string.Join(" -> ", perceptionResult.thought_chain)}";
+            //var enhancedDescription = $"{situationDescription}\n\n=== Perception Analysis ===\n{perceptionResult.situation_interpretation}\n\n생각 Chainn: {string.Join(" -> ", perceptionResult.thought_chain)}";
 
             // ActSelectorAgent를 통해 행동 선택 (Tool을 통해 동적으로 액션 정보 제공)
             // AI Agent 초기화
             var actSelectorAgent = new ActSelectorAgent(actor);
             actSelectorAgent.SetDayPlanner(dayPlanner); // DayPlanner 설정
-            var selection = await actSelectorAgent.SelectActAsync(enhancedDescription);
+            var selection = await actSelectorAgent.SelectActAsync(perceptionResult);
 
             // Enhanced Memory System: ActSelector 결과를 Short Term Memory에 추가 (일단 보류)
             //memoryManager.AddActSelectorResult(selection);
@@ -392,120 +395,21 @@ public class Brain
         {
             var visualInformation = mainActor.sensor.GetLookableEntityDescriptions();
             var perceptionAgent = new PerceptionAgent(actor);
-            return await perceptionAgent.InterpretVisualInformationAsync(visualInformation);
+            recentPerceptionResult = await perceptionAgent.InterpretVisualInformationAsync(visualInformation);
+
+            CharacterMemoryManager characterMemoryManager = new CharacterMemoryManager(actor);
+            var characterInfo = characterMemoryManager.GetCharacterInfo();
+            characterInfo.SetEmotions(recentPerceptionResult.emotions);
+            await characterMemoryManager.SaveCharacterInfoAsync();
+
+            return recentPerceptionResult;
         }
 
         Debug.LogError($"[{actor.Name}] MainActor가 아닌 Actor에서 시각정보 해석을 시도했습니다.");
         throw new System.InvalidOperationException($"{actor.Name}은 MainActor가 아니므로 시각정보 해석을 수행할 수 없습니다.");
-    }
-
-    /// <summary>
-    /// 현재 상황에 대한 설명을 생성합니다.
-    /// </summary>
-    private string GenerateSituationDescription()
-    {
-        var timeService = Services.Get<ITimeService>();
-        var localizationService = Services.Get<ILocalizationService>();
-        var currentTime = timeService.CurrentTime;
-
-        // 기본 정보 준비
-        var handItem = actor.HandItem?.Name ?? "Empty";
-        var inventoryItems = new List<string>();
-        for (int i = 0; i < actor.InventoryItems.Length; i++)
-        {
-            if (actor.InventoryItems[i] != null)
-            {
-                inventoryItems.Add($"Slot {i + 1}: {actor.InventoryItems[i].Name}");
-            }
-            else
-            {
-                inventoryItems.Add($"Slot {i + 1}: Empty");
-            }
-        }
-
-        // ThinkingActor인 경우 추가 정보 제공
-        if (actor is MainActor thinkingActor)
-        {
-            var sleepStatus = thinkingActor.IsSleeping ? "Sleeping" : "Awake";
-
-            // 주변 엔티티 정보 수집
-            var lookable = thinkingActor.sensor.GetLookableEntities();
-            var collectible = thinkingActor.sensor.GetCollectibleEntities();
-            var interactable = thinkingActor.sensor.GetInteractableEntities();
-            var movable = thinkingActor.sensor.GetMovablePositions();
-
-            var lookableEntities = new List<string>();
-            foreach (var entity in lookable)
-            {
-                lookableEntities.Add($"- {entity.Key}: {entity.Value.GetStatusDescription()}");
-            }
-
-            var collectibleEntities = new List<string>();
-            foreach (var entity in collectible)
-            {
-                collectibleEntities.Add($"- {entity.Key}: {entity.Value.GetStatusDescription()}");
-            }
-
-            // Interactable entities are organized by type
-            var allInteractable = new List<string>();
-            foreach (var actor in interactable.actors)
-            {
-                allInteractable.Add($"- {actor.Key}: Actor: {actor.Value.Name}");
-            }
-            foreach (var item in interactable.items)
-            {
-                allInteractable.Add($"- {item.Key}: Item: {item.Value.Name}");
-            }
-            foreach (var building in interactable.buildings)
-            {
-                allInteractable.Add($"- {building.Key}: Building: {building.Value.Name}");
-            }
-            foreach (var prop in interactable.props)
-            {
-                allInteractable.Add($"- {prop.Key}: Prop: {prop.Value.Name}");
-            }
-
-            var movablePositions = new List<string>();
-            foreach (var position in movable)
-            {
-                movablePositions.Add($"- {position.Key}");
-            }
-
-            // 통합 치환 정보
-            var replacements = new Dictionary<string, string>
-            {
-                { "currentTime", FormatTime(currentTime) },
-                { "location", actor.curLocation.locationName },
-                { "handItem", handItem },
-                { "inventory", string.Join(", ", inventoryItems) },
-                { "sleepStatus", sleepStatus },
-                { "hunger", actor.Hunger.ToString() },
-                { "thirst", actor.Thirst.ToString() },
-                { "stamina", actor.Stamina.ToString() },
-                { "stress", actor.Stress.ToString() },
-                { "sleepiness", thinkingActor.Sleepiness.ToString() },
-                { "lookableEntities", string.Join("\n", lookableEntities) },
-                { "collectibleEntities", string.Join("\n", collectibleEntities) },
-                { "interactableEntities", string.Join("\n", allInteractable) },
-                { "movablePositions", string.Join("\n", movablePositions) }
-            };
-
-            return localizationService.GetLocalizedText("brain_status", replacements);
-        }
-
-        // NPC는 Brain이 없으므로 여기까지 오면 안 됨
-        throw new System.InvalidOperationException("Brain should only be used with MainActor");
-    }
-
-    /// <summary>
-    /// GameTime을 문자열로 포맷합니다.
-    /// </summary>
-    private string FormatTime(GameTime time)
-    {
-        return $"{time.hour:D2}:{time.minute:D2}";
-    }    /// <summary>
-    /// 로깅 활성화 여부를 설정합니다.
-    /// </summary>
+    }   /// <summary>
+        /// 로깅 활성화 여부를 설정합니다.
+        /// </summary>
     public void SetLoggingEnabled(bool enabled)
     {
         // GPT 로깅 설정
@@ -525,15 +429,6 @@ public class Brain
     {
         var (selection, paramResult) = await Think();
         await Act(paramResult, CancellationToken.None);
-    }
-
-    /// <summary>
-    /// [Legacy] 이전 PlanToday 메서드 (호환성을 위해 유지)
-    /// </summary>
-    [System.Obsolete("Use StartDayPlanAndThink() method instead")]
-    public async UniTask PlanToday()
-    {
-        await dayPlanner.PlanToday();
     }
 
     /// <summary>

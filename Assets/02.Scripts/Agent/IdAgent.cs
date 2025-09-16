@@ -22,8 +22,8 @@ public class IdAgent : GPT
     {
         this.actor = actor;
         this.toolExecutor = new ActorToolExecutor(actor);
-        
-        LoadSystemPrompt();
+
+
         InitializeOptions();
     }
 
@@ -37,19 +37,20 @@ public class IdAgent : GPT
             // 캐릭터 정보와 기억을 동적으로 로드
             var characterInfo = actor.LoadCharacterInfo();
             var characterMemory = actor.LoadCharacterMemory();
-            
+
             // 플레이스홀더 교체를 위한 딕셔너리 생성
             var replacements = new Dictionary<string, string>
             {
                 { "character_name", actor.Name },
                 { "personality", actor.LoadPersonality() },
                 { "info", characterInfo },
-                { "memory", characterMemory }
+                { "memory", characterMemory },
+                { "character_situation", actor.LoadActorSituation() }
             };
-            
+
             // PromptLoader를 사용하여 프롬프트 로드 및 플레이스홀더 교체
             var promptText = PromptLoader.LoadPromptWithReplacements("IdAgentPrompt.txt", replacements);
-            
+
             messages.Add(new SystemChatMessage(promptText));
         }
         catch (Exception ex)
@@ -132,8 +133,15 @@ public class IdAgent : GPT
     {
         try
         {
+            LoadSystemPrompt();
+            var timeService = Services.Get<ITimeService>();
+            var year = timeService.CurrentTime.year;
+            var month = timeService.CurrentTime.month;
+            var day = timeService.CurrentTime.day;
+            var hour = timeService.CurrentTime.hour;
+            var minute = timeService.CurrentTime.minute;
             // 사용자 메시지 구성
-            var userMessage = $"현재 시각정보:\n{string.Join("\n", visualInformation)}";
+            var userMessage = $"현재 시간: \n{year}년 {month}월 {day}일 {hour:D2}:{minute:D2}\n\n현재 시각정보:\n{string.Join("\n", visualInformation)}";
             messages.Add(new UserChatMessage(userMessage));
 
             // GPT 호출

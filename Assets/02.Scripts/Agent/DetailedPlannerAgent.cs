@@ -17,75 +17,20 @@ using PlanStructures;
 /// </summary>
 public class DetailedPlannerAgent : GPT
 {
-    private Actor actor;
+    private MainActor actor;
     private IToolExecutor toolExecutor;
-
-    /// <summary>
-    /// 세부 활동 계획 구조
-    /// </summary>
-    // public class DetailedPlan
-    // {
-    //     [JsonProperty("summary")]
-    //     public string Summary { get; set; } = "";
-
-    //     [JsonProperty("mood")]
-    //     public string Mood { get; set; } = "";
-
-    //     [JsonProperty("detailed_activities")]
-    //     public List<DetailedActivity> DetailedActivities { get; set; } = new List<DetailedActivity>();
-    // }
-
-    // /// <summary>
-    // /// 세부 활동 (시간 기반 세부 활동)
-    // /// </summary>
-    // public class DetailedActivity
-    // {
-    //     [JsonProperty("activity_name")]
-    //     public string ActivityName { get; set; } = "";
-
-    //     [JsonProperty("description")]
-    //     public string Description { get; set; } = "";
-
-    //     [JsonProperty("start_time")]
-    //     public string StartTime { get; set; } = ""; // "HH:MM" 형식
-
-    //     [JsonProperty("end_time")]
-    //     public string EndTime { get; set; } = ""; // "HH:MM" 형식
-
-    //     [JsonProperty("duration_minutes")]
-    //     public int DurationMinutes { get; set; } = 0;
-
-    //     [JsonProperty("location")]
-    //     public string Location { get; set; } = "";
-
-    //     [JsonProperty("parent_high_level_task")]
-    //     public string ParentHighLevelTask { get; set; } = "";
-
-    //     [JsonProperty("status")]
-    //     public string Status { get; set; } = "pending";
-    // }
-
 
 
     public DetailedPlannerAgent(Actor actor)
         : base()
     {
-        this.actor = actor;
+        this.actor = actor as MainActor;
         this.toolExecutor = new ActorToolExecutor(actor);
 
         // Actor 이름 설정 (로깅용)
         SetActorName(actor.Name);
 
-        // DetailedPlannerAgent 프롬프트 로드 및 초기화
-        string systemPrompt = PromptLoader.LoadPromptWithReplacements("DetailedPlannerAgentPrompt.txt",
-            new Dictionary<string, string>
-            {
-                { "character_name", actor.Name },
-                { "personality", actor.LoadPersonality() },
-                { "info", actor.LoadCharacterInfo() },
-                { "memory", actor.LoadCharacterMemory() },
-            });
-        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+
 
         options = new()
         {
@@ -119,13 +64,13 @@ public class DetailedPlannerAgent : GPT
                 jsonSchemaIsStrict: true
             ),
         };
-        
+
         // 월드 정보 도구 추가
         ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
-        
+
         // 메모리 도구 추가
         ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Memory);
-        
+
         // 계획 도구 추가
         ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Plan);
     }
@@ -162,6 +107,18 @@ public class DetailedPlannerAgent : GPT
     /// </summary>
     public async UniTask<List<DetailedActivity>> CreateDetailedPlanAsync(HighLevelTask highLevelTask)
     {
+        // DetailedPlannerAgent 프롬프트 로드 및 초기화
+        string systemPrompt = PromptLoader.LoadPromptWithReplacements("DetailedPlannerAgentPrompt.txt",
+            new Dictionary<string, string>
+            {
+                { "character_name", actor.Name },
+                { "personality", actor.LoadPersonality() },
+                { "info", actor.LoadCharacterInfo() },
+                { "memory", actor.LoadCharacterMemory() },
+                { "character_situation", actor.LoadActorSituation() },
+                
+            });
+        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
         string prompt = GenerateDetailedPlanPrompt(highLevelTask);
         messages.Add(new UserChatMessage(prompt));
 
@@ -192,20 +149,22 @@ public class DetailedPlannerAgent : GPT
     {
         var localizationService = Services.Get<ILocalizationService>();
         var timeService = Services.Get<ITimeService>();
-        var currentTime = $"{timeService.CurrentTime.hour:D2}:{timeService.CurrentTime.minute:D2}";
-        
+        var year = timeService.CurrentTime.year;
+        var month = timeService.CurrentTime.month;
+        var day = timeService.CurrentTime.day;
+        var dayOfWeek = timeService.CurrentTime.GetDayOfWeek();
+        var hour = timeService.CurrentTime.hour;
+        var minute = timeService.CurrentTime.minute;
+
         var replacements = new Dictionary<string, string>
         {
-            { "currentTime", currentTime },
-            { "location", actor.curLocation.LocationToString() },
-            { "hunger", actor.Hunger.ToString() },
-            { "thirst", actor.Thirst.ToString() },
-            { "stamina", actor.Stamina.ToString() },
-            { "stress", actor.Stress.ToString() },
-            { "sleepiness", (actor as MainActor)?.Sleepiness.ToString() ?? "0" },
+            {"current_time", $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}" },
+            { "character_name", actor.Name },
+            { "interpretation", actor.brain.recentPerceptionResult.situation_interpretation },
             { "taskName", highLevelTask.TaskName },
             { "taskDescription", highLevelTask.Description },
-            { "taskDuration", highLevelTask.DurationMinutes.ToString() }
+            { "taskDuration", highLevelTask.DurationMinutes.ToString() },
+            {"today_plan", actor.brain.dayPlanner.GetCurrentDayPlan().ToString() }
         };
 
         return localizationService.GetLocalizedText("detailed_plan_prompt", replacements);
@@ -215,123 +174,123 @@ public class DetailedPlannerAgent : GPT
     /// 현재 시간 이후의 세부 활동만 재계획합니다.
     /// 기존의 완료된 활동들은 보존하고, 현재 시간 이후의 활동만 새로 생성합니다.
     /// </summary>
-    public async UniTask<HierarchicalPlan> CreateDetailedPlanFromCurrentTimeAsync(
-        HierarchicalPlan highLevelPlan,
-        GameTime currentTime,
-        HierarchicalPlan preservedActivities,
-        PerceptionResult perception,
-        string modificationSummary)
-    {
-        string prompt = GenerateDetailedPlanFromCurrentTimePrompt(
-            highLevelPlan, 
-            currentTime, 
-            preservedActivities, 
-            perception, 
-            modificationSummary
-        );
-        messages.Add(new UserChatMessage(prompt));
+    // public async UniTask<HierarchicalPlan> CreateDetailedPlanFromCurrentTimeAsync(
+    //     HierarchicalPlan highLevelPlan,
+    //     GameTime currentTime,
+    //     HierarchicalPlan preservedActivities,
+    //     PerceptionResult perception,
+    //     string modificationSummary)
+    // {
+    //     string prompt = GenerateDetailedPlanFromCurrentTimePrompt(
+    //         highLevelPlan,
+    //         currentTime,
+    //         preservedActivities,
+    //         perception,
+    //         modificationSummary
+    //     );
+    //     messages.Add(new UserChatMessage(prompt));
 
-        Debug.Log($"[DetailedPlannerAgent] {actor.Name}의 현재 시간 이후 세부 활동 재계획 시작...");
-        Debug.Log($"[DetailedPlannerAgent] 보존된 활동: {preservedActivities.HighLevelTasks.Count}개 HLT");
+    //     Debug.Log($"[DetailedPlannerAgent] {actor.Name}의 현재 시간 이후 세부 활동 재계획 시작...");
+    //     Debug.Log($"[DetailedPlannerAgent] 보존된 활동: {preservedActivities.HighLevelTasks.Count}개 HLT");
 
-        var response = await SendGPTAsync<HierarchicalPlan>(messages, options);
+    //     var response = await SendGPTAsync<HierarchicalPlan>(messages, options);
 
-        // 보존된 계획과 새 계획 병합 (같은 HLT 이름 기준으로 DetailedActivity 병합)
-        var merged = new HierarchicalPlan();
-        
-        // 보존된 HLT들을 먼저 추가
-        foreach (var preservedHlt in preservedActivities.HighLevelTasks)
-        {
-            merged.HighLevelTasks.Add(preservedHlt);
-        }
-        // 새 결과를 시간 순서대로 이어붙이기
-        if (response.HighLevelTasks.Count > 0)
-        {
-            var firstNewHlt = response.HighLevelTasks.First();
-            
-            if (merged.HighLevelTasks.Count > 0)
-            {
-                // 마지막 보존된 HLT 찾기
-                var lastPreservedHlt = merged.HighLevelTasks.Last();
-                
-                // 첫 번째 새 HLT를 마지막 보존된 HLT에 병합
-                foreach (var newActivity in firstNewHlt.DetailedActivities)
-                {
-                    lastPreservedHlt.DetailedActivities.Add(newActivity);
-                }
-                Debug.Log($"[DetailedPlannerAgent] 마지막 HLT '{lastPreservedHlt.TaskName}'에 첫 번째 새 HLT '{firstNewHlt.TaskName}' 병합");
-                
-                // 나머지 새 HLT들 추가
-                for (int i = 1; i < response.HighLevelTasks.Count; i++)
-                {
-                    merged.HighLevelTasks.Add(response.HighLevelTasks[i]);
-                }
-            }
-            else
-            {
-                // 보존된 HLT가 없으면 모든 새 HLT들 추가
-                foreach (var h in response.HighLevelTasks)
-                {
-                    merged.HighLevelTasks.Add(h);
-                }
-            }
-        }
+    //     // 보존된 계획과 새 계획 병합 (같은 HLT 이름 기준으로 DetailedActivity 병합)
+    //     var merged = new HierarchicalPlan();
 
-        Debug.Log($"[DetailedPlannerAgent] {actor.Name}의 세부 활동 재계획 완료!");
-        return merged;
-    }
+    //     // 보존된 HLT들을 먼저 추가
+    //     foreach (var preservedHlt in preservedActivities.HighLevelTasks)
+    //     {
+    //         merged.HighLevelTasks.Add(preservedHlt);
+    //     }
+    //     // 새 결과를 시간 순서대로 이어붙이기
+    //     if (response.HighLevelTasks.Count > 0)
+    //     {
+    //         var firstNewHlt = response.HighLevelTasks.First();
+
+    //         if (merged.HighLevelTasks.Count > 0)
+    //         {
+    //             // 마지막 보존된 HLT 찾기
+    //             var lastPreservedHlt = merged.HighLevelTasks.Last();
+
+    //             // 첫 번째 새 HLT를 마지막 보존된 HLT에 병합
+    //             foreach (var newActivity in firstNewHlt.DetailedActivities)
+    //             {
+    //                 lastPreservedHlt.DetailedActivities.Add(newActivity);
+    //             }
+    //             Debug.Log($"[DetailedPlannerAgent] 마지막 HLT '{lastPreservedHlt.TaskName}'에 첫 번째 새 HLT '{firstNewHlt.TaskName}' 병합");
+
+    //             // 나머지 새 HLT들 추가
+    //             for (int i = 1; i < response.HighLevelTasks.Count; i++)
+    //             {
+    //                 merged.HighLevelTasks.Add(response.HighLevelTasks[i]);
+    //             }
+    //         }
+    //         else
+    //         {
+    //             // 보존된 HLT가 없으면 모든 새 HLT들 추가
+    //             foreach (var h in response.HighLevelTasks)
+    //             {
+    //                 merged.HighLevelTasks.Add(h);
+    //             }
+    //         }
+    //     }
+
+    //     Debug.Log($"[DetailedPlannerAgent] {actor.Name}의 세부 활동 재계획 완료!");
+    //     return merged;
+    // }
 
     /// <summary>
     /// 현재 시간 이후 세부 활동 재계획 프롬프트 생성
     /// </summary>
-    private string GenerateDetailedPlanFromCurrentTimePrompt(
-        HierarchicalPlan highLevelPlan,
-        GameTime currentTime,
-        HierarchicalPlan preservedActivities,
-        PerceptionResult perception,
-        string modificationSummary)
-    {
-        var localizationService = Services.Get<ILocalizationService>();
-        
-        // 보존된 활동들을 HighLevelTask 이름으로 그룹화하여 문자열로 변환
-        var preservedActivitiesBuilder = new StringBuilder();
-        foreach (var h in preservedActivities.HighLevelTasks)
-        {
-            if (h.DetailedActivities.Count > 0)
-            {
-                preservedActivitiesBuilder.AppendLine($"=== {h.TaskName} ===");
-                foreach (var activity in h.DetailedActivities)
-                {
-                    preservedActivitiesBuilder.AppendLine($"  - {activity.ActivityName}: {activity.Description} ({activity.DurationMinutes}분)");
-                }
-                preservedActivitiesBuilder.AppendLine();
-            }
-        }
-        
-        // 고수준 작업들을 문자열로 변환
-        var highLevelTasksBuilder = new StringBuilder();
-        foreach (var task in highLevelPlan.HighLevelTasks)
-        {
-            highLevelTasksBuilder.AppendLine($"- {task.TaskName}: {task.Description} ({task.DurationMinutes}분)");
-        }
-        
-        var replacements = new Dictionary<string, string>
-        {
-            { "currentTime", $"{currentTime.hour:D2}:{currentTime.minute:D2}" },
-            { "location", actor.curLocation.LocationToString() },
-            { "hunger", actor.Hunger.ToString() },
-            { "thirst", actor.Thirst.ToString() },
-            { "stamina", actor.Stamina.ToString() },
-            { "stress", actor.Stress.ToString() },
-            { "sleepiness", (actor as MainActor)?.Sleepiness.ToString() ?? "0" },
-            { "high_level_tasks", highLevelTasksBuilder.ToString() },
-            { "preserved_activities", preservedActivitiesBuilder.ToString() },
-            { "perception_interpretation", perception.situation_interpretation },
-            { "perception_thought_chain", string.Join(" -> ", perception.thought_chain) },
-            { "modification_summary", modificationSummary }
-        };
+    // private string GenerateDetailedPlanFromCurrentTimePrompt(
+    //     HierarchicalPlan highLevelPlan,
+    //     GameTime currentTime,
+    //     HierarchicalPlan preservedActivities,
+    //     PerceptionResult perception,
+    //     string modificationSummary)
+    // {
+    //     var localizationService = Services.Get<ILocalizationService>();
 
-        return localizationService.GetLocalizedText("detailed_plan_from_current_time_prompt", replacements);
-    }
+    //     // 보존된 활동들을 HighLevelTask 이름으로 그룹화하여 문자열로 변환
+    //     var preservedActivitiesBuilder = new StringBuilder();
+    //     foreach (var h in preservedActivities.HighLevelTasks)
+    //     {
+    //         if (h.DetailedActivities.Count > 0)
+    //         {
+    //             preservedActivitiesBuilder.AppendLine($"=== {h.TaskName} ===");
+    //             foreach (var activity in h.DetailedActivities)
+    //             {
+    //                 preservedActivitiesBuilder.AppendLine($"  - {activity.ActivityName}: {activity.Description} ({activity.DurationMinutes}분)");
+    //             }
+    //             preservedActivitiesBuilder.AppendLine();
+    //         }
+    //     }
+
+    //     // 고수준 작업들을 문자열로 변환
+    //     var highLevelTasksBuilder = new StringBuilder();
+    //     foreach (var task in highLevelPlan.HighLevelTasks)
+    //     {
+    //         highLevelTasksBuilder.AppendLine($"- {task.TaskName}: {task.Description} ({task.DurationMinutes}분)");
+    //     }
+
+    //     var replacements = new Dictionary<string, string>
+    //     {
+    //         { "currentTime", $"{currentTime.hour:D2}:{currentTime.minute:D2}" },
+    //         { "location", actor.curLocation.LocationToString() },
+    //         { "hunger", actor.Hunger.ToString() },
+    //         { "thirst", actor.Thirst.ToString() },
+    //         { "stamina", actor.Stamina.ToString() },
+    //         { "stress", actor.Stress.ToString() },
+    //         { "sleepiness", (actor as MainActor)?.Sleepiness.ToString() ?? "0" },
+    //         { "high_level_tasks", highLevelTasksBuilder.ToString() },
+    //         { "preserved_activities", preservedActivitiesBuilder.ToString() },
+    //         { "perception_interpretation", perception.situation_interpretation },
+    //         { "perception_thought_chain", string.Join(" -> ", perception.thought_chain) },
+    //         { "modification_summary", modificationSummary }
+    //     };
+
+    //     return localizationService.GetLocalizedText("detailed_plan_from_current_time_prompt", replacements);
+    // }
 
 }

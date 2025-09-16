@@ -33,6 +33,9 @@ public class CharacterInfo
     [JsonProperty("additional_info")]
     public string AdditionalInfo { get; set; }
 
+    [JsonProperty("emotions")]
+    public Dictionary<string, float> Emotions { get; set; } = new Dictionary<string, float>();
+
     [JsonProperty("last_updated")]
     public DateTime LastUpdated { get; set; } = DateTime.Now;
 
@@ -73,6 +76,26 @@ public class CharacterInfo
         return allTraits;
     }
 
+    public void SetEmotions(Dictionary<string, float> emotions)
+    {
+        Emotions = emotions;
+        LastUpdated = DateTime.Now;
+    }
+
+    public string LoadEmotions()
+    {
+        if (Emotions == null || Emotions.Count == 0)
+            return "감정 없음";
+
+        var emotionList = new List<string>();
+        foreach (var emotion in Emotions)
+        {
+            emotionList.Add($"{emotion.Key}: {emotion.Value:F1}");
+        }
+
+        return string.Join(", ", emotionList);
+    }
+
     /// <summary>
     /// 특정 특성이 있는지 확인합니다.
     /// </summary>
@@ -80,21 +103,4 @@ public class CharacterInfo
     {
         return Temperament.Contains(trait) || Personality.Contains(trait);
     }
-}
-
-
-[System.Serializable]
-public class RelationshipInfo
-{
-    [JsonProperty("relationship_type")]
-    public string RelationshipType { get; set; } // "friend", "family", "romantic", "enemy", etc.
-
-    [JsonProperty("closeness")]
-    public float Closeness { get; set; } = 0.5f; // 0.0 ~ 1.0
-
-    [JsonProperty("last_interaction")]
-    public DateTime LastInteraction { get; set; } = DateTime.Now;
-
-    [JsonProperty("notes")]
-    public string Notes { get; set; }
 }

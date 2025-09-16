@@ -31,7 +31,8 @@ namespace Agent
                     { "character_name", actor.Name },
                     { "personality", actor.LoadPersonality() },
                     { "info", actor.LoadCharacterInfo() },
-                    { "memory", actor.LoadCharacterMemory() }
+                    { "memory", actor.LoadCharacterMemory() },
+                    { "character_situation", actor.LoadActorSituation() }
                 });
             this.options = new ChatCompletionOptions
             {
@@ -129,13 +130,20 @@ namespace Agent
         private string BuildUserMessage(CommonContext context)
         {
             var localizationService = Services.Get<ILocalizationService>();
-            
+            var timeService = Services.Get<ITimeService>();
+            var year = timeService.CurrentTime.year;
+            var month = timeService.CurrentTime.month;
+            var day = timeService.CurrentTime.day;
+            var hour = timeService.CurrentTime.hour;
+            var minute = timeService.CurrentTime.minute;
+            var dayOfWeek = timeService.CurrentTime.GetDayOfWeek();
             var replacements = new Dictionary<string, string>
             {
                 { "reasoning", context.Reasoning },
                 { "intention", context.Intention },
                 { "characters", string.Join(", ", GetCurrentAvailableCharacters()) },
-                { "feedback", !string.IsNullOrEmpty(context.PreviousFeedback) ? context.PreviousFeedback : "" }
+                { "current_time", $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}" }
+                //{ "feedback", !string.IsNullOrEmpty(context.PreviousFeedback) ? context.PreviousFeedback : "" }
             };
             
             return localizationService.GetLocalizedText("parameter_message_with_feedback", replacements);

@@ -1,4 +1,4 @@
-=== Chunk {chunk_number}: {chunk_id} ===
+=== Chunk {chunk_number}: [id: {chunk_id}] ===
 시간 범위: {time_range}
 요약: {summary}
 주요 사건: {main_events}

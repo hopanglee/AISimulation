@@ -1,1 +1,1 @@
-[{entry_number}] {timestamp} [{entry_type}] {content}
+[{entry_number}] {timestamp} [{entry_type}] <{emotions}> {content} ({details})

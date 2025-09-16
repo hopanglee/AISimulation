@@ -1,18 +1,18 @@
-내일({tomorrow}) 계획의 고수준 작업들에 대한 세부 활동을 다음 맥락을 바탕으로 생성하세요:
+현재시간
+{current_time}
 
-현재 상태: 배고픔({hunger}), 목마름({thirst}), 체력({stamina}), 스트레스({stress}), 졸림({sleepiness})
-현재 위치: {location}
-첫 번째 활동은 반드시 현재 시간 {currentTime}에 정확히 시작해야 합니다.
-첫 번째 활동 전에 간격을 두지 마세요. 에이전트가 깨어있다면 첫 번째 활동은 현재 시간에 시작해야 합니다.
+첫 번째 활동은 반드시 현재 시간 {current_time}에 정확히 시작해야 합니다.
+첫 번째 활동 전에 간격을 두지 마세요. 당신이 깨어있다면 첫 번째 활동은 현재 시간에 시작해야 합니다.
 
-예시:
-- {currentTime}: 일어나서 스트레칭하기
-- {currentTime}: 주방으로 가서 물 마시기
+현재 상황
+{interpretation}
 
-=== 고수준 계획 ===
-요약: {summary}
-기분: {mood}
-우선순위 목표: {priority_goals}
+=== 세분화 해야 할 고수준 계획 ===
+요약: {taskName}
+기분: {taskDescription}
+우선순위 목표: {taskDuration}
 
-고수준 작업:
-{high_level_tasks}
+오늘 하루 전체 계획:
+{today_plan}
+
+{character_name}다운 세부 계획을 생성하세요.  

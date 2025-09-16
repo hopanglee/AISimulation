@@ -15,10 +15,10 @@ public class RelationshipDecision
 {
     [JsonProperty("should_update")]
     public bool ShouldUpdate { get; set; }
-    
+
     [JsonProperty("reasoning")]
     public string Reasoning { get; set; }
-    
+
     [JsonProperty("updates")]
     public List<RelationshipUpdateEntry> Updates { get; set; } = new List<RelationshipUpdateEntry>();
 }
@@ -31,13 +31,13 @@ public class RelationshipUpdateEntry
 {
     [JsonProperty("character_name")]
     public string CharacterName { get; set; }
-    
+
     [JsonProperty("field_key")]
     public string FieldKey { get; set; }
-    
+
     [JsonProperty("new_value")]
     public object NewValue { get; set; }
-    
+
     [JsonProperty("change_reason")]
     public string ChangeReason { get; set; }
 }
@@ -55,8 +55,6 @@ public class RelationshipAgent : GPT
         this.actor = actor;
         SetActorName(actor.Name);
 
-        string systemPrompt = LoadRelationshipAgentPrompt();
-        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
 
         options = new()
         {
@@ -120,24 +118,36 @@ public class RelationshipAgent : GPT
     {
         try
         {
+            var timeService = Services.Get<ITimeService>();
+            var year = timeService.CurrentTime.year;
+            var month = timeService.CurrentTime.month;
+            var day = timeService.CurrentTime.day;
+            var dayOfWeek = timeService.CurrentTime.GetDayOfWeek();
+            var hour = timeService.CurrentTime.hour;
+            var minute = timeService.CurrentTime.minute;
             var updates = new List<RelationshipUpdateEntry>();
-            
+
             // 사용자 메시지 구성
             var localizationService = Services.Get<ILocalizationService>();
             var replacements = new Dictionary<string, string>
             {
+                { "current_time", $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}" },
                 { "situation_interpretation", perceptionResult.situation_interpretation },
                 { "thought_chain", string.Join(" -> ", perceptionResult.thought_chain ?? new List<string>()) },
-                { "emotions", string.Join(", ", perceptionResult.emotions?.Select(e => $"{e.Key}: {e.Value}") ?? new List<string>()) }
+                { "emotions", FormatEmotions(perceptionResult.emotions) },
+                {"current_relationships", actor.LoadRelationships() }
             };
-            
+
+            string systemPrompt = LoadRelationshipAgentPrompt();
+            messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+
             string userMessage = localizationService.GetLocalizedText("relationship_decision_prompt", replacements);
 
             // 사용자 메시지 추가
             messages.Add(new UserChatMessage(userMessage));
 
             var response = await SendGPTAsync<RelationshipDecision>(messages, options);
-            
+
             if (response != null)
             {
                 try
@@ -184,6 +194,20 @@ public class RelationshipAgent : GPT
             Debug.LogError($"Relationship Agent 프롬프트 로드 실패: {ex.Message}");
             throw; // 에러를 다시 던져서 호출자가 처리하도록 함
         }
+    }
+
+    private string FormatEmotions(Dictionary<string, float> emotions)
+    {
+        if (emotions == null || emotions.Count == 0)
+            return "감정 없음";
+
+        var emotionList = new List<string>();
+        foreach (var emotion in emotions)
+        {
+            emotionList.Add($"{emotion.Key}: {emotion.Value:F1}");
+        }
+
+        return string.Join(", ", emotionList);
     }
 }
 

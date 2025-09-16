@@ -32,26 +32,16 @@ namespace Agent
         private IToolExecutor toolExecutor;
         private DayPlanner dayPlanner; // DayPlanner 참조 추가
 
-        
+
 
         public ActSelectorAgent(Actor actor) : base()
         {
             this.actor = actor;
             this.toolExecutor = new ActorToolExecutor(actor);
             SetActorName(actor.Name);
-            
-            // ActSelectorAgent 프롬프트 로드 및 초기화 (CharacterName 플레이스홀더 치환)
-            string systemPrompt = PromptLoader.LoadPromptWithReplacements("ActSelectorAgentPrompt.txt", 
-                new Dictionary<string, string>
-                {
-                    { "character_name", actor.Name },
-                    { "personality", actor.LoadPersonality() },
-                    { "info", actor.LoadCharacterInfo() },
-                    { "memory", actor.LoadCharacterMemory() },
-                    {"available_act", FormatAvailableActionsToString(GetCurrentAvailableActions())}
-                });
-            messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
-            
+
+
+
             // Options 초기화
             options = new ChatCompletionOptions
             {
@@ -84,7 +74,7 @@ namespace Agent
                     jsonSchemaIsStrict: true
                 )
             };
-            
+
             // 모든 도구 추가 (액션 정보 + 아이템 관리)
             ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.All);
         }
@@ -115,68 +105,91 @@ namespace Agent
         /// <param name="situation">상황 설명</param>
         /// <param name="availableActions">사용 가능한 액션 집합 (null이면 모든 액션 사용 가능)</param>
         /// <returns>ActSelectionResult</returns>
-        public async UniTask<ActSelectionResult> SelectActAsync(string situation)
+        public async UniTask<ActSelectionResult> SelectActAsync(PerceptionResult perceptionResult)
         {
+            // ActSelectorAgent 프롬프트 로드 및 초기화 (CharacterName 플레이스홀더 치환)
+            string systemPrompt = PromptLoader.LoadPromptWithReplacements("ActSelectorAgentPrompt.txt",
+                new Dictionary<string, string>
+                {
+                    { "character_situation", actor.LoadActorSituation() },
+                    { "character_name", actor.Name },
+                    { "personality", actor.LoadPersonality() },
+                    { "info", actor.LoadCharacterInfo() },
+                    { "memory", actor.LoadCharacterMemory() },
+                    {"available_act", FormatAvailableActionsToString(GetCurrentAvailableActions())}
+                });
+            messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+
             // GPT에 물어보기 전에 responseformat 동적 갱신
-            UpdateResponseFormatSchema();
-            
-            string userMessage = situation;
-            
+            //UpdateResponseFormatSchema();
+
+            //string userMessage = $"{actor.Name}이 인식한 상황\n" + situation;
+
             // 현재 행동 정보 추가
             if (dayPlanner != null)
             {
                 try
                 {
                     var currentAction = await dayPlanner.GetCurrentSpecificActionAsync();
-                    if (currentAction != null)
+                    var currentActivity = currentAction.ParentDetailedActivity;
+                    // DayPlanner의 메서드를 사용하여 활동 시작 시간과 진행률 계산
+                    var activityStartTime = dayPlanner.GetActivityStartTime(currentActivity);
+
+                    // 모든 SpecificAction 나열
+                    var allActionsText = new List<string>();
+                    for (int i = 0; i < currentActivity.SpecificActions.Count; i++)
                     {
-                        var currentActivity = currentAction.ParentDetailedActivity;
-                        if (currentActivity != null)
-                        {
-                            // DayPlanner의 메서드를 사용하여 활동 시작 시간과 진행률 계산
-                            var activityStartTime = dayPlanner.GetActivityStartTime(currentActivity);
-                            
-                            // 모든 SpecificAction 나열
-                            var allActionsText = new List<string>();
-                            for (int i = 0; i < currentActivity.SpecificActions.Count; i++)
+                        var action = currentActivity.SpecificActions[i];
+                        var isCurrent = (action == currentAction) ? " [CURRENT]" : "";
+                        allActionsText.Add($"{i + 1}. {action.ActionType}{isCurrent}: {action.Description}");
+                    }
+
+
+                    //userMessage += $"\n\n{contextText}";
+
+                    // 현재 사용 가능한 액션 정보 추가
+                    //var currentAvailableActions = GetCurrentAvailableActions();
+                    //var formattedActions = FormatAvailableActionsToString(currentAvailableActions);
+                    //userMessage += $"\n\nCurrently Available Actions:\n{formattedActions}";
+                    // 프롬프트 텍스트 로드 및 replace
+                    var localizationService = Services.Get<ILocalizationService>();
+                    var timeService = Services.Get<ITimeService>();
+                    var year = timeService.CurrentTime.year;
+                    var month = timeService.CurrentTime.month;
+                    var day = timeService.CurrentTime.day;
+                    var dayOfWeek = timeService.CurrentTime.GetDayOfWeek();
+                    var hour = timeService.CurrentTime.hour;
+                    var minute = timeService.CurrentTime.minute;
+                    var replacements = new Dictionary<string, string>
                             {
-                                var action = currentActivity.SpecificActions[i];
-                                var isCurrent = (action == currentAction) ? " [CURRENT]" : "";
-                                allActionsText.Add($"{i + 1}. {action.ActionType}{isCurrent}: {action.Description}");
-                            }
-                            
-                            // 프롬프트 텍스트 로드 및 replace
-                            var localizationService = Services.Get<ILocalizationService>();
-                            var replacements = new Dictionary<string, string>
-                            {
+                                {"current_time", $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}" },
+                                {"character_name", actor.Name},
+                                {"interpretation", perceptionResult.situation_interpretation},
+                                {"thought_chain", string.Join(" -> ", perceptionResult.thought_chain)},
                                 { "parent_activity", currentActivity.ActivityName },
                                 { "parent_task", currentActivity.ParentHighLevelTask?.TaskName ?? "Unknown" },
                                 { "activity_start_time", $"{activityStartTime.hour:D2}:{activityStartTime.minute:D2}" },
                                 { "activity_duration_minutes", currentActivity.DurationMinutes.ToString() },
                                 { "all_actions_in_activity", string.Join("\n", allActionsText) }
                             };
-                            
-                            var contextText = localizationService.GetLocalizedText("current_action_context_prompt", replacements);
-                            userMessage += $"\n\n{contextText}";
-                        }
-                    }
+
+                    var userMessage = localizationService.GetLocalizedText("current_action_context_prompt", replacements);
+                    messages.Add(new UserChatMessage(userMessage));
+                    var response = await SendGPTAsync<ActSelectionResult>(messages, options);
+
+                    Debug.Log($"[ActSelectorAgent] Act: {response.ActType}, Reason: {response.Reasoning}, Intention: {response.Intention}");
+                    return response;
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogWarning($"[ActSelectorAgent] 현재 행동 정보 가져오기 실패: {ex.Message}");
+                    Debug.LogError($"[ActSelectorAgent] 현재 행동 정보 가져오기 실패: {ex.Message}");
+                    return null;
                 }
             }
-            
-            // 현재 사용 가능한 액션 정보 추가
-            var currentAvailableActions = GetCurrentAvailableActions();
-            var formattedActions = FormatAvailableActionsToString(currentAvailableActions);
-            userMessage += $"\n\nCurrently Available Actions:\n{formattedActions}";
-            
-            messages.Add(new UserChatMessage(userMessage));
-            var response = await SendGPTAsync<ActSelectionResult>(messages, options);
-        
-            Debug.Log($"[ActSelectorAgent] Act: {response.ActType}, Reason: {response.Reasoning}, Intention: {response.Intention}");
-            return response;
+
+            Debug.LogError($"[ActSelectorAgent] 현재 행동 정보 가져오기 실패");
+
+            return null;
         }
 
         /// <summary>
@@ -229,7 +242,7 @@ namespace Agent
             try
             {
                 var availableActions = new HashSet<ActionType>();
-                
+
                 // 기본적으로 모든 액션 사용 가능
                 availableActions.Add(ActionType.MoveToArea);
                 availableActions.Add(ActionType.MoveToEntity);
@@ -243,9 +256,9 @@ namespace Agent
                 availableActions.Add(ActionType.RemoveClothing); // 옷 벗기
 
                 availableActions.Add(ActionType.Wait);
-               // availableActions.Add(ActionType.PerformActivity);
+                // availableActions.Add(ActionType.PerformActivity);
                 availableActions.Add(ActionType.Think);
-                
+
                 // // 상황에 따른 제한 사항들
                 // if (actor is MainActor thinkingActor)
                 // {
@@ -254,7 +267,7 @@ namespace Agent
                 //         availableActions.Clear();
                 //         availableActions.Add(ActionType.Wait);
                 //     }
-                    
+
                 //     // 이동 가능한 위치가 없으면 MoveToArea 제한
                 //     var movablePositions = thinkingActor.sensor.GetMovablePositions();
                 //     if (movablePositions.Count == 0)
@@ -262,7 +275,7 @@ namespace Agent
                 //         availableActions.Remove(ActionType.MoveToArea);
                 //         availableActions.Remove(ActionType.MoveToEntity);
                 //     }
-                    
+
                 //     // 상호작용 가능한 엔티티가 없으면 관련 액션 제한
                 //     var interactable = thinkingActor.sensor.GetInteractableEntities();
                 //     if (interactable.actors.Count == 0)
@@ -275,20 +288,20 @@ namespace Agent
                 //         availableActions.Remove(ActionType.PickUpItem);
                 //         availableActions.Remove(ActionType.InteractWithObject);
                 //     }
-                    
+
                 //     // 손에 아이템이 없으면 PutDown 제한
                 //     if (thinkingActor.HandItem == null)
                 //     {
                 //         availableActions.Remove(ActionType.PutDown);
                 //     }
-                    
+
                 //     if (interactable.actors.Count == 0)
                 //     {
                 //         availableActions.Remove(ActionType.GiveMoney);
                 //         availableActions.Remove(ActionType.GiveItem);
                 //     }
                 // }
-                
+
                 return availableActions;
             }
             catch (Exception ex)
@@ -307,17 +320,17 @@ namespace Agent
             {
                 var actionInfos = new List<string>();
                 var localizationService = Services.Get<ILocalizationService>();
-                
+
                 foreach (var action in availableActions)
                 {
                     string actionFileName = $"{action}.json";
-                    
+
                     try
                     {
                         // LocalizationService를 통해 액션 JSON 파일 경로 가져오기
                         string actionPath = localizationService.GetActionPromptPath(actionFileName);
                         string jsonContent = "";
-                        
+
                         if (File.Exists(actionPath))
                         {
                             jsonContent = File.ReadAllText(actionPath);
@@ -326,23 +339,23 @@ namespace Agent
                         {
                             Debug.LogError($"[ActSelectorAgent] 액션 JSON 파일을 찾을 수 없습니다: {actionFileName}");
                         }
-                        
+
                         if (!string.IsNullOrEmpty(jsonContent))
                         {
                             var actionDesc = JsonUtility.FromJson<ActionDescription>(jsonContent);
-                            
+
                             var actionInfo = $"- {actionDesc.name}: {actionDesc.description}";
-                            
+
                             if (actionDesc.requirements != null && actionDesc.requirements.Length > 0)
                             {
                                 actionInfo += $"\n  요구사항: {string.Join(", ", actionDesc.requirements)}";
                             }
-                            
+
                             if (actionDesc.whenToUse != null && actionDesc.whenToUse.Length > 0)
                             {
                                 actionInfo += $"\n  사용 시기: {string.Join(", ", actionDesc.whenToUse)}";
                             }
-                            
+
                             actionInfos.Add(actionInfo);
                         }
                         else
@@ -356,7 +369,7 @@ namespace Agent
                         actionInfos.Add($"- {action}: Description not available.");
                     }
                 }
-                
+
                 return string.Join("\n", actionInfos);
             }
             catch (Exception ex)
@@ -403,4 +416,4 @@ namespace Agent
             public bool required;
         }
     }
-} 
+}

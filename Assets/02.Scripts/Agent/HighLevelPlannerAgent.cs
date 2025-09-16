@@ -16,7 +16,7 @@ using PlanStructures;
 /// </summary>
 public class HighLevelPlannerAgent : GPT
 {
-    private Actor actor;
+    private MainActor actor;
     private IToolExecutor toolExecutor;
 
     /// <summary>
@@ -60,22 +60,13 @@ public class HighLevelPlannerAgent : GPT
     public HighLevelPlannerAgent(Actor actor)
         : base()
     {
-        this.actor = actor;
+        this.actor = actor as MainActor;
         this.toolExecutor = new ActorToolExecutor(actor);
 
         // Actor 이름 설정 (로깅용)
         SetActorName(actor.Name);
 
-        // HighLevelPlannerAgent 프롬프트 로드 및 초기화
-        string systemPrompt = PromptLoader.LoadPromptWithReplacements("HighLevelPlannerAgentPrompt.txt",
-            new Dictionary<string, string>
-            {
-                { "character_name", actor.Name },
-                { "personality", actor.LoadPersonality() },
-                { "info", actor.LoadCharacterInfo() },
-                { "memory", actor.LoadCharacterMemory() },
-            });
-        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+
 
         options = new()
         {
@@ -109,10 +100,10 @@ public class HighLevelPlannerAgent : GPT
                 jsonSchemaIsStrict: true
             ),
         };
-        
+
         // 월드 정보 도구 추가
         ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
-        
+
         // 메모리 도구 추가
         ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Memory);
     }
@@ -140,6 +131,17 @@ public class HighLevelPlannerAgent : GPT
     /// </summary>
     public async UniTask<HierarchicalPlan> CreateHighLevelPlanAsync()
     {
+        // HighLevelPlannerAgent 프롬프트 로드 및 초기화
+        string systemPrompt = PromptLoader.LoadPromptWithReplacements("HighLevelPlannerAgentPrompt.txt",
+            new Dictionary<string, string>
+            {
+                { "character_name", actor.Name },
+                { "personality", actor.LoadPersonality() },
+                { "info", actor.LoadCharacterInfo() },
+                { "memory", actor.LoadCharacterMemory() },
+                { "character_situation", actor.LoadActorSituation() }
+            });
+        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
         string prompt = GenerateHighLevelPlanPrompt();
         messages.Add(new UserChatMessage(prompt));
 
@@ -157,11 +159,20 @@ public class HighLevelPlannerAgent : GPT
     /// 재계획을 위한 고수준 계획 생성 (perception과 modification_summary 포함)
     /// </summary>
     public async UniTask<HierarchicalPlan> CreateHighLevelPlanWithContextAsync(
-        PerceptionResult perception, 
         string modificationSummary,
         HierarchicalPlan existingPlan = null)
     {
-        string prompt = GenerateHighLevelPlanWithContextPrompt(perception, modificationSummary, existingPlan);
+        string systemPrompt = PromptLoader.LoadPromptWithReplacements("HighLevelPlannerAgentPrompt.txt",
+            new Dictionary<string, string>
+            {
+                { "character_name", actor.Name },
+                { "personality", actor.LoadPersonality() },
+                { "info", actor.LoadCharacterInfo() },
+                { "memory", actor.LoadCharacterMemory() },
+                { "character_situation", actor.LoadActorSituation() }
+            });
+        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+        string prompt = GenerateHighLevelPlanWithContextPrompt(modificationSummary, existingPlan);
         messages.Add(new UserChatMessage(prompt));
 
         Debug.Log($"[HighLevelPlannerAgent] {actor.Name}의 재계획용 고수준 계획 생성 시작...");
@@ -182,17 +193,18 @@ public class HighLevelPlannerAgent : GPT
     {
         var localizationService = Services.Get<ILocalizationService>();
         var timeService = Services.Get<ITimeService>();
-        var currentTime = $"{timeService.CurrentTime.hour:D2}:{timeService.CurrentTime.minute:D2}";
-        
+        var year = timeService.CurrentTime.year;
+        var month = timeService.CurrentTime.month;
+        var day = timeService.CurrentTime.day;
+        var dayOfWeek = timeService.CurrentTime.GetDayOfWeek();
+        var hour = timeService.CurrentTime.hour;
+        var minute = timeService.CurrentTime.minute;
+
         var replacements = new Dictionary<string, string>
         {
-            { "currentTime", currentTime },
-            { "location", actor.curLocation.LocationToString() },
-            { "hunger", actor.Hunger.ToString() },
-            { "thirst", actor.Thirst.ToString() },
-            { "stamina", actor.Stamina.ToString() },
-            { "stress", actor.Stress.ToString() },
-            { "sleepiness", (actor as MainActor)?.Sleepiness.ToString() ?? "0" }
+            { "currentTime", $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}" },
+            { "interpretation", actor.brain.recentPerceptionResult.situation_interpretation },
+            {"character_name", actor.Name },
         };
 
         return localizationService.GetLocalizedText("high_level_plan_prompt", replacements);
@@ -202,43 +214,37 @@ public class HighLevelPlannerAgent : GPT
     /// 재계획을 위한 고수준 계획 프롬프트 생성 (perception과 modification_summary 포함)
     /// </summary>
     private string GenerateHighLevelPlanWithContextPrompt(
-        PerceptionResult perception, 
-        string modificationSummary, 
+        string modificationSummary,
         HierarchicalPlan existingPlan = null)
     {
         var localizationService = Services.Get<ILocalizationService>();
         var timeService = Services.Get<ITimeService>();
-        var currentTime = $"{timeService.CurrentTime.hour:D2}:{timeService.CurrentTime.minute:D2}";
-        
+        var year = timeService.CurrentTime.year;
+        var month = timeService.CurrentTime.month;
+        var day = timeService.CurrentTime.day;
+        var dayOfWeek = timeService.CurrentTime.GetDayOfWeek();
+        var hour = timeService.CurrentTime.hour;
+        var minute = timeService.CurrentTime.minute;
+
+
         // 기존 계획 정보를 문자열로 변환
-        var existingPlanInfo = "";
-        if (existingPlan?.HighLevelTasks != null && existingPlan.HighLevelTasks.Count > 0)
-        {
-            var existingTasksBuilder = new StringBuilder();
-            existingTasksBuilder.AppendLine("기존 계획:");
-            foreach (var task in existingPlan.HighLevelTasks)
-            {
-                existingTasksBuilder.AppendLine($"- {task.TaskName}: {task.Description} ({task.DurationMinutes}분)");
-            }
-            existingPlanInfo = existingTasksBuilder.ToString();
-        }
+        var existingPlanInfo = actor.brain.dayPlanner.GetCurrentDayPlan().ToString();
+
+        // 감정을 읽기 쉬운 형태로 변환
+        //var perceptionEmotions = FormatEmotions(actor.brain.recentPerceptionResult.emotions);
         
         var replacements = new Dictionary<string, string>
         {
-            { "currentTime", currentTime },
-            { "location", actor.curLocation.LocationToString() },
-            { "hunger", actor.Hunger.ToString() },
-            { "thirst", actor.Thirst.ToString() },
-            { "stamina", actor.Stamina.ToString() },
-            { "stress", actor.Stress.ToString() },
-            { "sleepiness", (actor as MainActor)?.Sleepiness.ToString() ?? "0" },
-            { "perception_interpretation", perception.situation_interpretation },
-            { "perception_thought_chain", string.Join(" -> ", perception.thought_chain) },
+            { "currentTime", $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}" },
+            { "perception_interpretation", actor.brain.recentPerceptionResult.situation_interpretation },
+            { "perception_thought_chain", string.Join(" -> ", actor.brain.recentPerceptionResult.thought_chain) },
             { "modification_summary", modificationSummary },
             { "existing_plan", existingPlanInfo }
         };
 
         return localizationService.GetLocalizedText("high_level_plan_replan_prompt", replacements);
     }
+
+    
 
 }

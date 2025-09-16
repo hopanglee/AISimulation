@@ -3,13 +3,18 @@
 
 유저 메세지로 {character_name}이 인식한 현재 상황이 주어집니다.
 이 상황을 바탕으로 기존 계획을 유지할지 수정할지 결정하는 것이 당신의 역할입니다.
-{character_name}의 성향을 반드시 고려하여 {character_name}가 할법한 하루 활동을 계획하세요.
+{character_name}의 성향을 반드시 고려하여 {character_name}가 할법한 결정을 내리도록 하세요.
+수정하게된다면, 수정 이유와 어떻게 바꿔야 하는 지를 반드시 구체적으로 말하세요.
 
 ---
 
 {character_name} 정보
 - 성격: {personality} 
 - 정보: {info}
+
+{character_name}의 현재 상태
+{character_situation}
+
 {memory}
 ---
 

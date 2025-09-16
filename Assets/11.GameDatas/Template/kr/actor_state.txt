@@ -1,1 +1,0 @@
-현재 상태: 배고픔({hunger}), 목마름({thirst}), 체력({stamina}), 스트레스({stress})

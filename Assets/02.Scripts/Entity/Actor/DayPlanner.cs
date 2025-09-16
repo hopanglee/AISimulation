@@ -201,13 +201,12 @@ public class DayPlanner
     public async UniTask ReplanFromCurrentStateAsync(
         HierarchicalPlan currentPlan,
         GameTime currentTime,
-        PerceptionResult perception,
         PlanDecisionAgent.PlanDecisionResult decision)
     {
         if (currentPlan == null) throw new InvalidOperationException("currentPlan is null");
         if (decision == null) throw new InvalidOperationException("decision is null");
 
-        var newPlan = await hierarchicalPlanner.ReplanFromCurrentStateAsync(currentPlan, currentTime, perception, decision);
+        var newPlan = await hierarchicalPlanner.ReplanFromCurrentStateAsync(currentPlan, currentTime, decision);
         currentHierarchicalDayPlan = newPlan;
         StoreHierarchicalDayPlan(currentHierarchicalDayPlan);
     }
@@ -215,7 +214,7 @@ public class DayPlanner
     /// <summary>
     /// Perception 결과를 바탕으로 계획 유지/수정을 결정하고 필요한 경우 재계획을 수행합니다.
     /// </summary>
-    public async UniTask DecideAndMaybeReplanAsync(PerceptionResult perception)
+    public async UniTask DecideAndMaybeReplanAsync()
     {
         var timeService = Services.Get<ITimeService>();
         var currentTime = timeService.CurrentTime;
@@ -223,7 +222,6 @@ public class DayPlanner
 
         var decisionInput = new PlanDecisionAgent.PlanDecisionInput
         {
-            perception = perception,
             currentPlan = currentPlan,
             currentTime = currentTime
         };
@@ -232,7 +230,7 @@ public class DayPlanner
         var decision = await planDecisionAgent.DecideAsync(decisionInput);
         if (decision.decision == PlanDecisionAgent.Decision.Revise)
         {
-            await ReplanFromCurrentStateAsync(currentPlan, currentTime, perception, decision);
+            await ReplanFromCurrentStateAsync(currentPlan, currentTime, decision);
         }
     }
 

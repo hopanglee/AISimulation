@@ -1,7 +1,8 @@
+현재시간
+{current_time}
+
 추론: {reasoning}
 의도: {intention}
 사용 가능한 캐릭터들: {characters}
-
-이전 행동 피드백: {feedback}
 
 선택할 때 이 피드백을 고려하세요. 이전 캐릭터가 대화할 수 없었다면 다른 캐릭터를 선택하세요.

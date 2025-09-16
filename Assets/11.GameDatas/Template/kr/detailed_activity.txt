@@ -1,2 +1,0 @@
-- {activityName}: {description} ({startTime}-{endTime}) {location}에서
-  상위 작업: {parentTask}

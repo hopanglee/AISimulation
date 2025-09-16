@@ -16,31 +16,31 @@ public class LongTermMemoryEvaluation
 {
     [JsonProperty("memory_index")]
     public int MemoryIndex { get; set; }
-    
+
     [JsonProperty("recency_score")]
     public float RecencyScore { get; set; } // 0.0 ~ 1.0
-    
+
     [JsonProperty("surprise_score")]
     public float SurpriseScore { get; set; } // 0.0 ~ 1.0
-    
+
     [JsonProperty("importance_score")]
     public float ImportanceScore { get; set; } // 0.0 ~ 1.0
-    
+
     [JsonProperty("relevance_score")]
     public float RelevanceScore { get; set; } // 0.0 ~ 1.0
-    
+
     [JsonProperty("overall_score")]
     public float OverallScore { get; set; } // 0.0 ~ 1.0
-    
+
     [JsonProperty("action")]
     public string Action { get; set; } // "keep", "remove", "merge_with", "modify"
-    
+
     [JsonProperty("merge_target_index")]
     public int? MergeTargetIndex { get; set; }
-    
+
     [JsonProperty("modified_content")]
     public LongTermMemory ModifiedContent { get; set; }
-    
+
     [JsonProperty("reasoning")]
     public string Reasoning { get; set; }
 }
@@ -53,25 +53,25 @@ public class LongTermMemoryMaintenanceResult
 {
     [JsonProperty("evaluations")]
     public List<LongTermMemoryEvaluation> Evaluations { get; set; } = new List<LongTermMemoryEvaluation>();
-    
+
     [JsonProperty("memories_to_keep")]
     public List<int> MemoriesToKeep { get; set; } = new List<int>();
-    
+
     [JsonProperty("memories_to_remove")]
     public List<int> MemoriesToRemove { get; set; } = new List<int>();
-    
+
     [JsonProperty("memories_to_modify")]
     public List<int> MemoriesToModify { get; set; } = new List<int>();
-    
+
     [JsonProperty("merge_operations")]
     public List<MergeOperation> MergeOperations { get; set; } = new List<MergeOperation>();
-    
+
     [JsonProperty("maintenance_reasoning")]
     public string MaintenanceReasoning { get; set; }
-    
+
     [JsonProperty("original_count")]
     public int OriginalCount { get; set; }
-    
+
     [JsonProperty("final_count")]
     public int FinalCount { get; set; }
 }
@@ -84,10 +84,10 @@ public class MergeOperation
 {
     [JsonProperty("source_indices")]
     public List<int> SourceIndices { get; set; } = new List<int>();
-    
+
     [JsonProperty("merged_content")]
     public LongTermMemory MergedContent { get; set; }
-    
+
     [JsonProperty("merge_reasoning")]
     public string MergeReasoning { get; set; }
 }
@@ -105,8 +105,7 @@ public class LongTermMemoryMaintenanceAgent : GPT
         this.actor = actor;
         SetActorName(actor.Name);
 
-        string systemPrompt = LoadMaintenancePrompt();
-        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+
 
         options = new()
         {
@@ -181,6 +180,20 @@ public class LongTermMemoryMaintenanceAgent : GPT
         };
     }
 
+    private string FormatEmotions(Dictionary<string, float> emotions)
+    {
+        if (emotions == null || emotions.Count == 0)
+            return "감정 없음";
+
+        var emotionList = new List<string>();
+        foreach (var emotion in emotions)
+        {
+            emotionList.Add($"{emotion.Key}: {emotion.Value:F1}");
+        }
+
+        return string.Join(", ", emotionList);
+    }
+
     /// <summary>
     /// Long Term Memory를 정리하고 관리합니다.
     /// </summary>
@@ -188,9 +201,12 @@ public class LongTermMemoryMaintenanceAgent : GPT
     /// <param name="currentTime">현재 시간 (최신성 계산용)</param>
     /// <returns>정리 결과</returns>
     public async UniTask<LongTermMemoryMaintenanceResult> MaintainMemoriesAsync(
-        List<LongTermMemory> longTermMemories, 
+        List<LongTermMemory> longTermMemories,
         GameTime currentTime)
     {
+        string systemPrompt = LoadMaintenancePrompt();
+        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+
         try
         {
             if (longTermMemories == null || longTermMemories.Count == 0)
@@ -211,7 +227,7 @@ public class LongTermMemoryMaintenanceAgent : GPT
 
             // 메모리들을 텍스트로 변환
             var localizationService = Services.Get<ILocalizationService>();
-            var memoriesText = string.Join("\n\n", longTermMemories.Select((memory, index) => 
+            var memoriesText = string.Join("\n\n", longTermMemories.Select((memory, index) =>
             {
                 var memoryReplacements = new Dictionary<string, string>
                 {
@@ -220,11 +236,11 @@ public class LongTermMemoryMaintenanceAgent : GPT
                     { "memory_location", memory.location ?? "Unknown" },
                     { "memory_title", memory.type ?? "Untitled" },
                     { "memory_people", string.Join(", ", memory.relatedActors ?? new List<string>()) },
-                    { "memory_emotion", string.Join(", ", memory.emotions?.Keys.ToList() ?? new List<string>()) },
+                    { "memory_emotion", FormatEmotions(memory.emotions) },
                     { "memory_action", memory.category ?? "Unknown" },
                     { "memory_description", memory.content ?? "No description" }
                 };
-                
+
                 return localizationService.GetLocalizedText("memory_item_template", memoryReplacements);
             }));
 
@@ -235,24 +251,24 @@ public class LongTermMemoryMaintenanceAgent : GPT
                 { "current_date", $"{currentTime.year}-{currentTime.month:D2}-{currentTime.day:D2}" },
                 { "memories_text", memoriesText }
             };
-            
+
             string userMessage = localizationService.GetLocalizedText("longterm_memory_maintenance_prompt", replacements);
 
             messages.Add(new UserChatMessage(userMessage));
 
             var response = await SendGPTAsync<LongTermMemoryMaintenanceResult>(messages, options);
-            
+
             // 결과 검증 및 보정
             ValidateAndCorrectMaintenanceResult(response, longTermMemories);
 
             Debug.Log($"[{actor.Name}] Long Term Memory 정리 완료: {longTermMemories.Count}개 → {response.FinalCount}개");
-            
+
             return response;
         }
         catch (Exception ex)
         {
             Debug.LogError($"[{actor.Name}] Long Term Memory 정리 실패: {ex.Message}");
-            
+
             // 기본 응답: 모든 메모리 보존
             return new LongTermMemoryMaintenanceResult
             {
@@ -302,13 +318,13 @@ public class LongTermMemoryMaintenanceAgent : GPT
         // 2. 수정할 메모리들 적용
         foreach (var modifyIndex in maintenanceResult.MemoriesToModify)
         {
-            var evaluation = maintenanceResult.Evaluations.FirstOrDefault(e => 
+            var evaluation = maintenanceResult.Evaluations.FirstOrDefault(e =>
                 e.MemoryIndex == modifyIndex && e.Action == "modify");
-            
+
             if (evaluation?.ModifiedContent != null && modifyIndex >= 0 && modifyIndex < originalMemories.Count)
             {
-                var existingMemoryIndex = resultMemories.FindIndex(m => 
-                    m == originalMemories[modifyIndex] || 
+                var existingMemoryIndex = resultMemories.FindIndex(m =>
+                    m == originalMemories[modifyIndex] ||
                     (m.timestamp.ToString() == originalMemories[modifyIndex].timestamp.ToString()));
 
                 if (existingMemoryIndex >= 0)
@@ -340,7 +356,7 @@ public class LongTermMemoryMaintenanceAgent : GPT
     {
         var timeService = Services.Get<ITimeService>();
         var currentTime = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 0, 0);
-        
+
         // 누락된 평가 추가 및 모든 평가에 대해 휴리스틱 점수 계산
         for (int i = 0; i < originalMemories.Count; i++)
         {
@@ -356,7 +372,7 @@ public class LongTermMemoryMaintenanceAgent : GPT
                 };
                 result.Evaluations.Add(evaluation);
             }
-            
+
             // 휴리스틱 점수 계산
             CalculateHeuristicScores(evaluation, originalMemories[i], currentTime);
         }
@@ -370,12 +386,12 @@ public class LongTermMemoryMaintenanceAgent : GPT
         result.MergeOperations = new List<MergeOperation>();
         var mergeGroups = result.Evaluations.Where(e => e.Action == "merge_with" && e.MergeTargetIndex.HasValue)
             .GroupBy(e => e.MergeTargetIndex.Value);
-        
+
         foreach (var group in mergeGroups)
         {
             var sourceIndices = group.Select(e => e.MemoryIndex).ToList();
             sourceIndices.Add(group.Key); // 타겟 인덱스도 포함
-            
+
             result.MergeOperations.Add(new MergeOperation
             {
                 SourceIndices = sourceIndices,
@@ -405,12 +421,12 @@ public class LongTermMemoryMaintenanceAgent : GPT
     {
         // 1. 최신성 점수 계산 (날짜 기반 - 휴리스틱)
         evaluation.RecencyScore = CalculateRecencyScore(memory, currentTime);
-        
+
         // 2-4. 중요도, 의외성, 관련성은 Agent에서 받은 값을 그대로 사용
         // (Response format에서 required로 설정했으므로 Agent가 반드시 제공)
-        
+
         // 5. 종합 점수 계산 (휴리스틱)
-        evaluation.OverallScore = 
+        evaluation.OverallScore =
             evaluation.RecencyScore * 0.2f +
             evaluation.SurpriseScore * 0.3f +
             evaluation.ImportanceScore * 0.4f +
@@ -424,7 +440,7 @@ public class LongTermMemoryMaintenanceAgent : GPT
     {
         var memoryTime = memory.timestamp;
         var daysDiff = CalculateDaysDifference(memoryTime, currentTime);
-        
+
         if (daysDiff <= 365) return 0.8f + (365 - daysDiff) / 365f * 0.2f; // 1년 이내: 0.8-1.0
         if (daysDiff <= 1095) return 0.5f + (1095 - daysDiff) / 730f * 0.3f; // 1-3년: 0.5-0.8
         return Math.Max(0.0f, 0.5f - (daysDiff - 1095) / 1095f * 0.5f); // 3년 이상: 0.0-0.5

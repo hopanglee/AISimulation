@@ -22,8 +22,8 @@ public class EgoAgent : GPT
     {
         this.actor = actor;
         this.toolExecutor = new ActorToolExecutor(actor);
-        
-        LoadSystemPrompt();
+
+
         InitializeOptions();
     }
 
@@ -37,19 +37,20 @@ public class EgoAgent : GPT
             // 캐릭터 정보와 기억을 동적으로 로드
             var characterInfo = actor.LoadCharacterInfo();
             var characterMemory = actor.LoadCharacterMemory();
-            
+
             // 플레이스홀더 교체를 위한 딕셔너리 생성
             var replacements = new Dictionary<string, string>
             {
                 { "character_name", actor.Name },
                 { "personality", actor.LoadPersonality() },
                 { "info", characterInfo },
-                { "memory", characterMemory }
+                { "memory", characterMemory },
+                { "character_situation", actor.LoadActorSituation() }
             };
-            
+
             // PromptLoader를 사용하여 프롬프트 로드 및 플레이스홀더 교체
             var promptText = PromptLoader.LoadPromptWithReplacements("EgoAgentPrompt.txt", replacements);
-            
+
             messages.Add(new SystemChatMessage(promptText));
         }
         catch (Exception ex)
@@ -132,8 +133,23 @@ public class EgoAgent : GPT
     {
         try
         {
+            LoadSystemPrompt();
             // 사용자 메시지 구성
-            var userMessage = $"이성 에이전트 결과:\n{JsonUtility.ToJson(superegoResult, true)}\n\n본능 에이전트 결과:\n{JsonUtility.ToJson(idResult, true)}";
+            var localizationService = Services.Get<ILocalizationService>();
+            // 감정을 읽기 쉬운 형태로 변환
+            var superegoEmotions = FormatEmotions(superegoResult.emotions);
+            var idEmotions = FormatEmotions(idResult.emotions);
+            
+            var replacements = new Dictionary<string, string>
+            {
+                { "superego_result",superegoResult.situation_interpretation },
+                { "id_result", idResult.situation_interpretation },
+                { "superego_emotion", superegoEmotions },
+                { "id_emotion", idEmotions },
+                { "superego_thought_chain", string.Join(" -> ", superegoResult.thought_chain) },
+                { "id_thought_chain", string.Join(" -> ", idResult.thought_chain) }
+            };
+            var userMessage = localizationService.GetLocalizedText("ego_agent_results", replacements);
             messages.Add(new UserChatMessage(userMessage));
 
             // GPT 호출
@@ -146,6 +162,23 @@ public class EgoAgent : GPT
             Debug.LogError($"[EgoAgent] 타협 실패: {ex.Message}");
             throw new System.InvalidOperationException($"EgoAgent 타협 실패: {ex.Message}");
         }
+    }
+
+    /// <summary>
+    /// 감정 딕셔너리를 읽기 쉬운 문자열로 변환합니다.
+    /// </summary>
+    private string FormatEmotions(Dictionary<string, float> emotions)
+    {
+        if (emotions == null || emotions.Count == 0)
+            return "감정 없음";
+
+        var emotionList = new List<string>();
+        foreach (var emotion in emotions)
+        {
+            emotionList.Add($"{emotion.Key}: {emotion.Value:F1}");
+        }
+        
+        return string.Join(", ", emotionList);
     }
 }
 

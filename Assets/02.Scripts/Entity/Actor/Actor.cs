@@ -1096,6 +1096,103 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         transform.rotation = Quaternion.Euler(0f, lookRotation.eulerAngles.y, 0f);
     }
 
+    /// <summary>
+    /// 현재 상황에 대한 설명을 생성합니다.
+    /// </summary>
+    public string LoadActorSituation()
+    {
+        var timeService = Services.Get<ITimeService>();
+        var localizationService = Services.Get<ILocalizationService>();
+        var currentTime = timeService.CurrentTime;
+
+        // 기본 정보 준비
+        var handItem = HandItem?.Name ?? "Empty";
+        var inventoryItems = new List<string>();
+        for (int i = 0; i < InventoryItems.Length; i++)
+        {
+            if (InventoryItems[i] != null)
+            {
+                inventoryItems.Add($"Slot {i + 1}: {InventoryItems[i].Name}");
+            }
+            else
+            {
+                inventoryItems.Add($"Slot {i + 1}: Empty");
+            }
+        }
+
+        // ThinkingActor인 경우 추가 정보 제공
+        if (this is MainActor thinkingActor)
+        {
+            var sleepStatus = thinkingActor.IsSleeping ? "Sleeping" : "Awake";
+
+            // 주변 엔티티 정보 수집
+            var lookable = thinkingActor.sensor.GetLookableEntities();
+            var collectible = thinkingActor.sensor.GetCollectibleEntities();
+            var interactable = thinkingActor.sensor.GetInteractableEntities();
+            var movable = thinkingActor.sensor.GetMovablePositions();
+
+            var lookableEntities = new List<string>();
+            foreach (var entity in lookable)
+            {
+                lookableEntities.Add($"- {entity.Key}: {entity.Value.GetStatusDescription()}");
+            }
+
+            var collectibleEntities = new List<string>();
+            foreach (var entity in collectible)
+            {
+                collectibleEntities.Add($"{entity.Key}");
+            }
+
+            // Interactable entities are organized by type
+            var allInteractable = new List<string>();
+            foreach (var actor in interactable.actors)
+            {
+                allInteractable.Add($"{actor.Key}");
+            }
+            foreach (var item in interactable.items)
+            {
+                allInteractable.Add($"{item.Key}");
+            }
+            foreach (var building in interactable.buildings)
+            {
+                allInteractable.Add($"{building.Key}");
+            }
+            foreach (var prop in interactable.props)
+            {
+                allInteractable.Add($"{prop.Key}");
+            }
+
+            var movablePositions = new List<string>();
+            foreach (var position in movable)
+            {
+                movablePositions.Add($"{position.Key}");
+            }
+
+            // 통합 치환 정보
+            var replacements = new Dictionary<string, string>
+            {
+                { "location", curLocation.locationName },
+                { "handItem", handItem },
+                { "inventory", string.Join(", ", inventoryItems) },
+                { "sleepStatus", sleepStatus },
+                { "hunger", Hunger.ToString() },
+                { "thirst", Thirst.ToString() },
+                { "stamina", Stamina.ToString() },
+                { "stress", Stress.ToString() },
+                { "sleepiness", thinkingActor.Sleepiness.ToString() },
+                { "lookableEntities", string.Join("\n", lookableEntities) },
+                { "collectibleEntities", string.Join(", ", collectibleEntities) },
+                { "interactableEntities", string.Join(", ", allInteractable) },
+                { "movablePositions", string.Join(", ", movablePositions) }
+            };
+
+            return localizationService.GetLocalizedText("brain_status", replacements);
+        }
+
+        // NPC는 Brain이 없으므로 여기까지 오면 안 됨
+        throw new System.InvalidOperationException("Brain should only be used with MainActor");
+    }
+
     public string LoadCharacterInfo()
     {
         if (this is MainActor mainActor)
@@ -1118,7 +1215,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         var gender = characterInfo.Gender;
         var job = characterInfo.Job;
         var additionalInfo = characterInfo.AdditionalInfo;
-        
+
         var infoText = $"이름은 {name}이고, {age}세 {gender}입니다. ";
 
         if (!string.IsNullOrEmpty(job))
@@ -1126,18 +1223,28 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             infoText += $"당신의 직업은 {job}입니다. ";
         }
 
-         // 추가설정 정보 추가
+        // 추가설정 정보 추가
         if (!string.IsNullOrEmpty(additionalInfo))
         {
             infoText += $"중요한 정보: {additionalInfo} ";
+        }
+        if (characterInfo.Emotions != null && characterInfo.Emotions.Count > 0)
+        {
+            infoText += $"현재 감정: {characterInfo.LoadEmotions()} ";
         }
 
 
         return infoText;
     }
 
+    /// <summary>
+    /// 감정 딕셔너리를 읽기 쉬운 문자열로 변환합니다.
+    /// </summary>
+
+
     private string LoadMainCharacterInfo()
     {
+        var mainActor = this as MainActor;
         var characterMemoryManager = new CharacterMemoryManager(this);
         var characterInfo = characterMemoryManager.GetCharacterInfo();
         var name = characterInfo.Name;
@@ -1165,7 +1272,10 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             infoText += $"하루 스케줄은 다음과 같습니다: {dailySchedule}";
         }
 
-
+        if (characterInfo.Emotions != null && characterInfo.Emotions.Count > 0)
+        {
+            infoText += $"현재 감정: {characterInfo.LoadEmotions()} ";
+        }
 
         return infoText;
     }
