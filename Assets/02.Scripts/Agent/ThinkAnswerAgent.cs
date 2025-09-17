@@ -96,7 +96,6 @@ namespace Agent
         {
             try
             {
-                var localizationService = Services.Get<ILocalizationService>();
                 var timeService = Services.Get<ITimeService>();
                 var year = timeService.CurrentTime.year;
                 var month = timeService.CurrentTime.month;
@@ -117,7 +116,7 @@ namespace Agent
                     ["memory"] = actor.LoadCharacterMemory()
                 };
 
-                return localizationService.GetLocalizedText("think_answer_system_prompt", replacements);
+                return PromptLoader.LoadPromptWithReplacements("think_answer_system_prompt.txt", replacements);
             }
             catch (Exception ex)
             {

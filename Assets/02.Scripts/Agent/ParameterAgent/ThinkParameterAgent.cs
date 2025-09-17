@@ -54,17 +54,17 @@ public class ThinkParameterAgent : ParameterAgentBase
                                 ""think_scope"": {
                                     ""type"": ""string"",
                                     ""enum"": [""past_reflection"", ""future_planning"", ""current_analysis""],
-                                    ""description"": ""사색의 범위: 과거 회상, 미래 계획, 현재 분석""
+                                    ""description"": ""어떤 종류의 사색을 할지 선택합니다. 과거 회상, 미래 계획, 현재 분석""
                                 },
                                 ""topic"": {
                                     ""type"": ""string"",
-                                    ""description"": ""사색할 주제나 관심사""
+                                    ""description"": ""구체적으로 무엇에 대해 생각할지""
                                 },
                                 ""duration"": {
                                     ""type"": ""integer"",
                                     ""minimum"": 5,
                                     ""maximum"": 60,
-                                    ""description"": ""사색 시간 (분 단위, 5-60분)""
+                                    ""description"": ""얼마나 오래 생각할지""
                                 }
                             },
                             ""required"": [""think_scope"", ""topic"", ""duration""]
@@ -206,18 +206,23 @@ public class ThinkParameterAgent : ParameterAgentBase
 
         var timeService = Services.Get<ITimeService>();
         var currentTime = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 0, 0);
+        var year = currentTime.year;
+        var month = currentTime.month;
+        var day = currentTime.day;
+        var dayOfWeek = currentTime.GetDayOfWeek();
+        var hour = currentTime.hour;
+        var minute = currentTime.minute;
         
         var localizationService = Services.Get<ILocalizationService>();
         var replacements = new Dictionary<string, string>
         {
-            ["actor_name"] = actor.Name,
-            ["current_time"] = $"{currentTime.year}-{currentTime.month:D2}-{currentTime.day:D2} {currentTime.hour:D2}:{currentTime.minute:D2}",
-            ["current_situation"] = "평온한 상황",
-            ["recent_memories"] = stmText,
-            ["past_experiences"] = ltmText,
+            ["current_time"] = $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}",
+            ["character_name"] = actor.Name,
+            ["character_situation"] = actor.LoadActorSituation(),
+            ["memory"] = actor.LoadCharacterMemory(),
             ["reasoning"] = context.Reasoning,
             ["intention"] = context.Intention,
-            ["user_message"] = context.PreviousFeedback ?? "사색하고 싶다"
+            //["user_message"] = context.PreviousFeedback ?? "사색하고 싶다"
         };
 
         return localizationService.GetLocalizedText("think_parameter_prompt", replacements);
@@ -229,9 +234,17 @@ public class ThinkParameterAgent : ParameterAgentBase
     /// </summary>
     private string LoadThinkPrompt()
     {
+        
+        var replacements = new Dictionary<string, string>
+        {
+            
+            ["character_name"] = actor.Name,
+            ["personality"] = actor.LoadPersonality(),
+            ["info"] = actor.LoadCharacterInfo(),
+        };
         try
         {
-            return PromptLoader.LoadPrompt("think_parameter_prompt.txt");
+            return PromptLoader.LoadPromptWithReplacements("think_parameter_prompt.txt", replacements);
         }
         catch (Exception ex)
         {

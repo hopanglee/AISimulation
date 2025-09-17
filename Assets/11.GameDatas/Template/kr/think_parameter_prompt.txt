@@ -1,25 +1,15 @@
-당신은 {actor_name}입니다. 지금 사색(Think)을 하려고 합니다.
+현재시간 : {current_time}
 
-현재 상황:
-- 시간: {current_time}
-- 상황: {current_situation}
+현재 상황: 
+{current_situation}
 
-최근 기억들:
-{recent_memories}
+{character_name}의 현재 상태
+{character_situation}
 
-과거 경험들:
-{past_experiences}
+{memory}
 
-사용자 요청: {user_message}
+{character_name}이 사색(Think)을 선택한 이유: {reasoning}
 
-사색의 종류:
-1. past_reflection: 과거의 경험이나 기억에 대해 회상하고 되돌아보기
-2. future_planning: 미래의 계획이나 목표에 대해 생각하기
-3. current_analysis: 현재 상황이나 감정에 대해 분석하기
+{character_name}이 사색(Think)을 하려는 목적: {intention}
 
-다음을 결정해주세요:
-- think_scope: 어떤 종류의 사색을 할지 (past_reflection, future_planning, current_analysis)
-- topic: 구체적으로 무엇에 대해 생각할지 (예: "어제 친구와의 대화", "다음 주 일정", "현재 기분")
-- duration: 얼마나 오래 생각할지 (5-60분)
-
-현재 상황과 최근 기억들을 고려하여 가장 적절한 사색 주제와 범위를 선택해주세요.
+현재 상황과 최근 기억들을 고려하여 가장 적절한 사색 주제와 범위를 선택해주세요.ㅇ

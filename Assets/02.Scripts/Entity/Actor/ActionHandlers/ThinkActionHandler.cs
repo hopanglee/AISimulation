@@ -26,8 +26,8 @@ public class ThinkResult
     [JsonProperty("time_scope")]
     public string TimeScope { get; set; } // "past", "future", "present"
 
-    [JsonProperty("insights")]
-    public List<string> Insights { get; set; } = new List<string>();
+    // [JsonProperty("insights")]
+    // public List<string> Insights { get; set; } = new List<string>();
 
     [JsonProperty("conclusions")]
     public string Conclusions { get; set; }
@@ -83,7 +83,6 @@ namespace Agent.ActionHandlers
                     var thinkResult = await PerformInteractiveThinkingAsync(thinkScope, topic, duration, token);
 
                     var thinkingSummary = $"주제 '{topic}'에 대해 {duration}분간 사색함. " +
-                                        $"주요 통찰: {string.Join(", ", thinkResult.Insights)}. " +
                                         $"결론: {thinkResult.Conclusions}";
 
                     mainActor.brain.memoryManager.AddActionComplete(ActionType.Think, thinkingSummary);
@@ -103,7 +102,7 @@ namespace Agent.ActionHandlers
         private async UniTask<ThinkResult> PerformInteractiveThinkingAsync(string thinkScope, string topic, int duration, CancellationToken token)
         {
             var thoughtChain = new List<string>();
-            var insights = new List<string>();
+           // var insights = new List<string>();
 
             try
             {
@@ -147,26 +146,26 @@ namespace Agent.ActionHandlers
                     await SimDelay.DelaySimMinutes(thinkingTimeMinutes, token);
 
                     // 통찰 추출 (홀수 라운드마다, MainActor의 설정에 따라)
-                    if (round % 2 == 1 && actor is MainActor mainActorForInsight && mainActorForInsight.useInsightAgent)
-                    {
-                        var insightResult = await insightAgent.ExtractInsightAsync(string.Join("\n", thoughtChain.TakeLast(4)));
-                        if (!string.IsNullOrEmpty(insightResult))
-                        {
-                            insights.Add(insightResult);
-                            Debug.Log($"[{actor.Name}] Insight 추출: {insightResult}");
-                        }
-                    }
+                    // if (round % 2 == 1 && actor is MainActor mainActorForInsight && mainActorForInsight.useInsightAgent)
+                    // {
+                    //     var insightResult = await insightAgent.ExtractInsightAsync(string.Join("\n", thoughtChain.TakeLast(4)));
+                    //     if (!string.IsNullOrEmpty(insightResult))
+                    //     {
+                    //         insights.Add(insightResult);
+                    //         Debug.Log($"[{actor.Name}] Insight 추출: {insightResult}");
+                    //     }
+                    // }
                 }
 
                 // 최종 결론 생성
-                var conclusionResult = await conclusionAgent.GenerateFinalConclusionsAsync(topic, thoughtChain, insights);
+                var conclusionResult = await conclusionAgent.GenerateFinalConclusionsAsync(topic, thoughtChain);
 
                 return new ThinkResult
                 {
                     ThoughtChain = thoughtChain,
                     FocusTopic = topic,
                     TimeScope = thinkScope,
-                    Insights = insights,
+                    //Insights = insights,
                     Conclusions = conclusionResult,
                     Emotions = new Dictionary<string, float>() // 빈 감정 딕셔너리
                 };
@@ -180,7 +179,7 @@ namespace Agent.ActionHandlers
                     ThoughtChain = thoughtChain.Count > 0 ? thoughtChain : new List<string> { "생각이 잘 정리되지 않는다." },
                     FocusTopic = topic,
                     TimeScope = thinkScope,
-                    Insights = insights.Count > 0 ? insights : new List<string> { "때로는 생각이 복잡할 때가 있다." },
+                    //Insights = insights.Count > 0 ? insights : new List<string> { "때로는 생각이 복잡할 때가 있다." },
                     Conclusions = "잠시 마음을 정리하는 시간이었다."
                 };
             }
