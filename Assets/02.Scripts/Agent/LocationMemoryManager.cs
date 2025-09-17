@@ -103,7 +103,7 @@ public class LocationMemoryManager
     /// Sensor 정보를 바탕으로 location.json을 업데이트합니다.
     /// </summary>
     public void UpdateLocationMemory(string locationName, 
-        List<string> items, List<string> blocks, List<string> actors, List<string> buildings, List<string> connectedAreas)
+        List<string> items, List<string> props, List<string> actors, List<string> buildings, List<string> connectedAreas)
     {
         // 현재 위치 정보 업데이트
         var timeService = Services.Get<ITimeService>();
@@ -122,7 +122,7 @@ public class LocationMemoryManager
         
         // 분류된 데이터 업데이트
         locationData.items = items ?? new List<string>();
-        locationData.blocks = blocks ?? new List<string>();
+        locationData.props = props ?? new List<string>();
         locationData.actors = actors ?? new List<string>();
         locationData.buildings = buildings ?? new List<string>();
         locationData.connectedAreas = connectedAreas ?? new List<string>();

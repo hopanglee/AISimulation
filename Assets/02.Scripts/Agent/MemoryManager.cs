@@ -387,9 +387,9 @@ public class MemoryManager
     /// 위치 메모리를 업데이트합니다.
     /// </summary>
     public void UpdateLocationMemory(string locationName,
-        List<string> items, List<string> blocks, List<string> actors, List<string> buildings, List<string> connectedAreas)
+        List<string> items, List<string> props, List<string> actors, List<string> buildings, List<string> connectedAreas)
     {
-        locationMemoryManager?.UpdateLocationMemory(locationName, items, blocks, actors, buildings, connectedAreas);
+        locationMemoryManager?.UpdateLocationMemory(locationName, items, props, actors, buildings, connectedAreas);
     }
 
 

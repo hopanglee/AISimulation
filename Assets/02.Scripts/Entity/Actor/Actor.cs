@@ -1214,6 +1214,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         var age = characterInfo.Age;
         var gender = characterInfo.Gender;
         var job = characterInfo.Job;
+        var dailySchedule = characterInfo.DailySchedule;
         var additionalInfo = characterInfo.AdditionalInfo;
 
         var infoText = $"이름은 {name}이고, {age}세 {gender}입니다. ";
@@ -1227,6 +1228,11 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         if (!string.IsNullOrEmpty(additionalInfo))
         {
             infoText += $"중요한 정보: {additionalInfo} ";
+        }
+
+        if (!string.IsNullOrEmpty(dailySchedule))
+        {
+            infoText += $"하루 스케줄은 다음과 같습니다: {dailySchedule}";
         }
         if (characterInfo.Emotions != null && characterInfo.Emotions.Count > 0)
         {

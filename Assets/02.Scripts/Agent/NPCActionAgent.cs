@@ -60,6 +60,14 @@ public class NPCActionAgent : GPT
         // 도구 추가 - ItemManagement 도구 세트 추가
         ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.ItemManagement);
 
+        // 결제 액션 또는 가격표 제공 메서드가 있는 경우 결제 관련 도구 추가
+        bool hasPaymentAction = availableActions != null && availableActions.Any(a => string.Equals(a.ActionName, "Payment", StringComparison.OrdinalIgnoreCase));
+        bool hasPriceListProvider = owner?.GetType().GetMethod("GetPriceList", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance) != null;
+        if (hasPaymentAction || hasPriceListProvider)
+        {
+            ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Payment);
+        }
+
         Debug.Log($"[NPCActionAgent] 생성됨 - 소유자: {owner?.Name}, 액션 수: {availableActions?.Length ?? 0}");
     }
 

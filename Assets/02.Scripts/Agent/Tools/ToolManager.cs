@@ -37,6 +37,10 @@ namespace Agent.Tools
                 )
             );
 
+            public static readonly ChatTool GetPaymentPriceList = ChatTool.CreateFunctionTool(
+                functionName: nameof(GetPaymentPriceList),
+                functionDescription: "Return this NPC's price list for payment-capable jobs as name-price pairs. If not supported, return a friendly message."
+            );
 
 
             public static readonly ChatTool GetWorldAreaInfo = ChatTool.CreateFunctionTool(
@@ -123,6 +127,57 @@ namespace Agent.Tools
                 functionName: nameof(GetCurrentPlan),
                 functionDescription: "Get current plan information (completed, in-progress, and planned tasks)"
             );
+
+            public static readonly ChatTool GetCurrentSpecificAction = ChatTool.CreateFunctionTool(
+                functionName: nameof(GetCurrentSpecificAction),
+                functionDescription: "Get the current specific action that should be performed at this time"
+            );
+
+            // 건물 이름으로 해당 건물이 속한 에리어 경로(상위-하위)를 ":"로 연결해 반환합니다. 예: "도쿄:신주쿠:카부키쵸:1-chome-5"
+            public static readonly ChatTool FindBuildingAreaPath = ChatTool.CreateFunctionTool(
+                functionName: nameof(FindBuildingAreaPath),
+                functionDescription: "Given a building name, return its area path joined by ':' from top to leaf (e.g., '도쿄:신주쿠:카부키쵸:1-chome-5').",
+                functionParameters: System.BinaryData.FromBytes(
+                    System.Text.Encoding.UTF8.GetBytes(
+                        @"{
+                            ""type"": ""object"",
+                            ""properties"": {
+                                ""buildingName"": {
+                                    ""type"": ""string"",
+                                    ""description"": ""Localized building name to search (e.g., '이자카야 카게츠')""
+                                }
+                            },
+                            ""required"": [""buildingName""]
+                        }"
+                    )
+                )
+            );
+
+            // 현재 액터의 위치 Area에서 목표 Area 키(이름 또는 전체경로)까지의 최단 Area 경로를 찾아 "A -> B -> C" 형식으로 반환
+            public static readonly ChatTool FindShortestAreaPathFromActor = ChatTool.CreateFunctionTool(
+                functionName: nameof(FindShortestAreaPathFromActor),
+                functionDescription: "From the actor's current area, find the shortest connected-area path to the target area key (locationName or full path). Returns 'A -> B -> C'"
+                ,functionParameters: System.BinaryData.FromBytes(
+                    System.Text.Encoding.UTF8.GetBytes(
+                        @"{
+                            ""type"": ""object"",
+                            ""properties"": {
+                                ""targetAreaKey"": {
+                                    ""type"": ""string"",
+                                    ""description"": ""Target area key: either locationName (e.g., '1-chome-5') or full path (e.g., '도쿄:신주쿠:카부키쵸:1-chome-5')""
+                                }
+                            },
+                            ""required"": [""targetAreaKey""]
+                        }"
+                    )
+                )
+            );
+
+            // 전체 월드 지역 위치 텍스트를 반환 (현재는 도쿄 기준 구조 텍스트 파일 반환)
+            public static readonly ChatTool GetWorldAreaStructureText = ChatTool.CreateFunctionTool(
+                functionName: nameof(GetWorldAreaStructureText),
+                functionDescription: "Return the world area structure text built from 11.GameDatas (e.g., tokyo_area_structure.txt)."
+            );
         }
 
         // 도구 세트 정의
@@ -134,6 +189,11 @@ namespace Agent.Tools
             public static readonly ChatTool[] ItemManagement = { ToolDefinitions.SwapInventoryToHand };
 
             /// <summary>
+            /// 결제/가격 관련 도구들
+            /// </summary>
+            public static readonly ChatTool[] Payment = { ToolDefinitions.GetPaymentPriceList };
+
+            /// <summary>
             /// 액션 정보 관련 도구들
             /// </summary>
             public static readonly ChatTool[] ActionInfo = { };
@@ -141,7 +201,7 @@ namespace Agent.Tools
             /// <summary>
             /// 월드 정보 관련 도구들
             /// </summary>
-            public static readonly ChatTool[] WorldInfo = { ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetCurrentTime };
+            public static readonly ChatTool[] WorldInfo = { ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetCurrentTime, ToolDefinitions.FindBuildingAreaPath, ToolDefinitions.FindShortestAreaPathFromActor, ToolDefinitions.GetWorldAreaStructureText };
 
             /// <summary>
             /// 메모리 관련 도구들
@@ -151,12 +211,12 @@ namespace Agent.Tools
             /// <summary>
             /// 계획 관련 도구들
             /// </summary>
-            public static readonly ChatTool[] Plan = { ToolDefinitions.GetCurrentPlan };
+            public static readonly ChatTool[] Plan = { ToolDefinitions.GetCurrentPlan, ToolDefinitions.GetCurrentSpecificAction };
 
             /// <summary>
             /// 모든 도구들
             /// </summary>
-            public static readonly ChatTool[] All = { ToolDefinitions.SwapInventoryToHand, ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetUserMemory, ToolDefinitions.GetShortTermMemory, ToolDefinitions.GetLongTermMemory, ToolDefinitions.GetMemoryStats, ToolDefinitions.GetCurrentTime, ToolDefinitions.GetCurrentPlan };
+            public static readonly ChatTool[] All = { ToolDefinitions.SwapInventoryToHand, ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetUserMemory, ToolDefinitions.GetShortTermMemory, ToolDefinitions.GetLongTermMemory, ToolDefinitions.GetMemoryStats, ToolDefinitions.GetCurrentTime, ToolDefinitions.GetCurrentPlan, ToolDefinitions.GetCurrentSpecificAction, ToolDefinitions.FindBuildingAreaPath, ToolDefinitions.FindShortestAreaPathFromActor };
         }
 
         /// <summary>
@@ -205,8 +265,16 @@ namespace Agent.Tools
             {
                 case nameof(SwapInventoryToHand):
                     return SwapInventoryToHand(toolCall.FunctionArguments);
+                case nameof(GetPaymentPriceList):
+                    return GetPaymentPriceList();
                 case nameof(GetWorldAreaInfo):
                     return GetWorldAreaInfo();
+                    case nameof(FindBuildingAreaPath):
+                        return FindBuildingAreaPath(toolCall.FunctionArguments);
+                    case nameof(FindShortestAreaPathFromActor):
+                        return FindShortestAreaPathFromActor(toolCall.FunctionArguments);
+                    case nameof(GetWorldAreaStructureText):
+                        return GetWorldAreaStructureText();
                 case nameof(GetUserMemory):
                     return GetUserMemory();
                 case nameof(GetShortTermMemory):
@@ -219,6 +287,8 @@ namespace Agent.Tools
                     return GetCurrentTime();
                 case nameof(GetCurrentPlan):
                     return GetCurrentPlan();
+                case nameof(GetCurrentSpecificAction):
+                    return GetCurrentSpecificAction();
                 default:
                     return $"Error: Unknown tool '{toolCall.FunctionName}'";
             }
@@ -302,6 +372,77 @@ namespace Agent.Tools
             }
         }
 
+        private string GetPaymentPriceList()
+        {
+            try
+            {
+                if (actor == null)
+                {
+                    return "Error: No actor bound to executor";
+                }
+
+                // priceList 노출 메서드 탐색 (GetPriceList)
+                var method = actor.GetType().GetMethod("GetPriceList", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                if (method == null)
+                {
+                    return "No price list available for this actor (payment not supported).";
+                }
+
+                var listObj = method.Invoke(actor, null) as System.Collections.IEnumerable;
+                if (listObj == null)
+                {
+                    return "{\"items\":[],\"count\":0}";
+                }
+
+                var items = new System.Text.StringBuilder();
+                items.Append("{\"items\":[");
+                int count = 0;
+                foreach (var entry in listObj)
+                {
+                    if (entry == null) continue;
+                    var entryType = entry.GetType();
+                    var nameField = entryType.GetField("itemName") as object ?? entryType.GetProperty("itemName")?.GetGetMethod();
+                    var priceField = entryType.GetField("price") as object ?? entryType.GetProperty("price")?.GetGetMethod();
+
+                    string itemName = null;
+                    int price = 0;
+
+                    if (nameField is System.Reflection.FieldInfo nf)
+                    {
+                        itemName = nf.GetValue(entry) as string;
+                    }
+                    else if (nameField is System.Reflection.MethodInfo ng)
+                    {
+                        itemName = ng.Invoke(entry, null) as string;
+                    }
+
+                    if (priceField is System.Reflection.FieldInfo pf)
+                    {
+                        price = (int)(pf.GetValue(entry) ?? 0);
+                    }
+                    else if (priceField is System.Reflection.MethodInfo pg)
+                    {
+                        var val = pg.Invoke(entry, null);
+                        price = val is int iv ? iv : 0;
+                    }
+
+                    if (!string.IsNullOrEmpty(itemName))
+                    {
+                        if (count > 0) items.Append(",");
+                        items.Append($"{{\"name\":\"{System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(itemName)}\",\"price\":{price}}}");
+                        count++;
+                    }
+                }
+                items.Append($"],\"count\":{count}}}");
+                return items.ToString();
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[ActorToolExecutor] GetPaymentPriceList error: {ex.Message}");
+                return $"Error getting price list: {ex.Message}";
+            }
+        }
+
 
 
 
@@ -345,12 +486,112 @@ namespace Agent.Tools
                 
                 return memorySummary;
             }
-            
+
             return "메모리 정보를 찾을 수 없습니다.";
         }
+        catch (Exception ex)
+        {
+            return $"Error getting user memory: {ex.Message}";
+        }
+        }
+
+        private string FindBuildingAreaPath(System.BinaryData arguments)
+        {
+            try
+            {
+                using var args = System.Text.Json.JsonDocument.Parse(arguments.ToString());
+                if (!args.RootElement.TryGetProperty("buildingName", out var nameEl))
+                    return "Error: buildingName parameter is required";
+                var buildingName = nameEl.GetString();
+                if (string.IsNullOrWhiteSpace(buildingName))
+                    return "Error: buildingName is empty";
+
+                var buildings = UnityEngine.Object.FindObjectsByType<Building>(FindObjectsSortMode.None);
+                if (buildings == null || buildings.Length == 0)
+                    return "Error: No buildings found in scene";
+
+                Building target = null;
+                // 1) exact match by localized name
+                foreach (var b in buildings)
+                {
+                    var locName = b.GetLocalizedName();
+                    if (!string.IsNullOrEmpty(locName) && string.Equals(locName, buildingName, StringComparison.OrdinalIgnoreCase))
+                    { target = b; break; }
+                }
+                // 2) fallback: contains match
+                if (target == null)
+                {
+                    foreach (var b in buildings)
+                    {
+                        var locName = b.GetLocalizedName();
+                        if (!string.IsNullOrEmpty(locName) && locName.IndexOf(buildingName, StringComparison.OrdinalIgnoreCase) >= 0)
+                        { target = b; break; }
+                    }
+                }
+                if (target == null)
+                    return $"Error: Building '{buildingName}' not found";
+
+                // Return area path only (exclude building level)
+                var areaPath = target.curLocation != null ? target.curLocation.LocationToString() : null;
+                if (string.IsNullOrEmpty(areaPath))
+                    return "Error: Could not resolve building's area path";
+                return areaPath;
+            }
             catch (Exception ex)
             {
-                return $"Error getting user memory: {ex.Message}";
+                Debug.LogError($"[ActorToolExecutor] FindBuildingAreaPath error: {ex.Message}");
+                return $"Error: {ex.Message}";
+            }
+        }
+
+        private string FindShortestAreaPathFromActor(System.BinaryData arguments)
+        {
+            try
+            {
+                using var args = System.Text.Json.JsonDocument.Parse(arguments.ToString());
+                if (!args.RootElement.TryGetProperty("targetAreaKey", out var keyEl))
+                    return "Error: targetAreaKey parameter is required";
+                var targetKey = keyEl.GetString();
+                if (string.IsNullOrWhiteSpace(targetKey))
+                    return "Error: targetAreaKey is empty";
+
+                var locationService = Services.Get<ILocationService>();
+                var pathService = Services.Get<IPathfindingService>();
+                if (locationService == null || pathService == null)
+                    return "Error: Required services not available";
+
+                var startArea = locationService.GetArea(actor.curLocation);
+                if (startArea == null)
+                    return "Error: Actor's current area could not be determined";
+
+                var path = pathService.FindPathToLocation(startArea, targetKey) ?? new System.Collections.Generic.List<string>();
+                if (path.Count == 0)
+                    return $"No path found from {startArea.locationName} to {targetKey}";
+
+                return string.Join(" -> ", path);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[ActorToolExecutor] FindShortestAreaPathFromActor error: {ex.Message}");
+                return $"Error: {ex.Message}";
+            }
+        }
+
+        private string GetWorldAreaStructureText()
+        {
+            try
+            {
+                var relPath = "Assets/11.GameDatas/tokyo_area_structure.txt";
+                if (!System.IO.File.Exists(relPath))
+                {
+                    return "Error: tokyo_area_structure.txt not found. Please run the exporter first (Tools > Area > Export Tokyo Area Structure TXT).";
+                }
+                var txt = System.IO.File.ReadAllText(relPath, System.Text.Encoding.UTF8);
+                return txt ?? string.Empty;
+            }
+            catch (Exception ex)
+            {
+                return $"Error reading world area structure text: {ex.Message}";
             }
         }
 
@@ -412,6 +653,55 @@ namespace Agent.Tools
             catch (Exception ex)
             {
                 Debug.LogError($"[ActorToolExecutor] GetCurrentPlan error: {ex.Message}");
+                return $"Error: {ex.Message}";
+            }
+        }
+
+        private string GetCurrentSpecificAction()
+        {
+            try
+            {
+                // MainActor인지 확인
+                if (!(actor is MainActor mainActor))
+                {
+                    return "No specific action available (not MainActor)";
+                }
+
+                // DayPlanner를 통해 현재 특정 행동 조회
+                var dayPlanner = mainActor.brain.dayPlanner;
+                if (dayPlanner == null)
+                {
+                    return "No specific action available (DayPlanner not found)";
+                }
+
+                // 현재 특정 행동 가져오기 (동기적으로 처리)
+                var currentSpecificAction = dayPlanner.GetCurrentSpecificActionAsync().GetAwaiter().GetResult();
+                if (currentSpecificAction == null)
+                {
+                    return "No current specific action available";
+                }
+
+                // 특정 행동 정보 포맷팅
+                var actionInfo = new List<string>();
+                actionInfo.Add($"Action Type: {currentSpecificAction.ActionType}");
+                actionInfo.Add($"Description: {currentSpecificAction.Description}");
+                actionInfo.Add($"Duration: {currentSpecificAction.DurationMinutes} minutes");
+                
+                if (currentSpecificAction.ParentDetailedActivity != null)
+                {
+                    actionInfo.Add($"Activity: {currentSpecificAction.ParentDetailedActivity.ActivityName}");
+                    
+                    if (currentSpecificAction.ParentDetailedActivity.ParentHighLevelTask != null)
+                    {
+                        actionInfo.Add($"Task: {currentSpecificAction.ParentDetailedActivity.ParentHighLevelTask.TaskName}");
+                    }
+                }
+
+                return string.Join("\n", actionInfo);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[ActorToolExecutor] GetCurrentSpecificAction error: {ex.Message}");
                 return $"Error: {ex.Message}";
             }
         }

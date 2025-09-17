@@ -1,0 +1,12 @@
+{
+  "connected_areas": [
+    "1-chome-4",
+    "1-chome-6",
+    "1-chome-2"
+  ],
+  "buildings": [
+    "Cafe",
+    "Konbini",
+    "Restaurant"
+  ]
+}
