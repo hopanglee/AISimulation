@@ -127,6 +127,10 @@ public abstract class Entity : MonoBehaviour, ILocation
     [FoldoutGroup("Localization")]
     [SerializeField]
     private string _nameKr;
+    // public string NameKr 
+    // {
+    //     get { return NameKr; }
+    // }
 
     [SerializeField, TextArea]
     private string _currentStatusDescription;

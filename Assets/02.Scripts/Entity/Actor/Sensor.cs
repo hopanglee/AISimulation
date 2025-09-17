@@ -648,7 +648,7 @@ public class Sensor
                 {
                     // 분류된 데이터 수집
                     var items = new List<string>();
-                    var blocks = new List<string>();
+                    var props = new List<string>();
                     var actors = new List<string>();
                     var buildings = new List<string>();
                     var connectedAreas = new List<string>();
@@ -665,7 +665,7 @@ public class Sensor
                         }
                         else if (kv.Value is Prop prop)
                         {
-                            blocks.Add(prop.GetSimpleKeyRelativeToActor(owner));
+                            props.Add(prop.GetSimpleKeyRelativeToActor(owner));
                         }
                         else if (kv.Value is Building building)
                         {
@@ -687,7 +687,7 @@ public class Sensor
                     mainActor.brain.memoryManager.UpdateLocationMemory(
                         locationName, 
                         items,
-                        blocks,
+                        props,
                         actors,
                         buildings,
                         connectedAreas
