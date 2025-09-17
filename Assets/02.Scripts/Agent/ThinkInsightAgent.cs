@@ -64,13 +64,12 @@ namespace Agent
         {
             try
             {
-                var localizationService = Services.Get<ILocalizationService>();
                 var replacements = new Dictionary<string, string>
                 {
-                    ["actor_name"] = actor.Name
+                    ["character_name"] = actor.Name
                 };
 
-                return localizationService.GetLocalizedText("think_insight_system_prompt", replacements);
+                return PromptLoader.LoadPromptWithReplacements("think_insight_system_prompt.txt", replacements);
             }
             catch (Exception ex)
             {

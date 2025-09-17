@@ -30,12 +30,12 @@ namespace Agent
         /// <param name="thoughtChain">전체 질문-답변 대화</param>
         /// <param name="insights">중간에 추출된 통찰들</param>
         /// <returns>최종 결론</returns>
-        public async UniTask<string> GenerateFinalConclusionsAsync(string topic, List<string> thoughtChain, List<string> insights)
+        public async UniTask<string> GenerateFinalConclusionsAsync(string topic, List<string> thoughtChain)
         {
             try
             {
-                var systemPrompt = LoadSystemPrompt();
-                var userMessage = LoadUserMessage(topic, thoughtChain, insights);
+                var systemPrompt = LoadSystemPrompt(topic);
+                var userMessage = LoadUserMessage(topic, thoughtChain);
 
                 var messages = new List<ChatMessage>
                 {
@@ -67,17 +67,27 @@ namespace Agent
         /// <summary>
         /// 시스템 프롬프트를 로드합니다
         /// </summary>
-        private string LoadSystemPrompt()
+        private string LoadSystemPrompt(string topic)
         {
             try
             {
-                var localizationService = Services.Get<ILocalizationService>();
+                var timeService = Services.Get<ITimeService>();
+                var year = timeService.CurrentTime.year;
+                var month = timeService.CurrentTime.month;
+                var day = timeService.CurrentTime.day;
+                var dayOfWeek = timeService.CurrentTime.GetDayOfWeek();
+                var hour = timeService.CurrentTime.hour;
+                var minute = timeService.CurrentTime.minute;
                 var replacements = new Dictionary<string, string>
                 {
-                    ["actor_name"] = actor.Name
+                    ["character_name"] = actor.Name,
+                    ["topic"] = topic,
+                    ["personality"] = actor.LoadPersonality(),
+                    ["info"] = actor.LoadCharacterInfo(),
+                    ["character_situation"] = actor.LoadActorSituation(),
+                    ["current_time"] = $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}"
                 };
-
-                return localizationService.GetLocalizedText("think_conclusion_system_prompt", replacements);
+                return PromptLoader.LoadPromptWithReplacements("think_conclusion_system_prompt.txt", replacements);
             }
             catch (Exception ex)
             {
@@ -89,17 +99,15 @@ namespace Agent
         /// <summary>
         /// 사용자 메시지를 로드합니다
         /// </summary>
-        private string LoadUserMessage(string topic, List<string> thoughtChain, List<string> insights)
+        private string LoadUserMessage(string topic, List<string> thoughtChain)
         {
             try
             {
                 var localizationService = Services.Get<ILocalizationService>();
                 var replacements = new Dictionary<string, string>
                 {
-                    ["actor_name"] = actor.Name,
                     ["topic"] = topic,
-                    ["thought_chain"] = string.Join("\n", thoughtChain),
-                    ["insights"] = string.Join(", ", insights)
+                    ["thought_chain"] = string.Join("->", thoughtChain),
                 };
 
                 return localizationService.GetLocalizedText("think_conclusion_user_message", replacements);
@@ -107,7 +115,7 @@ namespace Agent
             catch (Exception ex)
             {
                 Debug.LogError($"[ThinkConclusionAgent] 사용자 메시지 로드 실패, 기본값 사용: {ex.Message}");
-                return GetDefaultUserMessage(topic, thoughtChain, insights);
+                return GetDefaultUserMessage(topic, thoughtChain);
             }
         }
 
@@ -122,11 +130,11 @@ namespace Agent
         /// <summary>
         /// 기본 사용자 메시지를 반환합니다
         /// </summary>
-        private string GetDefaultUserMessage(string topic, List<string> thoughtChain, List<string> insights)
+        private string GetDefaultUserMessage(string topic, List<string> thoughtChain)
         {
             return $"주제: {topic}\n\n" +
                    $"사색 과정:\n{string.Join("\n", thoughtChain)}\n\n" +
-                   $"얻은 통찰들: {string.Join(", ", insights)}\n\n" +
+                   //$"얻은 통찰들: {string.Join(", ", insights)}\n\n" +
                    "이 모든 과정을 통해 얻은 최종 결론이나 깨달음을 2-3문장으로 정리해주세요.";
         }
 
