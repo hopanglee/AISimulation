@@ -22,7 +22,7 @@ public class SuperegoAgent : GPT
     {
         this.actor = actor;
         this.toolExecutor = new ActorToolExecutor(actor);
-
+        SetActorName(actor.Name);
 
         InitializeOptions();
     }
@@ -214,7 +214,7 @@ public class SuperegoAgent : GPT
         try
         {
             LoadSystemPrompt();
-            
+
             var timeService = Services.Get<ITimeService>();
             var year = timeService.CurrentTime.year;
             var month = timeService.CurrentTime.month;

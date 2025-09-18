@@ -86,8 +86,8 @@ public class GameService : MonoBehaviour, IGameService
     // private bool enableThinkRoutine = true; // Think 루틴 활성화 여부 (테스트용)
     [SerializeField]
     private bool forceNewDayPlan = false; // 기존 계획 무시하고 새로 생성 (테스트용)
-    // [SerializeField]
-    // private bool thinkOnly = false; // Think만 실행하고 Act는 실행하지 않음 (테스트용)
+    [SerializeField]
+    private bool planOnly = false; // 첫 계획 생성까지만 실행하고 그 이후에는 멈춤 (테스트용)
     [SerializeField]
     private bool enableGPTLogging = true; // GPT 대화 로그 저장 활성화 여부
 
@@ -177,7 +177,18 @@ public class GameService : MonoBehaviour, IGameService
         // 기상 시 하루 계획 루틴 시작 (DayPlan이 끝난 후에만 Think 루틴 시작)
         //_ = RunDayPlanningRoutine(true); // 항상 startThinkAfter는 true로, enableThinkRoutine으로 제어
 
+        // 모든 Actor에 테스트 설정 적용
+        foreach (var actor in allActors)
+        {
+            if (actor != null && actor is MainActor mainActor && mainActor.brain != null)
+            {
+                mainActor.brain.SetForceNewDayPlan(forceNewDayPlan);
+                mainActor.brain.SetPlanOnly(planOnly);
+            }
+        }
+        
         Debug.Log($"[GameService] Simulation started with {allActors.Count} actors");
+        Debug.Log($"[GameService] Force new day plan: {forceNewDayPlan}, Plan only: {planOnly}");
         
         return UniTask.CompletedTask;
     }
@@ -543,6 +554,22 @@ public class GameService : MonoBehaviour, IGameService
     {
         forceNewDayPlan = !forceNewDayPlan;
         Debug.Log($"[GameService] Force new day plan {(forceNewDayPlan ? "enabled" : "disabled")}");
+    }
+    
+    [Button("Toggle Plan Only")]
+    private void TogglePlanOnly()
+    {
+        planOnly = !planOnly;
+        Debug.Log($"[GameService] Plan only mode {(planOnly ? "enabled" : "disabled")}");
+        
+        // 모든 Actor의 planOnly 설정 업데이트
+        foreach (var actor in allActors)
+        {
+            if (actor != null && actor is MainActor mainActor && mainActor.brain != null)
+            {
+                mainActor.brain.SetPlanOnly(planOnly);
+            }
+        }
     }
 
     [Button("Toggle GPT Logging")]

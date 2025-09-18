@@ -32,7 +32,7 @@ public class NPCActionAgent : GPT
         this.owner = owner;
         this.availableActions = availableActions;
         this.toolExecutor = new ActorToolExecutor(owner); // 도구 실행자 초기화
-
+        SetActorName(owner.Name);
         // NPCRole별 System prompt 로드 (replacements 포함)
         string systemPrompt = PromptLoader.LoadNPCRoleSystemPrompt(npcRole,
         new Dictionary<string, string>

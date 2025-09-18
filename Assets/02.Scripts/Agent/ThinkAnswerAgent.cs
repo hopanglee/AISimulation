@@ -17,6 +17,7 @@ namespace Agent
         public ThinkAnswerAgent(Actor actor)
         {
             this.actor = actor;
+            SetActorName(actor.Name);
             options = new ChatCompletionOptions
             {
                 Temperature = 0.7f

@@ -17,6 +17,7 @@ namespace Agent
         public ThinkQuestionAgent(Actor actor)
         {
             this.actor = actor;
+            SetActorName(actor.Name);
             options = new ChatCompletionOptions
             {
                 Temperature = 0.8f // 창의적인 질문을 위해 높은 온도
