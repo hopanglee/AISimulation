@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
@@ -91,6 +92,20 @@ public class AreaDataExporter : EditorWindow
                 }
             }
 
+            // Area 내부의 하위 Area들도 찾기 (예: Restaurant 내부의 Seating Area)
+            foreach (var otherArea in areas)
+            {
+                if (otherArea != area && otherArea.transform.IsChildOf(area.transform))
+                {
+                    string subAreaName = isKoreanVersion ? GetKoreanAreaName(otherArea) : GetEnglishAreaName(otherArea);
+                    if (!string.IsNullOrEmpty(subAreaName) && !areaInfo.connectedAreas.Contains(subAreaName))
+                    {
+                        areaInfo.connectedAreas.Add(subAreaName);
+                        Debug.Log($"Found sub-area '{subAreaName}' inside '{areaName}'");
+                    }
+                }
+            }
+
             // 해당 Area에 있는 Building들 찾기
             var buildings = Object.FindObjectsByType<Building>(FindObjectsSortMode.None);
             foreach (var building in buildings)
@@ -124,6 +139,9 @@ public class AreaDataExporter : EditorWindow
         }
 
         UpdateInfoJsonFiles(gameDataPath, areaDataMap);
+        
+        // 모든 Area에 대한 폴더 생성 (connected_areas에 있는 것뿐만 아니라 모든 Area)
+        CreateAllAreaFolders(gameDataPath, areaDataMap, areas, isKoreanVersion);
     }
 
     /// <summary>
@@ -390,6 +408,22 @@ public class AreaDataExporter : EditorWindow
             currentLocation = currentLocation.curLocation;
         }
         
+        // Area 내부의 하위 Area인지 확인하고 부모 Area 이름 추가
+        var allAreas = Object.FindObjectsByType<Area>(FindObjectsSortMode.None);
+        foreach (var parentArea in allAreas)
+        {
+            if (parentArea != targetArea && targetArea.transform.IsChildOf(parentArea.transform))
+            {
+                string parentAreaName = isKoreanVersion ? GetKoreanAreaName(parentArea) : GetEnglishAreaName(parentArea);
+                if (!string.IsNullOrEmpty(parentAreaName) && !locationChain.Contains(parentAreaName))
+                {
+                    locationChain.Add(parentAreaName);
+                    Debug.Log($"Area '{areaName}' is inside parent Area '{parentAreaName}', adding to path");
+                }
+                break;
+            }
+        }
+        
         // 폴더 체인 생성
         foreach (var locationName in locationChain)
         {
@@ -411,5 +445,63 @@ public class AreaDataExporter : EditorWindow
         
         Debug.Log($"Area '{areaName}' folder path: {finalFolder}");
         return finalFolder;
+    }
+    
+    /// <summary>
+    /// 모든 Area에 대한 폴더를 생성합니다.
+    /// </summary>
+    private void CreateAllAreaFolders(string basePath, Dictionary<string, AreaInfo> areaDataMap, Area[] areas, bool isKoreanVersion)
+    {
+        Debug.Log($"Creating folders for all {areas.Length} areas...");
+        
+        // 이미 폴더가 있는 Area들 제외
+        var existingFolders = Directory.GetDirectories(basePath, "*", SearchOption.AllDirectories)
+            .Select(folder => Path.GetFileName(folder))
+            .ToHashSet();
+        
+        int createdCount = 0;
+        
+        foreach (var area in areas)
+        {
+            string areaName = isKoreanVersion ? GetKoreanAreaName(area) : GetEnglishAreaName(area);
+            
+            if (string.IsNullOrEmpty(areaName))
+            {
+                Debug.LogWarning($"Area {area.name} has no {(isKoreanVersion ? "Korean" : "English")} name, skipping...");
+                continue;
+            }
+            
+            Debug.Log($"Checking area: '{areaName}' - existingFolders.Contains: {existingFolders.Contains(areaName)}");
+            
+            // 이미 폴더가 있으면 건너뛰기
+            if (!existingFolders.Contains(areaName))
+            {
+                // 해당 Area에 대한 폴더 생성
+                var folderPath = CreateAreaFolderPath(basePath, areaName, areaDataMap);
+                
+                // 빈 info.json 파일 생성
+                var infoFilePath = Path.Combine(folderPath, "info.json");
+                var emptyAreaInfo = new AreaInfo();
+                var jsonContent = JsonConvert.SerializeObject(emptyAreaInfo, Formatting.Indented);
+                
+                File.WriteAllText(infoFilePath, jsonContent);
+                Debug.Log($"Created area folder and info.json: {infoFilePath}");
+                createdCount++;
+            }
+        }
+        
+        if (createdCount > 0)
+        {
+            Debug.Log($"Created {createdCount} area folders");
+        }
+    }
+
+    /// <summary>
+    /// connected_areas에 있는 Area들에 대한 폴더를 생성합니다.
+    /// </summary>
+    private void CreateMissingAreaFolders(string basePath, Dictionary<string, AreaInfo> areaDataMap)
+    {
+        // 이 메서드는 더 이상 사용하지 않음 - CreateAllAreaFolders로 대체됨
+        Debug.Log("CreateMissingAreaFolders is deprecated - using CreateAllAreaFolders instead");
     }
 }

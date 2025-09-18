@@ -1268,7 +1268,9 @@
     "items": [],
     "props": [],
     "actors": [],
-    "buildings": [],
+    "buildings": [
+      "로카 고등학교"
+    ],
     "connectedAreas": [
       "5-chome-1",
       "5-chome-13",

@@ -1,4 +1,11 @@
 {
-  "connected_areas": [],
+  "connected_areas": [
+    "거실",
+    "런드리룸",
+    "부엌",
+    "복도",
+    "화장실",
+    "욕실"
+  ],
   "buildings": []
 }
