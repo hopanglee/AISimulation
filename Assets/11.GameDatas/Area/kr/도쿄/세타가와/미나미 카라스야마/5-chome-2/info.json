@@ -1,7 +1,10 @@
 {
   "connected_areas": [
     "5-chome-1",
-    "5-chome-3"
+    "5-chome-3",
+    "카운터",
+    "상품 진열대",
+    "네코마트"
   ],
   "buildings": [
     "네코마트"

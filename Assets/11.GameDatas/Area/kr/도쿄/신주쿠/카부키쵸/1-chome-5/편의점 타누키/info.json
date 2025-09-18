@@ -1,4 +1,7 @@
 {
-  "connected_areas": [],
+  "connected_areas": [
+    "상품 진열대",
+    "카운터"
+  ],
   "buildings": []
 }

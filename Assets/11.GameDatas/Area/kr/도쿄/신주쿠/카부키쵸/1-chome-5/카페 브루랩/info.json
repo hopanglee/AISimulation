@@ -1,4 +1,9 @@
 {
-  "connected_areas": [],
+  "connected_areas": [
+    "창고",
+    "화장실",
+    "카운터",
+    "홀"
+  ],
   "buildings": []
 }
