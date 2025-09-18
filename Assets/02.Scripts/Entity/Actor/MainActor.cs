@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Agent;
 using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
@@ -306,8 +307,52 @@ public abstract class MainActor : Actor
 			_ = WakeUp(); // async WakeUp 백그라운드 호출
 		}
 		
+		// 생일 체크 및 나이 증가 처리
+		_ = CheckBirthdayAndAgeUp(currentTime); // async 함수를 백그라운드로 호출
+		
 		// 청결도 감소 처리 (시뮬레이션 시간 기준)
 		UpdateCleanlinessDecay(currentTime);
+	}
+	
+	/// <summary>
+	/// 생일 체크 및 나이 증가 처리
+	/// </summary>
+	private async UniTask CheckBirthdayAndAgeUp(GameTime currentTime)
+	{
+		try
+		{
+			var characterMemoryManager = new CharacterMemoryManager(this);
+			var characterInfo = characterMemoryManager.GetCharacterInfo();
+			
+			// 생일이 설정되어 있는지 확인
+			if (characterInfo.Birthday == null)
+				return;
+			
+			var birthday = characterInfo.Birthday;
+			
+			// 현재 날짜가 생일인지 확인 (월과 일만 비교)
+			if (currentTime.month == birthday.month && currentTime.day == birthday.day)
+			{
+				// 이미 오늘 나이를 증가시켰는지 확인 (시간이 0시 0분인지 체크)
+				if (currentTime.hour == 0 && currentTime.minute == 0)
+				{
+					// 나이 증가
+					characterInfo.Age++;
+					
+					// CharacterInfo 저장
+					await characterMemoryManager.SaveCharacterInfoAsync();
+					
+					Debug.Log($"[{Name}] 생일입니다! {characterInfo.Age}세가 되었습니다! 🎉");
+					
+					// 생일 이벤트를 메모리에 추가할 수도 있음
+					// TODO: 생일 이벤트를 단기/장기 메모리에 추가하는 로직
+				}
+			}
+		}
+		catch (System.Exception ex)
+		{
+			Debug.LogWarning($"[{Name}] 생일 체크 중 오류 발생: {ex.Message}");
+		}
 	}
 	
 	/// <summary>

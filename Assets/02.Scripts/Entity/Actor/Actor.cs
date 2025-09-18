@@ -1220,9 +1220,9 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
         var infoText = $"이름은 {name}이고, {age}세 {gender}입니다. ";
 
-        if (!string.IsNullOrEmpty(birthday))
+        if (birthday != null)
         {
-            infoText += $"생일은 {birthday}입니다. ";
+            infoText += $"생일은 {birthday.month}월 {birthday.day}일입니다. ";
         }
 
         if (!string.IsNullOrEmpty(job))
@@ -1270,9 +1270,9 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
         var infoText = $"이름은 {name}이고, {age}세 {gender}입니다. ";
 
-        if (!string.IsNullOrEmpty(birthday))
+        if (birthday != null)
         {
-            infoText += $"생일은 {birthday}입니다. ";
+            infoText += $"생일은 {birthday.month}월 {birthday.day}일입니다. ";
         }
 
         if (!string.IsNullOrEmpty(job))

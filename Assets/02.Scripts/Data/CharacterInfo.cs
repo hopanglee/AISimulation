@@ -13,7 +13,8 @@ public class CharacterInfo
     public int Age { get; set; }
 
     [JsonProperty("birthday")]
-    public string Birthday { get; set; }
+    [JsonConverter(typeof(GameTimeConverter))]
+    public GameTime Birthday { get; set; }
 
     [JsonProperty("gender")]
     public string Gender { get; set; }
