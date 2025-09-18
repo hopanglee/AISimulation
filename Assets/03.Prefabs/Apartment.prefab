@@ -2032,6 +2032,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7999779466052175862}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2272769929078770298
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6882760012629554014}
+  m_Layer: 6
+  m_Name: 3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6882760012629554014
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2272769929078770298}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.13307066, z: -0, w: 0.9911066}
+  m_LocalPosition: {x: -0.189, y: 0.75, z: 0.242}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7578380262669965409}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2410652488627647031
 GameObject:
   m_ObjectHideFlags: 0
@@ -5642,6 +5673,38 @@ Transform:
   - {fileID: 6142998938036787466}
   m_Father: {fileID: 5661448514522356129}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5957275353787159610
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2752242920540425504}
+  m_Layer: 6
+  m_Name: 2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2752242920540425504
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5957275353787159610}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.656059, z: 0, w: 0.75470966}
+  m_LocalPosition: {x: 0.221, y: 0.771, z: -0.09}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8125826763725776871}
+  m_Father: {fileID: 7578380262669965409}
+  m_LocalEulerAnglesHint: {x: 0, y: -82, z: 0}
 --- !u!1 &6205801239504109942
 GameObject:
   m_ObjectHideFlags: 0
@@ -9778,7 +9841,7 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
+  HungerRecovery: 10
 --- !u!1001 &715498996882203356
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10042,7 +10105,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
   items: []
@@ -10204,7 +10266,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &959850221784426370
 PrefabInstance:
@@ -10668,7 +10729,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   HungerRecovery: 5
   ThirstRecovery: 20
 --- !u!1001 &1193273305016172121
@@ -11102,7 +11162,7 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
+  HungerRecovery: 10
 --- !u!4 &1335099351501685692 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: bc8c37d37bf158844b5dd9a5f29a33f1, type: 3}
@@ -11423,7 +11483,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
   isWaterRunning: 0
   waterTemperature: 20
@@ -12020,7 +12079,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
   isClean: 1
   isWet: 0
@@ -13376,7 +13434,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &2383732529594465479 stripped
 Transform:
@@ -13473,7 +13530,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
   isClean: 1
   isBroken: 0
@@ -14748,7 +14804,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: lemon
   isClean: 1
   isWet: 0
@@ -15246,7 +15301,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
   isWaterRunning: 0
   waterTemperature: 20
@@ -15405,7 +15459,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 934641233982087729}
   isClean: 1
   isOccupied: 0
@@ -17215,7 +17268,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
   isComfortable: 1
   sitPosition: {fileID: 6951535062731810788}
@@ -17451,7 +17503,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
   isWaterRunning: 0
   waterTemperature: 20
@@ -18801,7 +18852,7 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
+  HungerRecovery: 10
 --- !u!4 &5547572218082690704 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 5f0694814036e7041b0f671238e91aa5, type: 3}
@@ -18954,7 +19005,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 4898290608762593706}
   maxItems: 0
   items:
@@ -19233,7 +19283,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
   isClean: 1
   isBroken: 0
@@ -19364,7 +19413,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 5483043772208718735}
 --- !u!4 &5722982767548890064 stripped
 Transform:
@@ -20974,7 +21022,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &6661476479885858516
 PrefabInstance:
@@ -22770,6 +22817,12 @@ PrefabInstance:
       addedObject: {fileID: 8239531299098789676}
     - targetCorrespondingSourceObject: {fileID: 400000, guid: 1b1fff38809631c4bb72f88b4d96af45, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 2752242920540425504}
+    - targetCorrespondingSourceObject: {fileID: 400000, guid: 1b1fff38809631c4bb72f88b4d96af45, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6882760012629554014}
+    - targetCorrespondingSourceObject: {fileID: 400000, guid: 1b1fff38809631c4bb72f88b4d96af45, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 2557971655727956822}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 100000, guid: 1b1fff38809631c4bb72f88b4d96af45, type: 3}
@@ -22826,15 +22879,17 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 9028871841394943710}
   maxItems: 4
   items:
   - {fileID: 5301720456392187889}
   - {fileID: 6913456284336836640}
+  - {fileID: 3556000062890761542}
   itemPlacementPositions:
   - {fileID: 3906917712552076797}
   - {fileID: 8239531299098789676}
+  - {fileID: 2752242920540425504}
+  - {fileID: 6882760012629554014}
   useSimplePlacement: 0
 --- !u!4 &7578380262669965409 stripped
 Transform:
@@ -23673,6 +23728,79 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: a90af3f7d56f84549bff66a2a0964ab4, type: 3}
   m_PrefabInstance: {fileID: 8101487089289320475}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &8130269568398261909
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2752242920540425504}
+    m_Modifications:
+    - target: {fileID: 1845299116305810, guid: 8bd78344856479e469184dacaca1337a, type: 3}
+      propertyPath: m_Name
+      value: book01_1_1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4566800854899058, guid: 8bd78344856479e469184dacaca1337a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4566800854899058, guid: 8bd78344856479e469184dacaca1337a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4566800854899058, guid: 8bd78344856479e469184dacaca1337a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4566800854899058, guid: 8bd78344856479e469184dacaca1337a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4566800854899058, guid: 8bd78344856479e469184dacaca1337a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4566800854899058, guid: 8bd78344856479e469184dacaca1337a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4566800854899058, guid: 8bd78344856479e469184dacaca1337a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4566800854899058, guid: 8bd78344856479e469184dacaca1337a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4566800854899058, guid: 8bd78344856479e469184dacaca1337a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4566800854899058, guid: 8bd78344856479e469184dacaca1337a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -90
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8bd78344856479e469184dacaca1337a, type: 3}
+--- !u!114 &3556000062890761542 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4723702269283214291, guid: 8bd78344856479e469184dacaca1337a, type: 3}
+  m_PrefabInstance: {fileID: 8130269568398261909}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8043773221503074d947e4ba53cd83e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &8125826763725776871 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4566800854899058, guid: 8bd78344856479e469184dacaca1337a, type: 3}
+  m_PrefabInstance: {fileID: 8130269568398261909}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8207761350995274559
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24095,7 +24223,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
   maxItems: 3
   items:
@@ -24209,7 +24336,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
   isComfortable: 1
   sitPosition: {fileID: 5008572683708592581}
@@ -25388,7 +25514,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
   isOn: 0
   currentChannel: 1
