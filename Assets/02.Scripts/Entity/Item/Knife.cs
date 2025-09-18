@@ -3,10 +3,6 @@ using UnityEngine;
 [System.Serializable]
 public class Knife : Item
 {
-    public override string Get()
-    {
-        return "칼";
-    }
 
     public string Kill(Actor actor, Actor target)
     {

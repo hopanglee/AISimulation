@@ -10,11 +10,6 @@ public class Shampoo : Item, IUsable
         Debug.Log("머리를 감았습니다.");
     }
     
-    public override string Get()
-    {
-        return $"샴푸 - {brand}";
-    }
-
     /// <summary>
     /// IUsable 인터페이스 구현 - 머리를 감습니다
     /// </summary>

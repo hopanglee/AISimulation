@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public abstract class Building : Entity
@@ -7,6 +8,10 @@ public abstract class Building : Entity
     // Block의 toMovePos는 Entity의 transform.position으로 대체
     public override string Get()
     {
-        throw new System.NotImplementedException();
+        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()}";
+        }
+        return $"{LocationToString()}이 있다.";
     }
 }

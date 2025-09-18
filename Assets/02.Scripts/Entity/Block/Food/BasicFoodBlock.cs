@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -11,6 +12,12 @@ public class BasicFoodBlock : FoodBlock
     /// </summary>
     public override string Get()
     {
-        return $"{Name} - 영양가: {hungerValue}, 남은 양: {GetRemainingAmount()}%";
+        string status = $"{Name} - 영양가: {hungerValue}, 남은 양: {GetRemainingAmount()}%";
+
+        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()} {status}";
+        }
+        return $"{LocationToString()} - {status}";
     }
 }

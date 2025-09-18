@@ -1,6 +1,7 @@
+using System;
+
 public abstract class Item : Entity, ICollectible
 {
-    public string Description;
     
     /// <summary>
     /// IInteractable과 상호작용합니다. 기본 구현은 true를 반환합니다.
@@ -13,5 +14,14 @@ public abstract class Item : Entity, ICollectible
     {
         // 기본 구현: 상호작용 계속 진행
         return true;
+    }
+
+    public override string Get()
+    {
+        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()}";
+        }
+        return $"{LocationToString()}이 있다.";
     }
 }

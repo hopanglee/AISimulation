@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -73,19 +74,31 @@ public class Fan : InteractableProp
     
     public override string Get()
     {
+        string status = "";
         switch (currentSpeed)
         {
             case FanSpeed.Off:
-                return "선풍기가 꺼져있습니다.";
+                status = "선풍기가 꺼져있습니다.";
+                break;
             case FanSpeed.Low:
-                return "선풍기가 약하게 돌고 있습니다.";
+                status = "선풍기가 약하게 돌고 있습니다.";
+                break;
             case FanSpeed.Medium:
-                return "선풍기가 보통 속도로 돌고 있습니다.";
+                status = "선풍기가 보통 속도로 돌고 있습니다.";
+                break;
             case FanSpeed.High:
-                return "선풍기가 강하게 돌고 있습니다.";
+                status = "선풍기가 강하게 돌고 있습니다.";
+                break;
             default:
-                return "선풍기 상태를 알 수 없습니다.";
+                status = "선풍기 상태를 알 수 없습니다.";
+                break;
         }
+
+        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()} {status}";
+        }
+        return $"{LocationToString()} - {status}";
     }
     
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)

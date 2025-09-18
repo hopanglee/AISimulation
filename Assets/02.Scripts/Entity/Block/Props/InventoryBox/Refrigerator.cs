@@ -5,15 +5,6 @@ using UnityEngine;
 
 public class Refrigerator : InventoryBox
 {
-    public override string Get()
-    {
-        if (items.Count == 0)
-        {
-            return "냉장고가 비어있습니다.";
-        }
-        
-        return $"냉장고에 {items.Count}개의 아이템이 있습니다.";
-    }
     
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {

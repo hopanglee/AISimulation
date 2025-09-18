@@ -9,11 +9,6 @@ public class Book : Item, IUsable
     [SerializeField]
     private SerializableDictionary<int, Paper> pages = new();
 
-    public override string Get()
-    {
-        throw new System.NotImplementedException();
-    }
-
     /// <summary>
     /// IUsable 인터페이스 구현
     /// </summary>

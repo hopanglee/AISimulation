@@ -64,11 +64,6 @@ public class CafeWorker : NPC, IHasExtraSenseAreas
         public static bool operator !=(CafeAction left, CafeAction right) => !left.Equals(right);
     }
 
-    public override string Get()
-    {
-        return "";
-    }
-
     protected override void InitializeActionHandlers()
     {
         base.InitializeActionHandlers();

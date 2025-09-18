@@ -2,6 +2,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Agent;
+using System;
 
 public class Bed : SitableProp
 {
@@ -217,10 +218,17 @@ public class Bed : SitableProp
     
     public override string Get()
     {
+        string status = "";
         if (isOccupied && sleepingActor != null)
         {
-            return $"{sleepingActor.Name}이(가) 잠자고 있는 침대입니다.";
+            status = $"{sleepingActor.Name}이(가) 잠자고 있는 침대입니다.";
         }
-        return "사용 가능한 침대입니다.";
+        else status = "사용 가능한 침대입니다.";
+
+        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()} {status}";
+        }
+        return $"{LocationToString()} - {status}";
     }
 }

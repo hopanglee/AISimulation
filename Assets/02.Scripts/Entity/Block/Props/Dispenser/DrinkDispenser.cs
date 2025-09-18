@@ -3,6 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Agent;
+using System;
 
 public class DrinkDispenser : ItemDispenser
 {
@@ -94,8 +95,24 @@ public class DrinkDispenser : ItemDispenser
     
     public override string Get()
     {
-        string beanStatus = hasBeans ? $"원두: {beanLevel:F0}%" : "원두 부족";
-        return $"음료 디스펜서 - {beanStatus}";
+        string status = "";
+        if (supplies == null || supplies.Count == 0)
+        {
+            status = "현재 제공 가능한 음료가 없습니다.";
+        }
+        else
+        {
+            string keys = string.Join(", ", supplies.Where(s => s != null && s.prefab != null).Select(s => s.itemKey));
+            status = $"{keys}을(를) 제공할 수 있습니다.";
+        }
+        status += hasBeans ? $", 원두: {beanLevel:F0}%" : ", 원두 부족";
+        
+
+        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()}, {status}";
+        }
+        return $"{LocationToString()} - {status}";
     }
     
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)

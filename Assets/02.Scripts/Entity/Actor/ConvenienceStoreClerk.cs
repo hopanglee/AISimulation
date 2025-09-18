@@ -58,14 +58,6 @@ public class ConvenienceStoreClerk : NPC, IHasExtraSenseAreas
     }
     
     /// <summary>
-    /// NPC 정보 반환
-    /// </summary>
-    public override string Get()
-    {
-        return $"편의점 직원 {Name} (총 수익: {totalRevenue}원)";
-    }
-    
-    /// <summary>
     /// 편의점 직원 전용 액션 핸들러 초기화
     /// </summary>
     protected override void InitializeActionHandlers()

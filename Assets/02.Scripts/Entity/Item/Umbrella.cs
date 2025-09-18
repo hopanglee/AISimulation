@@ -3,10 +3,6 @@ using UnityEngine;
 [System.Serializable]
 public class Umbrella : Item, IUsable
 {
-    public override string Get()
-    {
-        return "우산";
-    }
 
     /// <summary>
     /// IUsable 인터페이스 구현

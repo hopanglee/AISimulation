@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -127,12 +128,18 @@ public class Bench : SitableProp
     public override string Get()
     {
         int count = GetOccupantCount();
+        string status = "";
         if (count == 0)
         {
-            return "벤치가 비어있습니다.";
+            status = "벤치가 비어있습니다.";
         }
+        else status = $"벤치에 {count}명이 앉아있습니다.";
 
-        return $"벤치에 {count}명이 앉아있습니다.";
+        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()} {status}";
+        }
+        return $"{LocationToString()} - {status}";
     }
 
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)

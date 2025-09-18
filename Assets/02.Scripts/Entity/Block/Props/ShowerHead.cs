@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -45,12 +46,19 @@ public class ShowerHead : InteractableProp
     
     public override string Get()
     {
+        string status = "";
         if (!isOn)
         {
-            return "샤워기가 꺼져있습니다.";
+            status = "샤워기가 꺼져있습니다.";
         }
         
-        return $"샤워기가 켜져있습니다. 온도: {waterTemperature:F1}°C, 압력: {waterPressure:F1}";
+        else status = $"샤워기가 켜져있습니다. 온도: {waterTemperature:F1}°C, 압력: {waterPressure:F1}";
+
+        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()} {status}";
+        }
+        return $"{LocationToString()} - {status}";
     }
     
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)

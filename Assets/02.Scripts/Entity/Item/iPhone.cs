@@ -216,9 +216,4 @@ public class iPhone : Item, IUsable
     {
         return System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
     }
-
-    public override string Get()
-    {
-        throw new System.NotImplementedException();
-    }
 }

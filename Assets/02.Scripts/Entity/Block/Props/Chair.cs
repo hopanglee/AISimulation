@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -68,12 +69,18 @@ public class Chair : SitableProp
     
     public override string Get()
     {
+        string status = "";
         if (seatedActor != null)
         {
-            return "의자에 누군가 앉아있습니다.";
+            status = "의자에 누군가 앉아있습니다.";
         }
+        else status = "의자가 비어있습니다.";
         
-        return isComfortable ? "편안한 의자입니다." : "의자입니다.";
+        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()} {status}";
+        }
+        return $"{LocationToString()} - {status}";
     }
     
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)

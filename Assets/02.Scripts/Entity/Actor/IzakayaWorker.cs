@@ -69,11 +69,6 @@ public class IzakayaWorker : NPC
         public static bool operator !=(IzakayaAction left, IzakayaAction right) => !left.Equals(right);
     }
 
-    public override string Get()
-    {
-        return "";
-    }
-
     protected override void InitializeActionHandlers()
     {
         base.InitializeActionHandlers();

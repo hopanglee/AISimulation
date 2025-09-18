@@ -4,6 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Agent;
+using System;
 
 [System.Serializable]
 public class DispenserEntry
@@ -39,38 +40,49 @@ public class ItemDispenser : InteractableProp
         // 임시 비활성 부모 생성
         GameObject tempParent = new GameObject("TempParent");
         tempParent.SetActive(false);
-        
+
         // 비활성 상태로 생성하여 OnEnable 실행 방지
         var instance = Instantiate(entry.prefab, tempParent.transform);
-        
+
         // curLocation 설정 (OnEnable 실행 전)
         if (instance is Entity entity)
         {
             entity.curLocation = this;
         }
-        
+
         // 부모에서 분리하고 활성화
         instance.transform.SetParent(null);
         Destroy(tempParent);
         instance.gameObject.SetActive(true);
-        
+
         return instance;
     }
 
     public override string Get()
     {
+        string status = "";
         if (supplies == null || supplies.Count == 0)
         {
-            return "공급 가능한 아이템이 없습니다.";
+            status = "현재 제공 가능한 물건이 없습니다.";
         }
-        string keys = string.Join(", ", supplies.Where(s => s != null && s.prefab != null).Select(s => s.itemKey));
-        return $"요청 시 무제한 공급 가능: {keys}";
+        else
+        {
+            string keys = string.Join(", ", supplies.Where(s => s != null && s.prefab != null).Select(s => s.itemKey));
+            status = $"{keys}을(를) 제공할 수 있습니다.";
+        }
+
+
+        if (String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()}, {status}";
+        }
+        return $"{LocationToString()} - {status}";
     }
 
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
         await SimDelay.DelaySimMinutes(1, cancellationToken);
-        
+
         if (supplies == null || supplies.Count == 0)
         {
             return "현재 제공 가능한 아이템이 없습니다.";
@@ -96,7 +108,7 @@ public class ItemDispenser : InteractableProp
             var actorManager = Services.Get<IActorService>();
             string reasoning = "ItemDispenser에서 아이템을 선택하여 생성하려고 합니다.";
             string intention = "현재 상황에 적합한 아이템을 선택하여 사용하려고 합니다.";
-            
+
             if (actorManager != null)
             {
                 var actResult = actorManager.GetActResult(actor);
@@ -119,7 +131,7 @@ public class ItemDispenser : InteractableProp
             if (paramResult != null && paramResult.Parameters.TryGetValue("selected_item_key", out var selectedItemKeyObj))
             {
                 string selectedItemKey = selectedItemKeyObj?.ToString();
-                
+
                 if (!string.IsNullOrEmpty(selectedItemKey) && HasItemKey(selectedItemKey))
                 {
                     // 선택된 아이템 생성

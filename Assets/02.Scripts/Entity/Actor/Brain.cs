@@ -258,8 +258,11 @@ public class Brain
             bool isSuccess = true;
             string completionReason = "성공적으로 완료";
 
+            MainActor mainActor = actor as MainActor;
             try
             {
+                
+                mainActor.CurrentActivity = paramResult.ActType.ToString();
                 await actionPerformer.ExecuteAction(action, token);
             }
             catch (OperationCanceledException)
@@ -267,12 +270,14 @@ public class Brain
                 isSuccess = false;
                 // 외부 이벤트로 취소된 경우: 이유 없이 '멈췄다'로 기록
                 memoryManager.AddActionInterrupted(paramResult.ActType);
+                mainActor.CurrentActivity = "Idle";
                 throw;
             }
             catch (Exception actionEx)
             {
                 isSuccess = false;
                 Debug.LogError($"[{actor.Name}] 액션 실행 중 오류: {actionEx.Message}");
+                mainActor.CurrentActivity = "Idle";
                 throw;
             }
             finally
@@ -282,6 +287,7 @@ public class Brain
                 {
                     memoryManager.AddActionComplete(paramResult.ActType, completionReason, true);
                 }
+                mainActor.CurrentActivity = "Idle";
             }
         }
         catch (Exception ex)

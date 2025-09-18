@@ -689,5 +689,37 @@ public abstract partial class NPC : Actor
     /// NPC가 현재 근무 중인지 확인
     /// </summary>
     
+    public override string Get()
+    {
+        string status = "";
+
+        // 손에 들고 있는 아이템 상태
+        if (HandItem != null)
+        {
+            status += $"손에 {HandItem.Name}을(를) 들고 있음";
+        }
+        else
+        {
+            status += "빈손";
+        }
+
+        // 현재 수행 중인 액션 정보
+        if (currentAction != null)
+        {
+            var actionText = currentAction.ActionName;
+
+            status += $", 현재 행동: {actionText}";
+        }
+        else if (isExecutingAction)
+        {
+            status += ", 현재 행동: 진행 중";
+        }
+
+        if (String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()}, {status}";
+        }
+        return $"{LocationToString()} - {status}";
+    }
 }
 

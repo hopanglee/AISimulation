@@ -11,11 +11,6 @@ public class Note : Item, IUsable
     [SerializeField]
     private SerializableDictionary<int, Paper> pages = new();
 
-    public override string Get()
-    {
-        return "노트";
-    }
-
     /// <summary>
     /// IUsable 인터페이스 구현
     /// </summary>

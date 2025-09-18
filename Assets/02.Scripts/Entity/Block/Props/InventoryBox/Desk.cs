@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -6,7 +7,18 @@ public class Desk : InventoryBox
 {
     public override string Get()
     {
-        return $"{Name} 입니다.";
+        string status = "";
+        if (items.Count == 0)
+        {
+            status = "위에 아무것도 없습니다.";
+        }
+        else status = $"위에 {items.Count}개의 물건이 있습니다. 물건들은 다음과 같습니다: {string.Join(", ", items.ConvertAll(item => item.Name))}";
+
+        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()}, {status}";
+        }
+        return $"{LocationToString()} - {status}";
     }
     
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
