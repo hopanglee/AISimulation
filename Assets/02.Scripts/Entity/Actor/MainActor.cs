@@ -27,19 +27,6 @@ public abstract class MainActor : Actor
 	
 	[Header("Sleep System")]
 	[SerializeField, Range(0, 23)]
-	private int wakeUpHour = 7; // 기상 시간
-	public int WakeUpHour => wakeUpHour;
-	public int wakeUpMinute = 0;
-	private bool hasAwokenToday = false;
-	
-	[Header("Cleanliness Decay System")]
-	[SerializeField, Tooltip("청결도가 감소하는 간격 (분)")]
-	private int cleanlinessDecayIntervalMinutes = 30; // 30분마다
-	[SerializeField, Tooltip("한 번에 감소하는 청결도")]
-	private int cleanlinessDecayAmount = 3;
-	private GameTime lastCleanlinessDecayTime;
-
-	[SerializeField, Range(0, 23)]
 	private int sleepHour = 22; // 취침 시간
 
 	[SerializeField, Range(0, 100)]
@@ -57,6 +44,13 @@ public abstract class MainActor : Actor
 	public bool IsSleeping => isSleeping;
 	public int SleepHour => sleepHour;
 	public int SleepinessThreshold => sleepinessThreshold;
+	
+	[Header("Cleanliness Decay System")]
+	[SerializeField, Tooltip("청결도가 감소하는 간격 (분)")]
+	private int cleanlinessDecayIntervalMinutes = 30; // 30분마다
+	[SerializeField, Tooltip("한 번에 감소하는 청결도")]
+	private int cleanlinessDecayAmount = 3;
+	private GameTime lastCleanlinessDecayTime;
 	
 	[Header("Activity System")]
 	[SerializeField]
@@ -132,12 +126,12 @@ public abstract class MainActor : Actor
 		}
 		else
 		{
-			// 기본 기상 시간으로 설정 (다음 날 기상 시간)
+			// 기본 기상 시간으로 설정 (다음 날 7시)
 			wakeUpTime = new GameTime(
 				currentTime.year,
 				currentTime.month,
 				currentTime.day + 1,
-				wakeUpHour,
+				7, // 기본 기상 시간 7시
 				0
 			);
 
@@ -212,53 +206,6 @@ public abstract class MainActor : Actor
 		brain.StartThinkLoop();
 	}
 
-
-
-	/// <summary>
-	/// 수면 필요성 체크 (졸림 수치에 따른 강제 수면)
-	/// </summary>
-	public void CheckSleepNeed()
-	{
-		if (isSleeping)
-			return;
-
-		// 졸림 수치가 임계값을 넘으면 강제 수면
-		// Sleepiness는 Actor에서 관리되므로 여기서는 체크하지 않음
-		// 강제 수면 로직은 Actor에서 처리
-	}
-
-	/// <summary>
-	/// 수면 시간인지 확인
-	/// </summary>
-	public bool IsSleepTime()
-	{
-		var timeService = Services.Get<ITimeService>();
-		var currentTime = timeService.CurrentTime;
-
-		// 수면 시간 범위 확인 (22:00 ~ 06:00)
-		return timeService.IsTimeBetween(sleepHour, 0, wakeUpHour, 0);
-	}
-
-	/// <summary>
-	/// 기상 시간인지 확인
-	/// </summary>
-	public bool IsWakeUpTime()
-	{
-		var timeService = Services.Get<ITimeService>();
-		var currentTime = timeService.CurrentTime;
-		return currentTime.hour == wakeUpHour && currentTime.minute == 0;
-	}
-
-	/// <summary>
-	/// 수면 시간 설정
-	/// </summary>
-	public void SetSleepSchedule(int sleepHour, int wakeUpHour)
-	{
-		this.sleepHour = Mathf.Clamp(sleepHour, 0, 23);
-		this.wakeUpHour = Mathf.Clamp(wakeUpHour, 0, 23);
-
-		Debug.Log($"[{Name}] Sleep schedule set: {sleepHour:D2}:00 ~ {wakeUpHour:D2}:00");
-	}
 	#endregion
 
 	#region Activity System
@@ -353,16 +300,10 @@ public abstract class MainActor : Actor
 
 	public void OnSimulationTimeChanged(GameTime currentTime)
 	{
-		// 기상 시간 처리
-		if (!hasAwokenToday && currentTime.hour == wakeUpHour && currentTime.minute == wakeUpMinute)
+		// 기상 시간 처리 - wakeUpTime과 비교
+		if (isSleeping && wakeUpTime != null && currentTime.Equals(wakeUpTime))
 		{
-			hasAwokenToday = true;
 			_ = WakeUp(); // async WakeUp 백그라운드 호출
-		}
-		// 자정에 플래그 리셋
-		if (currentTime.hour == 0 && currentTime.minute == 0)
-		{
-			hasAwokenToday = false;
 		}
 		
 		// 청결도 감소 처리 (시뮬레이션 시간 기준)

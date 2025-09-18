@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
@@ -9,7 +10,7 @@ using UnityEngine;
 /// </summary>
 public class ActionExecutor
 {
-    private Dictionary<ActionType, Func<Dictionary<string, object>, Task>> actionHandlers = new();
+    private Dictionary<ActionType, Func<Dictionary<string, object>, UniTask>> actionHandlers = new();
     //private float actionDelay = 5f; // 기본 5초 딜레이
 
     /// <summary>
@@ -17,7 +18,7 @@ public class ActionExecutor
     /// </summary>
     public void RegisterHandler(
         ActionType actionType,
-        Func<Dictionary<string, object>, Task> handler
+        Func<Dictionary<string, object>, UniTask> handler
     )
     {
         actionHandlers[actionType] = handler;
@@ -26,7 +27,7 @@ public class ActionExecutor
     /// <summary>
     /// 액션을 실행합니다.
     /// </summary>
-    public async Task<ActionExecutionResult> ExecuteActionAsync(ActionReasoning reasoning)
+    public async UniTask<ActionExecutionResult> ExecuteActionAsync(ActionReasoning reasoning)
     {
         if (reasoning?.Action == null)
             return Fail("No action provided");

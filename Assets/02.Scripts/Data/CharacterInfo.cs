@@ -12,6 +12,9 @@ public class CharacterInfo
     [JsonProperty("age")]
     public int Age { get; set; }
 
+    [JsonProperty("birthday")]
+    public string Birthday { get; set; }
+
     [JsonProperty("gender")]
     public string Gender { get; set; }
 

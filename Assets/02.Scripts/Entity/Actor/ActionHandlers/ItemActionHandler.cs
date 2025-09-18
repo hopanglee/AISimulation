@@ -23,7 +23,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// 아이템을 집는 액션을 처리합니다.
         /// </summary>
-        public async Task HandlePickUpItem(Dictionary<string, object> parameters, CancellationToken token = default)
+        public async UniTask HandlePickUpItem(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             // accept both new key (item_name) and legacy key (target_item)
             string itemName = null;

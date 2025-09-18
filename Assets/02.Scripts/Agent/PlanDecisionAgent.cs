@@ -58,6 +58,7 @@ public class PlanDecisionAgent : GPT
 	{
 		public PerceptionResult perception;                  // 새 Perception 결과
 		public HierarchicalPlan currentPlan; // 현재 계획(강타입)
+		[JsonConverter(typeof(GameTimeConverter))]
 		public GameTime currentTime;                         // 현재 게임 시간
 	}
 

@@ -117,7 +117,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// Area로 이동하는 실제 로직을 처리합니다.
         /// </summary>
-        private async Task ExecuteMoveToArea(string areaName, CancellationToken token)
+        private async UniTask ExecuteMoveToArea(string areaName, CancellationToken token)
         {
             // 먼저 현재 Area에서 이동 가능한 위치들을 확인
             if (actor.sensor != null)
@@ -198,7 +198,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// 직접 이동을 실행합니다.
         /// </summary>
-        private async Task ExecuteDirectMove(string targetLocation, CancellationToken token)
+        private async UniTask ExecuteDirectMove(string targetLocation, CancellationToken token)
         {
             var moveCompleted = new TaskCompletionSource<bool>();
 
@@ -215,7 +215,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// 특정 위치로 직접 이동을 실행합니다.
         /// </summary>
-        private async Task ExecuteDirectMoveToPosition(Vector3 targetPosition, string targetName, CancellationToken token)
+        private async UniTask ExecuteDirectMoveToPosition(Vector3 targetPosition, string targetName, CancellationToken token)
         {
             var moveCompleted = new TaskCompletionSource<bool>();
 
@@ -232,7 +232,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// 경로찾기를 통해 이동을 실행합니다.
         /// </summary>
-        private async Task ExecutePathfindingMove(string targetLocationKey, CancellationToken token)
+        private async UniTask ExecutePathfindingMove(string targetLocationKey, CancellationToken token)
         {
             var pathfindingService = Services.Get<IPathfindingService>();
             var locationService = Services.Get<ILocationService>();
@@ -270,7 +270,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// 이동 완료를 대기합니다.
         /// </summary>
-        private async Task WaitForMoveCompletion(TaskCompletionSource<bool> moveCompleted, string targetName, CancellationToken token)
+        private async UniTask WaitForMoveCompletion(TaskCompletionSource<bool> moveCompleted, string targetName, CancellationToken token)
         {
             try
             {

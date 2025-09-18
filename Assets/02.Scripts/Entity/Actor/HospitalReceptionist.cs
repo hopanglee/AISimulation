@@ -97,7 +97,7 @@ public class HospitalReceptionist : NPC
     /// 의사에게 원거리 전달 (Talk 아님, 메시지 전달) 처리
     /// parameters: [message]
     /// </summary>
-    protected virtual async Task HandleNotifyDoctor(object[] parameters)
+    protected virtual async UniTask HandleNotifyDoctor(object[] parameters)
     {
         string message = "환자가 도착했습니다.";
         if (parameters != null && parameters.Length >= 1 && !string.IsNullOrEmpty(parameters[0]?.ToString()))
@@ -122,7 +122,7 @@ public class HospitalReceptionist : NPC
     /// <summary>
     /// 결제 처리 액션 핸들러
     /// </summary>
-    protected virtual async Task HandlePayment(object[] parameters)
+    protected virtual async UniTask HandlePayment(object[] parameters)
     {
         try
         {

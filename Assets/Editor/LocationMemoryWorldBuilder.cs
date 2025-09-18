@@ -69,14 +69,16 @@ public static class LocationMemoryWorldBuilder
 
                 var buildings = ExtractArrayOfStrings(json, "buildings");
                 var connected = ExtractArrayOfStrings(json, "connected_areas");
+                buildings = SortList(MakeUniqueWithSuffix(buildings ?? new List<string>()));
+                connected = SortList(MakeUniqueWithSuffix(connected ?? new List<string>()));
 
                 var obj = new JObject
                 {
                     ["items"] = new JArray(),
-                    ["blocks"] = new JArray(),
+                    ["props"] = new JArray(),
                     ["actors"] = new JArray(),
-                    ["buildings"] = new JArray(buildings ?? new List<string>()),
-                    ["connectedAreas"] = new JArray(connected ?? new List<string>()),
+                    ["buildings"] = new JArray(buildings),
+                    ["connectedAreas"] = new JArray(connected),
                     ["lastSeen"] = GameTimeToIsoString(2024, 11, 14, 0, 0)
                 };
 
@@ -127,11 +129,18 @@ public static class LocationMemoryWorldBuilder
 
                 // Collect child membership by transform hierarchy
                 var areaTf = area.transform;
-                var areaItems = items.Where(e => e != null && e.transform.IsChildOf(areaTf)).Select(GetEntityKrName).Where(n => !string.IsNullOrEmpty(n)).Distinct().ToList();
-                var areaProps = props.Where(e => e != null && e.transform.IsChildOf(areaTf)).Select(GetEntityKrName).Where(n => !string.IsNullOrEmpty(n)).Distinct().ToList();
-                var areaActors = actors.Where(e => e != null && e.transform.IsChildOf(areaTf)).Select(GetEntityKrName).Where(n => !string.IsNullOrEmpty(n)).Distinct().ToList();
-                var areaBuildings = buildings.Where(e => e != null && e.transform.IsChildOf(areaTf)).Select(GetEntityKrName).Where(n => !string.IsNullOrEmpty(n)).Distinct().ToList();
-                var connected = (area.connectedAreas ?? new List<Area>()).Where(a => a != null && !string.IsNullOrEmpty(a.locationName)).Select(GetAreaKrName).Distinct().ToList();
+                var areaItems = items.Where(e => e != null && e.transform.IsChildOf(areaTf)).Select(GetEntityKrName).Where(n => !string.IsNullOrEmpty(n)).ToList();
+                var areaProps = props.Where(e => e != null && e.transform.IsChildOf(areaTf)).Select(GetEntityKrName).Where(n => !string.IsNullOrEmpty(n)).ToList();
+                var areaActors = actors.Where(e => e != null && e.transform.IsChildOf(areaTf)).Select(GetEntityKrName).Where(n => !string.IsNullOrEmpty(n)).ToList();
+                var areaBuildings = buildings.Where(e => e != null && e.transform.IsChildOf(areaTf)).Select(GetEntityKrName).Where(n => !string.IsNullOrEmpty(n)).ToList();
+                var connected = (area.connectedAreas ?? new List<Area>()).Where(a => a != null && !string.IsNullOrEmpty(a.locationName)).Select(GetAreaKrName).ToList();
+
+                // Make names unique with suffixes instead of dropping duplicates
+                areaItems = SortList(MakeUniqueWithSuffix(areaItems));
+                areaProps = SortList(MakeUniqueWithSuffix(areaProps));
+                areaActors = SortList(MakeUniqueWithSuffix(areaActors));
+                areaBuildings = SortList(MakeUniqueWithSuffix(areaBuildings));
+                connected = SortList(MakeUniqueWithSuffix(connected));
 
                 // Skip areas with no connections at all
                 if (connected.Count == 0) continue;
@@ -139,7 +148,7 @@ public static class LocationMemoryWorldBuilder
                 var obj = new JObject
                 {
                     ["items"] = new JArray(areaItems),
-                    ["blocks"] = new JArray(),
+                    ["props"] = new JArray(areaProps),
                     ["actors"] = new JArray(areaActors),
                     ["buildings"] = new JArray(areaBuildings),
                     ["connectedAreas"] = new JArray(connected),
@@ -217,6 +226,32 @@ public static class LocationMemoryWorldBuilder
         // fallback to localized name
         try { var ln = e.GetLocalizedName(); if (!string.IsNullOrEmpty(ln)) return ln; } catch { }
         return e.Name;
+    }
+
+    private static List<string> MakeUniqueWithSuffix(IEnumerable<string> names)
+    {
+        var result = new List<string>();
+        var counts = new Dictionary<string, int>(System.StringComparer.Ordinal);
+        foreach (var raw in names ?? Array.Empty<string>())
+        {
+            var baseName = raw ?? string.Empty;
+            if (!counts.TryGetValue(baseName, out var c))
+            {
+                counts[baseName] = 1;
+                result.Add(baseName);
+            }
+            else
+            {
+                result.Add($"{baseName}_{c}");
+                counts[baseName] = c + 1;
+            }
+        }
+        return result;
+    }
+
+    private static List<string> SortList(IEnumerable<string> names)
+    {
+        return (names ?? Array.Empty<string>()).OrderBy(s => s, System.StringComparer.Ordinal).ToList();
     }
 
     private static void WriteMemoryForCharacter(string characterName, JObject memoryRoot)

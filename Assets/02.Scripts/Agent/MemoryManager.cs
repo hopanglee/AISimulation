@@ -15,6 +15,7 @@ using Memory;
 [System.Serializable]
 public class ShortTermMemoryEntry
 {
+    [JsonConverter(typeof(GameTimeConverter))]
     public GameTime timestamp;
     public string type; // "perception", "thinking", "action_start", "action_complete", "plan", "sensor_update", "action_interrupt"
     public string content;
@@ -39,6 +40,7 @@ public class ShortTermMemoryEntry
 public class ShortTermMemoryData
 {
     public List<ShortTermMemoryEntry> entries = new List<ShortTermMemoryEntry>();
+    [JsonConverter(typeof(GameTimeConverter))]
     public GameTime lastUpdated;
 }
 

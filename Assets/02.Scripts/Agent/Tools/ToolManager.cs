@@ -157,7 +157,7 @@ namespace Agent.Tools
             public static readonly ChatTool FindShortestAreaPathFromActor = ChatTool.CreateFunctionTool(
                 functionName: nameof(FindShortestAreaPathFromActor),
                 functionDescription: "From the actor's current area, find the shortest connected-area path to the target area key (locationName or full path). Returns 'A -> B -> C'"
-                ,functionParameters: System.BinaryData.FromBytes(
+                , functionParameters: System.BinaryData.FromBytes(
                     System.Text.Encoding.UTF8.GetBytes(
                         @"{
                             ""type"": ""object"",
@@ -177,6 +177,32 @@ namespace Agent.Tools
             public static readonly ChatTool GetWorldAreaStructureText = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetWorldAreaStructureText),
                 functionDescription: "Return the world area structure text built from 11.GameDatas (e.g., tokyo_area_structure.txt)."
+            );
+
+            // 현재 액터의 location_memories.json 전체 반환
+            public static readonly ChatTool GetActorLocationMemories = ChatTool.CreateFunctionTool(
+                functionName: nameof(GetActorLocationMemories),
+                functionDescription: "Return this actor's full location_memories.json content as JSON text."
+            );
+
+            // 현재 액터의 location_memories.json에서 주어진 범위/키로 필터링해 반환
+            public static readonly ChatTool GetActorLocationMemoriesFiltered = ChatTool.CreateFunctionTool(
+                functionName: nameof(GetActorLocationMemoriesFiltered),
+                functionDescription: "Return this actor's location memories filtered by area scope or exact area key.",
+                functionParameters: System.BinaryData.FromBytes(
+                    System.Text.Encoding.UTF8.GetBytes(
+                        @"{
+                            ""type"": ""object"",
+                            ""properties"": {
+                                ""areaKey"": {
+                                    ""type"": ""string"",
+                                    ""description"": ""Scope or exact key. Examples: '도쿄', '도쿄:신주쿠', '신주쿠', '1-chome-1', '도쿄:신주쿠:카부키쵸:1-chome-1'""
+                                }
+                            },
+                            ""required"": [""areaKey""]
+                        }"
+                    )
+                )
             );
         }
 
@@ -206,7 +232,7 @@ namespace Agent.Tools
             /// <summary>
             /// 메모리 관련 도구들
             /// </summary>
-            public static readonly ChatTool[] Memory = { ToolDefinitions.GetUserMemory, ToolDefinitions.GetShortTermMemory, ToolDefinitions.GetLongTermMemory, ToolDefinitions.GetMemoryStats };
+            public static readonly ChatTool[] Memory = { ToolDefinitions.GetUserMemory, ToolDefinitions.GetShortTermMemory, ToolDefinitions.GetLongTermMemory, ToolDefinitions.GetMemoryStats, ToolDefinitions.GetActorLocationMemories, ToolDefinitions.GetActorLocationMemoriesFiltered };
 
             /// <summary>
             /// 계획 관련 도구들
@@ -269,12 +295,16 @@ namespace Agent.Tools
                     return GetPaymentPriceList();
                 case nameof(GetWorldAreaInfo):
                     return GetWorldAreaInfo();
-                    case nameof(FindBuildingAreaPath):
-                        return FindBuildingAreaPath(toolCall.FunctionArguments);
-                    case nameof(FindShortestAreaPathFromActor):
-                        return FindShortestAreaPathFromActor(toolCall.FunctionArguments);
-                    case nameof(GetWorldAreaStructureText):
-                        return GetWorldAreaStructureText();
+                case nameof(FindBuildingAreaPath):
+                    return FindBuildingAreaPath(toolCall.FunctionArguments);
+                case nameof(FindShortestAreaPathFromActor):
+                    return FindShortestAreaPathFromActor(toolCall.FunctionArguments);
+                case nameof(GetWorldAreaStructureText):
+                    return GetWorldAreaStructureText();
+                case nameof(GetActorLocationMemories):
+                    return GetActorLocationMemories();
+                case nameof(GetActorLocationMemoriesFiltered):
+                    return GetActorLocationMemoriesFiltered(toolCall.FunctionArguments);
                 case nameof(GetUserMemory):
                     return GetUserMemory();
                 case nameof(GetShortTermMemory):
@@ -323,7 +353,7 @@ namespace Agent.Tools
                         break;
                     }
                 }
-                
+
                 if (targetSlot == -1)
                 {
                     var availableItems = new List<string>();
@@ -338,14 +368,14 @@ namespace Agent.Tools
                 }
 
                 var currentHandItem = actor.HandItem;
-                
+
                 // 인벤토리 아이템을 핸드로 이동
                 actor.InventoryItems[targetSlot] = currentHandItem;
                 if (currentHandItem != null)
                 {
                     currentHandItem.curLocation = actor.Inven;
                 }
-                
+
                 // 핸드 아이템 설정
                 actor.HandItem = inventoryItem;
                 inventoryItem.curLocation = actor.Hand;
@@ -461,38 +491,38 @@ namespace Agent.Tools
 
         private string GetUserMemory()
         {
-        try
-        {
-            // Brain의 MemoryManager를 통해 메모리 정보 가져오기
-            if (actor is MainActor mainActor && mainActor.brain?.memoryManager != null)
+            try
             {
-                var shortTermMemories = mainActor.brain.memoryManager.GetShortTermMemory();
-                var longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories();
-                
-                var memorySummary = $"단기 메모리 ({shortTermMemories.Count}개):\n";
-                foreach (var memory in shortTermMemories)
+                // Brain의 MemoryManager를 통해 메모리 정보 가져오기
+                if (actor is MainActor mainActor && mainActor.brain?.memoryManager != null)
                 {
-                    memorySummary += $"- {memory.content}\n";
-                }
-                
-                if (longTermMemories.Count > 0)
-                {
-                    memorySummary += $"\n장기 메모리 ({longTermMemories.Count}개):\n";
-                    foreach (var memory in longTermMemories)
+                    var shortTermMemories = mainActor.brain.memoryManager.GetShortTermMemory();
+                    var longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories();
+
+                    var memorySummary = $"단기 메모리 ({shortTermMemories.Count}개):\n";
+                    foreach (var memory in shortTermMemories)
                     {
                         memorySummary += $"- {memory.content}\n";
                     }
-                }
-                
-                return memorySummary;
-            }
 
-            return "메모리 정보를 찾을 수 없습니다.";
-        }
-        catch (Exception ex)
-        {
-            return $"Error getting user memory: {ex.Message}";
-        }
+                    if (longTermMemories.Count > 0)
+                    {
+                        memorySummary += $"\n장기 메모리 ({longTermMemories.Count}개):\n";
+                        foreach (var memory in longTermMemories)
+                        {
+                            memorySummary += $"- {memory.content}\n";
+                        }
+                    }
+
+                    return memorySummary;
+                }
+
+                return "메모리 정보를 찾을 수 없습니다.";
+            }
+            catch (Exception ex)
+            {
+                return $"Error getting user memory: {ex.Message}";
+            }
         }
 
         private string FindBuildingAreaPath(System.BinaryData arguments)
@@ -595,6 +625,68 @@ namespace Agent.Tools
             }
         }
 
+        private string GetActorLocationMemories()
+        {
+            try
+            {
+                if (actor == null) return "Error: No actor bound";
+                var path = System.IO.Path.Combine(Application.dataPath, "11.GameDatas", "Character", actor.Name, "memory", "location", "location_memories.json");
+                if (!System.IO.File.Exists(path)) return $"Error: location_memories.json not found for {actor.Name}";
+                return System.IO.File.ReadAllText(path, System.Text.Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                return $"Error reading location memories: {ex.Message}";
+            }
+        }
+
+        private string GetActorLocationMemoriesFiltered(System.BinaryData arguments)
+        {
+            try
+            {
+                if (actor == null) return "Error: No actor bound";
+                using var args = System.Text.Json.JsonDocument.Parse(arguments.ToString());
+                if (!args.RootElement.TryGetProperty("areaKey", out var keyEl))
+                    return "Error: areaKey parameter is required";
+                var areaKey = keyEl.GetString();
+                if (string.IsNullOrWhiteSpace(areaKey)) return "Error: areaKey is empty";
+
+                var filePath = System.IO.Path.Combine(Application.dataPath, "11.GameDatas", "Character", actor.Name, "memory", "location", "location_memories.json");
+                if (!System.IO.File.Exists(filePath)) return $"Error: location_memories.json not found for {actor.Name}";
+                var json = System.IO.File.ReadAllText(filePath, System.Text.Encoding.UTF8);
+
+                // Parse to dictionary
+                var all = Newtonsoft.Json.JsonConvert.DeserializeObject<System.Collections.Generic.Dictionary<string, Memory.LocationData>>(json) ?? new System.Collections.Generic.Dictionary<string, Memory.LocationData>();
+
+                // Build filter predicate: exact match or prefix match by scope, also accept leaf-only forms
+                bool Matches(string key)
+                {
+                    if (string.Equals(key, areaKey, System.StringComparison.Ordinal)) return true; // exact full-path match
+                    if (key.StartsWith(areaKey + ":", System.StringComparison.Ordinal)) return true; // scope match by prefix
+                    // leaf-only forms: if areaKey has no colon, match last segment equality
+                    if (!areaKey.Contains(":"))
+                    {
+                        var parts = key.Split(':');
+                        var leaf = parts.Length > 0 ? parts[parts.Length - 1] : key;
+                        if (string.Equals(leaf, areaKey, System.StringComparison.Ordinal)) return true;
+                    }
+                    return false;
+                }
+
+                var filtered = new System.Collections.Generic.Dictionary<string, Memory.LocationData>();
+                foreach (var kv in all)
+                {
+                    if (Matches(kv.Key)) filtered[kv.Key] = kv.Value;
+                }
+
+                return Newtonsoft.Json.JsonConvert.SerializeObject(filtered, Newtonsoft.Json.Formatting.Indented);
+            }
+            catch (Exception ex)
+            {
+                return $"Error filtering location memories: {ex.Message}";
+            }
+        }
+
         private string GetCurrentTime()
         {
             try
@@ -634,7 +726,7 @@ namespace Agent.Tools
 
                 // 간단한 계획 정보 포맷팅
                 var planInfo = new List<string>();
-                
+
                 // 고수준 작업들만 간단히 표시
                 if (currentPlan.HighLevelTasks != null && currentPlan.HighLevelTasks.Count > 0)
                 {
@@ -686,11 +778,11 @@ namespace Agent.Tools
                 actionInfo.Add($"Action Type: {currentSpecificAction.ActionType}");
                 actionInfo.Add($"Description: {currentSpecificAction.Description}");
                 actionInfo.Add($"Duration: {currentSpecificAction.DurationMinutes} minutes");
-                
+
                 if (currentSpecificAction.ParentDetailedActivity != null)
                 {
                     actionInfo.Add($"Activity: {currentSpecificAction.ParentDetailedActivity.ActivityName}");
-                    
+
                     if (currentSpecificAction.ParentDetailedActivity.ParentHighLevelTask != null)
                     {
                         actionInfo.Add($"Task: {currentSpecificAction.ParentDetailedActivity.ParentHighLevelTask.TaskName}");
@@ -720,21 +812,21 @@ namespace Agent.Tools
                 string memoryType = "";
                 int limit = 20;
                 string keyword = "";
-                
+
                 if (arguments != null)
                 {
                     using var argumentsJson = System.Text.Json.JsonDocument.Parse(arguments.ToString());
-                    
+
                     if (argumentsJson.RootElement.TryGetProperty("memoryType", out var memoryTypeElement))
                     {
                         memoryType = memoryTypeElement.GetString() ?? "";
                     }
-                    
+
                     if (argumentsJson.RootElement.TryGetProperty("limit", out var limitElement))
                     {
                         limit = Math.Min(limitElement.GetInt32(), 50);
                     }
-                    
+
                     if (argumentsJson.RootElement.TryGetProperty("keyword", out var keywordElement))
                     {
                         keyword = keywordElement.GetString() ?? "";
@@ -742,20 +834,20 @@ namespace Agent.Tools
                 }
 
                 var memories = mainActor.brain.memoryManager.GetShortTermMemory() ?? new List<ShortTermMemoryEntry>();
-                
+
                 // 필터링
                 var filteredMemories = memories.AsEnumerable();
-                
+
                 if (!string.IsNullOrEmpty(memoryType))
                 {
                     filteredMemories = filteredMemories.Where(m => m.type.Equals(memoryType, StringComparison.OrdinalIgnoreCase));
                 }
-                
+
                 if (!string.IsNullOrEmpty(keyword))
                 {
                     filteredMemories = filteredMemories.Where(m => m.content.Contains(keyword, StringComparison.OrdinalIgnoreCase));
                 }
-                
+
                 // 최신 순으로 정렬하고 제한
                 var resultMemories = filteredMemories
                     .OrderByDescending(m => m.timestamp)
@@ -767,9 +859,9 @@ namespace Agent.Tools
                     return "No matching short-term memories found.";
                 }
 
-                var memoryTexts = resultMemories.Select(m => 
+                var memoryTexts = resultMemories.Select(m =>
                     $"[{m.timestamp:yyyy-MM-dd HH:mm}] ({m.type}) {m.content}");
-                
+
                 return $"Short-term memories ({resultMemories.Count} found):\n\n{string.Join("\n", memoryTexts)}";
             }
             catch (Exception ex)
@@ -792,21 +884,21 @@ namespace Agent.Tools
                 string searchQuery = "";
                 string dateRange = "all";
                 int limit = 10;
-                
+
                 if (arguments != null)
                 {
                     using var argumentsJson = System.Text.Json.JsonDocument.Parse(arguments.ToString());
-                    
+
                     if (argumentsJson.RootElement.TryGetProperty("searchQuery", out var searchElement))
                     {
                         searchQuery = searchElement.GetString() ?? "";
                     }
-                    
+
                     if (argumentsJson.RootElement.TryGetProperty("dateRange", out var dateElement))
                     {
                         dateRange = dateElement.GetString() ?? "all";
                     }
-                    
+
                     if (argumentsJson.RootElement.TryGetProperty("limit", out var limitElement))
                     {
                         limit = Math.Min(limitElement.GetInt32(), 30);
@@ -814,22 +906,22 @@ namespace Agent.Tools
                 }
 
                 var memories = mainActor.brain.memoryManager.GetLongTermMemories() ?? new List<LongTermMemory>();
-                
+
                 // 검색 쿼리 필터링
                 var filteredMemories = memories.AsEnumerable();
-                
+
                 if (!string.IsNullOrEmpty(searchQuery))
                 {
-                    filteredMemories = filteredMemories.Where(m => 
+                    filteredMemories = filteredMemories.Where(m =>
                     {
                         var content = m.content ?? "";
                         return content.Contains(searchQuery, StringComparison.OrdinalIgnoreCase);
                     });
                 }
-                
+
                 // 날짜 범위 필터링 (추후 구현 가능)
                 // dateRange에 따른 필터링 로직은 필요시 추가
-                
+
                 // 최신 순으로 정렬하고 제한
                 var resultMemories = filteredMemories.Take(limit).ToList();
 
@@ -838,14 +930,14 @@ namespace Agent.Tools
                     return "No matching long-term memories found.";
                 }
 
-                var memoryTexts = resultMemories.Select(m => 
+                var memoryTexts = resultMemories.Select(m =>
                 {
                     var date = m.timestamp.ToString();
                     var content = m.content ?? "No content";
-                    
+
                     return $"[{date}] {content}";
                 });
-                
+
                 return $"Long-term memories ({resultMemories.Count} found):\n\n{string.Join("\n\n", memoryTexts)}";
             }
             catch (Exception ex)
@@ -866,14 +958,14 @@ namespace Agent.Tools
 
                 var shortTermMemories = mainActor.brain.memoryManager.GetShortTermMemory() ?? new List<ShortTermMemoryEntry>();
                 var longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories() ?? new List<LongTermMemory>();
-                
+
                 // 단기 기억 통계
                 var stmStats = new Dictionary<string, int>();
                 foreach (var memory in shortTermMemories)
                 {
                     stmStats[memory.type] = stmStats.GetValueOrDefault(memory.type, 0) + 1;
                 }
-                
+
                 // 최근 활동 (최근 10개)
                 var recentActivities = shortTermMemories
                     .OrderByDescending(m => m.timestamp)
@@ -890,19 +982,19 @@ namespace Agent.Tools
                     "",
                     "Short-term memory breakdown:"
                 };
-                
+
                 foreach (var stat in stmStats.OrderByDescending(kvp => kvp.Value))
                 {
                     statsText.Add($"  - {stat.Key}: {stat.Value}");
                 }
-                
+
                 if (recentActivities.Count > 0)
                 {
                     statsText.Add("");
                     statsText.Add("Recent activity:");
                     statsText.AddRange(recentActivities.Select(a => $"  {a}"));
                 }
-                
+
                 return string.Join("\n", statsText);
             }
             catch (Exception ex)
@@ -911,4 +1003,4 @@ namespace Agent.Tools
             }
         }
     }
-} 
+}
