@@ -160,7 +160,7 @@ public class GameService : MonoBehaviour, IGameService
         }
 
         // 시간 흐름 시작 전, 시간을 5:58로 맞춤
-        timeService.SetTime(5, 58);
+        //timeService.SetTime(5, 58);
 
         // 시간 흐름 시작
         timeService.TimeScale = timeScale;
