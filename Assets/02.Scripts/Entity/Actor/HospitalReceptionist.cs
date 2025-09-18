@@ -34,11 +34,6 @@ public class HospitalReceptionist : NPC
         public int price; // 가격
     }
 
-    public override string Get()
-    {
-        return "";
-    }
-
     public void ReceiveMessage(Actor from, string text)
     {
         Debug.Log($"[{Name}] (메시지 수신) {from?.Name} ▶ {text}");

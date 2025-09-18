@@ -39,14 +39,6 @@ public class HospitalDoctor : NPC
         public static bool operator !=(DoctorAction left, DoctorAction right) => !left.Equals(right);
     }
 
-    /// <summary>
-    /// NPC 정보 반환
-    /// </summary>
-    public override string Get()
-    {
-        // TODO: 구현 예정
-        return "";
-    }
 
     public void ReceiveMessage(Actor from, string text)
     {

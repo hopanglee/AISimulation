@@ -1,14 +1,18 @@
+using System;
 using UnityEngine;
 
 [System.Serializable]
 public abstract class FoodItem : Item, IUsable
 {
+
+    [Range(0, 100)]
+    public int HungerRecovery = 10;
     /// <summary>
     /// Virtual Eat method: consumes the food, increasing the actor's hunger satisfaction.
     /// </summary>
     public virtual string Eat(Actor actor)
     {
-        actor.Hunger += 10; // 기본 배고픔 해결량
+        actor.Hunger += HungerRecovery; // 기본 배고픔 해결량
         if (actor.Hunger > 100)
             actor.Hunger = 100;
 
@@ -18,7 +22,7 @@ public abstract class FoodItem : Item, IUsable
             Destroy(gameObject);
         }
 
-        return $"{actor.Name} consumed {this.Name} and satisfied hunger.";
+        return $"{actor.Name}가 {this.Name}을(를) 먹어서 배고픔을 {HungerRecovery}만큼 회복했습니다.";
     }
 
     /// <summary>
@@ -26,7 +30,11 @@ public abstract class FoodItem : Item, IUsable
     /// </summary>
     public override string Get()
     {
-        return $"{Name} - 음식";
+        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()}, 배고픔 회복: {HungerRecovery}";
+        }
+        return $"{LocationToString()} - 배고픔 회복: {HungerRecovery}";
     }
 
     /// <summary>

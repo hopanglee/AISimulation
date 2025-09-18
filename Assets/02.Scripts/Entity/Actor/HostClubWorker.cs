@@ -53,11 +53,6 @@ public class HostClubWorker : NPC
         public static bool operator !=(HostClubAction left, HostClubAction right) => !left.Equals(right);
     }
 
-    public override string Get()
-    {
-        return "";
-    }
-
     protected override void InitializeActionHandlers()
     {
         base.InitializeActionHandlers();

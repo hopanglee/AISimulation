@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -8,11 +9,19 @@ public class Locker : InventoryBox
     public string lockerNumber;
     public bool isAvailable = true;
     
+    // public override string Get()
+    // {
+    //     return $"사물함 {lockerNumber}";
+    // }
     public override string Get()
     {
-        return $"사물함 {lockerNumber}";
+        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - 사물함 {lockerNumber} {GetLocalizedStatusDescription()} ";
+        }
+        return $"{LocationToString()} - 사물함 {lockerNumber}";
     }
-    
+
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
         await SimDelay.DelaySimMinutes(1, cancellationToken);

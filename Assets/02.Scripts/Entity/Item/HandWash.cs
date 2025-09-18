@@ -34,13 +34,6 @@ public class HandWash : Item, IUsable
         Debug.Log("손 세정제가 더러워졌습니다.");
     }
     
-    public override string Get()
-    {
-        string status = isClean ? "깨끗한" : "더러운";
-        string wetStatus = isWet ? " (젖음)" : "";
-        return $"손 세정제 - {brand} ({status}{wetStatus})";
-    }
-    
     public override string ToString()
     {
         return Get();

@@ -9,11 +9,6 @@ public class BodyWash : Item, IUsable
     {
         Debug.Log("몸을 씻었습니다.");
     }
-    
-    public override string Get()
-    {
-        return $"바디워시 - {brand}";
-    }
 
     /// <summary>
     /// IUsable 인터페이스 구현 - 몸을 씻습니다

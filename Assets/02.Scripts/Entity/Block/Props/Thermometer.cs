@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Thermometer : Prop
@@ -91,13 +92,12 @@ public class Thermometer : Prop
     
     public override string Get()
     {
-        if (!isWorking)
+
+        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {
-            return "고장난 온도계";
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()} {GetTemperatureString()}";
         }
-        
-        string mountType = isWallMounted ? "벽걸이" : "스탠드";
-        return $"{mountType} 온도계 - {GetTemperatureString()}";
+        return $"{LocationToString()} - {GetTemperatureString()}";
     }
     
     public string GetDetailedInfo()

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -122,7 +123,12 @@ public class Clothing : Item, IUsable
     
     public override string Get()
     {
-        return $"{Name} - {Description}";
+        string status = $"{targetGender}용 {clothingType}옷";
+        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()} {status}";
+        }
+        return $"{LocationToString()} - {status}";
     }
 }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -75,12 +76,13 @@ public class Television : InteractableProp
     
     public override string Get()
     {
+        string status = "";
         if (!isOn)
         {
-            return "텔레비전이 꺼져있습니다.";
+            status = "텔레비전이 꺼져있습니다.";
         }
         
-        string status = $"텔레비전이 켜져있습니다. 채널: {GetCurrentChannelName()}";
+        else status = $"텔레비전이 켜져있습니다. 채널: {GetCurrentChannelName()}";
         
         if (isMuted)
         {
@@ -90,8 +92,12 @@ public class Television : InteractableProp
         {
             status += $", 볼륨: {(volume * 100):F0}%";
         }
-        
-        return status;
+
+        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()} {status}";
+        }
+        return $"{LocationToString()} - {status}";
     }
     
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)

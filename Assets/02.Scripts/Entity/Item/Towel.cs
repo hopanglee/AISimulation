@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Towel : Item
@@ -45,6 +46,12 @@ public class Towel : Item
     {
         string status = isClean ? "깨끗한" : "더러운";
         string wetStatus = isWet ? " (젖음)" : "";
-        return $"수건 - {material} ({status}{wetStatus})";
+        // return $"수건 - {material} ({status}{wetStatus})";
+
+        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()} {status} {wetStatus}";
+        }
+        return $"{LocationToString()} - {status} {wetStatus}";
     }
 }

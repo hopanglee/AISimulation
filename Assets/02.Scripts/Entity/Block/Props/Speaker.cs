@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Speaker : Prop
@@ -9,12 +10,19 @@ public class Speaker : Prop
     
     public override string Get()
     {
+        string status = "";
         if (string.IsNullOrEmpty(currentContent))
         {
-            return $"스피커 - {contentType} 재생 대기 중 (볼륨: {volume:F0}%)";
+            status = $"스피커 - {contentType} 재생 대기 중 (볼륨: {volume:F0}%)";
         }
         
-        return $"스피커 - {contentType} 재생 중: '{currentContent}' (볼륨: {volume:F0}%)";
+        else status = $"스피커 - {contentType} 재생 중: '{currentContent}' (볼륨: {volume:F0}%)";
+
+        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()} {status}";
+        }
+        return $"{LocationToString()} - {status}";
     }
 
 }

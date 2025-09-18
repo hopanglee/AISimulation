@@ -3,6 +3,7 @@ using System.Threading;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using System;
 
 public abstract class InventoryBox : InteractableProp
 {
@@ -222,11 +223,6 @@ public abstract class InventoryBox : InteractableProp
         RemoveItemFromPosition(foundItem);
         
         return foundItem;
-    }
-    
-    public override string Get()
-    {
-        throw new System.NotImplementedException();
     }
 
     /// <summary>
@@ -511,5 +507,15 @@ public abstract class InventoryBox : InteractableProp
     public List<string> GetBoxItemsList()
     {
         return items.ConvertAll(item => item.Name).ToList();
+    }
+
+    public override string Get()
+    {
+        string status = "물건을 넣거나 뺄 수 있습니다.";
+        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()} {status}";
+        }
+        return $"{LocationToString()} - {status}";
     }
 }

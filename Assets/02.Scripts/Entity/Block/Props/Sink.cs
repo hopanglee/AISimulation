@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -51,17 +52,23 @@ public class Sink : InteractableProp
     
     public override string Get()
     {
-        if (!isClean)
-        {
-            return "더러운 세면대입니다.";
-        }
+        string status = "";
+        // if (!isClean)
+        // {
+        //     status = "더러운 세면대입니다.";
+        // }
+        // else status = "세면대가 깨끗합니다.";
         
         if (isWaterRunning)
         {
-            return $"세면대에서 물이 흐르고 있습니다. 온도: {waterTemperature:F1}°C";
+            status = $"세면대에서 물이 흐르고 있습니다. 온도: {waterTemperature:F1}°C";
         }
-        
-        return "세면대가 깨끗합니다.";
+
+        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{LocationToString()} - {GetLocalizedStatusDescription()} {status}";
+        }
+        return $"{LocationToString()} - {status}";
     }
     
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
