@@ -28,6 +28,7 @@ namespace Agent
         public PersonalityChangeAgent(Actor actor)
         {
             this.actor = actor;
+            SetActorName(actor.Name);
             this.responseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                 jsonSchemaFormatName: "personality_change_result",
                 jsonSchema: System.BinaryData.FromBytes(

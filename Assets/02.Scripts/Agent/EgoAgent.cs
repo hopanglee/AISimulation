@@ -22,7 +22,7 @@ public class EgoAgent : GPT
     {
         this.actor = actor;
         this.toolExecutor = new ActorToolExecutor(actor);
-
+        SetActorName(actor.Name);
 
         InitializeOptions();
     }

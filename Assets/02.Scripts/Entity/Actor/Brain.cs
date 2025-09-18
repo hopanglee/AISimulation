@@ -52,6 +52,10 @@ public class Brain
     public Thinker Thinker => thinker;
 
     public PerceptionResult recentPerceptionResult;
+    
+    // --- Test Settings ---
+    private bool forceNewDayPlan = false; // 기존 계획 무시하고 새로 생성 (테스트용)
+    private bool planOnly = false; // 첫 계획 생성까지만 실행하고 그 이후에는 멈춤 (테스트용)
 
     public Brain(Actor actor)
     {
@@ -72,6 +76,24 @@ public class Brain
     }
 
     /// <summary>
+    /// 강제로 새로운 DayPlan을 생성하도록 설정합니다.
+    /// </summary>
+    public void SetForceNewDayPlan(bool force)
+    {
+        forceNewDayPlan = force;
+        Debug.Log($"[{actor.Name}] Force new day plan {(force ? "enabled" : "disabled")}");
+    }
+    
+    /// <summary>
+    /// 첫 계획 생성까지만 실행하도록 설정합니다.
+    /// </summary>
+    public void SetPlanOnly(bool only)
+    {
+        planOnly = only;
+        Debug.Log($"[{actor.Name}] Plan only mode {(only ? "enabled" : "disabled")}");
+    }
+
+    /// <summary>
     /// DayPlan 생성을 시작합니다 (비동기).
     /// </summary>
     public async UniTask StartDayPlan()
@@ -88,6 +110,12 @@ public class Brain
             var planDescription = $"오늘의 계획: {string.Join(", ", dayPlan.HighLevelTasks.ConvertAll(t => t.Description))}";
             memoryManager.AddPlanCreated(planDescription);
         }
+        
+        // planOnly가 true이면 계획 생성 후 종료
+        if (planOnly)
+        {
+            Debug.Log($"[{actor.Name}] Plan only mode - 계획 생성 완료, Think 루프 시작하지 않음");
+        }
     }
 
     /// <summary>
@@ -95,6 +123,12 @@ public class Brain
     /// </summary>
     public void StartThinkLoop()
     {
+        if (planOnly)
+        {
+            Debug.Log($"[{actor.Name}] Plan only mode - Think 루프 시작하지 않음");
+            return;
+        }
+        
         _ = thinker.StartThinkAndActLoop();
     }
 

@@ -17,6 +17,7 @@ namespace Agent
         public ThinkInsightAgent(Actor actor)
         {
             this.actor = actor;
+            SetActorName(actor.Name);
             options = new ChatCompletionOptions
             {
                 Temperature = 0.6f // 균형있는 창의성

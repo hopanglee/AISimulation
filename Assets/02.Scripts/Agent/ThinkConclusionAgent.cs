@@ -17,6 +17,7 @@ namespace Agent
         public ThinkConclusionAgent(Actor actor)
         {
             this.actor = actor;
+            SetActorName(actor.Name);
             options = new ChatCompletionOptions
             {
                 Temperature = 0.7f // 창의적이면서도 논리적인 결론
