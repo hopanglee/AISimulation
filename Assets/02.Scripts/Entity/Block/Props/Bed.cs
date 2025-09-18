@@ -196,6 +196,21 @@ public class Bed : SitableProp
             isOccupied = false;
             sleepingActor = null;
             
+            // 액터가 여전히 Bed 하위라면 curLocation을 Bed의 curLocation으로 설정 (부모 이동 포함)
+            if (actor != null && actor.transform != null)
+            {
+                Transform t = actor.transform;
+                while (t != null && t.parent != null)
+                {
+                    if (t.parent == transform)
+                    {
+                        actor.curLocation = this.curLocation;
+                        break;
+                    }
+                    t = t.parent;
+                }
+            }
+
             // MainActor인 경우 WakeUp 함수 호출
             if (actor is MainActor mainActor)
             {

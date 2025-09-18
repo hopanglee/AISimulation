@@ -237,6 +237,20 @@ public abstract class MainActor : Actor
 		isSleeping = false;
 		Stamina = Mathf.Min(100, Stamina + 30); // 수면으로 체력 회복
 
+		// 부모 체인 중 Bed가 있으면 Actor의 curLocation을 Bed의 curLocation으로 설정한다
+		Transform t = transform;
+		while (t != null && t.parent != null)
+		{
+			var parentBed = t.parent.GetComponent<Bed>();
+			if (parentBed != null)
+			{
+				// LocationService 일관성을 위해 curLocation 사용 (부모 변경 포함)
+				curLocation = parentBed.curLocation;
+				break;
+			}
+			t = t.parent;
+		}
+
 		Debug.Log($"[{Name}] Woke up at {currentTime}. Stamina restored to {Stamina}");
 		
 		// Enhanced Memory System: 기상을 STM에 추가
