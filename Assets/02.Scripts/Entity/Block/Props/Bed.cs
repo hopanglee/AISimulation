@@ -242,8 +242,8 @@ public class Bed : SitableProp
 
         if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {
-            return $"{LocationToString()} - {GetLocalizedStatusDescription()} {status}";
+            return $"{GetLocalizedStatusDescription()} {status}";
         }
-        return $"{LocationToString()} - {status}";
+        return $"{status}";
     }
 }

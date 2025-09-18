@@ -126,9 +126,9 @@ public class Clothing : Item, IUsable
         string status = $"{targetGender}용 {clothingType}옷";
         if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {
-            return $"{LocationToString()} - {GetLocalizedStatusDescription()} {status}";
+            return $"{GetLocalizedStatusDescription()} {status}";
         }
-        return $"{LocationToString()} - {status}";
+        return $"{status}";
     }
 }
 

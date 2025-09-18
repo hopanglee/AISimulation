@@ -1,0 +1,218 @@
+[
+	{
+		"timestamp": "2021-04-08T08:40:00Z",
+		"type": "event",
+		"category": "location",
+		"content": "로카 고등학교 교문 앞에서 잠깐 멈췄다. 첫날은 늘 조금 과장되고, 나는 그 과장을 조용히 따라가는 편이다.",
+		"emotions": { "설렘": 0.5, "경계": 0.5 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-14"
+	},
+	{
+		"timestamp": "2022-03-15T19:20:00Z",
+		"type": "experience",
+		"category": "personal",
+		"content": "본가를 떠나 혼자 사는 연습. 불을 끄고 침대에 누우면, 공간이 한 사람을 기준으로 정리되는 느낌이 들었다.",
+		"emotions": { "자유": 0.6, "쓸쓸함": 0.4 },
+		"relatedActors": ["부모님"],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:거실"
+	},
+	{
+		"timestamp": "2022-06-02T07:10:00Z",
+		"type": "experience",
+		"category": "personal",
+		"content": "부얶에서 급히 끓인 라면이 이상하게 맛있던 날. 아무도 칭찬해주지 않아도 기분이 좋아졌다.",
+		"emotions": { "만족": 0.7, "허무": 0.3 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:부얶"
+	},
+	{
+		"timestamp": "2022-10-11T21:30:00Z",
+		"type": "experience",
+		"category": "location",
+		"content": "나카미세도리의 밤, 길거리 버스커 후렴을 따라 부르자 옆사람들이 박수쳤다. 낯선 순간이 갑자기 내 편이 되는 기분.",
+		"emotions": { "평온": 0.6, "고독": 0.4 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:나카미세도리"
+	},
+	{
+		"timestamp": "2023-01-05T18:00:00Z",
+		"type": "experience",
+		"category": "personal",
+		"content": "욕실 거울 앞에서 머리를 묶고 풀고를 반복. 사소한 변화에 집착하는 버릇이 있다는 걸 인정했다.",
+		"emotions": { "집착": 0.6, "재미": 0.4 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:욕실"
+	},
+	{
+		"timestamp": "2023-04-01T10:40:00Z",
+		"type": "knowledge",
+		"category": "school",
+		"content": "새 학기 노트 첫 장에 '과장하지 말기, 불평하지 말기'를 적었다. 지키는 날도 있고 못 지키는 날도 있다.",
+		"emotions": { "결심": 0.7, "회의": 0.3 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-14"
+	},
+	{
+		"timestamp": "2023-07-22T13:10:00Z",
+		"type": "experience",
+		"category": "location",
+		"content": "네코마트에서 신제품 과자 이야기를 사쿠라와 5분이나 했다. 다음에 추천 리스트를 받아 오기로 약속했다.",
+		"emotions": { "안정": 0.6, "무감": 0.4 },
+		"relatedActors": ["사쿠라"],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-2:네코마트:상품 진열대:카운터"
+	},
+	{
+		"timestamp": "2023-10-03T06:50:00Z",
+		"type": "experience",
+		"category": "personal",
+		"content": "런드리룸의 기계음과 세제 냄새. 아침은 기계적일수록 마음이 덜 흔들렸다.",
+		"emotions": { "차분": 0.7, "공허": 0.3 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:런드리룸"
+	},
+	{
+		"timestamp": "2024-02-14T20:20:00Z",
+		"type": "experience",
+		"category": "personal",
+		"content": "책장을 넘기다 줄 간격에 마음이 걸렸다. 사소한 걸 오래 붙잡는 성격, 고치지 않기로 했다.",
+		"emotions": { "수용": 0.6, "자기비판": 0.4 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:거실"
+	},
+	{
+		"timestamp": "2024-05-09T17:30:00Z",
+		"type": "relationship",
+		"category": "social",
+		"content": "반 친구에게 먼저 말을 걸었다. 즉흥적으로 시작한 일은 대체로 오래 가지 않지만, 가끔은 길이 열린다.",
+		"emotions": { "긴장": 0.6, "낙관": 0.4 },
+		"relatedActors": ["반 친구"],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-14"
+	},
+	{
+		"timestamp": "2024-07-03T12:15:00Z",
+		"type": "experience",
+		"category": "school",
+		"content": "수업 중 갑자기 손을 들어 3분 스피치를 했다. 준비 없이도 목소리는 생각보다 멀리 갔다.",
+		"emotions": { "권태": 0.6, "정직": 0.4 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-14"
+	},
+	{
+		"timestamp": "2024-09-18T19:40:00Z",
+		"type": "experience",
+		"category": "location",
+		"content": "나카미세도리에서 비를 맞으며 뛰다가 모르는 사람과 동시에 웃음이 터졌다. 순간의 열기.",
+		"emotions": { "감상": 0.7, "자유": 0.3 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:나카미세도리"
+	},
+	{
+		"timestamp": "2024-10-21T08:05:00Z",
+		"type": "event",
+		"category": "school",
+		"content": "발표에서 반대 의견을 또렷하게 냈다. 교실이 잠깐 조용했고, 끝나고 박수가 났다.",
+		"emotions": { "긴장": 0.7, "자존": 0.6 },
+		"relatedActors": ["선생님", "반 친구들"],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-14"
+	},
+	{
+		"timestamp": "2024-11-05T22:30:00Z",
+		"type": "experience",
+		"category": "personal",
+		"content": "불 꺼진 거실에서 틱톡 댄스를 따라 하다 혼자 웃음이 터졌다. 즉흥은 종종 나를 구했다.",
+		"emotions": { "사색": 0.8, "불안": 0.4 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:거실"
+	},
+	{
+		"timestamp": "2024-11-28T18:50:00Z",
+		"type": "experience",
+		"category": "social",
+		"content": "네코마트에서 망설이던 아이에게 과자를 추천해줬다. '고마워요'라는 한 마디가 오래 따라왔다.",
+		"emotions": { "변덕": 0.7, "장난": 0.3 },
+		"relatedActors": ["사쿠라"],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-2:네코마트:상품 진열대"
+	},
+	{
+		"timestamp": "2024-12-03T06:40:00Z",
+		"type": "knowledge",
+		"category": "health",
+		"content": "아침에 유난히 피곤해 노트에 표시만 해 두었다. 근거 없는 불길함은 농담처럼 넘겼다.",
+		"emotions": { "의심": 0.6, "부정": 0.6 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-13"
+	},
+	{
+		"timestamp": "2024-12-12T15:20:00Z",
+		"type": "experience",
+		"category": "health",
+		"content": "병원 로비에서 울먹이는 아이에게 종이학을 접어 건넸다. 기다림의 시간도 작게 나눌 수 있음을 배웠다.",
+		"emotions": { "두려움": 0.6, "차분": 0.4 },
+		"relatedActors": ["멜라"],
+		"location": "도쿄:신주쿠:카부키쵸:1-chome-7:세이메이 종합병원:로비"
+	},
+	{
+		"timestamp": "2024-12-20T20:10:00Z",
+		"type": "experience",
+		"category": "personal",
+		"content": "거실 시계를 몇 번이나 확인했다. 기다림은 내가 제일 못하는 감정. 불평하지 않기로 한 약속을 떠올렸다.",
+		"emotions": { "초조": 0.7, "자제": 0.5 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:거실"
+	},
+	{
+		"timestamp": "2025-01-02T15:30:00Z",
+		"type": "experience",
+		"category": "location",
+		"content": "나카미세도리에서 상점 사람들과 새해 덕담을 주고받았다. '올해는 잘 될 거예요'를 큰소리로 말해봤다.",
+		"emotions": { "낙관": 0.6, "차분": 0.4 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:나카미세도리"
+	},
+	{
+		"timestamp": "2025-01-05T09:00:00Z",
+		"type": "experience",
+		"category": "school",
+		"content": "로카 고등학교로 가는 길에 손을 주머니에 넣었다. 날이 차가울수록 마음은 더 단단해지는 기분.",
+		"emotions": { "결의": 0.7, "냉정": 0.3 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-14"
+	},
+	{
+		"timestamp": "2025-01-07T21:10:00Z",
+		"type": "experience",
+		"category": "personal",
+		"content": "부얶 싱크대에 접시를 쌓아 두었다가 한 번에 씻었다. 미루는 건 나쁜 습관이지만, 오늘은 나를 용서했다.",
+		"emotions": { "게으름": 0.6, "자기수용": 0.6 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:부얶"
+	},
+	{
+		"timestamp": "2025-01-09T18:40:00Z",
+		"type": "experience",
+		"category": "social",
+		"content": "네코마트 카운터에서 잔돈을 받으며 미소를 연습했다. 남의 마음을 상하게 하지 않는 건 내 자존심이기도 하다.",
+		"emotions": { "다정": 0.7, "자기중심": 0.3 },
+		"relatedActors": ["사쿠라"],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-2:네코마트:상품 진열대:카운터"
+	},
+	{
+		"timestamp": "2025-01-10T23:20:00Z",
+		"type": "experience",
+		"category": "personal",
+		"content": "런드리룸의 따뜻한 공기 속에서 마른 옷 냄새를 맡았다. 기분이 좋아지는 정확한 순간을 기억하고 싶었다.",
+		"emotions": { "안온": 0.7, "감상": 0.5 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:런드리룸"
+	},
+	{
+		"timestamp": "2025-01-11T08:30:00Z",
+		"type": "knowledge",
+		"category": "personal",
+		"content": "노트 첫 장에 오늘 날짜를 적고, 올해 하고 싶은 세 가지를 썼다: 낯선 곳에서 노래하기, 친구 셋 만들기, 무언가를 끝까지 해보기.",
+		"emotions": { "평온": 0.8, "집중": 0.6 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:거실"
+	}
+]

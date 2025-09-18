@@ -23,7 +23,7 @@ public class Mirror : Prop
 
         if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {
-            return $"{LocationToString()} - {GetLocalizedStatusDescription()}";
+            return $"{GetLocalizedStatusDescription()}";
         }
         return $"{LocationToString()}이 있다.";
     }

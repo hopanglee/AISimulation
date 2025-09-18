@@ -9,9 +9,9 @@ public class Alcohol : Drink
     {
         if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {
-            return $"{LocationToString()} - {GetLocalizedStatusDescription()} 도수: {alcoholContent}% - 배고픔 회복: {HungerRecovery}, 갈증 회복: {ThirstRecovery}";
+            return $"{GetLocalizedStatusDescription()} 도수: {alcoholContent}% - 배고픔 회복: {HungerRecovery}, 갈증 회복: {ThirstRecovery}";
         }
-        return $"{LocationToString()} - 도수: {alcoholContent}% - 배고픔 회복: {HungerRecovery}, 갈증 회복: {ThirstRecovery}";
+        return $"도수: {alcoholContent}% - 배고픔 회복: {HungerRecovery}, 갈증 회복: {ThirstRecovery}";
     }
     
     public override string Eat(Actor actor)

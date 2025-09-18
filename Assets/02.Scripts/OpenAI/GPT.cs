@@ -171,6 +171,96 @@ public class GPT
     }
 
     /// <summary>
+    /// 보낼 요청 페이로드(모델, 메시지, 응답 포맷 요약)를 JSON으로 저장
+    /// </summary>
+    private UniTask SaveRequestLogAsync(List<ChatMessage> messages, ChatCompletionOptions options, string agentType = "GPT")
+    {
+        if (!enableLogging)
+            return UniTask.CompletedTask;
+
+        try
+        {
+            // 세션별/캐릭터별 디렉토리 생성
+            string baseDirectoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "ConversationLogs");
+            string sessionPath = sessionDirectoryName != null ? Path.Combine(baseDirectoryPath, sessionDirectoryName) : baseDirectoryPath;
+            string characterDirectoryPath = Path.Combine(sessionPath, actorName);
+
+            if (!Directory.Exists(baseDirectoryPath)) Directory.CreateDirectory(baseDirectoryPath);
+            if (!Directory.Exists(sessionPath)) Directory.CreateDirectory(sessionPath);
+            if (!Directory.Exists(characterDirectoryPath)) Directory.CreateDirectory(characterDirectoryPath);
+
+            string fileName = $"OutgoingRequestLog_{sessionDirectoryName ?? "Session"}_{actorName}_{agentType}.txt";
+            string filePath = Path.Combine(characterDirectoryPath, fileName);
+
+            // 간소화된 요청 페이로드 구성
+            var requestPayload = new
+            {
+                model = "gpt-4o",
+                response_format = options?.ResponseFormat?.GetType()?.Name ?? "null",
+                messages = BuildSerializableMessages(messages)
+            };
+
+            string json = JsonConvert.SerializeObject(requestPayload, Formatting.Indented);
+
+            using (var stream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
+            using (var writer = new StreamWriter(stream, System.Text.Encoding.UTF8))
+            {
+                writer.WriteLine("=== Outgoing Request ===");
+                writer.WriteLine($"Actor: {actorName}");
+                writer.WriteLine($"Agent Type: {agentType}");
+                writer.WriteLine($"Real Time: {System.DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+                writer.WriteLine(json);
+                writer.WriteLine();
+            }
+
+            // 콘솔에도 축약 출력
+            Debug.Log($"[GPT] Outgoing request logged: {filePath}");
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[GPT] Error saving request log: {ex.Message}");
+        }
+
+        return UniTask.CompletedTask;
+    }
+
+    private List<object> BuildSerializableMessages(List<ChatMessage> messages)
+    {
+        var list = new List<object>();
+        foreach (var message in messages)
+        {
+            try
+            {
+                if (message is SystemChatMessage sys)
+                {
+                    list.Add(new { role = "system", content = ExtractMessageContent(sys.Content) });
+                }
+                else if (message is UserChatMessage usr)
+                {
+                    list.Add(new { role = "user", content = ExtractMessageContent(usr.Content) });
+                }
+                else if (message is AssistantChatMessage asst)
+                {
+                    list.Add(new { role = "assistant", content = ExtractMessageContent(asst.Content) });
+                }
+                else if (message is ToolChatMessage tool)
+                {
+                    list.Add(new { role = "tool", content = ExtractMessageContent(tool.Content) });
+                }
+                else
+                {
+                    list.Add(new { role = message?.GetType()?.Name ?? "unknown", content = "[unhandled message type]" });
+                }
+            }
+            catch
+            {
+                list.Add(new { role = "error", content = "[failed to serialize message]" });
+            }
+        }
+        return list;
+    }
+
+    /// <summary>
     /// ChatMessageContent에서 실제 텍스트 내용을 추출하는 헬퍼 메서드
     /// </summary>
     private string ExtractMessageContent(ChatMessageContent content)
@@ -243,6 +333,9 @@ public class GPT
             do
             {
                 requiresAction = false;
+                // 요청 로그 저장 (각 라운드 호출 직전)
+                string agentTypeForLog = GetAgentTypeFromStackTrace();
+                await SaveRequestLogAsync(messages, options, agentTypeForLog);
                 ChatCompletion completion = await client.CompleteChatAsync(messages, options);
 
                 switch (completion.FinishReason)

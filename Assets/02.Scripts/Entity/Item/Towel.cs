@@ -50,8 +50,8 @@ public class Towel : Item
 
         if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {
-            return $"{LocationToString()} - {GetLocalizedStatusDescription()} {status} {wetStatus}";
+            return $"{GetLocalizedStatusDescription()} {status} {wetStatus}";
         }
-        return $"{LocationToString()} - {status} {wetStatus}";
+        return $"{status} {wetStatus}";
     }
 }

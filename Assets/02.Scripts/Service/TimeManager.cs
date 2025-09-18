@@ -331,7 +331,7 @@ public class TimeManager : ITimeService
     private float timeScale = 1f; // 1분 = 1초 (실시간)
 
     [SerializeField]
-    private GameTime currentTime = new GameTime(2025, 2, 23, 6, 50); // 시작 시간: 2024년 1월 1일 6시
+    private GameTime currentTime = new GameTime(2025, 2, 23, 6, 58); // 시작 시간: 2024년 1월 1일 6시
 
     [SerializeField]
     private bool isTimeFlowing = false;

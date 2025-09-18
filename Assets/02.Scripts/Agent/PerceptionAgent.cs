@@ -45,19 +45,19 @@ public class PerceptionAgent
     {
         try
         {
-            Debug.Log($"[PerceptionAgent] 3-에이전트 구조로 시각정보 해석 시작");
+            Debug.Log($"[PerceptionAgent {actor.Name}] 3-에이전트 구조로 시각정보 해석 시작");
             
             // 1. 이성 에이전트 실행
             var superegoResult = await superegoAgent.InterpretAsync(visualInformation);
-            Debug.Log($"[PerceptionAgent] 이성 에이전트 완료");
+            Debug.Log($"[PerceptionAgent {actor.Name}] 이성 에이전트 완료");
             
             // 2. 본능 에이전트 실행
             var idResult = await idAgent.InterpretAsync(visualInformation);
-            Debug.Log($"[PerceptionAgent] 본능 에이전트 완료");
+            Debug.Log($"[PerceptionAgent {actor.Name}] 본능 에이전트 완료");
             
             // 3. 자아 에이전트로 타협
             var egoResult = await egoAgent.MediateAsync(superegoResult, idResult);
-            Debug.Log($"[PerceptionAgent] 자아 에이전트 완료");
+            Debug.Log($"[PerceptionAgent {actor.Name}] 자아 에이전트 완료");
             
             // 4. EgoResult를 PerceptionResult로 변환
             var finalResult = new PerceptionResult
@@ -67,12 +67,12 @@ public class PerceptionAgent
                 emotions = egoResult.emotions ?? new Dictionary<string, float>()
             };
             
-            Debug.Log($"[PerceptionAgent] 3-에이전트 해석 완료");
+            Debug.Log($"[PerceptionAgent {actor.Name}] 3-에이전트 해석 완료");
             return finalResult;
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[PerceptionAgent] 시각정보 해석 실패: {ex.Message}");
+            Debug.LogError($"[PerceptionAgent {actor.Name}] 시각정보 해석 실패: {ex.Message}");
             throw new System.InvalidOperationException($"PerceptionAgent 시각정보 해석 실패: {ex.Message}");
         }
     }

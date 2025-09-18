@@ -599,7 +599,7 @@ public class Sensor
                 }
                 catch (System.Exception ex)
                 {
-                    Debug.LogWarning($"[Sensor] Entity {kv.Key}의 Get() 함수 호출 중 오류 발생: {ex.Message}");
+                    Debug.LogWarning($"[{owner.Name}] Entity {kv.Key}의 Get() 함수 호출 중 오류 발생: {ex.Message}");
                 }
             }
         }

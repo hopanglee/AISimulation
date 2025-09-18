@@ -17,9 +17,9 @@ public class Locker : InventoryBox
     {
         if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {
-            return $"{LocationToString()} - 사물함 {lockerNumber} {GetLocalizedStatusDescription()} ";
+            return $"사물함 {lockerNumber} {GetLocalizedStatusDescription()} ";
         }
-        return $"{LocationToString()} - 사물함 {lockerNumber}";
+        return $"사물함 {lockerNumber}";
     }
 
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)

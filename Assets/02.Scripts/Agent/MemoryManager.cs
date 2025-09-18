@@ -127,16 +127,20 @@ public class MemoryManager
             {
                 string json = File.ReadAllText(shortTermMemoryPath);
                 shortTermMemory = JsonConvert.DeserializeObject<ShortTermMemoryData>(json);
+                if (shortTermMemory.entries == null)
+                    shortTermMemory.entries = new List<ShortTermMemoryEntry>();
             }
             catch (Exception ex)
             {
                 Debug.LogWarning($"Short Term Memory 로드 실패: {ex.Message}");
                 shortTermMemory = new ShortTermMemoryData();
+                shortTermMemory.entries = new List<ShortTermMemoryEntry>();
             }
         }
         else
         {
             shortTermMemory = new ShortTermMemoryData();
+            shortTermMemory.entries = new List<ShortTermMemoryEntry>();
         }
     }
 
@@ -147,10 +151,23 @@ public class MemoryManager
     {
         try
         {
+            // Null 안전 가드
+            if (shortTermMemory == null)
+                shortTermMemory = new ShortTermMemoryData();
+            if (shortTermMemory.entries == null)
+                shortTermMemory.entries = new List<ShortTermMemoryEntry>();
+
+            // 경로 보장
+            if (string.IsNullOrEmpty(shortTermMemoryPath))
+                InitializeMemoryPaths();
+
+            string logOwner = owner != null ? owner.Name : "Unknown";
+            Debug.Log($"[{logOwner}] Short Term Memory 저장 시작: {shortTermMemory.entries.Count}개");
             var timeService = Services.Get<ITimeService>();
             shortTermMemory.lastUpdated = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 0, 0);
             string json = JsonConvert.SerializeObject(shortTermMemory, Formatting.Indented);
             File.WriteAllText(shortTermMemoryPath, json);
+            Debug.Log($"[{logOwner}] Short Term Memory 저장 완료: {shortTermMemory.entries.Count}개");
         }
         catch (Exception ex)
         {
@@ -163,11 +180,28 @@ public class MemoryManager
     /// </summary>
     public void AddShortTermMemory(string type, string content, string details = null, Dictionary<string, float> emotions = null)
     {
+        // 경로 보장
+        if (string.IsNullOrEmpty(shortTermMemoryPath))
+            InitializeMemoryPaths();
+
+        // 메모리가 비어 있으면 먼저 로드 시도
+        if (shortTermMemory == null || shortTermMemory.entries == null)
+            LoadShortTermMemory();
+
+        // 여전히 null이면 안전 초기화
+        if (shortTermMemory == null)
+            shortTermMemory = new ShortTermMemoryData();
+        if (shortTermMemory.entries == null)
+            shortTermMemory.entries = new List<ShortTermMemoryEntry>();
+
+        string logOwner = owner != null ? owner.Name : "Unknown";
+        Debug.Log($"[{logOwner}] Short Term Memory 추가: [{type}] {content}");
+
         var entry = new ShortTermMemoryEntry(type, content, details, emotions);
         shortTermMemory.entries.Add(entry);
         SaveShortTermMemory();
 
-        Debug.Log($"[{owner.Name}] Short Term Memory 추가: [{type}] {content}");
+
     }
 
     /// <summary>
@@ -212,6 +246,10 @@ public class MemoryManager
         {
             longTermMemories = new List<LongTermMemory>();
         }
+        
+        // Null 안전 가드(이중 보강)
+        if (longTermMemories == null)
+            longTermMemories = new List<LongTermMemory>();
     }
 
     /// <summary>
@@ -221,9 +259,19 @@ public class MemoryManager
     {
         try
         {
+            // Null/경로 안전 가드
+            if (longTermMemories == null)
+                longTermMemories = new List<LongTermMemory>();
+            if (string.IsNullOrEmpty(longTermMemoryPath))
+                InitializeMemoryPaths();
+            var dir = Path.GetDirectoryName(longTermMemoryPath);
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
             string json = JsonConvert.SerializeObject(longTermMemories, Formatting.Indented);
             File.WriteAllText(longTermMemoryPath, json);
-            Debug.Log($"[{owner.Name}] Long Term Memory 저장 완료: {longTermMemories.Count}개");
+            string logOwner = owner != null ? owner.Name : "Unknown";
+            Debug.Log($"[{logOwner}] Long Term Memory 저장 완료: {longTermMemories.Count}개");
         }
         catch (Exception ex)
         {
@@ -244,12 +292,25 @@ public class MemoryManager
     /// </summary>
     public void AddLongTermMemories(List<LongTermMemory> memories)
     {
-        if (memories != null && memories.Count > 0)
-        {
-            longTermMemories.AddRange(memories);
-            SaveLongTermMemory();
-            Debug.Log($"[{owner.Name}] Long Term Memory 추가: {memories.Count}개");
-        }
+        if (memories == null || memories.Count == 0)
+            return;
+
+        // 경로 보장
+        if (string.IsNullOrEmpty(longTermMemoryPath))
+            InitializeMemoryPaths();
+
+        // 내부 메모리 비어있으면 먼저 로드 시도
+        if (longTermMemories == null)
+            LoadLongTermMemory();
+
+        // 여전히 null이면 안전 초기화
+        if (longTermMemories == null)
+            longTermMemories = new List<LongTermMemory>();
+
+        longTermMemories.AddRange(memories);
+        SaveLongTermMemory();
+        string logOwner = owner != null ? owner.Name : "Unknown";
+        Debug.Log($"[{logOwner}] Long Term Memory 추가: {memories.Count}개");
     }
 
     /// <summary>
@@ -348,6 +409,7 @@ public class MemoryManager
 
     public void AddActionComplete(string actionType, string result, bool isSuccess = true)
     {
+        Debug.Log($"[{owner.Name}] AddActionComplete: {actionType} - {result}");
         string content = $"행동 완료: {actionType} - {result}";
         string details = JsonConvert.SerializeObject(new
         {

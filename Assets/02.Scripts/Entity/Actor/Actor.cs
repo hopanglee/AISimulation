@@ -1134,7 +1134,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             var lookableEntities = new List<string>();
             foreach (var entity in lookable)
             {
-                lookableEntities.Add($"- {entity.Key}: {entity.Value.GetStatusDescription()}");
+                lookableEntities.Add($"- {entity.Key} => {entity.Value.Get()}");
             }
 
             var collectibleEntities = new List<string>();

@@ -93,9 +93,9 @@ public class TrashBin : InventoryBox
 
         if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {
-            return $"{LocationToString()} - {GetLocalizedStatusDescription()} {status}";
+            return $"{GetLocalizedStatusDescription()} {status}";
         }
-        return $"{LocationToString()} - {status}";
+        return $"{status}";
     }
     
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)

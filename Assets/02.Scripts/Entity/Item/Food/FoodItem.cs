@@ -32,9 +32,9 @@ public abstract class FoodItem : Item, IUsable
     {
         if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {
-            return $"{LocationToString()} - {GetLocalizedStatusDescription()}, 배고픔 회복: {HungerRecovery}";
+            return $"{GetLocalizedStatusDescription()}, 배고픔 회복: {HungerRecovery}";
         }
-        return $"{LocationToString()} - 배고픔 회복: {HungerRecovery}";
+        return $"배고픔 회복: {HungerRecovery}";
     }
 
     /// <summary>

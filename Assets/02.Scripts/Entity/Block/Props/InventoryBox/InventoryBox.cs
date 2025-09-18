@@ -514,8 +514,8 @@ public abstract class InventoryBox : InteractableProp
         string status = "물건을 넣거나 뺄 수 있습니다.";
         if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {
-            return $"{LocationToString()} - {GetLocalizedStatusDescription()} {status}";
+            return $"{GetLocalizedStatusDescription()} {status}";
         }
-        return $"{LocationToString()} - {status}";
+        return $"{status}";
     }
 }

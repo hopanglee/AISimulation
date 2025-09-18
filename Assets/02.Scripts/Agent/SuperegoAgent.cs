@@ -55,7 +55,7 @@ public class SuperegoAgent : GPT
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[SuperegoAgent] 프롬프트 로드 실패: {ex.Message}");
+            Debug.LogError($"[SuperegoAgent {actor.Name}] 프롬프트 로드 실패: {ex.Message}");
             throw new System.IO.FileNotFoundException($"프롬프트 파일 로드 실패: {ex.Message}");
         }
     }
@@ -90,7 +90,7 @@ public class SuperegoAgent : GPT
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[SuperegoAgent] 캐릭터 정보 로드 실패: {ex.Message}");
+            Debug.LogError($"[SuperegoAgent {actor.Name}] 캐릭터 정보 로드 실패: {ex.Message}");
             return "캐릭터 정보 로드 중 오류가 발생했습니다.";
         }
     }
@@ -135,7 +135,7 @@ public class SuperegoAgent : GPT
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[SuperegoAgent] 캐릭터 기억 로드 실패: {ex.Message}");
+            Debug.LogError($"[SuperegoAgent {actor.Name}] 캐릭터 기억 로드 실패: {ex.Message}");
             return "캐릭터 기억 로드 중 오류가 발생했습니다.";
         }
     }
@@ -175,7 +175,8 @@ public class SuperegoAgent : GPT
                                     ""description"": ""감정과 강도 (0.0~1.0)""
                                 }
                             },
-                            ""required"": [""situation_interpretation"", ""thought_chain"", ""emotions""]
+                            ""required"": [""situation_interpretation"", ""thought_chain""],
+                            ""additionalProperties"": false
                         }"
                     )
                 ),
@@ -200,7 +201,7 @@ public class SuperegoAgent : GPT
         }
         else
         {
-            Debug.LogWarning($"[SuperegoAgent] No tool executor available for tool call: {toolCall.FunctionName}");
+            Debug.LogWarning($"[SuperegoAgent {actor.Name}] No tool executor available for tool call: {toolCall.FunctionName}");
         }
     }
 
@@ -222,7 +223,7 @@ public class SuperegoAgent : GPT
             var hour = timeService.CurrentTime.hour;
             var minute = timeService.CurrentTime.minute;
             // 사용자 메시지 구성
-            var userMessage = $"현재 시간: \n{year}년 {month}월 {day}일 {hour:D2}:{minute:D2}\n\n현재 시각정보:\n{string.Join("\n", visualInformation)}";
+            var userMessage = $"현재 시간: \n{year}년 {month}월 {day}일 {hour:D2}:{minute:D2}";//\n\n현재 시각정보:\n{string.Join("\n", visualInformation)}";
             messages.Add(new UserChatMessage(userMessage));
 
             // GPT 호출
@@ -232,7 +233,7 @@ public class SuperegoAgent : GPT
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[SuperegoAgent] 시각정보 해석 실패: {ex.Message}");
+            Debug.LogError($"[SuperegoAgent {actor.Name}] 시각정보 해석 실패: {ex.Message}");
             throw new System.InvalidOperationException($"SuperegoAgent 시각정보 해석 실패: {ex.Message}");
         }
     }
