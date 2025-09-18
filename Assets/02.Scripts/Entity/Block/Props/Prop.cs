@@ -12,7 +12,7 @@ public abstract class Prop : Entity
     {
         if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {
-            return $"{LocationToString()} - {GetLocalizedStatusDescription()}";
+            return $"{GetLocalizedStatusDescription()}";
         }
         return $"{LocationToString()}이 있다.";
     }

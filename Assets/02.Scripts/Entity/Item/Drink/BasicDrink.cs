@@ -7,9 +7,9 @@ public class BasicDrink : Drink
     {
         if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {
-            return $"{LocationToString()} - {GetLocalizedStatusDescription()} 배고픔 회복: {HungerRecovery}, 갈증 회복: {ThirstRecovery}";
+            return $"{GetLocalizedStatusDescription()} 배고픔 회복: {HungerRecovery}, 갈증 회복: {ThirstRecovery}";
         }
-        return $"{LocationToString()} - 배고픔 회복: {HungerRecovery}, 갈증 회복: {ThirstRecovery}";
+        return $"배고픔 회복: {HungerRecovery}, 갈증 회복: {ThirstRecovery}";
     }
     
     public override string Eat(Actor actor)

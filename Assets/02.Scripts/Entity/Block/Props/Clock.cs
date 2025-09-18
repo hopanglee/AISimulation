@@ -9,8 +9,8 @@ public class Clock : Prop
 
         if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {
-            return $"{LocationToString()} - {status} {GetLocalizedStatusDescription()}";
+            return $"{status} {GetLocalizedStatusDescription()}";
         }
-        return $"{LocationToString()} - {status}";
+        return $"{status}";
     }
 }

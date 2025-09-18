@@ -73,6 +73,7 @@ public class EgoAgent : GPT
                     System.Text.Encoding.UTF8.GetBytes(
                         @"{
                             ""type"": ""object"",
+                            ""additionalProperties"": false,
                             ""properties"": {
                                 ""situation_interpretation"": {
                                     ""type"": ""string"",
@@ -95,7 +96,8 @@ public class EgoAgent : GPT
                                     ""description"": ""감정과 강도 (0.0~1.0)""
                                 }
                             },
-                            ""required"": [""situation_interpretation"", ""thought_chain"", ""emotions""]
+                            ""required"": [""situation_interpretation"", ""thought_chain""],
+                            ""additionalProperties"": false
                         }"
                     )
                 ),

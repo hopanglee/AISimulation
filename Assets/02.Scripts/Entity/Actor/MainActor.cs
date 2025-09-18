@@ -17,15 +17,15 @@ public abstract class MainActor : Actor
 {
 	[Header("Thinking System")]
 	public Brain brain;
-	
+
 	[Header("Think Action Settings")]
 	[SerializeField, Tooltip("Think 액션에서 Insight 추출 기능을 사용할지 여부")]
 	public bool useInsightAgent = true;
-	
-	
+
+
 	[Header("Items")]
 	public iPhone iPhone;
-	
+
 	[Header("Sleep System")]
 	[SerializeField, Range(0, 23)]
 	private int sleepHour = 22; // 취침 시간
@@ -45,14 +45,14 @@ public abstract class MainActor : Actor
 	public bool IsSleeping => isSleeping;
 	public int SleepHour => sleepHour;
 	public int SleepinessThreshold => sleepinessThreshold;
-	
+
 	[Header("Cleanliness Decay System")]
 	[SerializeField, Tooltip("청결도가 감소하는 간격 (분)")]
 	private int cleanlinessDecayIntervalMinutes = 30; // 30분마다
 	[SerializeField, Tooltip("한 번에 감소하는 청결도")]
 	private int cleanlinessDecayAmount = 3;
 	private GameTime lastCleanlinessDecayTime;
-	
+
 	[Header("Activity System")]
 	[SerializeField]
 	private string currentActivity = "Idle"; // 현재 수행 중인 활동
@@ -69,58 +69,58 @@ public abstract class MainActor : Actor
 	public string CurrentActivity { get => currentActivity; set => currentActivity = value; }
 	public string ActivityDescription => activityDescription;
 	public bool IsPerformingActivity => currentActivity != "Idle";
-	
+
 	[Header("Event History")]
 	[SerializeField] private List<string> _eventHistory = new();
-	
+
 	[Header("Manual Think Act Control")]
 	[SerializeField] private ManualActionController manualActionController = new();
-	
+
 	private ITimeService timeService;
 
 	public override string Get()
-    {
-        string status = "";
+	{
+		string status = "";
 
-        // 손에 든 아이템
-        if (HandItem != null)
-        {
-            status += $"손에 {HandItem.Name} 있음";
-        }
-        else
-        {
-            status += "빈손";
-        }
+		// 손에 든 아이템
+		if (HandItem != null)
+		{
+			status += $"손에 {HandItem.Name} 있음";
+		}
+		else
+		{
+			status += "빈손";
+		}
 
-        // 현재 활동
-        if (!string.IsNullOrEmpty(CurrentActivity))
-        {
-            status += $", 현재: {CurrentActivity}";
-        }
+		// 현재 활동
+		if (!string.IsNullOrEmpty(CurrentActivity))
+		{
+			status += $", 현재: {CurrentActivity}";
+		}
 
-        // 생체 상태 해석 (간단한 임계값 기반)
-        // Hunger
-        if (Hunger >= 70) status += ", 배고파보인다";
-        else if (Hunger <= 30) status += ", 배불러보인다";
+		// 생체 상태 해석 (간단한 임계값 기반)
+		// Hunger
+		if (Hunger >= 70) status += ", 배고파보인다";
+		else if (Hunger <= 30) status += ", 배불러보인다";
 
-        // Thirst
-        if (Thirst >= 70) status += ", 목말라보인다";
-        else if (Thirst <= 30) status += ", 갈증은 없어보인다";
+		// Thirst
+		if (Thirst >= 70) status += ", 목말라보인다";
+		else if (Thirst <= 30) status += ", 갈증은 없어보인다";
 
-        // Stress
-        if (Stress >= 70) status += ", 스트레스를 많이 받아보인다";
-        else if (Stress <= 30) status += ", 여유로워보인다";
+		// Stress
+		if (Stress >= 70) status += ", 스트레스를 많이 받아보인다";
+		else if (Stress <= 30) status += ", 여유로워보인다";
 
-        // Sleepiness
-        if (Sleepiness >= 70) status += ", 졸려보인다";
-        else if (Sleepiness <= 30) status += ", 상쾌해보인다";
+		// Sleepiness
+		if (Sleepiness >= 70) status += ", 졸려보인다";
+		else if (Sleepiness <= 30) status += ", 상쾌해보인다";
 
-        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
-        {
-            return $"{LocationToString()} - {GetLocalizedStatusDescription()}, {status}";
-        }
-        return $"{LocationToString()} - {status}";
-    }
+		if (String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+		{
+			return $"{GetLocalizedStatusDescription()}, {status}";
+		}
+		return $"{status}";
+	}
 
 	protected override void Awake()
 	{
@@ -162,7 +162,7 @@ public abstract class MainActor : Actor
 
 		// 기상 시간 계산
 		var currentTime = timeService.CurrentTime;
-		
+
 		if (minutes.HasValue)
 		{
 			// 지정된 시간(분) 후에 일어나도록 설정
@@ -197,14 +197,14 @@ public abstract class MainActor : Actor
 		isSleeping = true;
 
 		Debug.Log($"[{Name}] Started sleeping at {sleepStartTime}. Will wake up at {wakeUpTime}");
-		
+
 		// Enhanced Memory System: 하루 종료 - Long Term Memory 통합 처리
 		await ProcessDayEndMemoryAsync();
-		
+
 		// STM 초기화 후 수면 시작을 새로운 STM에 추가
 		brain?.memoryManager?.AddActionStart("수면", null);
 	}
-	
+
 	/// <summary>
 	/// 하루가 끝날 때 Long Term Memory 처리를 수행합니다.
 	/// </summary>
@@ -252,17 +252,40 @@ public abstract class MainActor : Actor
 		}
 
 		Debug.Log($"[{Name}] Woke up at {currentTime}. Stamina restored to {Stamina}");
-		
-		// Enhanced Memory System: 기상을 STM에 추가
-		brain?.memoryManager?.AddActionComplete("수면", 
-			$"수면 완료 - 잠에서 깨어남. 체력 {Stamina}로 회복됨", true);
-		
-		// DayPlan 생성 (await)
+
+		// DayPlan 생성 전 안내 로그를 먼저 출력
 		Debug.Log($"[{Name}] 기상! DayPlan 및 Think 시작");
-		await brain.StartDayPlan();
-		
-		// Think/Act 루프 시작 (백그라운드)
-		brain.StartThinkLoop();
+
+		// Enhanced Memory System: 기상을 STM에 추가 (예외 방어)
+		try
+		{
+			brain?.memoryManager?.AddActionComplete("수면",
+				$"수면 완료 - 잠에서 깨어남. 체력 {Stamina}로 회복됨", true);
+		}
+		catch (Exception ex)
+		{
+			Debug.LogWarning($"[{Name}] AddActionComplete 실패: {ex.Message}");
+		}
+
+		// DayPlan 생성 (await) - 예외 방어
+		try
+		{
+			await brain.StartDayPlan();
+		}
+		catch (Exception ex)
+		{
+			Debug.LogError($"[{Name}] StartDayPlan 실패: {ex.Message}");
+		}
+
+		// Think/Act 루프 시작 (백그라운드) - 예외 방어
+		try
+		{
+			brain.StartThinkLoop();
+		}
+		catch (Exception ex)
+		{
+			Debug.LogError($"[{Name}] StartThinkLoop 실패: {ex.Message}");
+		}
 	}
 
 	#endregion
@@ -331,7 +354,7 @@ public abstract class MainActor : Actor
 	{
 		return new List<string>(_eventHistory);
 	}
-	
+
 	/// <summary>
 	/// MainActor의 Hear 메서드 오버라이드 - 이벤트 히스토리에 추가
 	/// </summary>
@@ -362,16 +385,19 @@ public abstract class MainActor : Actor
 		// 기상 시간 처리 - wakeUpTime과 비교
 		if (isSleeping && wakeUpTime != null && currentTime.Equals(wakeUpTime))
 		{
+			Debug.Log($"[{Name}] WakeUpTime: {wakeUpTime.ToString()}, CurrentTime: {currentTime.ToString()}");
 			_ = WakeUp(); // async WakeUp 백그라운드 호출
 		}
-		
+
+
+
 		// 생일 체크 및 나이 증가 처리
 		_ = CheckBirthdayAndAgeUp(currentTime); // async 함수를 백그라운드로 호출
-		
+
 		// 청결도 감소 처리 (시뮬레이션 시간 기준)
 		UpdateCleanlinessDecay(currentTime);
 	}
-	
+
 	/// <summary>
 	/// 생일 체크 및 나이 증가 처리
 	/// </summary>
@@ -381,13 +407,13 @@ public abstract class MainActor : Actor
 		{
 			var characterMemoryManager = new CharacterMemoryManager(this);
 			var characterInfo = characterMemoryManager.GetCharacterInfo();
-			
+
 			// 생일이 설정되어 있는지 확인
 			if (characterInfo.Birthday == null)
 				return;
-			
+
 			var birthday = characterInfo.Birthday;
-			
+
 			// 현재 날짜가 생일인지 확인 (월과 일만 비교)
 			if (currentTime.month == birthday.month && currentTime.day == birthday.day)
 			{
@@ -396,12 +422,12 @@ public abstract class MainActor : Actor
 				{
 					// 나이 증가
 					characterInfo.Age++;
-					
+
 					// CharacterInfo 저장
 					await characterMemoryManager.SaveCharacterInfoAsync();
-					
+
 					Debug.Log($"[{Name}] 생일입니다! {characterInfo.Age}세가 되었습니다! 🎉");
-					
+
 					// 생일 이벤트를 메모리에 추가할 수도 있음
 					// TODO: 생일 이벤트를 단기/장기 메모리에 추가하는 로직
 				}
@@ -412,7 +438,7 @@ public abstract class MainActor : Actor
 			Debug.LogWarning($"[{Name}] 생일 체크 중 오류 발생: {ex.Message}");
 		}
 	}
-	
+
 	/// <summary>
 	/// 시뮬레이션 시간 기준으로 청결도 감소 처리
 	/// </summary>
@@ -424,10 +450,10 @@ public abstract class MainActor : Actor
 			lastCleanlinessDecayTime = currentTime;
 			return;
 		}
-		
+
 		// 현재 시간과 마지막 감소 시간의 차이를 분 단위로 계산
 		int minutesDiff = currentTime.GetMinutesSince(lastCleanlinessDecayTime);
-		
+
 		// 설정된 간격만큼 시간이 지났으면 청결도 감소
 		if (minutesDiff >= cleanlinessDecayIntervalMinutes)
 		{
@@ -441,7 +467,7 @@ public abstract class MainActor : Actor
 	}
 
 
-	
+
 	#region Odin Inspector Buttons
 	// 버튼들은 Actor로 이동하여 공용화됨
 

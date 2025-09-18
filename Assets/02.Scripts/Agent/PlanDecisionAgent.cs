@@ -87,6 +87,7 @@ public class PlanDecisionAgent : GPT
 	/// </summary>
 	public const string PlanDecisionResultJsonSchema = @"{
   ""type"": ""object"",
+  ""additionalProperties"": false,
   ""properties"": {
     ""decision"": {
       ""type"": ""string"",

@@ -117,7 +117,7 @@ public class GameService : MonoBehaviour, IGameService
         // 시간 업데이트 (시뮬레이션이 실행 중일 때만)
         if (isSimulationRunning && timeService != null && timeService.IsTimeFlowing)
         {
-            Debug.Log($"[GameService] UpdateTime: {Time.deltaTime}");
+            //Debug.Log($"[GameService] UpdateTime: {Time.deltaTime}");
             timeService.UpdateTime(Time.deltaTime);
         }
         

@@ -79,15 +79,10 @@ public class Area : MonoBehaviour, ILocation
         {
             return GetLocalizedName();
         }
-        var locService = Services.Get<ILocalizationService>();
-        if (locService != null && locService.CurrentLanguage == Language.KR)
-        {
-            return curLocation.LocationToString() + curLocation.preposition + GetLocalizedName();
-        }
-        else
-        {
-            return GetLocalizedName() + " " + curLocation.preposition + " " + curLocation.LocationToString();
-        }
+        // 표준화: 전체 경로를 ':'로 연결 (언어/전치사에 영향받지 않음)
+        string parentPath = curLocation.LocationToString();
+        string selfName = GetLocalizedName();
+        return parentPath + ":" + selfName;
     }
 
     public string GetLocalizedPreposition()

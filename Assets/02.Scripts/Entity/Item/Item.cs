@@ -20,7 +20,7 @@ public abstract class Item : Entity, ICollectible
     {
         if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {
-            return $"{LocationToString()} - {GetLocalizedStatusDescription()}";
+            return $"{GetLocalizedStatusDescription()}";
         }
         return $"{LocationToString()}이 있다.";
     }

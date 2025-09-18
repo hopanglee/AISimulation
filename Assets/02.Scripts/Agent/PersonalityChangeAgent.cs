@@ -35,6 +35,7 @@ namespace Agent
                     System.Text.Encoding.UTF8.GetBytes(
                         @"{
                         ""type"": ""object"",
+                        ""additionalProperties"": false,
                         ""properties"": {
                             ""has_personality_change"": {
                                 ""type"": ""boolean"",

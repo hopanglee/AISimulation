@@ -73,6 +73,7 @@ public class IdAgent : GPT
                     System.Text.Encoding.UTF8.GetBytes(
                         @"{
                             ""type"": ""object"",
+                            ""additionalProperties"": false,
                             ""properties"": {
                                 ""situation_interpretation"": {
                                     ""type"": ""string"",
@@ -95,7 +96,8 @@ public class IdAgent : GPT
                                     ""description"": ""감정과 강도 (0.0~1.0)""
                                 }
                             },
-                            ""required"": [""situation_interpretation"", ""thought_chain"", ""emotions""]
+                            ""required"": [""situation_interpretation"", ""thought_chain""],
+                            ""additionalProperties"": false
                         }"
                     )
                 ),
@@ -141,7 +143,7 @@ public class IdAgent : GPT
             var hour = timeService.CurrentTime.hour;
             var minute = timeService.CurrentTime.minute;
             // 사용자 메시지 구성
-            var userMessage = $"현재 시간: \n{year}년 {month}월 {day}일 {hour:D2}:{minute:D2}\n\n현재 시각정보:\n{string.Join("\n", visualInformation)}";
+            var userMessage = $"현재 시간: \n{year}년 {month}월 {day}일 {hour:D2}:{minute:D2}";//\n\n현재 시각정보:\n{string.Join("\n", visualInformation)}";
             messages.Add(new UserChatMessage(userMessage));
 
             // GPT 호출

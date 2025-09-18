@@ -119,6 +119,14 @@ public class GPTApprovalService : IGPTApprovalService
         isWaitingForApproval = true;
         
         Debug.Log($"[GPTApprovalService] 승인 요청 처리 시작: {currentRequest.ActorName} - {currentRequest.AgentType}");
+
+        // 승인 팝업 표시 동안 시간 정지
+        var timeService = Services.Get<ITimeService>();
+        if (timeService != null)
+        {
+            timeService.StartAPICall();
+            Debug.Log("[GPTApprovalService] Approval popup opened - time paused");
+        }
         
         // SimulationController에 승인 요청 알림
         if (SimulationController.Instance != null)
@@ -133,6 +141,13 @@ public class GPTApprovalService : IGPTApprovalService
             approvalCompletionSource = null;
             currentRequest = null;
             isWaitingForApproval = false;
+            
+            // 시간 재개 (팝업을 열기 직전에 정지했을 수 있음)
+            if (timeService != null)
+            {
+                timeService.EndAPICall();
+                Debug.Log("[GPTApprovalService] Approval popup failed to open - time resumed");
+            }
             
             // 다음 요청 처리
             ProcessNextRequest();
@@ -163,6 +178,14 @@ public class GPTApprovalService : IGPTApprovalService
         if (SimulationController.Instance != null)
         {
             SimulationController.Instance.HideGPTApprovalPopup();
+        }
+
+        // 승인 팝업 종료 이후 시간 재개
+        var timeService = Services.Get<ITimeService>();
+        if (timeService != null)
+        {
+            timeService.EndAPICall();
+            Debug.Log("[GPTApprovalService] Approval popup closed - time resumed");
         }
         
         // 다음 요청 처리

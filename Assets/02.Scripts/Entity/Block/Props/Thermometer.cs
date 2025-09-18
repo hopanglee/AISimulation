@@ -95,9 +95,9 @@ public class Thermometer : Prop
 
         if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {
-            return $"{LocationToString()} - {GetLocalizedStatusDescription()} {GetTemperatureString()}";
+            return $"{GetLocalizedStatusDescription()} {GetTemperatureString()}";
         }
-        return $"{LocationToString()} - {GetTemperatureString()}";
+        return $"{GetTemperatureString()}";
     }
     
     public string GetDetailedInfo()

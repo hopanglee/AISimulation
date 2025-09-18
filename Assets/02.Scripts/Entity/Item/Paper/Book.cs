@@ -10,9 +10,6 @@ public class Book : Item, IUsable
     private SerializableDictionary<int, Paper> pages = new();
 
     [SerializeField]
-    private bool autoPopulateOnEnable = true;
-
-    [SerializeField]
     private bool isSharedFavorite = true; // 히노/카미야가 함께 읽는 단 한 권
 
     protected override void OnEnable()
