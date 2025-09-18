@@ -24,7 +24,7 @@ public abstract partial class NPC : Actor
     [SerializeField] protected List<INPCAction> availableActions = new List<INPCAction>(); // 수행 가능한 액션들
     
     [Header("Action Handler System")]
-    protected Dictionary<INPCAction, Func<object[], Task>> actionHandlers = new Dictionary<INPCAction, Func<object[], Task>>(); // 액션-핸들러 매핑 (매개변수는 null 가능)
+    protected Dictionary<INPCAction, Func<object[], UniTask>> actionHandlers = new Dictionary<INPCAction, Func<object[], UniTask>>(); // 액션-핸들러 매핑 (매개변수는 null 가능)
     
     [Header("AI Agent")]
     protected NPCActionAgent actionAgent; // NPC 액션 결정을 위한 AI Agent

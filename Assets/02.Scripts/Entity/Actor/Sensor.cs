@@ -76,6 +76,9 @@ public class Sensor
         
         // Enhanced Memory System: location.json 업데이트
         UpdateLocationMemory();
+        
+        // 관계의 last_interaction 업데이트
+        UpdateRelationshipLastInteraction();
     }
 
     /// <summary>
@@ -698,6 +701,44 @@ public class Sensor
         catch (System.Exception ex)
         {
             Debug.LogWarning($"[Sensor] Location Memory 업데이트 실패: {ex.Message}");
+        }
+    }
+    
+    /// <summary>
+    /// lookable에 있는 Actor들과의 관계의 last_interaction을 현재 시간으로 업데이트합니다.
+    /// </summary>
+    private void UpdateRelationshipLastInteraction()
+    {
+        try
+        {
+            // MainActor이고 Brain이 있는 경우에만 관계 업데이트
+            if (owner is MainActor mainActor)
+            {
+                var timeService = Services.Get<ITimeService>();
+                if (timeService == null) return;
+                
+                var currentTime = timeService.CurrentTime;
+                
+                foreach (var kv in lookable)
+                {
+                    if (kv.Value is Actor otherActor && otherActor != owner)
+                    {
+                        // 관계의 last_interaction을 현재 시간으로 업데이트
+                        var relationshipMemoryManager = new RelationshipMemoryManager(mainActor);   
+                        var relationship = relationshipMemoryManager.GetRelationship(otherActor.Name);
+                        if (relationship != null)
+                        {
+                            relationship.LastInteraction = currentTime;
+                            // 관계 저장 (비동기로 처리)
+                            _ = relationshipMemoryManager.SaveRelationshipAsync(otherActor.Name, relationship);
+                        }
+                    }
+                }
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogWarning($"[Sensor] Relationship LastInteraction 업데이트 실패: {ex.Message}");
         }
     }
 }

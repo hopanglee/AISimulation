@@ -41,7 +41,7 @@ public abstract partial class NPC
 		RegisterActionHandler(NPCAction.GiveMoney, HandleGiveMoney);
 	}
 
-	protected void RegisterActionHandler(INPCAction action, Func<object[], Task> handler)
+	protected void RegisterActionHandler(INPCAction action, Func<object[], UniTask> handler)
 	{
 		actionHandlers[action] = handler;
 		AddToAvailableActions(action);
@@ -55,15 +55,15 @@ public abstract partial class NPC
 		}
 	}
 
-	public virtual async Task ExecuteAction(INPCAction action, params object[] parameters)
+	public virtual async UniTask ExecuteAction(INPCAction action, params object[] parameters)
 	{
 		await ExecuteActionInternal(action, parameters);
 	}
 
-	private async Task ExecuteActionInternal(INPCAction action, params object[] parameters)
+	private async UniTask ExecuteActionInternal(INPCAction action, params object[] parameters)
 	{
 		if (!CanPerformAction(action)) return;
-		if (actionHandlers.TryGetValue(action, out Func<object[], Task> handler))
+		if (actionHandlers.TryGetValue(action, out Func<object[], UniTask> handler))
 		{
 			currentAction = action;
 			isExecutingAction = true;
@@ -113,13 +113,13 @@ public abstract partial class NPC
 		return availableActions.Any(availableAction => availableAction.ActionName == action.ActionName);
 	}
 
-	protected virtual async Task HandleWait(object[] parameters)
+	protected virtual async UniTask HandleWait(object[] parameters)
 	{
 		ShowSpeech("잠시만요...");
 		await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
 	}
 
-	protected virtual async Task HandleGiveItem(object[] parameters)
+	protected virtual async UniTask HandleGiveItem(object[] parameters)
 	{
 		if (parameters == null || parameters.Length == 0)
 		{
@@ -167,7 +167,7 @@ public abstract partial class NPC
 		}
 	}
 
-	protected virtual async Task HandleGiveMoney(object[] parameters)
+	protected virtual async UniTask HandleGiveMoney(object[] parameters)
 	{
 		if (parameters == null || parameters.Length < 2)
 		{
@@ -208,7 +208,7 @@ public abstract partial class NPC
 		await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
 	}
 
-	private async Task MoveToActor(Actor target, CancellationToken token)
+	private async UniTask MoveToActor(Actor target, CancellationToken token)
 	{
 		if (target == null) return;
 		
@@ -253,7 +253,7 @@ public abstract partial class NPC
 		return false;
 	}
 
-	protected virtual async Task HandlePutDown(object[] parameters)
+	protected virtual async UniTask HandlePutDown(object[] parameters)
 	{
 		if (HandItem == null)
 		{
@@ -378,7 +378,7 @@ public abstract partial class NPC
 	/// <summary>
 	/// InventoryBox로 이동합니다.
 	/// </summary>
-	private async Task MoveToInventoryBox(InventoryBox inventoryBox)
+	private async UniTask MoveToInventoryBox(InventoryBox inventoryBox)
 	{
 		// InventoryBox의 위치로 이동
 		Move(inventoryBox.GetSimpleKeyRelativeToActor(this));
@@ -390,7 +390,7 @@ public abstract partial class NPC
 	/// <summary>
 	/// InventoryBox가 Interactable 범위 밖에 있으면 이동합니다.
 	/// </summary>
-	private async Task MoveToInventoryBoxIfNeeded(InventoryBox inventoryBox)
+	private async UniTask MoveToInventoryBoxIfNeeded(InventoryBox inventoryBox)
 	{
 		if (inventoryBox == null) return;
 		
@@ -430,7 +430,7 @@ public abstract partial class NPC
 		return false;
 	}
 
-	protected virtual async Task HandleTalk(object[] parameters)
+	protected virtual async UniTask HandleTalk(object[] parameters)
 	{
 		string targetName = null;
 		string message = "네, 말씀하세요.";

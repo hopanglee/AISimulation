@@ -94,12 +94,12 @@ public class HinoMaori : MainActor
         }
         else
         {
-            // 기본 기상 시간으로 설정 (다음 날 기상 시간)
+            // 기본 기상 시간으로 설정 (다음 날 7시)
             wakeUpTime = new GameTime(
                 currentTime.year,
                 currentTime.month,
                 currentTime.day + 1,
-                WakeUpHour,
+                7, // 기본 기상 시간 7시
                 0
             );
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using Cysharp.Threading.Tasks;
 
 /// <summary>
 /// 편의점 직원 전용 액션들
@@ -88,7 +89,7 @@ public class ConvenienceStoreClerk : NPC, IHasExtraSenseAreas
     /// <summary>
     /// 결제 처리 액션 핸들러
     /// </summary>
-    protected virtual async Task HandlePayment(object[] parameters)
+    protected virtual async UniTask HandlePayment(object[] parameters)
     {
         try
         {

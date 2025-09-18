@@ -8,6 +8,25 @@ using OpenAI.Chat;
 using UnityEngine;
 
 /// <summary>
+/// 관계 필드 키 enum
+/// </summary>
+public enum RelationshipFieldKey
+{
+    name,
+    age,
+    birthday,
+    house_location,
+    relationship_type,
+    closeness,
+    trust,
+    interaction_history,
+    notes,
+    personality_traits,
+    shared_interests,
+    shared_memories,
+}
+
+/// <summary>
 /// 관계 수정 결정을 나타내는 응답 구조
 /// </summary>
 [System.Serializable]
@@ -33,7 +52,7 @@ public class RelationshipUpdateEntry
     public string CharacterName { get; set; }
 
     [JsonProperty("field_key")]
-    public string FieldKey { get; set; }
+    public RelationshipFieldKey FieldKey { get; set; }
 
     [JsonProperty("new_value")]
     public object NewValue { get; set; }
@@ -86,7 +105,8 @@ public class RelationshipAgent : GPT
                                             },
                                             ""field_key"": {
                                                 ""type"": ""string"",
-                                                ""description"": ""관계를 수정할 항목 (예: 'closeness', 'trust', 등)""
+                                                ""enum"": [""name"", ""age"", ""birthday"", ""house_location"", ""relationship_type"", ""closeness"", ""trust"", ""interaction_history"", ""notes"", ""personality_traits"", ""shared_interests"", ""shared_memories""],
+                                                ""description"": ""관계를 수정할 항목""
                                             },
                                             ""new_value"": {
                                                 ""type"": [""string"", ""number"", ""boolean"", ""null""],

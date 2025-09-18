@@ -2,6 +2,7 @@ using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 
 public interface ITimeService : IService
 {
@@ -299,6 +300,27 @@ public struct GameTime
     public string ToIsoString()
     {
         return ToDateTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
+    }
+}
+
+/// <summary>
+/// GameTime을 JSON에서 DateTime 문자열로 변환하는 컨버터
+/// </summary>
+public class GameTimeConverter : JsonConverter<GameTime>
+{
+    public override void WriteJson(JsonWriter writer, GameTime value, JsonSerializer serializer)
+    {
+        writer.WriteValue(value.ToIsoString());
+    }
+
+    public override GameTime ReadJson(JsonReader reader, Type objectType, GameTime existingValue, bool hasExistingValue, JsonSerializer serializer)
+    {
+        if (reader.TokenType == JsonToken.String)
+        {
+            string dateTimeString = reader.Value.ToString();
+            return GameTime.FromIsoString(dateTimeString);
+        }
+        return new GameTime(2024, 1, 1, 0, 0);
     }
 }
 

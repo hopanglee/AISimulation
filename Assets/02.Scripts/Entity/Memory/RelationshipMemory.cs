@@ -14,6 +14,9 @@ namespace Memory
         [JsonProperty("age")]
         public int Age { get; set; }
 
+        [JsonProperty("birthday")]
+        public string Birthday { get; set; }
+
         [JsonProperty("house_location")]
         public string HouseLocation { get; set; }
 
@@ -27,6 +30,7 @@ namespace Memory
         public float Trust { get; set; }  // 0.0 ~ 1.0
 
         [JsonProperty("last_interaction")]
+        [JsonConverter(typeof(GameTimeConverter))]
         public GameTime LastInteraction { get; set; }
 
         [JsonProperty("interaction_history")]
@@ -45,6 +49,7 @@ namespace Memory
         public List<string> SharedMemories { get; set; } = new List<string>();
 
         [JsonProperty("last_updated")]
+        [JsonConverter(typeof(GameTimeConverter))]
         public GameTime LastUpdated { get; set; }
     }
 }

@@ -82,7 +82,7 @@ public class IzakayaWorker : NPC
         RegisterActionHandler(IzakayaAction.Payment, HandlePayment);
     }
 
-    private async Task HandleMove(object[] parameters)
+    private async UniTask HandleMove(object[] parameters)
     {
         try
         {
@@ -114,7 +114,7 @@ public class IzakayaWorker : NPC
         }
     }
 
-    private async Task HandleCook(object[] parameters)
+    private async UniTask HandleCook(object[] parameters)
     {
         try
         {
@@ -196,7 +196,7 @@ public class IzakayaWorker : NPC
     /// <summary>
     /// 결제 처리 액션 핸들러
     /// </summary>
-    protected virtual async Task HandlePayment(object[] parameters)
+    protected virtual async UniTask HandlePayment(object[] parameters)
     {
         try
         {
@@ -314,7 +314,7 @@ public class IzakayaWorker : NPC
     /// <summary>
     /// 조리실(Transform 우선, 없으면 LocationKey)로 이동
     /// </summary>
-    private async Task MoveToKitchenAsync(CancellationToken cancellationToken)
+    private async UniTask MoveToKitchenAsync(CancellationToken cancellationToken)
     {
         // Transform이 지정된 경우 해당 위치로 이동
         if (kitchenTransform != null)
@@ -336,7 +336,7 @@ public class IzakayaWorker : NPC
     /// <summary>
     /// 지정된 위치로 이동하고 도착/취소/타임아웃 중 하나가 발생할 때까지 대기
     /// </summary>
-    private async Task MoveToLocationAsync(string locationKey, CancellationToken cancellationToken)
+    private async UniTask MoveToLocationAsync(string locationKey, CancellationToken cancellationToken)
     {
         var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         bool moveStarted = false;
@@ -414,7 +414,7 @@ public class IzakayaWorker : NPC
     /// <summary>
     /// 지정된 월드 좌표로 이동하고 도착/취소/타임아웃 중 하나가 발생할 때까지 대기
     /// </summary>
-    private async Task MoveToPositionAsync(Vector3 position, CancellationToken cancellationToken)
+    private async UniTask MoveToPositionAsync(Vector3 position, CancellationToken cancellationToken)
     {
         var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         bool moveStarted = false;

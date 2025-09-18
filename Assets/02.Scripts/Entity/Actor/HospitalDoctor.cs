@@ -66,7 +66,7 @@ public class HospitalDoctor : NPC
     /// 진찰 액션 처리
     /// </summary>
     /// <param name="parameters">매개변수 배열 - [환자명, 진찰내용]</param>
-    protected virtual async Task HandleExamine(object[] parameters)
+    protected virtual async UniTask HandleExamine(object[] parameters)
     {
         try
         {
@@ -111,7 +111,7 @@ public class HospitalDoctor : NPC
     /// NPCActionDecision을 기반으로 진찰 액션 처리 (target_key 활용)
     /// </summary>
     /// <param name="decision">액션 결정</param>
-    protected async Task HandleExamineWithDecision(NPCActionDecision decision)
+    protected async UniTask HandleExamineWithDecision(NPCActionDecision decision)
     {
         try
         {
@@ -176,7 +176,7 @@ public class HospitalDoctor : NPC
     /// 접수처 직원에게 전달 액션 처리 (Talk 아님, 메시지 전달)
     /// parameters: [message]
     /// </summary>
-    protected virtual async Task HandleNotifyReceptionist(object[] parameters)
+    protected virtual async UniTask HandleNotifyReceptionist(object[] parameters)
     {
         string message = "환자 안내를 요청합니다.";
         if (parameters != null && parameters.Length >= 1 && !string.IsNullOrEmpty(parameters[0]?.ToString()))

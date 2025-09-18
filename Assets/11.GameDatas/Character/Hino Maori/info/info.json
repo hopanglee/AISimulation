@@ -1,6 +1,7 @@
 {
     "name": "Hino Maori",
     "age": 18,
+    "birthday": "3월 15일",
     "gender": "female",
     "temperament": [
         "kind",

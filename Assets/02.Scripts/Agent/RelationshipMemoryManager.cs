@@ -291,11 +291,14 @@ public class RelationshipMemoryManager
             }
 
             // 필드 업데이트
-            switch (update.FieldKey.ToLower())
+            switch (update.FieldKey.ToString().ToLower())
             {
                 case "age":
                     if (int.TryParse(update.NewValue?.ToString(), out int age))
                         relationship.Age = age;
+                    break;
+                case "birthday":
+                    relationship.Birthday = update.NewValue?.ToString();
                     break;
                 case "house_location":
                     relationship.HouseLocation = update.NewValue?.ToString();
@@ -311,12 +314,10 @@ public class RelationshipMemoryManager
                     if (float.TryParse(update.NewValue?.ToString(), out float trust))
                         relationship.Trust = Mathf.Clamp01(trust);
                     break;
-                case "last_interaction":
-                    // GameTime으로 변환하거나 문자열로 저장
-                    if (update.NewValue is string interactionStr)
+                case "interaction_history":
+                    if (update.NewValue is string historyStr)
                     {
-                        // 간단한 문자열로 저장 (GameTime 변환은 복잡하므로 일단 문자열로)
-                        // relationship.LastInteraction = GameTime.Parse(interactionStr);
+                        relationship.InteractionHistory.Add(historyStr);
                     }
                     break;
                 case "notes":
@@ -325,6 +326,31 @@ public class RelationshipMemoryManager
                         relationship.Notes.Add(noteStr);
                     }
                     break;
+                case "personality_traits":
+                    if (update.NewValue is string traitStr)
+                    {
+                        relationship.PersonalityTraits.Add(traitStr);
+                    }
+                    break;
+                case "shared_interests":
+                    if (update.NewValue is string interestStr)
+                    {
+                        relationship.SharedInterests.Add(interestStr);
+                    }
+                    break;
+                case "shared_memories":
+                    if (update.NewValue is string memoryStr)
+                    {
+                        relationship.SharedMemories.Add(memoryStr);
+                    }
+                    break;
+            }
+
+            // LastUpdated를 현재 시간으로 설정
+            var timeService = Services.Get<ITimeService>();
+            if (timeService != null)
+            {
+                relationship.LastUpdated = timeService.CurrentTime;
             }
 
             // 관계 저장

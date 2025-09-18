@@ -83,7 +83,7 @@ public class CafeWorker : NPC, IHasExtraSenseAreas
         return new List<Area> { seatingArea };
     }
 
-    private async Task HandlePrepareMenu(object[] parameters)
+    private async UniTask HandlePrepareMenu(object[] parameters)
     {
         try
         {
@@ -202,7 +202,7 @@ public class CafeWorker : NPC, IHasExtraSenseAreas
     }
 
     // 창고에서 커피백을 받아 커피머신에 보충하는 휴리스틱 처리
-    private async Task RefillBeansHeuristic()
+    private async UniTask RefillBeansHeuristic()
     {
         if (storage == null || coffeeMachine == null)
         {
@@ -254,7 +254,7 @@ public class CafeWorker : NPC, IHasExtraSenseAreas
     /// <summary>
     /// 결제 처리 액션 핸들러
     /// </summary>
-    protected virtual async Task HandlePayment(object[] parameters)
+    protected virtual async UniTask HandlePayment(object[] parameters)
     {
         try
         {

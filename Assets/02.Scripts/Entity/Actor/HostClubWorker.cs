@@ -65,7 +65,7 @@ public class HostClubWorker : NPC
         RegisterActionHandler(HostClubAction.Payment, HandlePayment);
     }
 
-    private async Task HandleMove(object[] parameters)
+    private async UniTask HandleMove(object[] parameters)
     {
         try
         {
@@ -100,7 +100,7 @@ public class HostClubWorker : NPC
     /// <summary>
     /// 지정된 위치로 이동하고 도착/취소/타임아웃 중 하나가 발생할 때까지 대기
     /// </summary>
-    private async Task MoveToLocationAsync(string locationKey, CancellationToken cancellationToken)
+    private async UniTask MoveToLocationAsync(string locationKey, CancellationToken cancellationToken)
     {
         var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         bool moveStarted = false;
@@ -176,7 +176,7 @@ public class HostClubWorker : NPC
     /// <summary>
     /// 결제 처리 액션 핸들러
     /// </summary>
-    protected virtual async Task HandlePayment(object[] parameters)
+    protected virtual async UniTask HandlePayment(object[] parameters)
     {
         try
         {
