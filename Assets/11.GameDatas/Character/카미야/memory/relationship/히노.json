@@ -1,11 +1,11 @@
 {
   "name": "히노 마오리",
-  "age": 17,
+  "age": 16,
   "birthday": "",
-  "house_location": "학교 도서관",
-  "relationship_type": "친구",
-  "closeness": 0.6,
-  "trust": 0.7,
+  "house_location": "5-chome-13",
+  "relationship_type": "친구 이상의 관계",
+  "closeness": 0.8,
+  "trust": 0.7, 
   "last_interaction": "2024-01-01T15:30:00Z",
   "interaction_history": [
     "도서관에서 첫 만남",
