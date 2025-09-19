@@ -5,7 +5,7 @@ public class Clock : Prop
     public override string Get()
     {
         var timeService = Services.Get<ITimeService>();
-        string status = timeService.CurrentTime.ToIsoString();
+        string status = timeService.CurrentTime.ToKoreanString();
 
         if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {

@@ -17,6 +17,7 @@ public class PutDownParameterAgent : ParameterAgentBase
     public PutDownParameterAgent(Actor actor)
         : base(actor)
     {
+        SetAgentType(nameof(PutDownParameterAgent));
         var locationList = GetCurrentAvailableLocations();
 
         // "null" 옵션 추가 (현재 위치에 놓기)

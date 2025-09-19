@@ -23,6 +23,7 @@ public class EgoAgent : GPT
         this.actor = actor;
         this.toolExecutor = new ActorToolExecutor(actor);
         SetActorName(actor.Name);
+        SetAgentType(nameof(EgoAgent));
 
         InitializeOptions();
     }
@@ -75,17 +76,18 @@ public class EgoAgent : GPT
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {
-                                ""situation_interpretation"": {
-                                    ""type"": ""string"",
-                                    ""description"": ""최종 상황 인식 (타협된 결과)""
-                                },
                                 ""thought_chain"": {
                                     ""type"": ""array"",
                                     ""items"": {
                                         ""type"": ""string""
                                     },
-                                    ""description"": ""타협된 사고체인""
+                                    ""description"": ""타협된 사고체인, 최소 4단계를 거치세요.""
+                                },  
+                                ""situation_interpretation"": {
+                                    ""type"": ""string"",
+                                    ""description"": ""최종 상황 인식 (타협된 결과), 50자 이상 100자 이내로 서술하세요.""
                                 },
+                                
                                 ""emotions"": {
                                     ""type"": ""object"",
                                     ""additionalProperties"": {
@@ -93,10 +95,10 @@ public class EgoAgent : GPT
                                         ""minimum"": 0.0,
                                         ""maximum"": 1.0
                                     },
-                                    ""description"": ""감정과 강도 (0.0~1.0)""
+                                    ""description"": ""감정과 강도 (0.0~1.0), 최소 3~5개 이상의 감정을 작성하세요.""
                                 }
                             },
-                            ""required"": [""situation_interpretation"", ""thought_chain""],
+                            ""required"": [""thought_chain"", ""situation_interpretation""],
                             ""additionalProperties"": false
                         }"
                     )
@@ -141,7 +143,7 @@ public class EgoAgent : GPT
             // 감정을 읽기 쉬운 형태로 변환
             var superegoEmotions = FormatEmotions(superegoResult.emotions);
             var idEmotions = FormatEmotions(idResult.emotions);
-            
+
             var replacements = new Dictionary<string, string>
             {
                 { "superego_result",superegoResult.situation_interpretation },
@@ -179,7 +181,7 @@ public class EgoAgent : GPT
         {
             emotionList.Add($"{emotion.Key}: {emotion.Value:F1}");
         }
-        
+
         return string.Join(", ", emotionList);
     }
 }

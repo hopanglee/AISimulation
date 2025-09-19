@@ -1,8 +1,5 @@
 현재시간 : {current_time}
 
-현재 상황: 
-{current_situation}
-
 {character_name}의 현재 상태
 {character_situation}
 

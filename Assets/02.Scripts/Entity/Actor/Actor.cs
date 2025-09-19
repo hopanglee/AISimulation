@@ -1171,12 +1171,13 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             // 통합 치환 정보
             var replacements = new Dictionary<string, string>
             {
-                { "location", curLocation.locationName },
+                { "location", curLocation != null ? curLocation.LocationToString() : "Unknown" },
                 { "handItem", handItem },
                 { "inventory", string.Join(", ", inventoryItems) },
                 { "sleepStatus", sleepStatus },
                 { "hunger", Hunger.ToString() },
-                { "thirst", Thirst.ToString() },
+                { "thirst", (100 - Thirst).ToString() },
+                { "cleanliness", Cleanliness.ToString() },
                 { "stamina", Stamina.ToString() },
                 { "stress", Stress.ToString() },
                 { "sleepiness", thinkingActor.Sleepiness.ToString() },
@@ -1264,6 +1265,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         var birthday = characterInfo.Birthday;
         var gender = characterInfo.Gender;
         var job = characterInfo.Job;
+        var houseLocation = characterInfo.HouseLocation;
         var relationships = characterInfo.Relationships;
         var dailySchedule = characterInfo.DailySchedule;
         var additionalInfo = characterInfo.AdditionalInfo;
@@ -1278,6 +1280,11 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         if (!string.IsNullOrEmpty(job))
         {
             infoText += $"직업은 {job}입니다. ";
+        }
+
+        if (!string.IsNullOrEmpty(houseLocation))
+        {
+            infoText += $"거주지 주소: {houseLocation}. ";
         }
 
         if (relationships != null && relationships.Count > 0)
@@ -1311,7 +1318,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             var memoryText = "";
 
             memoryText += LoadShortTermMemory();
-
+            memoryText += "\n";
             memoryText += LoadLongTermMemory();
 
             return memoryText.Trim();
@@ -1356,7 +1363,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 memoryText += "- 단기 기억들:\n";
                 foreach (var memory in shortTermMemories)
                 {
-                    var timestamp = memory.timestamp != null ? memory.timestamp.ToString() : "시간 미상";
+                    var timestamp = memory.timestamp != null ? memory.timestamp.ToKoreanString() : "시간 미상";
                     var emotions = memory.emotions != null && memory.emotions.Count > 0
                         ? string.Join(", ", memory.emotions.Select(e => $"{e.Key}:{e.Value:F1}"))
                         : "감정 없음";
@@ -1384,7 +1391,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 memoryText += "- 장기 기억들:\n";
                 foreach (var memory in longTermMemories)
                 {
-                    var timestamp = memory.timestamp != null ? memory.timestamp.ToString() : "시간 미상";
+                    var timestamp = memory.timestamp != null ? memory.timestamp.ToKoreanString() : "시간 미상";
                     var emotions = memory.emotions != null && memory.emotions.Count > 0
                         ? string.Join(", ", memory.emotions.Select(e => $"{e.Key}:{e.Value:F1}"))
                         : "감정 없음";
@@ -1409,20 +1416,25 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         var characterMemoryManager = new CharacterMemoryManager(this);
         var characterInfo = characterMemoryManager.GetCharacterInfo();
 
-        var temperament = characterInfo.Temperament;
-        var personality = characterInfo.Personality;
+        //var temperament = characterInfo.Temperament;
+        //var personality = characterInfo.Personality;
 
         var personalityText = "";
+        var allTraits = characterInfo.GetAllTraits();
 
-        if (temperament != null && temperament.Count > 0)
+        if(allTraits != null && allTraits.Count > 0)
         {
-            personalityText += $"기질은 {string.Join(", ", temperament)}입니다. ";
+            personalityText += $"{string.Join(", ", allTraits)}";
         }
+        //if (temperament != null && temperament.Count > 0)
+        //{
+            //personalityText += $"기질은 {string.Join(", ", temperament)}입니다. ";
+        //}
 
-        if (personality != null && personality.Count > 0)
-        {
-            personalityText += $"성격은 {string.Join(", ", personality)}입니다.";
-        }
+        //if (personality != null && personality.Count > 0)
+        //{
+            //personalityText += $"성격은 {string.Join(", ", personality)}입니다.";
+        //}
 
         return personalityText;
     }

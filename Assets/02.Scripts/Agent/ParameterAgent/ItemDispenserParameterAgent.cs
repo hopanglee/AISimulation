@@ -29,6 +29,7 @@ namespace Agent
         {
             this.availableItemKeys = availableItemKeys ?? new List<string>();
             systemPrompt = PromptLoader.LoadPrompt("ItemDispenserParameterAgentPrompt.txt", "You are an ItemDispenser parameter generator.");
+            SetAgentType(nameof(ItemDispenserParameterAgent));
             
             // 초기 enum 설정
             var itemNames = availableItemKeys.Count > 0 ? availableItemKeys : new List<string> {};

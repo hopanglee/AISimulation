@@ -32,6 +32,7 @@ namespace Agent
 
         public NoteUseAgent(Actor actor) : base(actor)
         {
+            SetAgentType(nameof(NoteUseAgent));
             systemPrompt = PromptLoader.LoadPromptWithReplacements("NoteUseAgentPrompt.txt",
                 new Dictionary<string, string>
                 {

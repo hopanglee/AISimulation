@@ -22,15 +22,19 @@ public class DetailedPlannerAgent : GPT
 
 
     public DetailedPlannerAgent(Actor actor)
-        : base()
+        : base("gpt-5")
     {
         this.actor = actor as MainActor;
         this.toolExecutor = new ActorToolExecutor(actor);
 
         // Actor 이름 설정 (로깅용)
         SetActorName(actor.Name);
+        SetAgentType(nameof(DetailedPlannerAgent));
 
 
+
+        // 현재 씬의 Area 이름들을 수집하여 location enum으로 사용
+        string areaEnumJson = BuildLocationEnumJson();
 
         options = new()
         {
@@ -50,11 +54,12 @@ public class DetailedPlannerAgent : GPT
                                         ""properties"": {{
                                             ""activity_name"": {{ ""type"": ""string"", ""description"": ""세부 활동의 이름 (예: '양치질하기', '옷 입기')"" }},
                                             ""description"": {{ ""type"": ""string"", ""description"": ""세부 활동의 목적 및 수행 방식 설명"" }},
-                                            ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 1, ""description"": ""활동에 소요되는 시간 (분 단위, 5~30분)"" }},
+                                            ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 15, ""maximum"": 60, ""description"": ""활동에 소요되는 시간 (분 단위, 15~60분)"" }},
+                                            ""location"": {{ ""type"": ""string"", ""enum"": {areaEnumJson}, ""description"": ""활동 장소 (현재 씬에서 사용 가능한 지역만 선택)"" }}
                                         }},
                                         ""required"": [""activity_name"", ""description"", ""duration_minutes"", ""location""]
                                     }},
-                                    ""description"": ""List of detailed activities for the given high-level task""
+                                    ""description"": ""주어진 고수준 태스크를 위한 세부 활동 리스트""
                                 }}
                             }},
                             ""required"": [""detailed_activities""]
@@ -69,10 +74,35 @@ public class DetailedPlannerAgent : GPT
         ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
 
         // 메모리 도구 추가
-        ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Memory);
+        // ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Memory);
 
         // 계획 도구 추가
-        ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Plan);
+        //ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Plan);
+    }
+
+    private static string BuildLocationEnumJson()
+    {
+        try
+        {
+            var areas = UnityEngine.Object.FindObjectsByType<Area>(FindObjectsSortMode.None);
+            var names = areas
+                .Where(a => a != null && !string.IsNullOrWhiteSpace(a.LocationToString()))
+                .Select(a => a.LocationToString())
+                .Distinct()
+                .OrderBy(n => n)
+                .ToList();
+            if (names.Count == 0)
+            {
+                // 최소 하나는 제공 (모델이 비어있는 enum을 싫어함)
+                names.Add("Unknown");
+            }
+            return JsonConvert.SerializeObject(names);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[DetailedPlannerAgent] Failed to build location enum: {ex.Message}");
+            return "[\"Unknown\"]";
+        }
     }
 
     // Tool 정의들

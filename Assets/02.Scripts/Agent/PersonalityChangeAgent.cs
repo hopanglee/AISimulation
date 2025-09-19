@@ -22,13 +22,14 @@ namespace Agent
             public string reasoning;
         }
 
-        private Actor actor;
+        private readonly Actor actor;
         private readonly ChatResponseFormat responseFormat;
 
-        public PersonalityChangeAgent(Actor actor)
+        public PersonalityChangeAgent(Actor actor) : base()
         {
             this.actor = actor;
             SetActorName(actor.Name);
+            SetAgentType(nameof(PersonalityChangeAgent));
             this.responseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                 jsonSchemaFormatName: "personality_change_result",
                 jsonSchema: System.BinaryData.FromBytes(

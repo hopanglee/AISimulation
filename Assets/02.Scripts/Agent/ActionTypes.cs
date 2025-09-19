@@ -14,7 +14,7 @@ public enum ActionType
     Unknown = 0,
     MoveToArea,
     MoveToEntity,
-    SpeakToCharacter,
+    Talk,
     UseObject,
     PickUpItem,
     InteractWithObject,

@@ -67,7 +67,7 @@ public class LongTermMemoryFilterAgent : GPT
     {
         this.actor = actor;
         SetActorName(actor.Name);
-
+        SetAgentType(nameof(LongTermMemoryFilterAgent));
 
 
         options = new()

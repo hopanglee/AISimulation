@@ -14,10 +14,11 @@ namespace Agent
     {
         private readonly Actor actor;
 
-        public ThinkQuestionAgent(Actor actor)
+        public ThinkQuestionAgent(Actor actor) : base()
         {
             this.actor = actor;
             SetActorName(actor.Name);
+            SetAgentType(nameof(ThinkQuestionAgent));
             options = new ChatCompletionOptions
             {
                 Temperature = 0.8f // 창의적인 질문을 위해 높은 온도

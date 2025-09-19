@@ -14,10 +14,11 @@ namespace Agent
     {
         private readonly Actor actor;
 
-        public ThinkInsightAgent(Actor actor)
+        public ThinkInsightAgent(Actor actor) : base()
         {
             this.actor = actor;
             SetActorName(actor.Name);
+            SetAgentType(nameof(ThinkInsightAgent));
             options = new ChatCompletionOptions
             {
                 Temperature = 0.6f // 균형있는 창의성

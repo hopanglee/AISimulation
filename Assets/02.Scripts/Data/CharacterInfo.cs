@@ -31,6 +31,9 @@ public class CharacterInfo
     [JsonProperty("job")]
     public string Job { get; set; }
 
+    [JsonProperty("house_location")]
+    public string HouseLocation { get; set; }
+
     [JsonProperty("daily_schedule")]
     public string DailySchedule { get; set; }
 

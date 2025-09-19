@@ -41,10 +41,12 @@ public class ActionExecutor
             {
                 // 핸들러 실행을 await로 기다림
                 await handler(action.Parameters);
+                await SimDelay.DelaySimMinutes(5);
                 return Success($"Action {action.ActionType} executed successfully");
             }
             catch (Exception ex)
             {
+                await SimDelay.DelaySimMinutes(5);
                 return Fail($"Error: {ex.Message}");
             }
         }

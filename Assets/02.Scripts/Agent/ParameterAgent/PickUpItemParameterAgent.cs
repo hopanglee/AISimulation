@@ -24,6 +24,7 @@ namespace Agent
         {
             var itemList = GetCurrentCollectibleItemKeys();
             systemPrompt = PromptLoader.LoadPrompt("PickUpItemParameterAgentPrompt.txt", "You are a PickUpItem parameter generator.");
+            SetAgentType(nameof(PickUpItemParameterAgent));
             this.options = new ChatCompletionOptions
             {
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(

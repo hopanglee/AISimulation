@@ -32,6 +32,7 @@ namespace Agent
 
         public iPhoneUseAgent(Actor actor) : base(actor)
         {
+            SetAgentType(nameof(iPhoneUseAgent));
             systemPrompt = PromptLoader.LoadPromptWithReplacements("iPhoneUseAgentPrompt.txt",
                 new Dictionary<string, string>
                 {

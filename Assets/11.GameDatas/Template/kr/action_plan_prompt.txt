@@ -1,7 +1,8 @@
 현재시간
 {current_time}
 
-첫 번째 활동은 반드시 현재 시간 {current_time}에 정확히 시작해야 합니다.
+첫 번째 활동은 반드시 현재 시간 {current_time}에 정확히 시작해야 합니다.마지막 활동은 반드시 {activityName}이 끝나는 시간과 같아야합니다.
+즉, 모든 활동의 duration(단위 분)을 더하면 {activityDuration}분이 되어야 합니다.
 첫 번째 활동 전에 간격을 두지 마세요. 당신이 깨어있다면 첫 번째 활동은 현재 시간에 시작해야 합니다.
 
 현재 상황
@@ -10,8 +11,8 @@
 === 구체화 해야 할 세분화 계획 ===
 요약: {activityName}
 기분: {activityDescription}
-우선순위 목표: {activityDuration}
-상위 테스크 {taskName}: {taskDescription} ({taskDuration})
+예상 소요 시간: {activityDuration}분
+상위 테스크 {taskName}: {taskDescription} (예상 소요 시간: {taskDuration}분)
 
 
 오늘 하루 전체 계획:

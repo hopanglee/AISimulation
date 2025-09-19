@@ -23,6 +23,7 @@ namespace Agent
         {
             var objectList = GetCurrentAvailableObjects();
             systemPrompt = PromptLoader.LoadPrompt("InteractWithObjectParameterAgentPrompt.txt", "You are an InteractWithObject parameter generator.");
+            SetAgentType(nameof(InteractWithObjectParameterAgent));
             this.options = new ChatCompletionOptions
             {
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(

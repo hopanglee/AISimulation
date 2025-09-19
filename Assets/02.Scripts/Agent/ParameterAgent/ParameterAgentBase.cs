@@ -110,7 +110,7 @@ namespace Agent
                 case ActionType.MoveToEntity:
                     agent = new MoveToEntityParameterAgent(actor);
                     break;
-                case ActionType.SpeakToCharacter:
+                case ActionType.Talk:
                     agent = new TalkParameterAgent(actor);
                     break;
                 case ActionType.PickUpItem:

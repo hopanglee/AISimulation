@@ -31,6 +31,7 @@ namespace Agent
         {
             this.currentBoardContent = currentBoardContent ?? "";
             systemPrompt = PromptLoader.LoadPrompt("WhiteBoardParameterAgentPrompt.txt", "You are a WhiteBoard parameter generator.");
+            SetAgentType(nameof(WhiteBoardParameterAgent));
             
             this.options = new ChatCompletionOptions
             {

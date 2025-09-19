@@ -4,6 +4,7 @@ using System.IO;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using PlanStructures;
+using Newtonsoft.Json;
 
 /// <summary>
 /// Actor의 하루 계획(DayPlan)을 관리하는 클래스
@@ -52,13 +53,19 @@ public class DayPlanner
 
         Debug.Log($"[{actor.Name}] DayPlan 생성 시작 - {currentDate}");
 
+		// 디버그: 실제로 어디에서 기존 계획을 찾는지 경로와 존재 여부 출력
+		var debugPath = GetDayPlanFilePath(currentDate);
+		var debugExists = File.Exists(debugPath);
+		Debug.Log($"[DayPlanner][{actor.Name}] Existing plan check: path={debugPath}, exists={debugExists}, forceNewDayPlan={forceNewDayPlan}");
+
         // 기존 계획이 있고 강제 새 계획이 아니면 로드
         if (!forceNewDayPlan && HasDayPlanForDate(currentDate))
         {
             Debug.Log($"[{actor.Name}] 기존 DayPlan 로드");
+			Debug.Log($"[DayPlanner][{actor.Name}] Loading from: {debugPath}");
             currentHierarchicalDayPlan = await LoadHierarchicalDayPlanFromJsonAsync(currentDate);
-            // 기존 계획의 경우 현재 날짜의 시작 시간 (00:00)으로 설정
-            planStartTime = new GameTime(currentDate.year, currentDate.month, currentDate.day, 0, 0);
+            // 기존 계획 로드시에도 현재 시각을 계획 시작으로 간주 (기상 시점 기준 정렬)
+            planStartTime = currentDate;
             return;
         }
 
@@ -93,60 +100,81 @@ public class DayPlanner
         var currentMinutes = currentTime.hour * 60 + currentTime.minute;
         var startMinutes = planStartTime.hour * 60 + planStartTime.minute;
 
-        int accumulatedMinutes = 0;
+        int accumulatedHighLevelMinutes = 0;
 
         foreach (var hlt in currentHierarchicalDayPlan.HighLevelTasks)
         {
-            // DetailedActivity가 비어있다면 Just-in-Time으로 생성
+            // 먼저 HLT의 시간창에 현재 시간이 들어오는지 판단
+            var hltStart = startMinutes + accumulatedHighLevelMinutes;
+            var hltEnd = hltStart + hlt.DurationMinutes;
+
+            if (currentMinutes < hltStart || currentMinutes >= hltEnd)
+            {
+                // 이 HLT 시간창이 아니면 넘어가며 누적 시간만 증가
+                accumulatedHighLevelMinutes += hlt.DurationMinutes;
+                continue;
+            }
+
+            // 이 시점의 HLT에 대해서만 JIT 상세 계획 생성
             if (hlt.DetailedActivities == null || hlt.DetailedActivities.Count == 0)
             {
                 Debug.Log($"[DayPlanner] {hlt.TaskName}에 대한 DetailedActivity가 없음. Just-in-Time 생성 중...");
                 var detailedActivities = await hierarchicalPlanner.GenerateDetailedActivitiesForTaskAsync(hlt);
                 hlt.DetailedActivities = detailedActivities;
                 Debug.Log($"[DayPlanner] DetailedActivity Just-in-Time 생성 완료: {detailedActivities.Count}개");
+                // 생성된 상세 계획을 파일에 즉시 반영
+                StoreHierarchicalDayPlan(currentHierarchicalDayPlan);
             }
 
-            foreach (var activity in hlt.DetailedActivities)
-            {                
-                // 계획 시작 시간부터 누적된 시간으로 현재 활동 범위 확인
-                var activityStartMinutes = startMinutes + accumulatedMinutes;
-                var activityEndMinutes = activityStartMinutes + activity.DurationMinutes;
-                
-                // 현재 시간이 이 활동의 범위에 있는지 확인
-                if (currentMinutes >= activityStartMinutes && currentMinutes < activityEndMinutes)
-                {
-                    // SpecificAction이 비어있다면 Just-in-Time으로 생성
-                    if (activity.SpecificActions == null || activity.SpecificActions.Count == 0)
-                    {
-                        Debug.Log($"[DayPlanner] {activity.ActivityName}에 대한 SpecificAction이 없음. Just-in-Time 생성 중...");
-                        var specificActions = await hierarchicalPlanner.GenerateSpecificActionsForActivityAsync(activity);
-                        activity.SpecificActions = specificActions;
-                        Debug.Log($"[DayPlanner] SpecificAction Just-in-Time 생성 완료: {specificActions.Count}개");
-                    }
+            // HLT 내부에서 DetailedActivity 범위 탐색
+			int accumulatedActivityMinutes = hltStart;
+			foreach (var activity in hlt.DetailedActivities)
+			{
+				var activityStartMinutes = accumulatedActivityMinutes;
+				var activityEndMinutes = activityStartMinutes + activity.DurationMinutes;
 
-                    // 현재 DetailedActivity 내에서 SpecificAction 찾기
-                    int actionAccumulatedMinutes = activityStartMinutes;
+				// 현재 시간이 이 활동 시작 이전이면 이후 활동들도 모두 시작 전이므로 즉시 종료
+				if (currentMinutes < activityStartMinutes)
+				{
+					return null;
+				}
+				// 현재 시간이 이 활동을 지난 경우 다음 활동으로 진행
+				if (currentMinutes >= activityEndMinutes)
+				{
+					accumulatedActivityMinutes += activity.DurationMinutes;
+					continue;
+				}
 
-                    foreach (var action in activity.SpecificActions)
-                    {
-                        var actionStartMinutes = actionAccumulatedMinutes;
-                        var actionEndMinutes = actionAccumulatedMinutes + action.DurationMinutes;
+				// 현재 시간이 이 활동 범위에 포함되는 경우에만 JIT SpecificAction 생성
+				if (activity.SpecificActions == null || activity.SpecificActions.Count == 0)
+				{
+					Debug.Log($"[DayPlanner] {activity.ActivityName}에 대한 SpecificAction이 없음. Just-in-Time 생성 중...");
+					var specificActions = await hierarchicalPlanner.GenerateSpecificActionsForActivityAsync(activity);
+					activity.SpecificActions = specificActions;
+					Debug.Log($"[DayPlanner] SpecificAction Just-in-Time 생성 완료: {specificActions.Count}개");
+					// 생성된 구체적 행동을 파일에 즉시 반영
+					StoreHierarchicalDayPlan(currentHierarchicalDayPlan);
+				}
 
-                        // 현재 시간이 이 SpecificAction의 범위에 있는지 확인
-                        if (currentMinutes >= actionStartMinutes && currentMinutes < actionEndMinutes)
-                        {
-                            return action; // 부모 참조가 이미 설정된 SpecificAction 반환
-                        }
+				// DetailedActivity 내에서 SpecificAction 범위 탐색
+				int actionAccumulatedMinutes = activityStartMinutes;
+				foreach (var action in activity.SpecificActions)
+				{
+					var actionStartMinutes = actionAccumulatedMinutes;
+					var actionEndMinutes = actionAccumulatedMinutes + action.DurationMinutes;
+					if (currentMinutes >= actionStartMinutes && currentMinutes < actionEndMinutes)
+					{
+						return action;
+					}
+					actionAccumulatedMinutes += action.DurationMinutes;
+				}
 
-                        actionAccumulatedMinutes += action.DurationMinutes;
-                    }
-                    
-                    // DetailedActivity 범위 내에 있지만 SpecificAction 범위 밖인 경우
-                    return null;
-                }
-                
-                accumulatedMinutes += activity.DurationMinutes;
-            }
+				// DetailedActivity 범위 내이지만 Action을 못 찾은 경우
+				return null;
+			}
+
+            // 현재 시간이 이 HLT 범위 내인데도 액티비티를 못 찾은 경우 방어 리턴
+            return null;
         }
 
         return null;
@@ -239,7 +267,7 @@ public class DayPlanner
     /// </summary>
     public void ListAllSavedDayPlans()
     {
-        var directoryPath = Path.Combine(Application.persistentDataPath, "DayPlans", actor.Name);
+        var directoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "Dayplans", actor.Name);
         if (!Directory.Exists(directoryPath))
         {
             Debug.Log($"[{actor.Name}] DayPlan 디렉토리가 존재하지 않습니다: {directoryPath}");
@@ -268,7 +296,7 @@ public class DayPlanner
         try
         {
             await SaveHierarchicalDayPlanToJsonAsync(hierarchicalDayPlan, currentDate);
-            Debug.Log($"[{actor.Name}] DayPlan 저장 완료: {currentDate}");
+            Debug.Log($"[{actor.Name}] DayPlan 저장 완료: {currentDate} (HLT: {hierarchicalDayPlan?.HighLevelTasks?.Count ?? 0})");
         }
         catch (Exception ex)
         {
@@ -289,7 +317,9 @@ public class DayPlanner
             Directory.CreateDirectory(directoryPath);
         }
 
-        var jsonData = JsonUtility.ToJson(hierarchicalDayPlan, true);
+        // UnityEngine.JsonUtility는 필드만 직렬화하므로 비어있는 {}가 저장됩니다.
+        // 계획 구조는 대부분 C# 프로퍼티이므로 Newtonsoft.Json으로 저장합니다.
+        var jsonData = JsonConvert.SerializeObject(hierarchicalDayPlan, Formatting.Indented);
         await File.WriteAllTextAsync(filePath, jsonData);
     }
 
@@ -309,7 +339,41 @@ public class DayPlanner
         try
         {
             var jsonData = await File.ReadAllTextAsync(filePath);
-            return JsonUtility.FromJson<HierarchicalPlan>(jsonData);
+            var plan = JsonConvert.DeserializeObject<HierarchicalPlan>(jsonData);
+
+            // 로드 후 부모 참조 복구
+            int restoredActivities = 0;
+            int restoredActions = 0;
+            if (plan?.HighLevelTasks != null)
+            {
+                foreach (var hlt in plan.HighLevelTasks)
+                {
+                    if (hlt == null) continue;
+                    if (hlt.DetailedActivities == null)
+                    {
+                        hlt.DetailedActivities = new List<DetailedActivity>();
+                    }
+                    foreach (var activity in hlt.DetailedActivities)
+                    {
+                        if (activity == null) continue;
+                        activity.SetParentHighLevelTask(hlt);
+                        restoredActivities++;
+
+                        if (activity.SpecificActions == null)
+                        {
+                            activity.SpecificActions = new List<SpecificAction>();
+                        }
+                        foreach (var sa in activity.SpecificActions)
+                        {
+                            if (sa == null) continue;
+                            sa.SetParentDetailedActivity(activity);
+                            restoredActions++;
+                        }
+                    }
+                }
+            }
+            Debug.Log($"[{actor.Name}] DayPlan 로드 완료 (HLT: {plan?.HighLevelTasks?.Count ?? 0}, Restored Activities: {restoredActivities}, Restored Actions: {restoredActions})");
+            return plan;
         }
         catch (Exception ex)
         {
@@ -324,7 +388,7 @@ public class DayPlanner
     private string GetDayPlanFilePath(GameTime date)
     {
         var fileName = $"{date.year:D4}-{date.month:D2}-{date.day:D2}.json";
-        return Path.Combine(Application.persistentDataPath, "DayPlans", actor.Name, fileName);
+        return Path.Combine(Application.dataPath, "11.GameDatas", "Dayplans", actor.Name, fileName);
     }
 
     /// <summary>

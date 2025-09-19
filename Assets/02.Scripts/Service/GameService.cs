@@ -84,8 +84,7 @@ public class GameService : MonoBehaviour, IGameService
     [Header("Test Settings")]
     // [SerializeField]
     // private bool enableThinkRoutine = true; // Think 루틴 활성화 여부 (테스트용)
-    [SerializeField]
-    private bool forceNewDayPlan = false; // 기존 계획 무시하고 새로 생성 (테스트용)
+    // Removed: global forceNewDayPlan. Use per-actor setting on MainActor instead.
     [SerializeField]
     private bool planOnly = false; // 첫 계획 생성까지만 실행하고 그 이후에는 멈춤 (테스트용)
     [SerializeField]
@@ -182,13 +181,13 @@ public class GameService : MonoBehaviour, IGameService
         {
             if (actor != null && actor is MainActor mainActor && mainActor.brain != null)
             {
-                mainActor.brain.SetForceNewDayPlan(forceNewDayPlan);
+                // Per-actor: planOnly만 전파 (force plan은 MainActor에서 개별 설정)
                 mainActor.brain.SetPlanOnly(planOnly);
             }
         }
         
         Debug.Log($"[GameService] Simulation started with {allActors.Count} actors");
-        Debug.Log($"[GameService] Force new day plan: {forceNewDayPlan}, Plan only: {planOnly}");
+        Debug.Log($"[GameService] Plan only: {planOnly}");
         
         return UniTask.CompletedTask;
     }
@@ -549,12 +548,7 @@ public class GameService : MonoBehaviour, IGameService
     }
 
 
-    [Button("Toggle Force New DayPlan")]
-    private void ToggleForceNewDayPlan()
-    {
-        forceNewDayPlan = !forceNewDayPlan;
-        Debug.Log($"[GameService] Force new day plan {(forceNewDayPlan ? "enabled" : "disabled")}");
-    }
+    // Removed: ToggleForceNewDayPlan (use per-actor toggle in MainActor)
     
     [Button("Toggle Plan Only")]
     private void TogglePlanOnly()

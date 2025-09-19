@@ -131,7 +131,7 @@ public class ActionPerformer
 
         // Interaction handlers
         actionExecutor.RegisterHandler(
-            ActionType.SpeakToCharacter,
+            ActionType.Talk,
             async (parameters) => await interactionHandler.HandleSpeakToCharacter(parameters, currentToken)
         );
 

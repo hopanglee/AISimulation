@@ -40,6 +40,7 @@ public class ThinkParameterAgent : ParameterAgentBase
         this.actor = actor;
         
         systemPrompt = LoadThinkPrompt();
+        SetAgentType(nameof(ThinkParameterAgent));
 
         options = new()
         {
@@ -219,6 +220,7 @@ public class ThinkParameterAgent : ParameterAgentBase
             ["current_time"] = $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}",
             ["character_name"] = actor.Name,
             ["character_situation"] = actor.LoadActorSituation(),
+            
             ["memory"] = actor.LoadCharacterMemory(),
             ["reasoning"] = context.Reasoning,
             ["intention"] = context.Intention,

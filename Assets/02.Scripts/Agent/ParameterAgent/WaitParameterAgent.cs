@@ -15,6 +15,7 @@ namespace Agent
         public WaitParameterAgent(Actor actor) : base(actor)
         {
             systemPrompt = PromptLoader.LoadPrompt("WaitParameterAgentPrompt.txt", "You are a Wait parameter generator.");
+            SetAgentType(nameof(WaitParameterAgent));
             this.options = new ChatCompletionOptions
             {
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(

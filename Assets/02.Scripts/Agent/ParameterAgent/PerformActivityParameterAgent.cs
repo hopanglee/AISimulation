@@ -22,6 +22,7 @@ namespace Agent
         public PerformActivityParameterAgent(Actor actor) : base(actor)
         {
             systemPrompt = PromptLoader.LoadPrompt("PerformActivityParameterAgentPrompt.txt", "You are a PerformActivity parameter generator.");
+            SetAgentType(nameof(PerformActivityParameterAgent));
             this.options = new ChatCompletionOptions
             {
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(

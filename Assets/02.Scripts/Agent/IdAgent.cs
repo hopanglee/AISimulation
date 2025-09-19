@@ -23,6 +23,7 @@ public class IdAgent : GPT
         this.actor = actor;
         this.toolExecutor = new ActorToolExecutor(actor);
         SetActorName(actor.Name);
+        SetAgentType(nameof(IdAgent));
 
         InitializeOptions();
     }
@@ -75,17 +76,17 @@ public class IdAgent : GPT
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {
-                                ""situation_interpretation"": {
-                                    ""type"": ""string"",
-                                    ""description"": ""본능적 관점에서 본 상황 인식""
-                                },
                                 ""thought_chain"": {
                                     ""type"": ""array"",
                                     ""items"": {
                                         ""type"": ""string""
                                     },
-                                    ""description"": ""본능적 사고체인 (즉각적 욕구와 감정 기반)""
+                                    ""description"": ""본능적 사고체인 (즉각적 욕구와 감정 기반), 최소 4단계를 거치세요.""
                                 },
+                                ""situation_interpretation"": {
+                                    ""type"": ""string"",
+                                    ""description"": ""본능적 관점에서 본 상황 인식, 50자 이상 100자 이내로 서술하세요.""
+                                },                                
                                 ""emotions"": {
                                     ""type"": ""object"",
                                     ""additionalProperties"": {
@@ -93,10 +94,10 @@ public class IdAgent : GPT
                                         ""minimum"": 0.0,
                                         ""maximum"": 1.0
                                     },
-                                    ""description"": ""감정과 강도 (0.0~1.0)""
+                                    ""description"": ""감정과 강도 (0.0~1.0), 최소 3~5개 이상의 감정을 작성하세요.""
                                 }
                             },
-                            ""required"": [""situation_interpretation"", ""thought_chain""],
+                            ""required"": [""thought_chain"",""situation_interpretation""],
                             ""additionalProperties"": false
                         }"
                     )

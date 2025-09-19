@@ -57,6 +57,19 @@ public abstract class MainActor : Actor
 	[SerializeField]
 	private string currentActivity = "Idle"; // 현재 수행 중인 활동
 
+	[Header("Planning")]
+	[SerializeField, Tooltip("이 메인 액터만 기존 계획을 무시하고 새 DayPlan을 강제로 생성할지 여부")]
+	private bool forceNewDayPlanForThisActor = false;
+	public bool ForceNewDayPlanForThisActor
+	{
+		get => forceNewDayPlanForThisActor;
+		set
+		{
+			forceNewDayPlanForThisActor = value;
+			TryApplyForcePlanFlagToBrain();
+		}
+	}
+
 	[SerializeField]
 	private string activityDescription = ""; // 활동에 대한 상세 설명
 
@@ -131,6 +144,8 @@ public abstract class MainActor : Actor
 		//brain?.memoryManager?.AddActionStart("수면", null);
 		brain?.memoryManager?.AddShortTermMemory(new GameTime(2025, 2, 22, 22, 0), "action_start", "수면", "거실 침대에서 취침", null);
 		manualActionController.Initialize(this);
+		// Per-Actor 강제 계획 생성 플래그를 Brain에 반영
+		TryApplyForcePlanFlagToBrain();
 	}
 
 	protected override void OnEnable()
@@ -274,7 +289,8 @@ public abstract class MainActor : Actor
 		// DayPlan 생성 (await) - 예외 방어
 		try
 		{
-			await brain.StartDayPlan();
+			//await brain.StartDayPlan();
+			brain.SetPlanPlug(true);
 		}
 		catch (Exception ex)
 		{
@@ -564,6 +580,30 @@ public abstract class MainActor : Actor
 		}
 	}
 	#endregion
+
+	private void TryApplyForcePlanFlagToBrain()
+	{
+		try
+		{
+			if (brain != null)
+			{
+				brain.SetForceNewDayPlan(forceNewDayPlanForThisActor);
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.LogWarning($"[{Name}] Failed to apply per-actor force plan flag: {ex.Message}");
+		}
+	}
+
+	#if UNITY_EDITOR
+	[FoldoutGroup("Debug"), Button("Toggle Force New DayPlan (Per-Actor)")]
+	private void ToggleForceNewDayPlanForThisActor()
+	{
+		ForceNewDayPlanForThisActor = !ForceNewDayPlanForThisActor;
+		Debug.Log($"[{Name}] Per-actor force new day plan {(ForceNewDayPlanForThisActor ? "enabled" : "disabled")}");
+	}
+	#endif
 }
 
 

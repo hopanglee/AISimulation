@@ -104,7 +104,7 @@ public class LongTermMemoryMaintenanceAgent : GPT
     {
         this.actor = actor;
         SetActorName(actor.Name);
-
+        SetAgentType(nameof(LongTermMemoryMaintenanceAgent));
 
 
         options = new()

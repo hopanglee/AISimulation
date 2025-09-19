@@ -67,6 +67,7 @@ public class LongTermMemoryConsolidationAgent : GPT
     {
         this.actor = actor;
         SetActorName(actor.Name);
+        SetAgentType(nameof(LongTermMemoryConsolidationAgent));
 
         options = new()
         {
@@ -90,7 +91,7 @@ public class LongTermMemoryConsolidationAgent : GPT
                                             },
                                             ""summary"": {
                                                 ""type"": ""string"",
-                                                ""description"": ""이 메모리 청크의 포괄적인 요약""
+                                                ""description"": ""이 메모리 청크의 포괄적인 요약, 20자 이상 100자 이내로 서술하세요.""
                                             },
                                             ""time_range"": {
                                                 ""type"": ""string"",
@@ -99,7 +100,7 @@ public class LongTermMemoryConsolidationAgent : GPT
                                             ""main_events"": {
                                                 ""type"": ""array"",
                                                 ""items"": { ""type"": ""string"" },
-                                                ""description"": ""이 청크의 주요 사건들""
+                                                ""description"": ""이 청크의 주요 사건들, 최소 3개 이상의 사건을 작성하세요.""
                                             },
                                             ""people_involved"": {
                                                 ""type"": ""array"",
@@ -113,7 +114,7 @@ public class LongTermMemoryConsolidationAgent : GPT
                                                     ""minimum"": 0.0,
                                                     ""maximum"": 1.0
                                                 },
-                                                ""description"": ""이 청크에서 경험한 감정들과 강도 값""
+                                                ""description"": ""이 청크에서 경험한 감정들과 강도 값, 최소 3개 이상의 감정을 작성하세요.""
                                             },
                                             ""original_entries_count"": {
                                                 ""type"": ""integer"",
