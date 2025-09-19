@@ -126,6 +126,10 @@ public abstract class MainActor : Actor
 	{
 		base.Awake();
 		brain = new(this);
+		brain.memoryManager.ClearShortTermMemory();
+		// STM 초기화 후 수면 시작을 새로운 STM에 추가
+		//brain?.memoryManager?.AddActionStart("수면", null);
+		brain?.memoryManager?.AddShortTermMemory(new GameTime(2025, 2, 22, 22, 0), "action_start", "수면", "거실 침대에서 취침", null);
 		manualActionController.Initialize(this);
 	}
 

@@ -1,33 +1,12 @@
 {
   "entries": [
     {
-      "timestamp": "2024-01-01T00:00:00Z",
-      "type": "action_complete",
-      "content": "행동 완료: 수면 - 수면 완료 - 잠에서 깨어남. 체력 30로 회복됨",
-      "details": "{\"action_type\":\"수면\",\"result\":\"수면 완료 - 잠에서 깨어남. 체력 30로 회복됨\",\"success\":true}",
-      "emotions": {}
-    },
-    {
-      "timestamp": "2024-01-01T00:00:00Z",
-      "type": "action_complete",
-      "content": "행동 완료: 수면 - 수면 완료 - 잠에서 깨어남. 체력 30로 회복됨",
-      "details": "{\"action_type\":\"수면\",\"result\":\"수면 완료 - 잠에서 깨어남. 체력 30로 회복됨\",\"success\":true}",
-      "emotions": {}
-    },
-    {
-      "timestamp": "2024-01-01T00:00:00Z",
-      "type": "action_complete",
-      "content": "행동 완료: 수면 - 수면 완료 - 잠에서 깨어남. 체력 30로 회복됨",
-      "details": "{\"action_type\":\"수면\",\"result\":\"수면 완료 - 잠에서 깨어남. 체력 30로 회복됨\",\"success\":true}",
-      "emotions": {}
-    },
-    {
-      "timestamp": "2025-02-23T07:00:00Z",
-      "type": "action_complete",
-      "content": "행동 완료: 수면 - 수면 완료 - 잠에서 깨어남. 체력 30로 회복됨",
-      "details": "{\"action_type\":\"수면\",\"result\":\"수면 완료 - 잠에서 깨어남. 체력 30로 회복됨\",\"success\":true}",
+      "timestamp": "2025-02-22T22:00:00Z",
+      "type": "action_start",
+      "content": "수면",
+      "details": "거실 침대에서 취침",
       "emotions": {}
     }
   ],
-  "lastUpdated": "2025-02-23T07:00:00Z"
+  "lastUpdated": "2025-02-23T06:58:00Z"
 }
