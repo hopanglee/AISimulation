@@ -77,6 +77,7 @@ namespace PlanStructures
         [JsonProperty("activity_name")] public string ActivityName { get; set; } = "";
         [JsonProperty("description")] public string Description { get; set; } = "";
         [JsonProperty("duration_minutes")] public int DurationMinutes { get; set; } = 0;
+        [JsonProperty("location")] public string Location { get; set; } = "";
         [JsonProperty("specific_actions")] public List<SpecificAction> SpecificActions { get; set; } = new List<SpecificAction>();
         
         /// <summary>

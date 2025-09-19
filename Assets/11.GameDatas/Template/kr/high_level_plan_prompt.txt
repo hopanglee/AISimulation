@@ -8,3 +8,8 @@
 {interpretation}
 
 {character_name}다운 전체적인 하루 계획을 생성하세요.  
+
+중요사항
+모든 task의 duration_minutes는 연속적으로 이어집니다.
+따라서, 모든 duration_minutes(단위 분)을 {current_time}에서 더하면 취침시간이 나와야 합니다.
+duration_minutes의 단위는 '분'입니다.

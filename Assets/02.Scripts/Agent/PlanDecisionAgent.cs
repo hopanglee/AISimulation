@@ -23,6 +23,7 @@ public class PlanDecisionAgent : GPT
 		this.toolExecutor = new ActorToolExecutor(actor);
 
 		SetActorName(actor.Name);
+		SetAgentType(nameof(PlanDecisionAgent));
 		InitializeOptions();
 	}
 
@@ -41,7 +42,7 @@ public class PlanDecisionAgent : GPT
 		// 도구 추가
 		ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
 		ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Memory);
-		ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Plan);
+		//ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Plan);
 	}
 
 	protected override void ExecuteToolCall(ChatToolCall toolCall)

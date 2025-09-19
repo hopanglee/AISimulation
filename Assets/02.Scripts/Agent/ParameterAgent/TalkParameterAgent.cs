@@ -34,6 +34,7 @@ namespace Agent
                     { "memory", actor.LoadCharacterMemory() },
                     { "character_situation", actor.LoadActorSituation() }
                 });
+            SetAgentType(nameof(TalkParameterAgent));
             this.options = new ChatCompletionOptions
             {
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(

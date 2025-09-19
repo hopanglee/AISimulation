@@ -23,6 +23,7 @@ namespace Agent
             var movableAreas = GetCurrentMovableAreaKeys();
             // 프롬프트 로드
             systemPrompt = PromptLoader.LoadPrompt("MoveToAreaParameterAgentPrompt.txt", "You are a MoveToArea parameter generator.");
+            SetAgentType(nameof(MoveToAreaParameterAgent));
             this.options = new ChatCompletionOptions
             {
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(

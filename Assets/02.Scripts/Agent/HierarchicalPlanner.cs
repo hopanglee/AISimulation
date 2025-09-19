@@ -516,12 +516,19 @@ public class HierarchicalPlanner
             var specificPlannerAgent = new SpecificPlannerAgent(actor);
             var specificActions = await specificPlannerAgent.CreateActionPlanAsync(detailedActivity);
 
-            Debug.Log($"[HierarchicalPlanner] SpecificAction 생성 완료: {specificActions.Count}개");
+            Debug.Log($"[HierarchicalPlanner][{actor?.Name}] SpecificAction 생성 완료: {specificActions.Count}개");
             return specificActions;
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[HierarchicalPlanner] SpecificAction 생성 실패: {ex.Message}");
+            try
+            {
+                Debug.LogError($"[HierarchicalPlanner][{actor?.Name}] SpecificAction 생성 실패 (Activity='{detailedActivity?.ActivityName ?? "null"}'): {ex.Message}");
+            }
+            catch
+            {
+                Debug.LogError($"[HierarchicalPlanner] SpecificAction 생성 실패: {ex.Message}");
+            }
             throw;
         }
     }

@@ -14,10 +14,11 @@ namespace Agent
     {
         private readonly Actor actor;
 
-        public ThinkAnswerAgent(Actor actor)
+        public ThinkAnswerAgent(Actor actor) : base()
         {
             this.actor = actor;
             SetActorName(actor.Name);
+            SetAgentType(nameof(ThinkAnswerAgent));
             options = new ChatCompletionOptions
             {
                 Temperature = 0.7f
@@ -48,7 +49,7 @@ namespace Agent
                 messages.Add(new UserChatMessage(question));
 
                 // 메모리 툴 추가
-                Agent.Tools.ToolManager.AddToolSetToOptions(options, Agent.Tools.ToolManager.ToolSets.Memory);
+                Tools.ToolManager.AddToolSetToOptions(options, Agent.Tools.ToolManager.ToolSets.Memory);
 
                 var response = await SendGPTAsync<string>(messages, options);
                 

@@ -43,18 +43,20 @@ public class SpecificPlannerAgent : GPT
 
 
     public SpecificPlannerAgent(Actor actor)
-        : base()
+        : base("gpt-5")
     {
         this.actor = actor as MainActor;
         this.toolExecutor = new ActorToolExecutor(actor);
 
         // Actor 이름 설정 (로깅용)
         SetActorName(actor.Name);
-
+        SetAgentType(nameof(SpecificPlannerAgent));
 
 
         // ActionType enum 값들을 동적으로 가져와서 JSON schema에 포함
         var actionTypeValues = string.Join(", ", Enum.GetNames(typeof(ActionType)).Select(name => $"\"{name}\""));
+        // 현재 씬의 Area 이름들을 수집하여 location enum으로 사용
+        var areaEnumJson = BuildLocationEnumJson();
 
         options = new()
         {
@@ -74,12 +76,12 @@ public class SpecificPlannerAgent : GPT
                                         ""properties"": {{
                                             ""action_type"": {{ ""type"": ""string"", ""enum"": [{actionTypeValues}], ""description"": ""실행가능한 활동의 이름"" }},
                                             ""description"": {{ ""type"": ""string"", ""description"": ""실행가능한 활동의 목적 및 파라미터 등 설명 "" }},
-                                            ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 1, ""description"": ""활동에 소요되는 시간 (분 단위, 1~5분)"" }},
-                                            ""location"": {{ ""type"": ""string"", ""description"": ""활동이 일어나는 장소 (시스템에서 제공된 전체 경로 형식 사용. 예: '아파트:부엌')"" }}
+                                            ""duration_minutes"": {{ ""type"": ""integer"", ""maximum"": 30, ""minimum"": 5, ""description"": ""활동에 소요되는 시간 (분 단위, 5~30분)"" }},
+                                            ""location"": {{ ""type"": ""string"", ""enum"": {areaEnumJson}, ""description"": ""활동이 일어나는 장소 (시스템에서 제공된 전체 경로 형식 사용. 예: '아파트:부엌')"" }}
                                         }},
                                         ""required"": [""action_type"", ""description"", ""duration_minutes"", ""location""]
                                     }},
-                                    ""description"": ""List of specific actions for tomorrow""
+                                    ""description"": ""주어진 세부적 행동의 목표를 이루기 위한 가장 작은 단위의 act 2개 이상을 연속으로 연결한 체인""
                                 }}
                             }},
                             ""required"": [""specific_actions""]
@@ -95,6 +97,29 @@ public class SpecificPlannerAgent : GPT
         ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Plan);
     }
 
+    private static string BuildLocationEnumJson()
+    {
+        try
+        {
+            var areas = UnityEngine.Object.FindObjectsByType<Area>(FindObjectsSortMode.None);
+            var names = areas
+                .Where(a => a != null && !string.IsNullOrWhiteSpace(a.LocationToString()))
+                .Select(a => a.LocationToString())
+                .Distinct()
+                .OrderBy(n => n)
+                .ToList();
+            if (names.Count == 0)
+            {
+                names.Add("Unknown");
+            }
+            return JsonConvert.SerializeObject(names);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[SpecificPlannerAgent] Failed to build location enum: {ex.Message}");
+            return "[\"Unknown\"]";
+        }
+    }
 
 
     protected override void ExecuteToolCall(ChatToolCall toolCall)

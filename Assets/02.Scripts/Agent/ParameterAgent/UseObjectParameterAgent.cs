@@ -15,6 +15,7 @@ namespace Agent
         public UseObjectParameterAgent(Actor actor) : base(actor)
         {
             systemPrompt = PromptLoader.LoadPrompt("UseObjectParameterAgentPrompt.txt", "You are a UseObject parameter generator.");
+            SetAgentType(nameof(UseObjectParameterAgent));
             this.options = new ChatCompletionOptions
             {
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(

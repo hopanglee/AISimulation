@@ -22,6 +22,11 @@ public class ShortTermMemoryEntry
     public string details; // 추가 세부 정보 (JSON 형태)
     public Dictionary<string, float> emotions; // 감정과 강도
 
+    // Json 역직렬화를 위한 기본 생성자
+    public ShortTermMemoryEntry()
+    {
+    }
+
     public ShortTermMemoryEntry(string type, string content, string details = null, Dictionary<string, float> emotions = null)
     {
         var timeService = Services.Get<ITimeService>();

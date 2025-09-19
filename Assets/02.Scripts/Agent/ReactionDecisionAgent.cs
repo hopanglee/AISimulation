@@ -16,7 +16,7 @@ namespace Agent
     /// </summary>
     public class ReactionDecisionAgent : GPT
     {
-        private Actor actor;
+        private readonly Actor actor;
         private IToolExecutor toolExecutor;
         private DayPlanner dayPlanner;
 
@@ -25,6 +25,7 @@ namespace Agent
             this.actor = actor;
             this.toolExecutor = new ActorToolExecutor(actor);
             SetActorName(actor.Name);
+            SetAgentType(nameof(ReactionDecisionAgent));
             
             // ReactionDecisionAgent 프롬프트 로드 및 초기화
             string systemPrompt = PromptLoader.LoadPrompt("ReactionDecisionAgentPrompt.txt", "You are an AI agent responsible for deciding whether to react to external events.");
@@ -64,7 +65,7 @@ namespace Agent
             };
             
             // 모든 도구 추가
-            ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.All);
+            //ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.All);
         }
 
         /// <summary>

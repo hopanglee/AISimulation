@@ -9,7 +9,7 @@ using Cysharp.Threading.Tasks;
 /// MainActor의 시각정보를 성격과 기억을 바탕으로 해석하는 Agent 그룹
 /// 이성(Superego), 본능(Id), 자아(Ego) 에이전트로 구성되어 상황을 다각도로 분석합니다.
 /// </summary>
-public class PerceptionAgent
+public class PerceptionAgentGroup
 {
     private Actor actor;
     
@@ -18,7 +18,7 @@ public class PerceptionAgent
     private IdAgent idAgent;
     private EgoAgent egoAgent;
 
-    public PerceptionAgent(Actor actor)
+    public PerceptionAgentGroup(Actor actor)
     {
         this.actor = actor;
         

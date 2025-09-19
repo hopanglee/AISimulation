@@ -52,10 +52,12 @@ public class Brain
     public Thinker Thinker => thinker;
 
     public PerceptionResult recentPerceptionResult;
-    
+
     // --- Test Settings ---
     private bool forceNewDayPlan = false; // 기존 계획 무시하고 새로 생성 (테스트용)
     private bool planOnly = false; // 첫 계획 생성까지만 실행하고 그 이후에는 멈춤 (테스트용)
+
+    private bool planPlug = false; // 계획 생성을 플러그로 처리하고 싶을 때
 
     public Brain(Actor actor)
     {
@@ -82,8 +84,17 @@ public class Brain
     {
         forceNewDayPlan = force;
         Debug.Log($"[{actor.Name}] Force new day plan {(force ? "enabled" : "disabled")}");
+        // DayPlanner에도 전달하여 로드 분기를 우회하도록 동기화
+        try
+        {
+            dayPlanner?.SetForceNewDayPlan(force);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[{actor.Name}] Failed to set forceNewDayPlan on DayPlanner: {ex.Message}");
+        }
     }
-    
+
     /// <summary>
     /// 첫 계획 생성까지만 실행하도록 설정합니다.
     /// </summary>
@@ -98,6 +109,8 @@ public class Brain
     /// </summary>
     public async UniTask StartDayPlan()
     {
+        // 현재 설정된 강제 새 계획 플래그를 DayPlanner에 반영 (방어적 동기화)
+        try { dayPlanner?.SetForceNewDayPlan(forceNewDayPlan); } catch {}
         // PerceptionAgent를 통해 시각정보 해석
         var perceptionResult = await InterpretVisualInformationAsync();
         Debug.Log($"[{actor.Name}] DayPlan 시작");
@@ -110,12 +123,19 @@ public class Brain
             var planDescription = $"오늘의 계획: {string.Join(", ", dayPlan.HighLevelTasks.ConvertAll(t => t.Description))}";
             memoryManager.AddPlanCreated(planDescription);
         }
-        
+
         // planOnly가 true이면 계획 생성 후 종료
         if (planOnly)
         {
             Debug.Log($"[{actor.Name}] Plan only mode - 계획 생성 완료, Think 루프 시작하지 않음");
         }
+    }
+
+
+    public void SetPlanPlug(bool plug)
+    {
+        planPlug = plug;
+        Debug.Log($"[{actor.Name}] Plan plug {(plug ? "enabled" : "disabled")}");
     }
 
     /// <summary>
@@ -128,7 +148,7 @@ public class Brain
             Debug.Log($"[{actor.Name}] Plan only mode - Think 루프 시작하지 않음");
             return;
         }
-        
+
         _ = thinker.StartThinkAndActLoop();
     }
 
@@ -237,12 +257,41 @@ public class Brain
             // Enhanced Memory System: Perception 결과를 Short Term Memory에 추가
             memoryManager.AddPerceptionResult(perceptionResult);
 
-            // RelationshipAgent: 관계 수정 여부 결정 및 적용
-            var relationshipMemoryManager = new RelationshipMemoryManager(actor);
-            await relationshipMemoryManager.ProcessRelationshipUpdatesAsync(perceptionResult);
+            #region DayPlanner 실행
+            // PerceptionAgent를 통해 시각정보 해석
+            //var perceptionResult = await InterpretVisualInformationAsync();
+            if (planPlug)
+            {
+                Debug.Log($"[{actor.Name}] DayPlan 시작");
+                await dayPlanner.PlanToday();
 
-            // === 계획 유지/수정 결정 및 필요 시 재계획 (DayPlanner 내부로 캡슐화) ===
-            await dayPlanner.DecideAndMaybeReplanAsync();
+                // Enhanced Memory System: 계획 생성을 Short Term Memory에 추가
+                var dayPlan = dayPlanner.GetCurrentDayPlan();
+                if (dayPlan?.HighLevelTasks != null && dayPlan.HighLevelTasks.Count > 0)
+                {
+                    var planDescription = $"오늘의 계획: {string.Join(", ", dayPlan.HighLevelTasks.ConvertAll(t => t.Description))}";
+                    memoryManager.AddPlanCreated(planDescription);
+                }
+
+                // planOnly가 true이면 계획 생성 후 종료
+                if (planOnly)
+                {
+                    Debug.Log($"[{actor.Name}] Plan only mode - 계획 생성 완료, Think 루프 시작하지 않음");
+                }
+
+                planPlug = false;
+            }
+            #endregion
+            else
+            {
+                // RelationshipAgent: 관계 수정 여부 결정 및 적용
+                var relationshipMemoryManager = new RelationshipMemoryManager(actor);
+                await relationshipMemoryManager.ProcessRelationshipUpdatesAsync(perceptionResult);
+
+                // === 계획 유지/수정 결정 및 필요 시 재계획 (DayPlanner 내부로 캡슐화) ===
+                await dayPlanner.DecideAndMaybeReplanAsync();
+            }
+
 
             // 상황 설명 생성 (기존 방식과 PerceptionAgent 결과를 결합)
             //var enhancedDescription = $"{situationDescription}\n\n=== Perception Analysis ===\n{perceptionResult.situation_interpretation}\n\n생각 Chainn: {string.Join(" -> ", perceptionResult.thought_chain)}";
@@ -295,7 +344,7 @@ public class Brain
             MainActor mainActor = actor as MainActor;
             try
             {
-                
+
                 mainActor.CurrentActivity = paramResult.ActType.ToString();
                 await actionPerformer.ExecuteAction(action, token);
             }
@@ -434,7 +483,7 @@ public class Brain
         if (actor is MainActor mainActor)
         {
             var visualInformation = mainActor.sensor.GetLookableEntityDescriptions();
-            var perceptionAgent = new PerceptionAgent(actor);
+            var perceptionAgent = new PerceptionAgentGroup(actor);
             recentPerceptionResult = await perceptionAgent.InterpretVisualInformationAsync(visualInformation);
 
             CharacterMemoryManager characterMemoryManager = new CharacterMemoryManager(actor);

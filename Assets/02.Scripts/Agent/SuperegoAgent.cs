@@ -23,6 +23,7 @@ public class SuperegoAgent : GPT
         this.actor = actor;
         this.toolExecutor = new ActorToolExecutor(actor);
         SetActorName(actor.Name);
+        SetAgentType(nameof(SuperegoAgent));
 
         InitializeOptions();
     }
@@ -58,7 +59,7 @@ public class SuperegoAgent : GPT
             Debug.LogError($"[SuperegoAgent {actor.Name}] 프롬프트 로드 실패: {ex.Message}");
             throw new System.IO.FileNotFoundException($"프롬프트 파일 로드 실패: {ex.Message}");
         }
-    }    
+    }
 
     /// <summary>
     /// 옵션을 초기화합니다.
@@ -74,17 +75,18 @@ public class SuperegoAgent : GPT
                         @"{
                             ""type"": ""object"",
                             ""properties"": {
-                                ""situation_interpretation"": {
-                                    ""type"": ""string"",
-                                    ""description"": ""이성적 관점의 상황 인식""
-                                },
                                 ""thought_chain"": {
                                     ""type"": ""array"",
                                     ""items"": {
                                         ""type"": ""string""
                                     },
-                                    ""description"": ""상황을 인식하는 사고체인""
+                                    ""description"": ""상황을 인식하는 사고체인, 최소 4단계를 거치세요.""
                                 },
+                                ""situation_interpretation"": {
+                                    ""type"": ""string"",
+                                    ""description"": ""이성적 관점의 상황 인식, 50자 이상 100자 이내로 서술하세요.""
+                                },
+                                
                                 ""emotions"": {
                                     ""type"": ""object"",
                                     ""additionalProperties"": {
@@ -92,10 +94,10 @@ public class SuperegoAgent : GPT
                                         ""minimum"": 0.0,
                                         ""maximum"": 1.0
                                     },
-                                    ""description"": ""감정과 강도 (0.0~1.0)""
+                                    ""description"": ""감정과 강도 (0.0~1.0), 최소 3~5개 이상의 감정을 작성하세요.""
                                 }
                             },
-                            ""required"": [""situation_interpretation"", ""thought_chain""],
+                            ""required"": [""thought_chain"", ""situation_interpretation""],
                             ""additionalProperties"": false
                         }"
                     )

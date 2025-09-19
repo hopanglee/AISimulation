@@ -219,7 +219,7 @@ public class ManualActionController
         {
             ActionType.MoveToArea => "예시: target_area = \"Living Room\" (Area 이름)",
             ActionType.MoveToEntity => "예시: target_entity = \"Yellow Clock in Living Room\" (Entity 전체 이름)",
-            ActionType.SpeakToCharacter => "예시: target_character = \"Hino\", message = \"안녕하세요\"",
+            ActionType.Talk => "예시: target_character = \"Hino\", message = \"안녕하세요\"",
             ActionType.PickUpItem => "예시: item_name = \"Donut_1 on Plate\"",
             ActionType.InteractWithObject => "예시: target_object = \"refrigerator in kitchen\"",
             ActionType.PutDown => "예시: target_location = \"table in living room\"",
@@ -902,7 +902,7 @@ public class ManualActionController
         {
             ActionType.MoveToArea => new List<string> { "target_area" }, // 예: "Living Room", "Kitchen", "Bedroom"
             ActionType.MoveToEntity => new List<string> { "target_entity" }, // 예: "Yellow Clock in Living Room"
-            ActionType.SpeakToCharacter => new List<string> { "target_character", "message" },
+            ActionType.Talk => new List<string> { "target_character", "message" },
             ActionType.PickUpItem => new List<string> { "item_name" },
             ActionType.InteractWithObject => new List<string> { "target_object" },
             ActionType.PutDown => new List<string> { "target_location" },

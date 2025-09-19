@@ -73,6 +73,7 @@ public class RelationshipAgent : GPT
     {
         this.actor = actor;
         SetActorName(actor.Name);
+        SetAgentType(nameof(RelationshipAgent));
 
 
         options = new()
@@ -122,7 +123,7 @@ public class RelationshipAgent : GPT
                                     }
                                 }
                             },
-                            ""required"": [""should_update"", ""reasoning""]
+                            ""required"": [""should_update"", ""reasoning"", ""updates""]
                         }"
                     )
                 ),

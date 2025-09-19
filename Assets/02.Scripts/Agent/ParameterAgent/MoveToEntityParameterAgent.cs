@@ -23,6 +23,7 @@ namespace Agent
         {
             var entityList = GetCurrentEntityNames();
             systemPrompt = PromptLoader.LoadPrompt("MoveToEntityParameterAgentPrompt.txt", "You are a MoveToEntity parameter generator.");
+            SetAgentType(nameof(MoveToEntityParameterAgent));
             this.options = new ChatCompletionOptions
             {
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(

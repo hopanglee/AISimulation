@@ -3,6 +3,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Globalization;
 
 public interface ITimeService : IService
 {
@@ -88,6 +89,11 @@ public struct GameTime
     public override string ToString()
     {
         return $"{year:D4}-{month:D2}-{day:D2} {hour:D2}:{minute:D2}";
+    }
+
+    public string ToKoreanString()
+    {
+        return $"{year:D4}년 {month:D2}월 {day:D2}일 {GetDayOfWeek()} {hour:D2}:{minute:D2}";
     }
 
     public override bool Equals(object obj)
@@ -287,10 +293,44 @@ public struct GameTime
     /// </summary>
     public static GameTime FromIsoString(string isoString)
     {
-        if (DateTime.TryParse(isoString, out DateTime dateTime))
+        if (string.IsNullOrEmpty(isoString))
+            return new GameTime(2024, 1, 1, 0, 0);
+
+        // 1) DateTimeOffset로 UTC/Z 오프셋 포함 문자열 우선 처리
+        if (DateTimeOffset.TryParse(
+            isoString,
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
+            out DateTimeOffset dto))
         {
-            return FromDateTime(dateTime);
+            return FromDateTime(dto.UtcDateTime);
         }
+
+        // 2) InvariantCulture 기반 일반 파싱 (로컬/불명확 형식까지 수용)
+        if (DateTime.TryParse(
+            isoString,
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
+            out DateTime dt))
+        {
+            return FromDateTime(dt.ToUniversalTime());
+        }
+
+        // 3) 몇 가지 흔한 포맷에 대해 ParseExact 시도
+        string[] formats = new[]
+        {
+            "yyyy-MM-ddTHH:mm:ssZ",
+            "yyyy-MM-ddTHH:mm:ss",
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd HH:mm"
+        };
+        if (DateTime.TryParseExact(isoString, formats, CultureInfo.InvariantCulture,
+            DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out DateTime dtExact))
+        {
+            return FromDateTime(dtExact.ToUniversalTime());
+        }
+
+        // 실패 시 안전 기본값
         return new GameTime(2024, 1, 1, 0, 0);
     }
     
@@ -317,10 +357,28 @@ public class GameTimeConverter : JsonConverter<GameTime>
     {
         if (reader.TokenType == JsonToken.String)
         {
-            string dateTimeString = reader.Value.ToString();
+            string dateTimeString = reader.Value?.ToString();
             return GameTime.FromIsoString(dateTimeString);
         }
-        return new GameTime(2024, 1, 1, 0, 0);
+        if (reader.TokenType == JsonToken.Date)
+        {
+            // Newtonsoft가 날짜 문자열을 자동으로 Date로 파싱한 경우 처리
+            if (reader.Value is DateTime dt)
+            {
+                return GameTime.FromDateTime(DateTime.SpecifyKind(dt, DateTimeKind.Utc));
+            }
+            if (reader.Value is DateTimeOffset dto)
+            {
+                return GameTime.FromDateTime(dto.UtcDateTime);
+            }
+        }
+        if (reader.TokenType == JsonToken.Null)
+        {
+            return new GameTime(2024, 1, 1, 0, 0);
+        }
+
+        // 알 수 없는 토큰 타입: 기존값 유지 또는 기본값 반환
+        return hasExistingValue ? existingValue : new GameTime(2024, 1, 1, 0, 0);
     }
 }
 

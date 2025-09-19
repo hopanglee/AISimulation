@@ -58,14 +58,14 @@ public class HighLevelPlannerAgent : GPT
 
 
     public HighLevelPlannerAgent(Actor actor)
-        : base()
+        : base("gpt-5")
     {
         this.actor = actor as MainActor;
         this.toolExecutor = new ActorToolExecutor(actor);
 
         // Actor 이름 설정 (로깅용)
         SetActorName(actor.Name);
-
+        SetAgentType(nameof(HighLevelPlannerAgent));
 
 
         options = new()
@@ -85,12 +85,12 @@ public class HighLevelPlannerAgent : GPT
                                         ""additionalProperties"": false,
                                         ""properties"": {{
                                             ""task_name"": {{ ""type"": ""string"", ""description"": ""태스크의 이름 (예: '저녁 준비', '업무 마무리') "" }},
-                                            ""description"": {{ ""type"": ""string"", ""description"": ""태스크의 목적 및 주요 활동에 대한 설명"" }},
-                                            ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 1, ""description"": ""해당 태스크에 할당된 시간 (분 단위, 최소 1분 이상)"" }}
+                                            ""description"": {{ ""type"": ""string"", ""description"": ""태스크의 목적 및 주요 활동에 대한 설명, 20자 이상 50자 이내로 서술하세요."" }},
+                                            ""duration_minutes"": {{ ""type"": ""integer"", ""maximum"": 420, ""minimum"": 60, ""description"": ""해당 태스크에 할당된 시간 (10분 단위, 60~420분)"" }}
                                         }},
                                         ""required"": [""task_name"", ""description"", ""duration_minutes""]
                                     }},
-                                    ""description"": ""List of 3-5 high-level tasks for tomorrow""
+                                    ""description"": ""오늘을 위한 7~15개의 고수준 태스크""
                                 }}
                             }},
                             ""required"": [""high_level_tasks""]
@@ -105,7 +105,7 @@ public class HighLevelPlannerAgent : GPT
         ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
 
         // 메모리 도구 추가
-        ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Memory);
+        //ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Memory);
     }
 
     // Tool 정의들
@@ -202,7 +202,7 @@ public class HighLevelPlannerAgent : GPT
 
         var replacements = new Dictionary<string, string>
         {
-            { "currentTime", $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}" },
+            { "current_time", $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}" },
             { "interpretation", actor.brain.recentPerceptionResult.situation_interpretation },
             {"character_name", actor.Name },
         };
@@ -235,10 +235,11 @@ public class HighLevelPlannerAgent : GPT
         
         var replacements = new Dictionary<string, string>
         {
-            { "currentTime", $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}" },
+            { "current_time", $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}" },
             { "perception_interpretation", actor.brain.recentPerceptionResult.situation_interpretation },
             { "perception_thought_chain", string.Join(" -> ", actor.brain.recentPerceptionResult.thought_chain) },
             { "modification_summary", modificationSummary },
+            { "character_name", actor.Name },
             { "existing_plan", existingPlanInfo }
         };
 

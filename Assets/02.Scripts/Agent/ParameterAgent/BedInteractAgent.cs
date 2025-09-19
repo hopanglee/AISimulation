@@ -28,6 +28,7 @@ public class BedInteractAgent : GPT
 
     public BedInteractAgent(Actor actor) : base()
     {
+        SetAgentType(nameof(BedInteractAgent));
         this.actor = actor;
         
         SetActorName(actor.Name);
