@@ -31,6 +31,15 @@ public class ShortTermMemoryEntry
         this.details = details;
         this.emotions = emotions ?? new Dictionary<string, float>();
     }
+
+    public ShortTermMemoryEntry(GameTime timestamp, string type, string content, string details = null, Dictionary<string, float> emotions = null)
+    {
+        this.timestamp = timestamp;
+        this.type = type;
+        this.content = content;
+        this.details = details;
+        this.emotions = emotions ?? new Dictionary<string, float>();
+    }
 }
 
 /// <summary>
@@ -200,8 +209,30 @@ public class MemoryManager
         var entry = new ShortTermMemoryEntry(type, content, details, emotions);
         shortTermMemory.entries.Add(entry);
         SaveShortTermMemory();
+    }
 
+    public void AddShortTermMemory(GameTime timestamp, string type, string content, string details = null, Dictionary<string, float> emotions = null)
+    {
+        // 경로 보장
+        if (string.IsNullOrEmpty(shortTermMemoryPath))
+            InitializeMemoryPaths();
 
+        // 메모리가 비어 있으면 먼저 로드 시도
+        if (shortTermMemory == null || shortTermMemory.entries == null)
+            LoadShortTermMemory();
+
+        // 여전히 null이면 안전 초기화
+        if (shortTermMemory == null)
+            shortTermMemory = new ShortTermMemoryData();
+        if (shortTermMemory.entries == null)
+            shortTermMemory.entries = new List<ShortTermMemoryEntry>();
+
+        string logOwner = owner != null ? owner.Name : "Unknown";
+        Debug.Log($"[{logOwner}] Short Term Memory 추가: [{type}] {content}");
+
+        var entry = new ShortTermMemoryEntry(timestamp, type, content, details, emotions);
+        shortTermMemory.entries.Add(entry);
+        SaveShortTermMemory();
     }
 
     /// <summary>
