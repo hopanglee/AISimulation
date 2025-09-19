@@ -34,6 +34,9 @@ namespace Agent
             // Note 전용 Agent
             var noteAgent = new NoteUseAgent(actor);
             itemTypeAgents[typeof(Note)] = noteAgent;
+
+            var bookAgent = new BookUseParameterAgent(actor);
+            itemTypeAgents[typeof(Book)] = bookAgent;
         }
 
         /// <summary>

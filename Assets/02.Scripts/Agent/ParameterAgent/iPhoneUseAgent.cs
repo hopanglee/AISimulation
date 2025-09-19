@@ -49,28 +49,39 @@ namespace Agent
                     jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
                         $@"{{
                             ""type"": ""object"",
-                            ""additionalProperties"": false,
-                            ""properties"": {{
-                                ""Command"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": [""chat"", ""read"", ""continue""],
-                                    ""description"": ""아이폰에 수행할 명령어""
+                            ""oneOf"": [
+                                {{
+                                    ""type"": ""object"",
+                                    ""additionalProperties"": false,
+                                    ""properties"": {{
+                                        ""command"": {{ ""type"": ""string"", ""const"": ""chat"" }},
+                                        ""target_actor"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(GetCurrentAvailableActors())} }},
+                                        ""message"": {{ ""type"": ""string"" }}
+                                    }},
+                                    ""required"": [""command"", ""target_actor"", ""message""]
                                 }},
-                                ""TargetActor"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": {JsonConvert.SerializeObject(GetCurrentAvailableActors())},
-                                    ""description"": ""대상 행동주체 이름""
+                                {{
+                                    ""type"": ""object"",
+                                    ""additionalProperties"": false,
+                                    ""properties"": {{
+                                        ""command"": {{ ""type"": ""string"", ""const"": ""read"" }},
+                                        ""target_actor"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(GetCurrentAvailableActors())} }},
+                                        ""message_count"": {{ ""type"": ""integer"" }}
+                                    }},
+                                    ""required"": [""command"", ""target_actor"", ""message_count""]
                                 }},
-                                ""Message"": {{
-                                    ""type"": ""string"",
-                                    ""description"": ""보낼 메시지 (chat 명령어일 때만 사용)""
-                                }},
-                                ""MessageCount"": {{
-                                    ""type"": ""integer"",
-                                    ""description"": ""읽을 메시지 개수 (read/continue 명령어일 때만 사용)""
+                                {{
+                                    ""type"": ""object"",
+                                    ""additionalProperties"": false,
+                                    ""properties"": {{
+                                        ""command"": {{ ""type"": ""string"", ""const"": ""continue"" }},
+                                        ""target_actor"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(GetCurrentAvailableActors())} }},
+                                        ""message_count"": {{ ""type"": ""integer"" }}
+                                    }},
+                                    ""required"": [""command"", ""target_actor"", ""message_count""]
                                 }}
-                            }},
-                            ""required"": [""Command"", ""TargetActor""]
+                            ],
+                            ""additionalProperties"": false
                         }}"
                     )),
                     jsonSchemaIsStrict: true

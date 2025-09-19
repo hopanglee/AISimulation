@@ -226,7 +226,7 @@ public class ManualActionController
             ActionType.GiveMoney => "예시: target_character = \"Hino\", amount = \"1000\"",
             ActionType.GiveItem => "예시: target_character = \"Hino\", item_name = \"apple\"",
             ActionType.RemoveClothing => "파라미터 없음 - 세트로 옷 전체를 벗어서 손에 쥐어줍니다",
-            //ActionType.PerformActivity => "예시: activity_name = \"reading\", duration = \"30\"",
+            ActionType.PerformActivity => "예시: activity_name = \"reading\", duration = \"30\"",
             ActionType.UseObject => GetUseObjectParameterExamples(),
             _ => "파라미터 예시 없음"
         };
@@ -909,7 +909,7 @@ public class ManualActionController
             ActionType.GiveMoney => new List<string> { "target_character", "amount" },
             ActionType.GiveItem => new List<string> { "target_character", "item_name" },
             ActionType.RemoveClothing => new List<string>(), // 파라미터 없음 - 세트로 옷 전체를 벗음
-            //ActionType.PerformActivity => new List<string> { "activity_name", "duration" },
+            ActionType.PerformActivity => new List<string> { "activity_name", "duration" },
             ActionType.UseObject => GetUseObjectParameterKeys(),
             _ => new List<string>()
         };

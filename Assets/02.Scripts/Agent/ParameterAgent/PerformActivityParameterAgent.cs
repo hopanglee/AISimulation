@@ -34,16 +34,16 @@ namespace Agent
                             ""properties"": {{
                                 ""ActivityName"": {{
                                     ""type"": ""string"",
-                                    ""description"": ""One of the available activities to perform""
+                                    ""description"": ""수행할 활동 정보""
                                 }},
                                 ""Duration"": {{
                                     ""type"": ""integer"",
-                                    ""minimum"": 1,
+                                    ""minimum"": 5,
                                     ""maximum"": 300,
-                                    ""description"": ""Duration of the activity in minutes (1-300 minutes)""
+                                    ""description"": ""활동 소요 시간 (분 단위, 5-300분)""
                                 }}
                             }},
-                            ""required"": [""ActivityName""]
+                            ""required"": [""ActivityName"", ""Duration""]
                         }}"
                     )),
                     jsonSchemaIsStrict: true

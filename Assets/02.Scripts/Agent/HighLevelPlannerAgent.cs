@@ -58,7 +58,7 @@ public class HighLevelPlannerAgent : GPT
 
 
     public HighLevelPlannerAgent(Actor actor)
-        : base("gpt-5")
+        : base()
     {
         this.actor = actor as MainActor;
         this.toolExecutor = new ActorToolExecutor(actor);
@@ -90,7 +90,7 @@ public class HighLevelPlannerAgent : GPT
                                         }},
                                         ""required"": [""task_name"", ""description"", ""duration_minutes""]
                                     }},
-                                    ""description"": ""오늘을 위한 7~15개의 고수준 태스크""
+                                    ""description"": ""오늘을 위한 7~10개의 고수준 태스크""
                                 }}
                             }},
                             ""required"": [""high_level_tasks""]

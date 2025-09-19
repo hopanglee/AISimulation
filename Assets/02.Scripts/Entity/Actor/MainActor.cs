@@ -26,6 +26,10 @@ public abstract class MainActor : Actor
 	[Header("Items")]
 	public iPhone iPhone;
 
+	[Header("UI")]
+	[SerializeField, Tooltip("PerformActivity 진행 상황을 표시할 UI")]
+	public ActivityBubbleUI activityBubbleUI;
+
 	[Header("Sleep System")]
 	[SerializeField, Range(0, 23)]
 	private int sleepHour = 22; // 취침 시간

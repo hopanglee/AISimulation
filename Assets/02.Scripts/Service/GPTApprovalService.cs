@@ -31,6 +31,12 @@ public interface IGPTApprovalService : IService
     /// 승인 요청을 승인하거나 거부합니다
     /// </summary>
     void ApproveRequest(bool approved);
+
+    // Navigation for queued approval requests
+    int GetPendingCount();
+    int GetCurrentIndex();
+    void MoveSelection(int delta);
+    void SelectIndex(int index);
 }
 
 /// <summary>
@@ -63,10 +69,11 @@ public class GPTApprovalService : IGPTApprovalService
     private bool isWaitingForApproval = false;
     private GPTApprovalRequest currentRequest = null;
     private UniTaskCompletionSource<bool> approvalCompletionSource = null;
-    
-    // 승인 요청 큐
-    private Queue<GPTApprovalRequest> approvalQueue = new Queue<GPTApprovalRequest>();
-    private Queue<UniTaskCompletionSource<bool>> completionSourceQueue = new Queue<UniTaskCompletionSource<bool>>();
+
+    // 승인 요청 목록 (인덱스 네비게이션 지원)
+    private readonly System.Collections.Generic.List<GPTApprovalRequest> pendingRequests = new System.Collections.Generic.List<GPTApprovalRequest>();
+    private readonly System.Collections.Generic.List<UniTaskCompletionSource<bool>> pendingCompletions = new System.Collections.Generic.List<UniTaskCompletionSource<bool>>();
+    private int currentIndex = 0;
     
     public bool IsWaitingForApproval => isWaitingForApproval;
     public GPTApprovalRequest CurrentRequest => currentRequest;
@@ -81,12 +88,10 @@ public class GPTApprovalService : IGPTApprovalService
         // 승인 요청 생성
         var request = new GPTApprovalRequest(actorName, agentType, messageCount);
         var completionSource = new UniTaskCompletionSource<bool>();
-        
-        // 큐에 추가
-        approvalQueue.Enqueue(request);
-        completionSourceQueue.Enqueue(completionSource);
-        
-        Debug.Log($"[GPTApprovalService] GPT API 승인 요청 큐에 추가: {actorName} - {agentType} (큐 크기: {approvalQueue.Count})");
+        // 목록에 추가
+        pendingRequests.Add(request);
+        pendingCompletions.Add(completionSource);
+        Debug.Log($"[GPTApprovalService] GPT API 승인 요청 큐에 추가: {actorName} - {agentType} (대기: {pendingRequests.Count})");
         
         // 현재 처리 중인 요청이 없으면 즉시 처리 시작
         if (!isWaitingForApproval)
@@ -107,18 +112,18 @@ public class GPTApprovalService : IGPTApprovalService
     /// </summary>
     private void ProcessNextRequest()
     {
-        if (approvalQueue.Count == 0)
+        if (pendingRequests.Count == 0)
         {
             Debug.Log("[GPTApprovalService] 처리할 승인 요청이 없습니다.");
             return;
         }
         
-        // 큐에서 다음 요청 가져오기
-        currentRequest = approvalQueue.Dequeue();
-        approvalCompletionSource = completionSourceQueue.Dequeue();
+        // 첫 요청을 기본 선택으로 팝업 표시
         isWaitingForApproval = true;
-        
-        Debug.Log($"[GPTApprovalService] 승인 요청 처리 시작: {currentRequest.ActorName} - {currentRequest.AgentType}");
+        currentIndex = Mathf.Clamp(currentIndex, 0, pendingRequests.Count - 1);
+        currentRequest = pendingRequests[currentIndex];
+        approvalCompletionSource = pendingCompletions[currentIndex];
+        Debug.Log($"[GPTApprovalService] 승인 요청 처리 시작(선택 {currentIndex+1}/{pendingRequests.Count}): {currentRequest.ActorName} - {currentRequest.AgentType}");
 
         // 승인 팝업 표시 동안 시간 정지
         var timeService = Services.Get<ITimeService>();
@@ -165,30 +170,68 @@ public class GPTApprovalService : IGPTApprovalService
             Debug.LogWarning("[GPTApprovalService] 승인할 요청이 없습니다.");
             return;
         }
-        
         Debug.Log($"[GPTApprovalService] 승인 요청 처리 완료: {approved} - {currentRequest.ActorName} - {currentRequest.AgentType}");
-        
-        // 현재 요청 완료
+
+        // 선택된 요청을 목록에서 제거하고 완료
+        var doneIndex = currentIndex;
         approvalCompletionSource.TrySetResult(approved);
-        approvalCompletionSource = null;
-        currentRequest = null;
-        isWaitingForApproval = false;
+        pendingRequests.RemoveAt(doneIndex);
+        pendingCompletions.RemoveAt(doneIndex);
+
+        // 인덱스 재조정
+        if (pendingRequests.Count == 0)
+        {
+            approvalCompletionSource = null;
+            currentRequest = null;
+            isWaitingForApproval = false;
+            // 팝업 닫기 및 시간 재개
+            if (SimulationController.Instance != null) SimulationController.Instance.HideGPTApprovalPopup();
+            var timeService = Services.Get<ITimeService>();
+            if (timeService != null)
+            {
+                timeService.EndAPICall();
+                Debug.Log("[GPTApprovalService] Approval popup closed - time resumed");
+            }
+        }
+        else
+        {
+            currentIndex = Mathf.Clamp(doneIndex, 0, pendingRequests.Count - 1);
+            currentRequest = pendingRequests[currentIndex];
+            approvalCompletionSource = pendingCompletions[currentIndex];
+            // 팝업 내용만 갱신
+            if (SimulationController.Instance != null)
+            {
+                SimulationController.Instance.ShowGPTApprovalPopup(currentRequest);
+            }
+        }
         
-        // SimulationController에 승인 완료 알림
+        // 아직 대기 중이고 팝업이 닫히지 않았으면 유지, 아니면 다음 배치 시작 가능
+        if (!isWaitingForApproval && pendingRequests.Count > 0)
+        {
+            ProcessNextRequest();
+        }
+    }
+
+    public int GetPendingCount() => pendingRequests.Count;
+    public int GetCurrentIndex() => currentIndex;
+    public void MoveSelection(int delta)
+    {
+        if (!isWaitingForApproval || pendingRequests.Count == 0) return;
+        var newIndex = Mathf.Clamp(currentIndex + delta, 0, pendingRequests.Count - 1);
+        SelectIndex(newIndex);
+    }
+
+    public void SelectIndex(int index)
+    {
+        if (!isWaitingForApproval || pendingRequests.Count == 0) return;
+        index = Mathf.Clamp(index, 0, pendingRequests.Count - 1);
+        if (index == currentIndex) return;
+        currentIndex = index;
+        currentRequest = pendingRequests[currentIndex];
+        approvalCompletionSource = pendingCompletions[currentIndex];
         if (SimulationController.Instance != null)
         {
-            SimulationController.Instance.HideGPTApprovalPopup();
+            SimulationController.Instance.ShowGPTApprovalPopup(currentRequest);
         }
-
-        // 승인 팝업 종료 이후 시간 재개
-        var timeService = Services.Get<ITimeService>();
-        if (timeService != null)
-        {
-            timeService.EndAPICall();
-            Debug.Log("[GPTApprovalService] Approval popup closed - time resumed");
-        }
-        
-        // 다음 요청 처리
-        ProcessNextRequest();
     }
 }

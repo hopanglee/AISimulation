@@ -39,20 +39,35 @@ namespace Agent
                     jsonSchemaFormatName: "whiteboard_parameter",
                     jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
                         @"{
-                            ""type"": ""object"",
-                            ""additionalProperties"": false,
-                            ""properties"": {
-                                ""action_type"": {
-                                    ""type"": ""string"",
-                                    ""enum"": [""write"", ""erase"", ""update""],
-                                    ""description"": ""화이트보드에 수행할 액션""
+                            ""oneOf"": [
+                                {
+                                    ""type"": ""object"",
+                                    ""additionalProperties"": false,
+                                    ""properties"": {
+                                        ""action_type"": { ""type"": ""string"", ""const"": ""write"" },
+                                        ""content"": { ""type"": ""string"" }
+                                    },
+                                    ""required"": [""action_type"", ""content""]
                                 },
-                                ""content"": {
-                                    ""type"": ""string"",
-                                    ""description"": ""쓰거나 업데이트할 내용 (쓰기/업데이트 행동 시 필수)""
+                                {
+                                    ""type"": ""object"",
+                                    ""additionalProperties"": false,
+                                    ""properties"": {
+                                        ""action_type"": { ""type"": ""string"", ""const"": ""update"" },
+                                        ""content"": { ""type"": ""string"" }
+                                    },
+                                    ""required"": [""action_type"", ""content""]
+                                },
+                                {
+                                    ""type"": ""object"",
+                                    ""additionalProperties"": false,
+                                    ""properties"": {
+                                        ""action_type"": { ""type"": ""string"", ""const"": ""erase"" }
+                                    },
+                                    ""required"": [""action_type""]
                                 }
-                            },
-                            ""required"": [""action_type""]
+                            ],
+                            ""additionalProperties"": false
                         }"
                     )),
                     jsonSchemaIsStrict: true

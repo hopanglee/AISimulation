@@ -22,7 +22,7 @@ public class DetailedPlannerAgent : GPT
 
 
     public DetailedPlannerAgent(Actor actor)
-        : base("gpt-5")
+        : base()
     {
         this.actor = actor as MainActor;
         this.toolExecutor = new ActorToolExecutor(actor);

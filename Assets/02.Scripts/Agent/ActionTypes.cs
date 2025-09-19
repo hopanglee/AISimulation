@@ -23,6 +23,7 @@ public enum ActionType
     GiveItem,
     RemoveClothing, // 옷 벗기
     //ObserveEnvironment,
+    PerformActivity,
     Wait,
     //PerformActivity,
     Think // 사색, 과거 회상 또는 미래 계획

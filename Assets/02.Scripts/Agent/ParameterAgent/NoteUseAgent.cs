@@ -47,28 +47,39 @@ namespace Agent
                     jsonSchemaFormatName: "note_use_parameter",
                     jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
                         $@"{{
-                            ""type"": ""object"",
-                            ""additionalProperties"": false,
-                            ""properties"": {{
-                                ""Action"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": [""write"", ""read"", ""rewrite""],
-                                    ""description"": ""노트에 수행할 액션""
+                            ""oneOf"": [
+                                {{
+                                    ""type"": ""object"",
+                                    ""additionalProperties"": false,
+                                    ""properties"": {{
+                                        ""action"": {{ ""type"": ""string"", ""const"": ""write"" }},
+                                        ""page_number"": {{ ""type"": ""integer"" }},
+                                        ""text"": {{ ""type"": ""string"" }}
+                                    }},
+                                    ""required"": [""action"", ""page_number"", ""text""]
                                 }},
-                                ""PageNumber"": {{
-                                    ""type"": ""integer"",
-                                    ""description"": ""작업할 페이지 번호""
+                                {{
+                                    ""type"": ""object"",
+                                    ""additionalProperties"": false,
+                                    ""properties"": {{
+                                        ""action"": {{ ""type"": ""string"", ""const"": ""read"" }},
+                                        ""page_number"": {{ ""type"": ""integer"" }}
+                                    }},
+                                    ""required"": [""action"", ""page_number""]
                                 }},
-                                ""LineNumber"": {{
-                                    ""type"": ""integer"",
-                                    ""description"": ""수정할 줄 번호 (rewrite 명령어일 때만 사용)""
-                                }},
-                                ""Text"": {{
-                                    ""type"": ""string"",
-                                    ""description"": ""쓰거나 수정할 텍스트""
+                                {{
+                                    ""type"": ""object"",
+                                    ""additionalProperties"": false,
+                                    ""properties"": {{
+                                        ""action"": {{ ""type"": ""string"", ""const"": ""rewrite"" }},
+                                        ""page_number"": {{ ""type"": ""integer"" }},
+                                        ""line_number"": {{ ""type"": ""integer"" }},
+                                        ""text"": {{ ""type"": ""string"" }}
+                                    }},
+                                    ""required"": [""action"", ""page_number"", ""line_number"", ""text""]
                                 }}
-                            }},
-                            ""required"": [""Action"", ""PageNumber""]
+                            ],
+                            ""additionalProperties"": false
                         }}"
                     )),
                     jsonSchemaIsStrict: true

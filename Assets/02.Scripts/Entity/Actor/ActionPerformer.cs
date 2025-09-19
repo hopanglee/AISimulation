@@ -140,10 +140,10 @@ public class ActionPerformer
             async (parameters) => await interactionHandler.HandleInteractWithObject(parameters, currentToken)
         );
 
-        // actionExecutor.RegisterHandler(
-        //     ActionType.PerformActivity,
-        //     async (parameters) => await interactionHandler.HandlePerformActivity(parameters, currentToken)
-        // );
+        actionExecutor.RegisterHandler(
+            ActionType.PerformActivity,
+            async (parameters) => await interactionHandler.HandlePerformActivity(parameters, currentToken)
+        );
 
         actionExecutor.RegisterHandler(
             ActionType.Wait,
