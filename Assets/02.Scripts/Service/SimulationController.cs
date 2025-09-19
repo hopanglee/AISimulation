@@ -56,6 +56,10 @@ public class SimulationController : MonoBehaviour
     private Button approvalApproveButton;
     [SerializeField]
     private Button approvalRejectButton;
+    [SerializeField]
+    private Button approvalPrevButton;
+    [SerializeField]
+    private Button approvalNextButton;
 
     [Header("Settings")]
     [SerializeField]
@@ -428,6 +432,18 @@ public class SimulationController : MonoBehaviour
             approvalRejectButton.onClick.AddListener(() => OnApprovalReject());
         }
 
+        if (approvalPrevButton != null)
+        {
+            approvalPrevButton.onClick.RemoveAllListeners();
+            approvalPrevButton.onClick.AddListener(OnApprovalPrev);
+        }
+
+        if (approvalNextButton != null)
+        {
+            approvalNextButton.onClick.RemoveAllListeners();
+            approvalNextButton.onClick.AddListener(OnApprovalNext);
+        }
+
         // 팝업창 표시
         gptApprovalPopup.SetActive(true);
         
@@ -467,6 +483,24 @@ public class SimulationController : MonoBehaviour
         {
             gptApprovalService.ApproveRequest(false);
             Debug.Log("[SimulationController] GPT API 호출 거부됨");
+        }
+    }
+
+    private void OnApprovalPrev()
+    {
+        if (gptApprovalService != null)
+        {
+            gptApprovalService.MoveSelection(-1);
+            Debug.Log("[SimulationController] Approval selection moved to previous");
+        }
+    }
+
+    private void OnApprovalNext()
+    {
+        if (gptApprovalService != null)
+        {
+            gptApprovalService.MoveSelection(1);
+            Debug.Log("[SimulationController] Approval selection moved to next");
         }
     }
 

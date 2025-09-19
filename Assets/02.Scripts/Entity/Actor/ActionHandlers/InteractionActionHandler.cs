@@ -118,8 +118,10 @@ namespace Agent.ActionHandlers
         /// </summary>
         public async UniTask HandlePerformActivity(Dictionary<string, object> parameters, CancellationToken token = default)
         {
-            if (parameters.TryGetValue("activity_name", out var activityNameObj) && activityNameObj is string activityName)
+            string activityName = "Activity";
+            if (parameters.TryGetValue("activity_name", out var activityNameObj) && activityNameObj is string actName)
             {
+                activityName = actName;
                 Debug.Log($"[{actor.Name}] 활동 수행: {activityName}");
                 if (actor is MainActor thinkingActor)
                 {
@@ -137,7 +139,30 @@ namespace Agent.ActionHandlers
                 delay = (int)durationObj;
             }
 
-            await SimDelay.DelaySimMinutes(delay, token);
+            // UI 표시: 씬에 존재하는 ActivityBubbleUI를 찾아 on/off 및 텍스트/초 갱신
+            ActivityBubbleUI bubble = null;
+            try
+            {
+                if (actor is MainActor bubbleOwner)
+                {
+                    bubble = bubbleOwner.activityBubbleUI;
+                }
+                if (bubble != null)
+                {
+                    bubble.SetFollowTarget(actor.transform);
+                    bubble.Show(activityName, Mathf.Max(1, delay * 60));
+                    // PerformActivity 전체 동안 기다림 (초 기반)
+                    await SimDelay.DelaySimSeconds(Mathf.Max(1, delay * 60), token);
+                }
+                else
+                {
+                    await SimDelay.DelaySimMinutes(delay, token);
+                }
+            }
+            finally
+            {
+                if (bubble != null) bubble.Hide();
+            }
         }
 
         /// <summary>

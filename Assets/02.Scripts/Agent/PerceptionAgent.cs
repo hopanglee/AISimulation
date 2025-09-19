@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Agent;
 using Cysharp.Threading.Tasks;
+using System.IO;
+using Newtonsoft.Json;
 
 /// <summary>
 /// MainActor의 시각정보를 성격과 기억을 바탕으로 해석하는 Agent 그룹
@@ -17,6 +19,9 @@ public class PerceptionAgentGroup
     private SuperegoAgent superegoAgent;
     private IdAgent idAgent;
     private EgoAgent egoAgent;
+
+    // 최초 1회 캐시 체크용
+    private bool firstCacheCheckDone = false;
 
     public PerceptionAgentGroup(Actor actor)
     {
@@ -36,6 +41,62 @@ public class PerceptionAgentGroup
         egoAgent = new EgoAgent(actor);
     }
 
+    private string GetPerceptionBaseDir()
+    {
+        return Path.Combine(Application.dataPath, "11.GameDatas", "Perception");
+    }
+
+    private string GetPerceptionDayDir(GameTime date)
+    {
+        var baseDir = GetPerceptionBaseDir();
+        return Path.Combine(baseDir, actor.Name, $"{date.year:D4}-{date.month:D2}-{date.day:D2}");
+    }
+
+    private string GetPerceptionFilePath(GameTime date, string name)
+    {
+        return Path.Combine(GetPerceptionDayDir(date), $"{name}.json");
+    }
+
+    private void EnsurePerceptionDirs(GameTime date)
+    {
+        var dir = GetPerceptionDayDir(date);
+        if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+    }
+
+    private void SaveResultIfPresent(GameTime date, string name, object result)
+    {
+        try
+        {
+            if (result == null) return;
+            EnsurePerceptionDirs(date);
+            var path = GetPerceptionFilePath(date, name);
+            var json = JsonConvert.SerializeObject(result, Formatting.Indented);
+            File.WriteAllText(path, json);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[PerceptionAgent {actor.Name}] {name} 저장 실패: {ex.Message}");
+        }
+    }
+
+    private T LoadResultIfExists<T>(GameTime date, string name) where T : class
+    {
+        try
+        {
+            var path = GetPerceptionFilePath(date, name);
+            if (File.Exists(path))
+            {
+                var json = File.ReadAllText(path);
+                return JsonConvert.DeserializeObject<T>(json);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[PerceptionAgent {actor.Name}] {name} 로드 실패: {ex.Message}");
+        }
+        return null;
+    }
+
     /// <summary>
     /// 시각정보를 해석합니다. (새로운 3-에이전트 구조)
     /// </summary>
@@ -46,6 +107,25 @@ public class PerceptionAgentGroup
         try
         {
             Debug.Log($"[PerceptionAgent {actor.Name}] 3-에이전트 구조로 시각정보 해석 시작");
+            var timeService = Services.Get<ITimeService>();
+            var currentDate = timeService.CurrentTime;
+
+            // 최초 1회: 캐시된 Ego 결과가 있으면 그것을 사용
+            if (!firstCacheCheckDone)
+            {
+                firstCacheCheckDone = true;
+                var cachedEgo = LoadResultIfExists<EgoResult>(currentDate, "ego");
+                if (cachedEgo != null)
+                {
+                    Debug.Log($"[PerceptionAgent {actor.Name}] 캐시된 Ego 결과 사용");
+                    return new PerceptionResult
+                    {
+                        situation_interpretation = cachedEgo.situation_interpretation,
+                        thought_chain = cachedEgo.thought_chain,
+                        emotions = cachedEgo.emotions ?? new Dictionary<string, float>()
+                    };
+                }
+            }
             
             // 1. 이성 에이전트 실행
             var superegoResult = await superegoAgent.InterpretAsync(visualInformation);
@@ -58,6 +138,11 @@ public class PerceptionAgentGroup
             // 3. 자아 에이전트로 타협
             var egoResult = await egoAgent.MediateAsync(superegoResult, idResult);
             Debug.Log($"[PerceptionAgent {actor.Name}] 자아 에이전트 완료");
+
+            // 결과 저장 (동일 부모 폴더: Assets/11.GameDatas/Perception)
+            SaveResultIfPresent(currentDate, "superego", superegoResult);
+            SaveResultIfPresent(currentDate, "id", idResult);
+            SaveResultIfPresent(currentDate, "ego", egoResult);
             
             // 4. EgoResult를 PerceptionResult로 변환
             var finalResult = new PerceptionResult

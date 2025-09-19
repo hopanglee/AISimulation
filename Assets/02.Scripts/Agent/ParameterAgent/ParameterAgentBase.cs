@@ -21,7 +21,14 @@ namespace Agent
         /// <summary>
         /// ParameterAgentBase 생성자 - 자식 클래스에서 :base()로 호출
         /// </summary>
-        protected ParameterAgentBase(Actor actor)
+        protected ParameterAgentBase(Actor actor) : base()
+        {
+            SetActorName(actor.Name);
+            this.actor = actor;
+            this.toolExecutor = new ActorToolExecutor(actor);
+        }
+
+        protected ParameterAgentBase(Actor actor, string version) : base(version)
         {
             SetActorName(actor.Name);
             this.actor = actor;
@@ -128,9 +135,9 @@ namespace Agent
                 case ActionType.GiveItem:
                     agent = new GiveItemParameterAgent(actor);
                     break;
-                // case ActionType.PerformActivity:
-                //     agent = new PerformActivityParameterAgent(actor);
-                //     break;
+                case ActionType.PerformActivity:
+                    agent = new PerformActivityParameterAgent(actor);
+                    break;
                 case ActionType.Think:
                     agent = new ThinkParameterAgent(actor);
                     break;
