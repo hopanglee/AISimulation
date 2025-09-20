@@ -183,6 +183,19 @@ public class SimulationController : MonoBehaviour
     {
         // UI 상태 업데이트
         UpdateUI();
+
+        // 승인 팝업 열려있을 때 방향키로 원형 네비게이션
+        if (gptApprovalPopup != null && gptApprovalPopup.activeSelf && gptApprovalService != null)
+        {
+            if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                gptApprovalService.MoveSelection(1);
+            }
+            else if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                gptApprovalService.MoveSelection(-1);
+            }
+        }
     }
 
     private void UpdateUI()

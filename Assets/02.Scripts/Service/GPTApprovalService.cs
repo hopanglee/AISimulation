@@ -217,14 +217,16 @@ public class GPTApprovalService : IGPTApprovalService
     public void MoveSelection(int delta)
     {
         if (!isWaitingForApproval || pendingRequests.Count == 0) return;
-        var newIndex = Mathf.Clamp(currentIndex + delta, 0, pendingRequests.Count - 1);
+        int count = pendingRequests.Count;
+        int newIndex = ((currentIndex + (delta % count)) % count + count) % count; // 원형 래핑
         SelectIndex(newIndex);
     }
 
     public void SelectIndex(int index)
     {
         if (!isWaitingForApproval || pendingRequests.Count == 0) return;
-        index = Mathf.Clamp(index, 0, pendingRequests.Count - 1);
+        int count = pendingRequests.Count;
+        index = ((index % count) % count + count) % count; // 원형 래핑
         if (index == currentIndex) return;
         currentIndex = index;
         currentRequest = pendingRequests[currentIndex];
