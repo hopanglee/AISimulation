@@ -27,6 +27,9 @@ namespace Agent.ActionHandlers
         /// </summary>
         public async UniTask HandleMoveToArea(Dictionary<string, object> parameters, CancellationToken token = default)
         {
+            // 앉아있는 상태면 자동으로 일어나기
+            await TryStandUpIfSeated(token);
+
             string targetValue = null;
             
             // target_area 파라미터 확인
@@ -59,8 +62,27 @@ namespace Agent.ActionHandlers
 
             Debug.Log($"[{actor.Name}] 영역/건물로 이동: {targetValue}");
 
-            // Area로 이동 처리
-            await ExecuteMoveToArea(targetValue, token);
+            // UI 표시: 이동 중
+            ActivityBubbleUI bubble = null;
+            try
+            {
+                if (actor is MainActor bubbleOwner)
+                {
+                    bubble = bubbleOwner.activityBubbleUI;
+                }
+                if (bubble != null)
+                {
+                    bubble.SetFollowTarget(actor.transform);
+                    bubble.Show($"{targetValue}로 이동 중", 0);
+                }
+
+                // Area로 이동 처리
+                await ExecuteMoveToArea(targetValue, token);
+            }
+            finally
+            {
+                if (bubble != null) bubble.Hide();
+            }
         }
 
         /// <summary>
@@ -69,6 +91,9 @@ namespace Agent.ActionHandlers
         /// </summary>
         public async UniTask HandleMoveToEntity(Dictionary<string, object> parameters, CancellationToken token = default)
         {
+            // 앉아있는 상태면 자동으로 일어나기
+            await TryStandUpIfSeated(token);
+
             string targetValue = null;
             
             // target_entity 파라미터 확인
@@ -100,18 +125,37 @@ namespace Agent.ActionHandlers
 
             Debug.Log($"[{actor.Name}] 엔티티로 이동: {targetValue}");
 
-            // Movable 스코프에서만 위치를 조회
-            if (actor.sensor != null)
+            // UI 표시: 이동 중
+            ActivityBubbleUI bubble = null;
+            try
             {
-                var movablePositions = actor.sensor.GetMovablePositions();
-                if (movablePositions.ContainsKey(targetValue))
+                if (actor is MainActor bubbleOwner)
                 {
-                    await ExecuteDirectMoveToPosition(movablePositions[targetValue], targetValue, token);
-                    return;
+                    bubble = bubbleOwner.activityBubbleUI;
                 }
-            }
+                if (bubble != null)
+                {
+                    bubble.SetFollowTarget(actor.transform);
+                    bubble.Show($"{targetValue}로 이동 중", 0);
+                }
 
-            Debug.LogWarning($"[{actor.Name}] 엔티티(이동 가능)를 찾을 수 없음: {targetValue}");
+                // Movable 스코프에서만 위치를 조회
+                if (actor.sensor != null)
+                {
+                    var movablePositions = actor.sensor.GetMovablePositions();
+                    if (movablePositions.ContainsKey(targetValue))
+                    {
+                        await ExecuteDirectMoveToPosition(movablePositions[targetValue], targetValue, token);
+                        return;
+                    }
+                }
+
+                Debug.LogWarning($"[{actor.Name}] 엔티티(이동 가능)를 찾을 수 없음: {targetValue}");
+            }
+            finally
+            {
+                if (bubble != null) bubble.Hide();
+            }
         }
 
         /// <summary>
@@ -193,6 +237,35 @@ namespace Agent.ActionHandlers
 
             // 확실하지 않으면 true 반환 (기본적으로 Area로 처리)
             return true;
+        }
+
+        /// <summary>
+        /// Actor가 앉아있는 상태라면 일어나도록 시도합니다.
+        /// </summary>
+        private async UniTask TryStandUpIfSeated(CancellationToken token)
+        {
+            try
+            {
+                if (actor?.curLocation is SitableProp sitable)
+                {
+                    if (sitable.IsActorSeated(actor))
+                    {
+                        ActivityBubbleUI bubble = null;
+                        if (actor is MainActor bubbleOwner)
+                        {
+                            bubble = bubbleOwner.activityBubbleUI;
+                        }
+                        if (bubble != null) bubble.Show("일어나는 중", 0);
+                        await SimDelay.DelaySimMinutes(1, token);
+                        sitable.StandUp(actor);
+                        Debug.Log($"[{actor.Name}] 이동 전에 일어섰습니다.");
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogWarning($"[MovementActionHandler] TryStandUpIfSeated 오류: {ex.Message}");
+            }
         }
 
         /// <summary>

@@ -33,7 +33,14 @@ public class WhiteBoard : InteractableProp
 
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
-        await SimDelay.DelaySimMinutes(1, cancellationToken);
+        ActivityBubbleUI bubble = null;
+        if (actor is MainActor ma && ma.activityBubbleUI != null)
+        {
+            bubble = ma.activityBubbleUI;
+            bubble.SetFollowTarget(actor.transform);
+        }
+
+        
 
         try
         {
@@ -78,26 +85,36 @@ public class WhiteBoard : InteractableProp
                     {
                         case "write":
                             // 새로운 내용으로 덮어쓰기
+                            if (bubble != null) bubble.Show("화이트보드에 쓰는 중", 0);
+                            await SimDelay.DelaySimMinutes(2, cancellationToken);
                             WriteText(content);
+                            //await SimDelay.DelaySimMinutes(1, cancellationToken);
                             Debug.Log($"[WhiteBoard] {actor.Name}이(가) 화이트보드에 작성: {content} (이유: {reasoning}, 의도: {intention})");
                             return $"화이트보드에 '{content}'를 작성했습니다.";
 
                         case "update":
                             // 기존 내용에 추가/수정
+                            if (bubble != null) bubble.Show("화이트보드 업데이트 중", 0);
+                            await SimDelay.DelaySimMinutes(2, cancellationToken);
                             string updatedContent = string.IsNullOrEmpty(currentText) ? content : currentText + "\n" + content;
                             WriteText(updatedContent);
+                            //await SimDelay.DelaySimMinutes(1, cancellationToken);
                             Debug.Log($"[WhiteBoard] {actor.Name}이(가) 화이트보드 내용을 업데이트: {content} (이유: {reasoning}, 의도: {intention})");
                             return $"화이트보드 내용을 '{content}'로 업데이트했습니다.";
 
                         case "erase":
                             // 빈 문자열로 덮어쓰기 (지우기)
+                            await SimDelay.DelaySimMinutes(2, cancellationToken);
+                            if (bubble != null) bubble.Show("화이트보드 지우는 중", 0);
                             WriteText("");
+                            //await SimDelay.DelaySimMinutes(1, cancellationToken);
                             Debug.Log($"[WhiteBoard] {actor.Name}이(가) 화이트보드를 지웠습니다. (이유: {reasoning}, 의도: {intention})");
                             return "화이트보드를 깨끗하게 지웠습니다.";
 
                         default:
                             Debug.LogWarning($"[WhiteBoard] 알 수 없는 액션 타입: {actionType}");
                             // 기본적으로 write로 처리
+                            if (bubble != null) bubble.Show("화이트보드에 쓰는 중", 0);
                             WriteText(content);
                             return $"화이트보드에 '{content}'를 작성했습니다.";
                     }
@@ -112,7 +129,10 @@ public class WhiteBoard : InteractableProp
             WriteText("메모");
             return "화이트보드에 기본 메모를 작성했습니다.";
         }
-
+        finally
+        {
+            if (bubble != null) bubble.Hide();
+        }
         return "화이트보드와 상호작용할 수 있습니다.";
     }
 

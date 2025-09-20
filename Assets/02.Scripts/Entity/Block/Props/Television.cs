@@ -82,7 +82,7 @@ public class Television : InteractableProp
             status = "텔레비전이 꺼져있습니다.";
         }
         
-        else status = $"텔레비전이 켜져있습니다. 채널: {GetCurrentChannelName()}";
+        else status = $"텔레비전이 켜져있습니다. 채널: {GetCurrentChannelName()}, 月曜日から夜更かし방송을 하고 있다.";
         
         if (isMuted)
         {
@@ -102,16 +102,36 @@ public class Television : InteractableProp
     
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
-        await SimDelay.DelaySimMinutes(1, cancellationToken);
-        if (isOn)
+        ActivityBubbleUI bubble = null;
+        try
         {
-            TurnOff();
-            return "텔레비전을 끄겠습니다.";
+            if (actor is MainActor ma && ma.activityBubbleUI != null)
+            {
+                bubble = ma.activityBubbleUI;
+                bubble.SetFollowTarget(actor.transform);
+            }
+
+            await SimDelay.DelaySimMinutes(1, cancellationToken);
+            if (isOn)
+            {
+                if (bubble != null) bubble.Show("TV 끄는 중", 0);
+                await SimDelay.DelaySimMinutes(1, cancellationToken);
+                TurnOff();
+                //await SimDelay.DelaySimMinutes(1, cancellationToken);
+                return "텔레비전을 끄겠습니다.";
+            }
+            else
+            {
+                if (bubble != null) bubble.Show("TV 켜는 중", 0);
+                await SimDelay.DelaySimMinutes(1, cancellationToken);
+                TurnOn();
+                //await SimDelay.DelaySimMinutes(1, cancellationToken);
+                return $"텔레비전을 켭니다. 채널: {GetCurrentChannelName()}";
+            }
         }
-        else
+        finally
         {
-            TurnOn();
-            return $"텔레비전을 켭니다. 채널: {GetCurrentChannelName()}";
+            if (bubble != null) bubble.Hide();
         }
     }
 }

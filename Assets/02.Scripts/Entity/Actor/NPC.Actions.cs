@@ -116,7 +116,20 @@ public abstract partial class NPC
 	protected virtual async UniTask HandleWait(object[] parameters)
 	{
 		ShowSpeech("잠시만요...");
-		await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
+		var bubble = activityBubbleUI;
+		try
+		{
+			if (bubble != null)
+			{
+				bubble.SetFollowTarget(transform);
+				bubble.Show("대기 중...", 0);
+			}
+			await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
+		}
+		finally
+		{
+			if (bubble != null) bubble.Hide();
+		}
 	}
 
 	protected virtual async UniTask HandleGiveItem(object[] parameters)
@@ -126,34 +139,52 @@ public abstract partial class NPC
 			Debug.LogWarning($"[{Name}] GiveItem 실패: 파라미터가 없습니다.");
 			throw new InvalidOperationException("GiveItem 파라미터가 없습니다.");
 		}
-		
+
 		string targetName = parameters[0]?.ToString();
 		if (string.IsNullOrEmpty(targetName))
 		{
 			Debug.LogWarning($"[{Name}] GiveItem 실패: 대상 이름이 없습니다.");
 			throw new InvalidOperationException("GiveItem 대상 이름이 없습니다.");
 		}
-		
+
 		if (HandItem == null)
 		{
 			Debug.LogWarning($"[{Name}] GiveItem 실패: 손에 아이템이 없습니다.");
 			throw new InvalidOperationException("GiveItem 손에 아이템이 없습니다.");
 		}
-		
+
 		Actor targetActor = FindActorByName(targetName);
 		if (targetActor == null)
 		{
 			Debug.LogWarning($"[{Name}] GiveItem 실패: 대상 배우를 찾지 못했습니다: {targetName}");
 			throw new InvalidOperationException($"GiveItem 대상 배우를 찾지 못했습니다: {targetName}");
 		}
+		var bubble = activityBubbleUI;
+		if (bubble != null)
+		{
+			bubble.SetFollowTarget(transform);
 
+		}
 		// 대상에게 이동
+		bubble.Show($"{targetActor.Name}에게 이동 중", 0);
 		await MoveToActor(targetActor, currentActionCancellation != null ? currentActionCancellation.Token : default);
+
 
 		var beforeItem = HandItem;
 		// 이름 키 대신 실제 Actor 참조로 직접 전달
-		bool received = targetActor.Receive(this, beforeItem);
-		await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
+		bool received = false;
+		try
+		{
+			var itemName = beforeItem != null ? beforeItem.Name : "아이템";
+			bubble.Show($"{targetActor.Name}에게 {itemName} 건네는 중", 0);
+			await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
+			received = targetActor.Receive(this, beforeItem);
+
+		}
+		finally
+		{
+			if (bubble != null) bubble.Hide();
+		}
 		if (!received)
 		{
 			Debug.LogWarning($"[{Name}] GiveItem 실패: 아이템 전달 실패: {beforeItem?.Name} -> {targetActor.Name}");
@@ -174,51 +205,68 @@ public abstract partial class NPC
 			Debug.LogWarning($"[{Name}] GiveMoney 실패: 파라미터가 부족합니다. [target, money]");
 			throw new InvalidOperationException("GiveMoney 파라미터가 부족합니다. [target, money]");
 		}
-		
+
 		string targetName = parameters[0]?.ToString();
 		if (string.IsNullOrEmpty(targetName))
 		{
 			Debug.LogWarning($"[{Name}] GiveMoney 실패: 대상 이름이 없습니다.");
 			throw new InvalidOperationException("GiveMoney 대상 이름이 없습니다.");
 		}
-		
+
 		if (!int.TryParse(parameters[1]?.ToString(), out int amount) || amount <= 0)
 		{
 			Debug.LogWarning($"[{Name}] GiveMoney 실패: 금액이 유효하지 않습니다. (입력값: {parameters[1]})");
 			throw new InvalidOperationException($"GiveMoney 금액이 유효하지 않습니다. (입력값: {parameters[1]})");
 		}
-		
+
 		if (Money < amount)
 		{
 			Debug.LogWarning($"[{Name}] GiveMoney 실패: 보유 금액이 부족합니다. (보유: {Money}원, 필요: {amount}원)");
 			throw new InvalidOperationException($"GiveMoney 보유 금액이 부족합니다. (보유: {Money}원, 필요: {amount}원)");
 		}
-		
+
 		Actor targetActor = FindActorByName(targetName);
 		if (targetActor == null)
 		{
 			Debug.LogWarning($"[{Name}] GiveMoney 실패: 대상 배우를 찾지 못했습니다: {targetName}");
 			throw new InvalidOperationException($"GiveMoney 대상 배우를 찾지 못했습니다: {targetName}");
 		}
-
+		var bubble = activityBubbleUI;
+		if (bubble != null)
+			{
+				bubble.SetFollowTarget(transform);
+				bubble.Show($"{targetActor.Name}에게 이동 중", 0);
+			}
 		// 이동 후 지급
 		await MoveToActor(targetActor, currentActionCancellation != null ? currentActionCancellation.Token : default);
-		GiveMoney(targetActor, amount);
-		Debug.Log($"[{Name}] {targetActor.Name}에게 {amount}원을 전달했습니다. 남은 보유금: {Money}");
-		await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
+		try
+		{
+			if (bubble != null)
+			{
+				
+				bubble.Show($"{targetActor.Name}에게 돈 {amount}원 주는 중", 0);
+			}
+			GiveMoney(targetActor, amount);
+			Debug.Log($"[{Name}] {targetActor.Name}에게 {amount}원을 전달했습니다. 남은 보유금: {Money}");
+			await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
+		}
+		finally
+		{
+			if (bubble != null) bubble.Hide();
+		}
 	}
 
 	private async UniTask MoveToActor(Actor target, CancellationToken token)
 	{
 		if (target == null) return;
-		
+
 		// Interactable 범위 안에 있는지 확인
 		if (IsInInteractableRange(target))
 		{
 			Debug.Log($"[{Name}] {target.Name}이(가) 이미 Interactable 범위 안에 있습니다. 이동하지 않습니다.");
 			return;
 		}
-		
+
 		// 범위 밖에 있으면 이동
 		string key = target.GetSimpleKeyRelativeToActor(this);
 		if (!string.IsNullOrEmpty(key))
@@ -228,14 +276,14 @@ public abstract partial class NPC
 			await SimDelay.DelaySimMinutes(1, token);
 		}
 	}
-	
+
 	/// <summary>
 	/// 대상이 Interactable 범위 안에 있는지 확인
 	/// </summary>
 	private bool IsInInteractableRange(Actor target)
 	{
 		if (target == null || sensor == null) return false;
-		
+
 		// sensor의 Interactable 범위 내에 있는지 확인
 		var interactableEntities = sensor.GetInteractableEntities();
 		if (interactableEntities?.actors != null)
@@ -249,7 +297,7 @@ public abstract partial class NPC
 				}
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -269,7 +317,7 @@ public abstract partial class NPC
 
 		// 타겟 위치 찾기 (ILocation 또는 InventoryBox)
 		ILocation targetLocation = null;
-		
+
 		if (!string.IsNullOrEmpty(targetKey))
 		{
 			// 특정 키로 InventoryBox 찾기
@@ -316,17 +364,31 @@ public abstract partial class NPC
 			{
 				await MoveToInventoryBoxIfNeeded(inventoryBox);
 			}
-			
+
 			// Actor.PutDown 함수를 직접 호출 (Agent 호출 없이)
-			Debug.Log($"[{Name}] {HandItem.Name}을(를) {(targetLocation as UnityEngine.MonoBehaviour)?.name ?? "현재 위치"}에 놓습니다.");
-			PutDown(targetLocation);
-			
-			await SimDelay.DelaySimMinutes(2, currentActionCancellation != null ? currentActionCancellation.Token : default);
+			var bubble = activityBubbleUI;
+			try
+			{
+				if (bubble != null)
+				{
+					bubble.SetFollowTarget(transform);
+					var placeName = (targetLocation as UnityEngine.MonoBehaviour)?.name ?? "현재 위치";
+					bubble.Show($"{placeName}에 {HandItem.Name} 놓는 중", 0);
+				}
+				Debug.Log($"[{Name}] {HandItem.Name}을(를) {(targetLocation as UnityEngine.MonoBehaviour)?.name ?? "현재 위치"}에 놓습니다.");
+				await SimDelay.DelaySimMinutes(2, currentActionCancellation != null ? currentActionCancellation.Token : default);
+				PutDown(targetLocation);
+				
+			}
+			finally
+			{
+				if (bubble != null) bubble.Hide();
+			}
 		}
 		else
 		{
-			string errorMessage = !string.IsNullOrEmpty(targetKey) 
-				? $"{targetKey}를 찾을 수 없습니다." 
+			string errorMessage = !string.IsNullOrEmpty(targetKey)
+				? $"{targetKey}를 찾을 수 없습니다."
 				: "아이템을 놓을 위치를 찾을 수 없습니다.";
 			Debug.LogWarning($"[{Name}] {errorMessage}");
 			await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
@@ -339,7 +401,7 @@ public abstract partial class NPC
 	private List<InventoryBox> FindNearbyInventoryBoxes()
 	{
 		var nearbyBoxes = new List<InventoryBox>();
-		
+
 		// Sensor를 통해 주변의 Props 찾기 (lookable 기반 필터)
 		var inter = sensor?.GetInteractableEntities();
 		if (inter?.props != null)
@@ -352,7 +414,7 @@ public abstract partial class NPC
 				}
 			}
 		}
-		
+
 		return nearbyBoxes;
 	}
 
@@ -371,7 +433,7 @@ public abstract partial class NPC
 				return inventoryBox;
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -382,7 +444,7 @@ public abstract partial class NPC
 	{
 		// InventoryBox의 위치로 이동
 		Move(inventoryBox.GetSimpleKeyRelativeToActor(this));
-		
+
 		// 이동 완료까지 대기 (간단한 지연)
 		await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
 	}
@@ -393,26 +455,26 @@ public abstract partial class NPC
 	private async UniTask MoveToInventoryBoxIfNeeded(InventoryBox inventoryBox)
 	{
 		if (inventoryBox == null) return;
-		
+
 		// Interactable 범위 안에 있는지 확인
 		if (IsInventoryBoxInInteractableRange(inventoryBox))
 		{
 			Debug.Log($"[{Name}] {inventoryBox.name}이(가) 이미 Interactable 범위 안에 있습니다. 이동하지 않습니다.");
 			return;
 		}
-		
+
 		// 범위 밖에 있으면 이동
 		Debug.Log($"[{Name}] {inventoryBox.name}이(가) Interactable 범위 밖에 있습니다. 이동을 시작합니다.");
 		await MoveToInventoryBox(inventoryBox);
 	}
-	
+
 	/// <summary>
 	/// InventoryBox가 Interactable 범위 안에 있는지 확인
 	/// </summary>
 	private bool IsInventoryBoxInInteractableRange(InventoryBox inventoryBox)
 	{
 		if (inventoryBox == null || sensor == null) return false;
-		
+
 		// sensor의 Interactable 범위 내에 있는지 확인
 		var interactableEntities = sensor.GetInteractableEntities();
 		if (interactableEntities?.props != null)
@@ -426,7 +488,7 @@ public abstract partial class NPC
 				}
 			}
 		}
-		
+
 		return false;
 	}
 

@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
@@ -116,9 +118,18 @@ public class Clothing : Item, IUsable
     /// <summary>
     /// IUsable 인터페이스 구현 - 옷을 입습니다
     /// </summary>
-    public virtual string Use(Actor actor, object variable)
+    public virtual async UniTask<string> Use(Actor actor, object variable, CancellationToken token = default)
     {
-        return Wear(actor);
+        var bubble = actor?.activityBubbleUI;
+        if (bubble != null)
+        {
+            bubble.SetFollowTarget(actor.transform);
+            bubble.Show($"{Name} 입는 중", 0);
+        }
+        await SimDelay.DelaySimMinutes(1, token);
+        var result = Wear(actor);
+        if (bubble != null) bubble.Hide();
+        return result;
     }
     
     public override string Get()

@@ -26,9 +26,34 @@ public abstract class MainActor : Actor
 	[Header("Items")]
 	public iPhone iPhone;
 
-	[Header("UI")]
-	[SerializeField, Tooltip("PerformActivity 진행 상황을 표시할 UI")]
-	public ActivityBubbleUI activityBubbleUI;
+    // ActivityBubbleUI는 Actor로 이동했습니다 (NPC 포함 공용)
+
+	#if UNITY_EDITOR
+	[FoldoutGroup("Debug UI"), Button("Test Activity Bubble: 5s Walk to Kitchen")]
+	private async void Debug_TestActivityBubble_Walk()
+	{
+		if (activityBubbleUI != null)
+		{
+			activityBubbleUI.SetFollowTarget(transform);
+			activityBubbleUI.Show("부엌으로 이동 중", 5);
+		}
+		else
+		{
+			Debug.LogWarning($"[{Name}] activityBubbleUI가 할당되지 않았습니다.");
+		}
+		await Task.Delay(1000);
+		activityBubbleUI.Hide();
+	}
+
+	[FoldoutGroup("Debug UI"), Button("Hide Activity Bubble")]
+	private void Debug_HideActivityBubble()
+	{
+		if (activityBubbleUI != null)
+		{
+			activityBubbleUI.Hide();
+		}
+	}
+	#endif
 
 	[Header("Sleep System")]
 	[SerializeField, Range(0, 23)]

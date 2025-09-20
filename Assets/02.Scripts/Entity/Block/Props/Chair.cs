@@ -85,23 +85,44 @@ public class Chair : SitableProp
     
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
-        await SimDelay.DelaySimMinutes(1, cancellationToken);
-        if (IsActorSeated(actor))
+        ActivityBubbleUI bubble = null;
+        try
         {
-            StandUp(actor);
-            return "의자에서 일어났습니다.";
+            if (actor is MainActor ma && ma.activityBubbleUI != null)
+            {
+                bubble = ma.activityBubbleUI;
+                bubble.SetFollowTarget(actor.transform);
+            }
+
+            await SimDelay.DelaySimMinutes(1, cancellationToken);
+            if (IsActorSeated(actor))
+            {
+                if (bubble != null) bubble.Show("의자에서 일어나는 중", 0);
+                await SimDelay.DelaySimMinutes(1, cancellationToken);
+                StandUp(actor);
+                //await SimDelay.DelaySimMinutes(1, cancellationToken);
+                return "의자에서 일어났습니다.";
+            }
+            
+            if (IsOccupied())
+            {
+                return "의자가 이미 사용 중입니다.";
+            }
+            
+            if (bubble != null) bubble.Show("의자에 앉는 중", 0);
+            await SimDelay.DelaySimMinutes(1, cancellationToken);
+            if (TrySit(actor))
+            {
+                
+                //await SimDelay.DelaySimMinutes(1, cancellationToken);
+                return "의자에 앉았습니다.";
+            }
+            
+            return "의자에 앉을 수 없습니다.";
         }
-        
-        if (IsOccupied())
+        finally
         {
-            return "의자가 이미 사용 중입니다.";
+            if (bubble != null) bubble.Hide();
         }
-        
-        if (TrySit(actor))
-        {
-            return "의자에 앉았습니다.";
-        }
-        
-        return "의자에 앉을 수 없습니다.";
     }
 }

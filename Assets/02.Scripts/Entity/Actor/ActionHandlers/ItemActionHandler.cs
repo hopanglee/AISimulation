@@ -44,13 +44,32 @@ namespace Agent.ActionHandlers
                 var item = EntityFinder.FindCollectibleItemByKey(actor, itemName);
                 if (item != null)
                 {
-                    if (actor.PickUp(item))
+                    // UI 표시: 집는 중
+                    ActivityBubbleUI bubble = null;
+                    try
                     {
-                        Debug.Log($"[{actor.Name}] 아이템을 성공적으로 집었습니다: {itemName}");
+                        if (actor is MainActor bubbleOwner)
+                        {
+                            bubble = bubbleOwner.activityBubbleUI;
+                        }
+                        if (bubble != null)
+                        {
+                            bubble.SetFollowTarget(actor.transform);
+                            bubble.Show($"{itemName}을(를) 집는 중", 0);
+                        }
+                        await SimDelay.DelaySimMinutes(2,token);
+                        if (actor.PickUp(item))
+                        {
+                            Debug.Log($"[{actor.Name}] 아이템을 성공적으로 집었습니다: {itemName}");
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"[{actor.Name}] 손과 인벤토리가 모두 가득 찼습니다: {itemName}");
+                        }
                     }
-                    else
+                    finally
                     {
-                        Debug.LogWarning($"[{actor.Name}] 손과 인벤토리가 모두 가득 찼습니다: {itemName}");
+                        if (bubble != null) bubble.Hide();
                     }
                 }
                 else
@@ -58,7 +77,7 @@ namespace Agent.ActionHandlers
                     Debug.LogWarning($"[{actor.Name}] 아이템을 찾을 수 없음(collectible 전용): {itemName}");
                 }
             }
-            await SimDelay.DelaySimMinutes(3);
+
         }
 
         /// <summary>
@@ -85,11 +104,31 @@ namespace Agent.ActionHandlers
 
                 // target_key를 사용하여 실제 ILocation 객체 찾기
                 ILocation targetLocation = FindLocationByKey(targetKey);
-                
-                // 실제 ILocation 객체를 사용하여 PutDown 호출
-                actor.PutDown(targetLocation);
-                await SimDelay.DelaySimMinutes(1);
-                Debug.Log($"[{actor.Name}] PutDown 완료: {actor.HandItem?.Name ?? "아이템"}을(를) {targetKey}에 내려놓았습니다.");
+
+                // UI 표시: 집는 중
+                ActivityBubbleUI bubble = null;
+                try
+                {
+                    if (actor is MainActor bubbleOwner)
+                    {
+                        bubble = bubbleOwner.activityBubbleUI;
+                    }
+                    if (bubble != null)
+                    {
+                        bubble.SetFollowTarget(actor.transform);
+                        bubble.Show($"{actor.HandItem.Name}을(를) {targetKey}에 내려놓는 중", 0);
+                    }
+                    // 실제 ILocation 객체를 사용하여 PutDown 호출
+                    await SimDelay.DelaySimMinutes(2, token);
+                    actor.PutDown(targetLocation);
+                    await SimDelay.DelaySimMinutes(1, token);
+                    
+                    Debug.Log($"[{actor.Name}] PutDown 완료: {actor.HandItem?.Name ?? "아이템"}을(를) {targetKey}에 내려놓았습니다.");
+                }
+                finally
+                {
+                    if (bubble != null) bubble.Hide();
+                }
             }
             catch (Exception ex)
             {
@@ -107,7 +146,7 @@ namespace Agent.ActionHandlers
                 if (actor?.sensor != null)
                 {
                     var interactableEntities = actor.sensor.GetInteractableEntities();
-                    
+
                     // Props에서 찾기
                     foreach (var prop in interactableEntities.props.Values)
                     {
@@ -119,7 +158,7 @@ namespace Agent.ActionHandlers
                             }
                         }
                     }
-                    
+
                     // Buildings에서 찾기
                     foreach (var building in interactableEntities.buildings.Values)
                     {
@@ -131,7 +170,7 @@ namespace Agent.ActionHandlers
                             }
                         }
                     }
-                    
+
                     // Items에서 찾기 (특별한 경우)
                     foreach (var item in interactableEntities.items.Values)
                     {
@@ -143,7 +182,7 @@ namespace Agent.ActionHandlers
                             }
                         }
                     }
-                    
+
                     Debug.LogWarning($"[{actor.Name}] target_key '{targetKey}'에 해당하는 ILocation을 찾을 수 없습니다.");
                 }
             }
@@ -151,7 +190,7 @@ namespace Agent.ActionHandlers
             {
                 Debug.LogError($"[{actor.Name}] FindLocationByKey 오류: {ex.Message}");
             }
-            
+
             return null;
         }
 
@@ -170,9 +209,18 @@ namespace Agent.ActionHandlers
                 {
                     try
                     {
+                        ActivityBubbleUI bubble = null;
                         if (actor is MainActor thinkingActor)
                         {
+                            bubble = thinkingActor.activityBubbleUI;
+                            if (bubble != null)
+                            {
+                                bubble.SetFollowTarget(actor.transform);
+                                bubble.Show($"{targetActor.Name}에게 돈 {amount}원을 주는 중", 0);
+                                await SimDelay.DelaySimMinutes(2, token);
+                            }
                             thinkingActor.GiveMoney(targetActor, amount);
+                            await SimDelay.DelaySimMinutes(1, token);
                         }
                         else
                         {
@@ -184,6 +232,10 @@ namespace Agent.ActionHandlers
                     {
                         Debug.LogWarning($"[{actor.Name}] 돈 주기 실패: {ex.Message}");
                     }
+                    finally
+                    {
+                        if (actor is MainActor ma && ma.activityBubbleUI != null) ma.activityBubbleUI.Hide();
+                    }
                 }
                 else
                 {
@@ -194,7 +246,7 @@ namespace Agent.ActionHandlers
             {
                 Debug.LogWarning($"[{actor.Name}] 돈 주기 파라미터가 올바르지 않음");
             }
-            await SimDelay.DelaySimMinutes(5);
+            //await SimDelay.DelaySimMinutes(5, token);
         }
 
         /// <summary>
@@ -209,15 +261,29 @@ namespace Agent.ActionHandlers
                 if (actor.HandItem == null)
                 {
                     Debug.LogWarning($"[{actor.Name}] 손에 아이템이 없습니다.");
-                    await SimDelay.DelaySimMinutes(1);
+                    //await SimDelay.DelaySimMinutes(1);
                     return;
                 }
 
                 var targetActor = EntityFinder.FindActorByName(actor, targetCharacter);
                 if (targetActor != null)
                 {
+                    // UI: 아이템 주는 중
+                    ActivityBubbleUI bubble = null;
+                    if (actor is MainActor bubbleOwner)
+                    {
+                        bubble = bubbleOwner.activityBubbleUI;
+                    }
+                    if (bubble != null)
+                    {
+                        bubble.SetFollowTarget(actor.transform);
+                        bubble.Show($"{targetActor.Name}에게 {actor.HandItem?.Name ?? "아이템"} 건네주는 중", 0);
+                    }
+                    await SimDelay.DelaySimMinutes(2, token);
                     actor.Give(targetCharacter);
+                    await SimDelay.DelaySimMinutes(1, token);
                     Debug.Log($"[{actor.Name}] {targetActor.Name}에게 {actor.HandItem?.Name ?? "아이템"}을 성공적으로 주었습니다.");
+                    if (bubble != null) bubble.Hide();
                 }
                 else
                 {
@@ -228,7 +294,7 @@ namespace Agent.ActionHandlers
             {
                 Debug.LogWarning($"[{actor.Name}] 아이템 주기 파라미터가 올바르지 않음");
             }
-            await SimDelay.DelaySimMinutes(2);
+           // await SimDelay.DelaySimMinutes(2);
         }
     }
 }

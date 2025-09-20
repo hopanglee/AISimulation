@@ -463,7 +463,14 @@ public abstract class InventoryBox : InteractableProp
     
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
-        await SimDelay.DelaySimMinutes(1, cancellationToken);
+        ActivityBubbleUI bubble = null;
+        if (actor is MainActor ma && ma.activityBubbleUI != null)
+        {
+            bubble = ma.activityBubbleUI;
+            bubble.SetFollowTarget(actor.transform);
+        }
+
+        //await SimDelay.DelaySimMinutes(1, cancellationToken);
         if (actor == null)
         {
             return "상호작용할 대상이 없습니다.";
@@ -478,15 +485,20 @@ public abstract class InventoryBox : InteractableProp
             actor.HandItem = null;
             
             // 인벤토리에 아이템 추가 (AddItem 사용)
+            if (bubble != null) bubble.Show($"{handItem.Name}을(를) {Name}에 놓는 중", 0);
+            await SimDelay.DelaySimMinutes(1, cancellationToken);
             if (AddItem(handItem))
             {
-                return $"{handItem.Name}을(를) {GetType().Name}에 보관했습니다.";
+                if (bubble != null) bubble.Hide();
+                //await SimDelay.DelaySimMinutes(1, cancellationToken);
+                return $"{handItem.Name}을(를) {Name}에 보관했습니다.";
             }
             else
             {
                 // 실패한 경우 아이템을 다시 손에 돌려줌
+                if (bubble != null) bubble.Hide();
                 actor.HandItem = handItem;
-                return $"{GetType().Name}이(가) 가득 차서 {handItem.Name}을(를) 보관할 수 없습니다.";
+                return $"{Name}이(가) 가득 차서 {handItem.Name}을(를) 보관할 수 없습니다.";
             }
         }
         else
@@ -499,7 +511,9 @@ public abstract class InventoryBox : InteractableProp
             else
             {
                 string itemList = string.Join(", ", items.ConvertAll(item => item.Name));
-                return $"{GetType().Name}에 보관된 아이템: {itemList}";
+                //if (bubble != null) bubble.Show($"{Name} 확인 중", 0);
+                //await SimDelay.DelaySimMinutes(1, cancellationToken);
+                return $"{Name}에 보관된 아이템: {itemList}";
             }
         }
     }

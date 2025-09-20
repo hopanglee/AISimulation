@@ -77,8 +77,21 @@ public class HospitalDoctor : NPC
 
             Debug.Log($"[{Name}] 진찰 시작 - 대상: {patientName}");
 
-            // 진찰 실행 (시뮬레이션)
-            await SimDelay.DelaySimMinutes(2);
+            var bubble = activityBubbleUI;
+            try
+            {
+                if (bubble != null)
+                {
+                    bubble.SetFollowTarget(transform);
+                    bubble.Show($"{patientName} 진찰 중", 0);
+                }
+                // 진찰 실행 (시뮬레이션)
+                await SimDelay.DelaySimMinutes(5);
+            }
+            finally
+            {
+                if (bubble != null) bubble.Hide();
+            }
 
             string examineReport = $"의사 {Name}가 {patientName}에게 {examineContent}";
             Debug.Log($"[{Name}] 진찰 완료: {examineReport}");
@@ -130,8 +143,21 @@ public class HospitalDoctor : NPC
 
             Debug.Log($"[{Name}] 진찰 시작 - 대상: {patientName}");
 
-            // 진찰 실행 (시뮬레이션)
-            await SimDelay.DelaySimMinutes(2);
+            var bubble = activityBubbleUI;
+            try
+            {
+                if (bubble != null)
+                {
+                    bubble.SetFollowTarget(transform);
+                    bubble.Show($"{patientName} 진찰 중", 0);
+                }
+                // 진찰 실행 (시뮬레이션)
+                await SimDelay.DelaySimMinutes(5);
+            }
+            finally
+            {
+                if (bubble != null) bubble.Hide();
+            }
 
             string examineReport = $"의사 {Name}가 {patientName}에게 {examineContent}";
             Debug.Log($"[{Name}] 진찰 완료: {examineReport}");
