@@ -997,13 +997,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: Activity Bubble UI
       objectReference: {fileID: 0}
+    - target: {fileID: 661190664671446343, guid: 058f8484bfdcb3041aef5ffd871aa967, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1174232163284575184, guid: 058f8484bfdcb3041aef5ffd871aa967, type: 3}
       propertyPath: m_fontSize
-      value: 8
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 1174232163284575184, guid: 058f8484bfdcb3041aef5ffd871aa967, type: 3}
       propertyPath: m_fontSizeBase
-      value: 8
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 2898460875751193722, guid: 058f8484bfdcb3041aef5ffd871aa967, type: 3}
       propertyPath: m_Pivot.x
@@ -1035,7 +1039,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2898460875751193722, guid: 058f8484bfdcb3041aef5ffd871aa967, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 10
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 2898460875751193722, guid: 058f8484bfdcb3041aef5ffd871aa967, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1085,10 +1089,38 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3117482909782230319, guid: 058f8484bfdcb3041aef5ffd871aa967, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3117482909782230319, guid: 058f8484bfdcb3041aef5ffd871aa967, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3117482909782230319, guid: 058f8484bfdcb3041aef5ffd871aa967, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 47.69
+      objectReference: {fileID: 0}
+    - target: {fileID: 3117482909782230319, guid: 058f8484bfdcb3041aef5ffd871aa967, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 23.84
+      objectReference: {fileID: 0}
+    - target: {fileID: 3117482909782230319, guid: 058f8484bfdcb3041aef5ffd871aa967, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 72
+      objectReference: {fileID: 0}
+    - target: {fileID: 3117482909782230319, guid: 058f8484bfdcb3041aef5ffd871aa967, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -10
+      objectReference: {fileID: 0}
     - target: {fileID: 4661344826312919019, guid: 058f8484bfdcb3041aef5ffd871aa967, type: 3}
       propertyPath: followTarget
       value: 
       objectReference: {fileID: 7779772188733534878}
+    - target: {fileID: 4661344826312919019, guid: 058f8484bfdcb3041aef5ffd871aa967, type: 3}
+      propertyPath: worldOffset.y
+      value: 1.2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

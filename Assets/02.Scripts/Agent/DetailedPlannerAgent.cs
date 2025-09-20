@@ -71,8 +71,11 @@ public class DetailedPlannerAgent : GPT
         };
 
         // 월드 정보 도구 추가
-        ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
-
+        //ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
+        options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
+        options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
+        options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemoriesFiltered);
+        options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetWorldAreaInfo);
         // 메모리 도구 추가
         // ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Memory);
 
@@ -146,7 +149,7 @@ public class DetailedPlannerAgent : GPT
                 { "info", actor.LoadCharacterInfo() },
                 { "memory", actor.LoadCharacterMemory() },
                 { "character_situation", actor.LoadActorSituation() },
-                
+
             });
         messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
         string prompt = GenerateDetailedPlanPrompt(highLevelTask);

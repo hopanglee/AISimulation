@@ -17,7 +17,7 @@ public class PlanDecisionAgent : GPT
 	private readonly Actor actor;
 	private readonly IToolExecutor toolExecutor;
 
-	public PlanDecisionAgent(Actor actor) : base()
+	public PlanDecisionAgent(Actor actor) : base("gpt-4o-mini")
 	{
 		this.actor = actor;
 		this.toolExecutor = new ActorToolExecutor(actor);
@@ -100,7 +100,7 @@ public class PlanDecisionAgent : GPT
       ""description"": ""revise인 경우 수정 방향 요약, keep이면 빈 문자열 가능""
     }
   },
-  ""required"": [""decision""]
+  ""required"": [""decision"",""modification_summary""]
 }";
 
 	/// <summary>

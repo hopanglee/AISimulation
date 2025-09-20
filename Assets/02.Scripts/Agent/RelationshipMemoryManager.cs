@@ -75,7 +75,29 @@ public class RelationshipMemoryManager
 
     public RelationshipMemory GetRelationship(string characterName)
     {
-        return relationships.TryGetValue(characterName, out var relationship) ? relationship : null;
+        if (string.IsNullOrWhiteSpace(characterName))
+        {
+            return null;
+        }
+
+        // 1) 정확 일치 우선
+        if (relationships.TryGetValue(characterName, out var relationship))
+        {
+            return relationship;
+        }
+
+        // 2) 공백으로 분리 후 첫 단어로 조회 (예: "히노 마오리" -> "히노")
+        var tokens = characterName.Split((char[])null, System.StringSplitOptions.RemoveEmptyEntries);
+        if (tokens.Length > 0)
+        {
+            var first = tokens[0];
+            if (relationships.TryGetValue(first, out relationship))
+            {
+                return relationship;
+            }
+        }
+
+        return null;
     }
 
     public List<RelationshipMemory> GetAllRelationships()

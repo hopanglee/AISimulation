@@ -411,10 +411,13 @@ public class GPT
         int toolRounds = 0; // Limit tool-call rounds
         bool forcedFinalAfterToolLimit = false; // Ensure we force exactly one final pass without tools
 
-        // GPT API 호출 시작 - 시뮬레이션 시간 자동 정지
+        // 승인 사용 중이면 시간 정지는 ApprovalService에서, 여기서는 느린 진행만 적용
         var timeService = Services.Get<ITimeService>();
+        var gameServiceForTime = Services.Get<IGameService>();
+        bool approvalsEnabled = gameServiceForTime != null && gameServiceForTime.IsGPTApprovalEnabled();
         if (timeService != null)
         {
+            // 모델 대기 동안 시뮬레이션 시간 완전 정지
             timeService.StartAPICall();
             Debug.Log($"[GPT][{actorName}] API 호출 시작 - 시뮬레이션 시간 정지됨");
         }
@@ -556,7 +559,6 @@ public class GPT
         }
         finally
         {
-            // GPT API 호출 종료 - 시뮬레이션 시간 자동 재개
             if (timeService != null)
             {
                 timeService.EndAPICall();

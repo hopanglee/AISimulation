@@ -105,7 +105,7 @@ public class LongTermMemoryConsolidationAgent : GPT
                                             ""people_involved"": {
                                                 ""type"": ""array"",
                                                 ""items"": { ""type"": ""string"" },
-                                                ""description"": ""이 청크에 관련된 사람들""
+                                                ""description"": ""이 청크에 관련된 사람들 (없으면 빈 배열)""
                                             },
                                             ""emotions"": {
                                                 ""type"": ""object"",
@@ -121,7 +121,7 @@ public class LongTermMemoryConsolidationAgent : GPT
                                                 ""description"": ""이 청크로 통합된 원본 항목의 수""
                                             }
                                         },
-                                        ""required"": [""chunk_id"", ""summary"", ""time_range"", ""main_events"", ""original_entries_count""]
+                                        ""required"": [""chunk_id"", ""summary"", ""time_range"", ""main_events"", ""people_involved"", ""original_entries_count""]
                                     }
                                 },
                                 ""consolidation_reasoning"": {

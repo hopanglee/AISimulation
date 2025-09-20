@@ -43,7 +43,7 @@ public class ActorEditor : OdinEditor
                 EditorGUILayout.LabelField($"Count: {lookableEntities.Count}");
                 foreach (var kvp in lookableEntities)
                 {
-                    EditorGUILayout.LabelField($"• {kvp.Key}: {kvp.Value?.Name ?? "null"}");
+                    EditorGUILayout.LabelField($"• {kvp.Key}");
                 }
                 EditorGUI.indentLevel--;
             }
@@ -57,7 +57,7 @@ public class ActorEditor : OdinEditor
                 EditorGUILayout.LabelField($"Count: {collectibleEntities.Count}");
                 foreach (var kvp in collectibleEntities)
                 {
-                    EditorGUILayout.LabelField($"• {kvp.Key}: {kvp.Value?.Name ?? "null"}");
+                    EditorGUILayout.LabelField($"• {kvp.Key}");
                 }
                 EditorGUI.indentLevel--;
             }
@@ -71,22 +71,22 @@ public class ActorEditor : OdinEditor
                 EditorGUILayout.LabelField($"Actors: {interactableEntities.actors.Count}");
                 foreach (var kvp in interactableEntities.actors)
                 {
-                    EditorGUILayout.LabelField($"  • {kvp.Key}: {kvp.Value?.Name ?? "null"}");
+                    EditorGUILayout.LabelField($"  • {kvp.Key}");
                 }
                 EditorGUILayout.LabelField($"Items: {interactableEntities.items.Count}");
                 foreach (var kvp in interactableEntities.items)
                 {
-                    EditorGUILayout.LabelField($"  • {kvp.Key}: {kvp.Value?.Name ?? "null"}");
+                    EditorGUILayout.LabelField($"  • {kvp.Key}");
                 }
                 EditorGUILayout.LabelField($"Buildings: {interactableEntities.buildings.Count}");
                 foreach (var kvp in interactableEntities.buildings)
                 {
-                    EditorGUILayout.LabelField($"  • {kvp.Key}: {kvp.Value?.Name ?? "null"}");
+                    EditorGUILayout.LabelField($"  • {kvp.Key}");
                 }
                 EditorGUILayout.LabelField($"Props: {interactableEntities.props.Count}");
                 foreach (var kvp in interactableEntities.props)
                 {
-                    EditorGUILayout.LabelField($"  • {kvp.Key}: {kvp.Value?.Name ?? "null"}");
+                    EditorGUILayout.LabelField($"  • {kvp.Key}");
                 }
                 EditorGUI.indentLevel--;
             }

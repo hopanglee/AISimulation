@@ -24,6 +24,7 @@ namespace Agent
             var objectList = GetCurrentAvailableObjects();
             systemPrompt = PromptLoader.LoadPrompt("InteractWithObjectParameterAgentPrompt.txt", "You are an InteractWithObject parameter generator.");
             SetAgentType(nameof(InteractWithObjectParameterAgent));
+            objectList.Add("null");
             this.options = new ChatCompletionOptions
             {
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
@@ -35,8 +36,8 @@ namespace Agent
                             ""properties"": {{
                                 ""object_name"": {{
                                     ""type"": ""string"",
-                                    ""enum"": {JsonConvert.SerializeObject(GetCurrentAvailableObjects())},
-                                    ""description"": ""상호작용할 물건 이름""
+                                    ""enum"": {JsonConvert.SerializeObject(objectList)},
+                                    ""description"": ""상호작용할 물건 이름 (없으면 null로 응답)""
                                 }}
                             }},
                             ""required"": [""object_name""]
@@ -67,7 +68,14 @@ namespace Agent
                 Intention = request.Intention,
                 PreviousFeedback = request.PreviousFeedback
             });
-            
+
+            // object_name이 null이면 취소 신호로 null 반환
+            if (param == null || string.IsNullOrEmpty(param.object_name) || param.object_name == "null")
+            {
+                Debug.LogWarning("[InteractWithObjectParameterAgent] object_name이 null이므로 액션을 취소합니다.");
+                return null;
+            }
+
             return new ActParameterResult
             {
                 ActType = request.ActType,

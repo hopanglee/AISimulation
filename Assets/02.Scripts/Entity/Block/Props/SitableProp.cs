@@ -1,3 +1,4 @@
+using Pathfinding;
 using UnityEngine;
 
 /// <summary>
@@ -14,12 +15,12 @@ public abstract class SitableProp : InteractableProp, ISitable
     {
         return actor != null && !IsOccupied();
     }
-    
+
     /// <summary>
     /// Actor를 앉힙니다. 하위 클래스에서 구현해야 합니다.
     /// </summary>
     public abstract bool TrySit(Actor actor);
-    
+
     /// <summary>
     /// Actor가 일어납니다. 하위 클래스에서 구현해야 합니다.
     /// </summary>
@@ -28,7 +29,9 @@ public abstract class SitableProp : InteractableProp, ISitable
         Debug.Log($"[{actor.Name}] 일어납니다. {Name}");
         if (standUpPosition != null)
         {
-            actor.transform.position = standUpPosition.position;
+            //actor.transform.position = standUpPosition.position;
+            var moveController = actor.MoveController;
+            moveController.Teleport(standUpPosition.position);
         }
 
         // 액터가 여전히 이 SitableProp 하위라면 curLocation을 이 Prop의 curLocation(보통 상위 위치)로 복원
@@ -46,17 +49,17 @@ public abstract class SitableProp : InteractableProp, ISitable
             }
         }
     }
-    
+
     /// <summary>
     /// Actor가 앉아있는지 확인합니다. 하위 클래스에서 구현해야 합니다.
     /// </summary>
     public abstract bool IsActorSeated(Actor actor);
-    
+
     /// <summary>
     /// 현재 사용 중인지 확인합니다. 하위 클래스에서 구현해야 합니다.
     /// </summary>
     public abstract bool IsOccupied();
-    
+
     /// <summary>
     /// 앉는 위치로 Actor를 이동시킵니다.
     /// </summary>
@@ -64,7 +67,9 @@ public abstract class SitableProp : InteractableProp, ISitable
     {
         if (actor != null)
         {
-            actor.transform.position = sitPosition;
+            // actor.transform.position = sitPosition;
+            var moveController = actor.MoveController;
+            moveController.Teleport(sitPosition);
             actor.curLocation = this;
         }
     }

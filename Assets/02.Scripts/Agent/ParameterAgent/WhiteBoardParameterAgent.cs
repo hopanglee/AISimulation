@@ -39,35 +39,21 @@ namespace Agent
                     jsonSchemaFormatName: "whiteboard_parameter",
                     jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
                         @"{
-                            ""oneOf"": [
-                                {
-                                    ""type"": ""object"",
-                                    ""additionalProperties"": false,
-                                    ""properties"": {
-                                        ""action_type"": { ""type"": ""string"", ""const"": ""write"" },
-                                        ""content"": { ""type"": ""string"" }
-                                    },
-                                    ""required"": [""action_type"", ""content""]
+                            ""type"": ""object"",
+                            ""description"": ""화이트보드 상호작용을 위한 파라미터 스키마"",
+                            ""additionalProperties"": false,
+                            ""properties"": {
+                                ""action_type"": {
+                                    ""type"": ""string"",
+                                    ""enum"": [""write"", ""update"", ""erase""],
+                                    ""description"": ""수행할 동작: write(쓰기), update(수정), erase(지우기)""
                                 },
-                                {
-                                    ""type"": ""object"",
-                                    ""additionalProperties"": false,
-                                    ""properties"": {
-                                        ""action_type"": { ""type"": ""string"", ""const"": ""update"" },
-                                        ""content"": { ""type"": ""string"" }
-                                    },
-                                    ""required"": [""action_type"", ""content""]
-                                },
-                                {
-                                    ""type"": ""object"",
-                                    ""additionalProperties"": false,
-                                    ""properties"": {
-                                        ""action_type"": { ""type"": ""string"", ""const"": ""erase"" }
-                                    },
-                                    ""required"": [""action_type""]
+                                ""content"": {
+                                    ""type"": [""string"", ""null""],
+                                    ""description"": ""작성/수정할 내용 (write/update일 때 사용, erase일 때 null)""
                                 }
-                            ],
-                            ""additionalProperties"": false
+                            },
+                            ""required"": [""action_type"", ""content""]
                         }"
                     )),
                     jsonSchemaIsStrict: true

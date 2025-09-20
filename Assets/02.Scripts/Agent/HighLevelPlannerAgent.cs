@@ -102,8 +102,10 @@ public class HighLevelPlannerAgent : GPT
         };
 
         // 월드 정보 도구 추가
-        ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
-
+        //ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
+        options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
+        options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemoriesFiltered);
+        options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetWorldAreaInfo);
         // 메모리 도구 추가
         //ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Memory);
     }
@@ -232,7 +234,7 @@ public class HighLevelPlannerAgent : GPT
 
         // 감정을 읽기 쉬운 형태로 변환
         //var perceptionEmotions = FormatEmotions(actor.brain.recentPerceptionResult.emotions);
-        
+
         var replacements = new Dictionary<string, string>
         {
             { "current_time", $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}" },
@@ -246,6 +248,6 @@ public class HighLevelPlannerAgent : GPT
         return localizationService.GetLocalizedText("high_level_plan_replan_prompt", replacements);
     }
 
-    
+
 
 }

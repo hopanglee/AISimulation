@@ -58,14 +58,24 @@ public interface ITimeService : IService
     bool IsTimeBetween(int startHour, int startMinute, int endHour, int endMinute);
 
     /// <summary>
-    /// API 호출 시작 (시간 자동 정지)
+    /// 승인 팝업 등 완전 정지를 위한 API 호출 시작 (정지)
     /// </summary>
     void StartAPICall();
 
     /// <summary>
-    /// API 호출 종료 (모든 Actor가 완료되면 시간 재개)
+    /// 승인 팝업 등 완전 정지를 위한 API 호출 종료 (정지 해제)
     /// </summary>
     void EndAPICall();
+
+    /// <summary>
+    /// GPT 대기 등 느린 진행을 위한 API 호출 시작 (배속 감소)
+    /// </summary>
+    void StartSlowAPICall();
+
+    /// <summary>
+    /// GPT 대기 등 느린 진행을 위한 API 호출 종료 (배속 복원)
+    /// </summary>
+    void EndSlowAPICall();
 }
 
 [System.Serializable]
@@ -189,7 +199,7 @@ public struct GameTime
         minutes += hour * 60;
         minutes += (day - 1) * 24 * 60;
         minutes += (month - 1) * 30 * 24 * 60; // 평균 30일로 계산
-        minutes += (year - 2024) * 365 * 24 * 60; // 평균 365일로 계산
+        minutes += (year - 2025) * 365 * 24 * 60; // 평균 365일로 계산
         return minutes;
     }
     
@@ -208,7 +218,7 @@ public struct GameTime
     /// </summary>
     public static GameTime FromMinutes(long totalMinutes)
     {
-        int year = 2024;
+        int year = 2025;
         int month = 1;
         int day = 1;
         int hour = 0;
@@ -294,7 +304,10 @@ public struct GameTime
     public static GameTime FromIsoString(string isoString)
     {
         if (string.IsNullOrEmpty(isoString))
+        {
+            Debug.LogError("[GameTime] FromIsoString received null or empty string. Defaulting to 2024-01-01 00:00.");
             return new GameTime(2024, 1, 1, 0, 0);
+        }
 
         // 1) DateTimeOffset로 UTC/Z 오프셋 포함 문자열 우선 처리
         if (DateTimeOffset.TryParse(
@@ -331,6 +344,7 @@ public struct GameTime
         }
 
         // 실패 시 안전 기본값
+        Debug.LogError($"[GameTime] Failed to parse ISO string '{isoString}'. Defaulting to 2024-01-01 00:00.");
         return new GameTime(2024, 1, 1, 0, 0);
     }
     
@@ -348,9 +362,43 @@ public struct GameTime
 /// </summary>
 public class GameTimeConverter : JsonConverter<GameTime>
 {
+    private static bool IsOptionalTimePath(string path)
+    {
+        if (string.IsNullOrEmpty(path)) return false;
+        var p = path.ToLowerInvariant();
+        return p.Equals("last_interaction") || p.EndsWith(".last_interaction")
+               || p.Equals("last_updated") || p.EndsWith(".last_updated");
+    }
+
+    private static bool IsBirthdayPath(string path)
+    {
+        if (string.IsNullOrEmpty(path)) return false;
+        return path.Equals("birthday", StringComparison.OrdinalIgnoreCase)
+            || path.EndsWith(".birthday", StringComparison.OrdinalIgnoreCase);
+    }
+
     public override void WriteJson(JsonWriter writer, GameTime value, JsonSerializer serializer)
     {
-        writer.WriteValue(value.ToIsoString());
+        try
+        {
+            // 유효하지 않은 날짜 기록 시도 시 오류 로그
+            if (value.year <= 0 || value.month <= 0 || value.day <= 0)
+            {
+                // 선택적 시간 필드는 조용히 null로 기록 (불필요한 에러 로그 방지)
+                if (!IsOptionalTimePath(writer?.Path))
+                {
+                    Debug.LogError($"[GameTimeConverter] Invalid GameTime while writing at '{writer?.Path}': year={value.year}, month={value.month}, day={value.day}. Writing null.");
+                }
+                writer.WriteNull();
+                return;
+            }
+            writer.WriteValue(value.ToIsoString());
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[GameTimeConverter] Exception during WriteJson at '{writer?.Path}': {ex.Message}");
+            writer.WriteNull();
+        }
     }
 
     public override GameTime ReadJson(JsonReader reader, Type objectType, GameTime existingValue, bool hasExistingValue, JsonSerializer serializer)
@@ -358,7 +406,15 @@ public class GameTimeConverter : JsonConverter<GameTime>
         if (reader.TokenType == JsonToken.String)
         {
             string dateTimeString = reader.Value?.ToString();
-            return GameTime.FromIsoString(dateTimeString);
+            try
+            {
+                return GameTime.FromIsoString(dateTimeString);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[GameTimeConverter] Failed to parse GameTime from string at '{reader?.Path}': '{dateTimeString}'. Error: {ex.Message}");
+                return hasExistingValue ? existingValue : new GameTime(2024, 1, 1, 0, 0);
+            }
         }
         if (reader.TokenType == JsonToken.Date)
         {
@@ -374,6 +430,16 @@ public class GameTimeConverter : JsonConverter<GameTime>
         }
         if (reader.TokenType == JsonToken.Null)
         {
+            if (IsBirthdayPath(reader?.Path))
+            {
+                Debug.LogWarning($"[GameTimeConverter] Null value for GameTime at '{reader?.Path}'. Treating as unset birthday.");
+                return new GameTime(2024, 1, 1, 0, 0);
+            }
+            // 선택적 시간 필드는 null이면 기본값(0) 유지
+            if (IsOptionalTimePath(reader?.Path))
+            {
+                return default;
+            }
             return new GameTime(2024, 1, 1, 0, 0);
         }
 
@@ -397,9 +463,13 @@ public class TimeManager : ITimeService
     private float accumulatedTime = 0f;
     private Action<GameTime> onTimeChanged;
 
-    // API 호출 중인 Actor 수 추적
-    private int apiCallingActorCount = 0;
+    // API 호출 중인 Actor 수 추적 (정지/감속 개별 관리)
+    private int apiPauseCount = 0;
     private bool wasTimeFlowingBeforeAPI = false;
+
+    private int apiSlowCount = 0;
+    private float timeScaleBeforeAPI = 1f;
+    [SerializeField, Range(1f, 20f)] private float apiSlowdownFactor = 100f; // API 대기 중 시간 100배 느리게
 
     public GameTime CurrentTime => currentTime;
     public float TimeScale
@@ -552,45 +622,75 @@ public class TimeManager : ITimeService
     }
 
     /// <summary>
-    /// API 호출 시작 (시간 자동 정지)
+    /// 승인 팝업 등 완전 정지를 위한 API 호출 시작 (정지)
     /// </summary>
     public void StartAPICall()
     {
-        apiCallingActorCount++;
+        apiPauseCount++;
 
-        // 첫 번째 API 호출이면 시간 정지
-        if (apiCallingActorCount == 1)
+        if (apiPauseCount == 1)
         {
             wasTimeFlowingBeforeAPI = isTimeFlowing;
             if (isTimeFlowing)
             {
                 isTimeFlowing = false;
-                Debug.Log($"[TimeManager] Time paused for API call (Actor count: {apiCallingActorCount})");
+                Debug.Log($"[TimeManager] Time paused for API call (Actor count: {apiPauseCount})");
             }
         }
 
-        Debug.Log($"[TimeManager] API call started (Actor count: {apiCallingActorCount})");
+        Debug.Log($"[TimeManager] API call started (pause count: {apiPauseCount})");
     }
 
     /// <summary>
-    /// API 호출 종료 (모든 Actor가 완료되면 시간 재개)
+    /// 승인 팝업 등 완전 정지를 위한 API 호출 종료 (정지 해제)
     /// </summary>
     public void EndAPICall()
     {
-        if (apiCallingActorCount <= 0)
+        if (apiPauseCount <= 0)
         {
             Debug.LogWarning("[TimeManager] EndAPICall called but no API calls are active!");
             return;
         }
 
-        apiCallingActorCount--;
-        Debug.Log($"[TimeManager] API call ended (Actor count: {apiCallingActorCount})");
+        apiPauseCount--;
+        Debug.Log($"[TimeManager] API call ended (pause count: {apiPauseCount})");
 
-        // 모든 Actor의 API 호출이 완료되면 시간 재개
-        if (apiCallingActorCount == 0 && wasTimeFlowingBeforeAPI)
+        if (apiPauseCount == 0 && wasTimeFlowingBeforeAPI)
         {
             isTimeFlowing = true;
-            Debug.Log("[TimeManager] All API calls completed - time resumed");
+            Debug.Log("[TimeManager] All API pauses completed - time resumed");
+        }
+    }
+
+    /// <summary>
+    /// GPT 대기 등 느린 진행을 위한 API 호출 시작 (배속 감소)
+    /// </summary>
+    public void StartSlowAPICall()
+    {
+        apiSlowCount++;
+        if (apiSlowCount == 1)
+        {
+            timeScaleBeforeAPI = timeScale;
+            timeScale = Mathf.Max(0.01f, timeScaleBeforeAPI / Mathf.Max(1f, apiSlowdownFactor));
+            Debug.Log($"[TimeManager] Time slowed for API call: x{timeScaleBeforeAPI / apiSlowdownFactor:F2} (slow count: {apiSlowCount})");
+        }
+    }
+
+    /// <summary>
+    /// GPT 대기 등 느린 진행을 위한 API 호출 종료 (배속 복원)
+    /// </summary>
+    public void EndSlowAPICall()
+    {
+        if (apiSlowCount <= 0)
+        {
+            Debug.LogWarning("[TimeManager] EndSlowAPICall called but no slow API calls are active!");
+            return;
+        }
+        apiSlowCount--;
+        if (apiSlowCount == 0)
+        {
+            timeScale = timeScaleBeforeAPI;
+            Debug.Log($"[TimeManager] Slow API calls completed - time scale restored to x{timeScale:F2}");
         }
     }
 

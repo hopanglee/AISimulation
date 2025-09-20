@@ -198,10 +198,10 @@ public class GPTApprovalService : IGPTApprovalService
             currentIndex = Mathf.Clamp(doneIndex, 0, pendingRequests.Count - 1);
             currentRequest = pendingRequests[currentIndex];
             approvalCompletionSource = pendingCompletions[currentIndex];
-            // 팝업 내용만 갱신
+            // 팝업 강제 표시 및 내용 갱신
             if (SimulationController.Instance != null)
             {
-                SimulationController.Instance.ShowGPTApprovalPopup(currentRequest);
+                SimulationController.Instance.ForceShowGPTApprovalPopup(currentRequest);
             }
         }
         

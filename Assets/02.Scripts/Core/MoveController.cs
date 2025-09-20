@@ -12,6 +12,7 @@ public class MoveController : MonoBehaviour
     public event Action OnReached;
 
     private Entity entity;
+    private float baseMaxSpeed = 0f;
 
     private void Awake()
     {
@@ -19,11 +20,24 @@ public class MoveController : MonoBehaviour
         aIDestinationSetter = GetComponent<AIDestinationSetter>();
         //followerEntity.stopDistance = 0f; // 목적지와 1m 거리에서도 멈추도록 설정
         entity = GetComponent<Entity>();
+        if (followerEntity != null)
+        {
+            baseMaxSpeed = followerEntity.maxSpeed;
+        }
+    }
+
+    public void Teleport(Vector3 position)
+    {
+        followerEntity.Teleport(position, true);
+        followerEntity?.SetDestination(Vector3.positiveInfinity);
     }
 
     public void SetTarget(Vector3 vector)
     {
-        followerEntity?.SetDestination(vector);
+		followerEntity?.SetDestination(vector);
+
+		// 시뮬레이션 시간 배속에 따라 속도 보정
+		ApplyTimeScaledSpeed();
 
         StartCoroutine(CheckArrival());
     }
@@ -42,7 +56,10 @@ public class MoveController : MonoBehaviour
             followerEntity?.SetDestination(transform.position);
         }
 
-        StartCoroutine(CheckArrival());
+		// 시뮬레이션 시간 배속에 따라 속도 보정
+		ApplyTimeScaledSpeed();
+
+		StartCoroutine(CheckArrival());
     }
 
     private IEnumerator CheckArrival()
@@ -57,6 +74,22 @@ public class MoveController : MonoBehaviour
 
         while (true)
         {
+			// Simulation 시간이 멈추면 이동도 일시정지
+			var timeService = Services.Get<ITimeService>();
+			if (timeService != null && !timeService.IsTimeFlowing)
+			{
+				if (followerEntity != null) followerEntity.isStopped = true;
+				// 시간 재개까지 대기
+				while (timeService != null && !timeService.IsTimeFlowing)
+				{
+					yield return null;
+				}
+				if (followerEntity != null) followerEntity.isStopped = false;
+
+				// 재개 시 현재 배속으로 속도 재보정
+				ApplyTimeScaledSpeed();
+			}
+
             bool reached = false;
             if (followerEntity != null)
             {
@@ -75,7 +108,19 @@ public class MoveController : MonoBehaviour
         isMoving = false;
         OnReachTarget();
     }
-
+	private void ApplyTimeScaledSpeed()
+	{
+		if (followerEntity == null) return;
+		var timeService = Services.Get<ITimeService>();
+		if (timeService == null) return;
+		try
+		{
+			float scale = Mathf.Max(0.01f, timeService.TimeScale);
+			var scaled = Mathf.Max(0.01f, baseMaxSpeed * scale);
+			followerEntity.maxSpeed = scaled;
+		}
+		catch { }
+	}
     private void OnReachTarget()
     {
         var namePrefix = entity != null ? entity.Name : gameObject.name;

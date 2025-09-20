@@ -11,10 +11,10 @@
 === 볼 수 있는 개체들 ===
 {lookableEntities}
 
-=== 수집 가능한 개체들 ===
+=== Pickup 가능한 개체들 ===
 {collectibleEntities}
 
-=== 상호작용 가능한 개체들 ===
+=== Interact 가능한 개체들 ===
 {interactableEntities}
 
 === 이동 가능한 위치들 ===

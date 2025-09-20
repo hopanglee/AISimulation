@@ -71,7 +71,7 @@ public class ActivityBubbleUI : MonoBehaviour
 
 		// 즉시 텍스트 반영 (totalSeconds가 0이어도 텍스트가 보이도록)
 		activityText.text = remainingSeconds > 0
-			? $"{activityName}  {remainingSeconds}초"
+			? $"{activityName}"
 			: activityName;
 
         countdownCts = new CancellationTokenSource();
@@ -110,12 +110,14 @@ public class ActivityBubbleUI : MonoBehaviour
                 if (activityText != null)
                 {
                     activityText.text = remainingSeconds > 0
-                        ? $"{activityName}  {remainingSeconds}초"
+                        ? $"{activityName}"
                         : activityName;
                 }
 
                 if (remainingSeconds <= 0)
                 {
+                    // 카운트다운이 끝나면 자동으로 숨김
+                    Hide();
                     break;
                 }
 

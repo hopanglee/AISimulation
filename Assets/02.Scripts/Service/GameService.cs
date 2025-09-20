@@ -94,8 +94,8 @@ public class GameService : MonoBehaviour, IGameService
     // private bool runThinkOnce = false; // 인스펙터에서 체크
 
     [Header("Time Settings")]
-    [SerializeField, Range(1f, 60f)]
-    private float timeScale = 1f; // 시간 흐름 속도
+    [SerializeField, Range(1f, 300f)]
+    private float timeScale = 60f; // 시간 흐름 속도
 
     private bool isSimulationRunning = false;
     private List<Actor> allActors = new List<Actor>();
