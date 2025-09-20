@@ -103,16 +103,36 @@ public class Fan : InteractableProp
     
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
-        await SimDelay.DelaySimMinutes(1, cancellationToken);
-        if (currentSpeed == FanSpeed.Off)
+        ActivityBubbleUI bubble = null;
+        try
         {
-            TurnOn();
-            return "선풍기를 켭니다.";
+            if (actor is MainActor ma && ma.activityBubbleUI != null)
+            {
+                bubble = ma.activityBubbleUI;
+                bubble.SetFollowTarget(actor.transform);
+            }
+
+            await SimDelay.DelaySimMinutes(1, cancellationToken);
+            if (currentSpeed == FanSpeed.Off)
+            {
+                if (bubble != null) bubble.Show("선풍기 켜는 중", 0);
+                await SimDelay.DelaySimMinutes(1, cancellationToken);
+                TurnOn();
+                //await SimDelay.DelaySimMinutes(1, cancellationToken);
+                return "선풍기를 켭니다.";
+            }
+            else
+            {
+                if (bubble != null) bubble.Show("선풍기 끄는 중", 0);
+                await SimDelay.DelaySimMinutes(1, cancellationToken);
+                TurnOff();
+                //await SimDelay.DelaySimMinutes(1, cancellationToken);
+                return "선풍기를 끕니다.";
+            }
         }
-        else
+        finally
         {
-            TurnOff();
-            return "선풍기를 끕니다.";
+            if (bubble != null) bubble.Hide();
         }
     }
 }

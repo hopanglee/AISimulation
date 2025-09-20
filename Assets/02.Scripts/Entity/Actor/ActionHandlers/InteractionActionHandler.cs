@@ -37,11 +37,33 @@ namespace Agent.ActionHandlers
                     {
                         if (parameters.TryGetValue("message", out var messageObj) && messageObj is string message)
                         {
-                            actor.ShowSpeech(message);
-                            Debug.Log($"[{actor.Name}] {targetActor.Name}에게 말함: {message}");
+                            // UI 표시: 대화 중 (대기 포함 전체 구간)
+                            ActivityBubbleUI bubble = null;
+                            try
+                            {
 
-                            // 성공적인 대화에 대한 피드백
-                            var feedback = $"Successfully spoke to {targetActor.Name}: '{message}'. The conversation was delivered.";
+                                if (actor is MainActor bubbleOwner)
+                                {
+                                    bubble = bubbleOwner.activityBubbleUI;
+                                }
+                                if (bubble != null)
+                                {
+                                    bubble.SetFollowTarget(actor.transform);
+                                    bubble.Show($"{targetActor.Name}와 대화 중", 0);
+                                }
+                                // 기본 대화 시간
+                                await SimDelay.DelaySimMinutes(1, token);
+                                actor.ShowSpeech(message);
+                                Debug.Log($"[{actor.Name}] {targetActor.Name}에게 말함: {message}");
+
+                                // 성공적인 대화에 대한 피드백
+                                var feedback = $"Successfully spoke to {targetActor.Name}: '{message}'. The conversation was delivered.";
+                                await SimDelay.DelaySimMinutes(1, token);
+                            }
+                            finally
+                            {
+                                if (bubble != null) bubble.Hide();
+                            }
                             // TODO: 여기서 ActionExecutor의 Success/Fail 메서드를 직접 호출할 수 있도록 구조 개선 필요
                         }
                         else
@@ -61,7 +83,7 @@ namespace Agent.ActionHandlers
                     Debug.LogWarning($"[{actor.Name}] sensor 기능을 사용할 수 없습니다.");
                 }
             }
-            await SimDelay.DelaySimMinutes(2);
+            //await SimDelay.DelaySimMinutes(2);
         }
 
         /// <summary>
@@ -80,7 +102,7 @@ namespace Agent.ActionHandlers
                     {
                         var prop = interactableEntities.props[objectName];
                         Debug.Log($"[{actor.Name}] {prop.Name}와 상호작용");
-                        
+
                         // 실제 상호작용 실행
                         if (prop is IInteractable interactable)
                         {
@@ -108,7 +130,7 @@ namespace Agent.ActionHandlers
                     Debug.LogWarning($"[{actor.Name}] sensor 기능을 사용할 수 없습니다.");
                 }
             }
-            
+
             // 기본적으로 1분 지연 (SimDelay(1))
             await SimDelay.DelaySimMinutes(1, token);
         }
@@ -171,7 +193,25 @@ namespace Agent.ActionHandlers
         public async UniTask HandleWait(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             Debug.Log($"[{actor.Name}] 대기 중...");
-            await SimDelay.DelaySimMinutes(10);
+            // UI 표시: 대기 중
+            ActivityBubbleUI bubble = null;
+            try
+            {
+                if (actor is MainActor bubbleOwner)
+                {
+                    bubble = bubbleOwner.activityBubbleUI;
+                }
+                if (bubble != null)
+                {
+                    bubble.SetFollowTarget(actor.transform);
+                    bubble.Show("생각 정리 중...", 0);
+                }
+                await SimDelay.DelaySimMinutes(10, token);
+            }
+            finally
+            {
+                if (bubble != null) bubble.Hide();
+            }
         }
     }
 }

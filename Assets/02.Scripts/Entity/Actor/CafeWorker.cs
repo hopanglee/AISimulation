@@ -119,9 +119,23 @@ public class CafeWorker : NPC, IHasExtraSenseAreas
 
                     if (coffee is Item coffeeItem)
                     {
-                        PickUp(coffeeItem);
-                        ShowSpeech($"{key} 준비되었습니다.");
-                        await SimDelay.DelaySimMinutes(3);
+                        var bubble = activityBubbleUI;
+                        try
+                        {
+                            if (bubble != null)
+                            {
+                                bubble.SetFollowTarget(transform);
+                                bubble.Show($"{key} 준비 중", 0);
+                            }
+                            await SimDelay.DelaySimMinutes(3);
+                            PickUp(coffeeItem);
+                            ShowSpeech($"{key} 준비되었습니다.");
+                            
+                        }
+                        finally
+                        {
+                            if (bubble != null) bubble.Hide();
+                        }
                         continue;
                     }
 
@@ -139,9 +153,23 @@ public class CafeWorker : NPC, IHasExtraSenseAreas
                     var beverage = beverageMachine.GetBeverage(key);
                     if (beverage is Item beverageItem)
                     {
-                        PickUp(beverageItem);
-                        Debug.Log($"{key} 준비되었습니다.");
-                        await SimDelay.DelaySimMinutes(2);
+                        var bubble = activityBubbleUI;
+                        try
+                        {
+                            if (bubble != null)
+                            {
+                                bubble.SetFollowTarget(transform);
+                                bubble.Show($"{key} 준비 중", 0);
+                            }
+                            await SimDelay.DelaySimMinutes(2);
+                            PickUp(beverageItem);
+                            Debug.Log($"{key} 준비되었습니다.");
+                            
+                        }
+                        finally
+                        {
+                            if (bubble != null) bubble.Hide();
+                        }
                         continue;
                     }
 
@@ -157,9 +185,23 @@ public class CafeWorker : NPC, IHasExtraSenseAreas
                     var bread = showcaseBig.GetItem(key);
                     if (bread is Item breadItem)
                     {
-                        PickUp(breadItem);
-                        Debug.Log($"{key} 가져왔습니다. (big)");
-                        await SimDelay.DelaySimMinutes(1);
+                        var bubble = activityBubbleUI;
+                        try
+                        {
+                            if (bubble != null)
+                            {
+                                bubble.SetFollowTarget(transform);
+                                bubble.Show($"{key} 꺼내는 중", 0);
+                            }
+                            await SimDelay.DelaySimMinutes(1);
+                            PickUp(breadItem);
+                            Debug.Log($"{key} 가져왔습니다. (big)");
+                            
+                        }
+                        finally
+                        {
+                            if (bubble != null) bubble.Hide();
+                        }
                         continue;
                     }
                     Debug.LogWarning($"{key} 가져오기 실패 (big)");
@@ -173,9 +215,23 @@ public class CafeWorker : NPC, IHasExtraSenseAreas
                     var bread = showcaseSmall.GetItem(key);
                     if (bread is Item breadItem)
                     {
-                        PickUp(breadItem);
-                        Debug.Log($"{key} 가져왔습니다. (small)");
-                        await SimDelay.DelaySimMinutes(1);
+                        var bubble = activityBubbleUI;
+                        try
+                        {
+                            if (bubble != null)
+                            {
+                                bubble.SetFollowTarget(transform);
+                                bubble.Show($"{key} 꺼내는 중", 0);
+                            }
+                            await SimDelay.DelaySimMinutes(1);
+                            PickUp(breadItem);
+                            Debug.Log($"{key} 가져왔습니다. (small)");
+                            
+                        }
+                        finally
+                        {
+                            if (bubble != null) bubble.Hide();
+                        }
                         continue;
                     }
                     Debug.LogWarning($"{key} 가져오기 실패 (small)");

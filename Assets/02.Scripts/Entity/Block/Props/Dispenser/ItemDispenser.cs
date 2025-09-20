@@ -81,7 +81,14 @@ public class ItemDispenser : InteractableProp
 
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
-        await SimDelay.DelaySimMinutes(1, cancellationToken);
+        ActivityBubbleUI bubble = null;
+        if (actor is MainActor ma && ma.activityBubbleUI != null)
+        {
+            bubble = ma.activityBubbleUI;
+            bubble.SetFollowTarget(actor.transform);
+        }
+
+        //await SimDelay.DelaySimMinutes(1, cancellationToken);
 
         if (supplies == null || supplies.Count == 0)
         {
@@ -141,14 +148,18 @@ public class ItemDispenser : InteractableProp
                         // PickUp 함수를 사용하여 아이템을 Actor에게 제공
                         if (createdItem is Item item)
                         {
+                            if (bubble != null) bubble.Show($"{selectedItemKey} 꺼내는 중", 0);
+                            await SimDelay.DelaySimMinutes(1, cancellationToken);
                             if (actor.PickUp(item))
                             {
+                                //await SimDelay.DelaySimMinutes(1, cancellationToken);
                                 return $"{selectedItemKey}을(를) 생성하여 {actor.Name}에게 제공했습니다.";
                             }
                             else
                             {
                                 // PickUp 실패 시 아이템 제거
                                 Destroy(item.gameObject);
+                                //await SimDelay.DelaySimMinutes(1, cancellationToken);
                                 return $"{selectedItemKey}을(를) 생성했지만, {actor.Name}의 손과 인벤토리가 모두 가득 착니다. 아이템을 내려놓고 다시 시도해주세요.";
                             }
                         }
@@ -183,6 +194,10 @@ public class ItemDispenser : InteractableProp
         {
             Debug.LogError($"[ItemDispenser] Interact 중 오류 발생: {ex.Message}");
             return "아이템 생성 중 오류가 발생했습니다.";
+        }
+        finally
+        {
+            if (bubble != null) bubble.Hide();
         }
     }
 }

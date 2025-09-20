@@ -1,5 +1,6 @@
 using UnityEngine;
-
+using System.Threading;
+using Cysharp.Threading.Tasks;
 public class HandWash : Item, IUsable
 {
     [Header("Hand Wash Settings")]
@@ -7,12 +8,23 @@ public class HandWash : Item, IUsable
     public bool isClean = true;
     public bool isWet = false;
     
-    public void UseHandWash()
+    public void UseHandWash(Actor actor)
     {
         if (isClean)
         {
             isWet = true;
-            Debug.Log("손을 씻었습니다.");
+            if (actor != null)
+            {
+                int before = actor.Cleanliness;
+                int cleanlinessIncrease = 10;
+                actor.Cleanliness = Mathf.Min(100, actor.Cleanliness + cleanlinessIncrease);
+                int actualInc = actor.Cleanliness - before;
+                Debug.Log($"손을 씻었습니다. 청결도 +{actualInc} ({before} → {actor.Cleanliness})");
+            }
+            else
+            {
+                Debug.Log("손을 씻었습니다.");
+            }
         }
         else
         {
@@ -42,9 +54,17 @@ public class HandWash : Item, IUsable
     /// <summary>
     /// IUsable 인터페이스 구현
     /// </summary>
-    public string Use(Actor actor, object variable)
+    public async UniTask<string> Use(Actor actor, object variable, CancellationToken token = default)
     {
-        UseHandWash();
+        var bubble = actor?.activityBubbleUI;
+        if (bubble != null)
+        {
+            bubble.SetFollowTarget(actor.transform);
+            bubble.Show("손 씻는 중", 0);
+        }
+        await SimDelay.DelaySimMinutes(1, token);
+        UseHandWash(actor);
+        if (bubble != null) bubble.Hide();
         return "손을 씻었습니다.";
     }
 }

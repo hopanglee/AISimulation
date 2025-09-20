@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 
 [System.Serializable]
 public abstract class Drink : Item, IUsable
@@ -36,8 +38,17 @@ public abstract class Drink : Item, IUsable
     /// <summary>
     /// IUsable 인터페이스 구현
     /// </summary>
-    public string Use(Actor actor, object variable)
+    public async UniTask<string> Use(Actor actor, object variable, CancellationToken token = default)
     {
-        return Eat(actor);
+        var bubble = actor?.activityBubbleUI;
+        if (bubble != null)
+        {
+            bubble.SetFollowTarget(actor.transform);
+            bubble.Show("음료 마시는 중", 0);
+        }
+        await SimDelay.DelaySimMinutes(2, token);
+        var result = Eat(actor);
+        if (bubble != null) bubble.Hide();
+        return result;
     }
 }

@@ -1,5 +1,6 @@
 using UnityEngine;
-
+using System.Threading;
+using Cysharp.Threading.Tasks;
 [System.Serializable]
 public class Book : Item, IUsable
 {
@@ -244,8 +245,15 @@ public class Book : Item, IUsable
     /// <summary>
     /// IUsable 인터페이스 구현
     /// </summary>
-    public string Use(Actor actor, object parameters)
+    public async UniTask<string> Use(Actor actor, object parameters, CancellationToken token = default)
     {
+        var bubble = actor?.activityBubbleUI;
+        if (bubble != null)
+        {
+            bubble.SetFollowTarget(actor.transform);
+            bubble.Show("책 읽는 중", 0);
+        }
+
         // 페이지 번호만 전달된 경우
         if (parameters is int pageNumber)
         {
@@ -256,11 +264,12 @@ public class Book : Item, IUsable
 
             if (pages.ContainsKey(pageNumber))
             {
+                await SimDelay.DelaySimMinutes(20, token);
                 return pages[pageNumber].Read() + $"\n{pageNumber}페이지를 읽었습니다.";
             }
             return "해당 페이지의 내용이 비어있습니다.";
         }
-        
+        if (bubble != null) bubble.Hide();
         return "잘못된 입력값입니다.";
     }
 }

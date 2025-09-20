@@ -36,7 +36,20 @@ namespace Agent.ActionHandlers
                 {
                     // 현재 착용 중인 전체 의상을 벗어서 공통 로직에 따라 손/인벤/바닥 순서로 처리
                     var outfit = actor.CurrentOutfit;
+                    // UI: 아이템 주는 중
+                    ActivityBubbleUI bubble = null;
+                    if (actor is MainActor bubbleOwner)
+                    {
+                        bubble = bubbleOwner.activityBubbleUI;
+                    }
+                    if (bubble != null)
+                    {
+                        bubble.SetFollowTarget(actor.transform);
+                        bubble.Show($"{actor.Name}이(가) {outfit.Name}을(를) 벗는 중", 0);
+                    }
+                    await SimDelay.DelaySimMinutes(2, token);
                     bool removed = actor.RemoveClothing(outfit);
+                    await SimDelay.DelaySimMinutes(2, token);
                     if (removed)
                     {
                         Debug.Log($"[{actor.Name}] {outfit.Name} 세트를 벗었습니다. (손 → 인벤토리 → 바닥 순 처리)");
@@ -45,14 +58,15 @@ namespace Agent.ActionHandlers
                     {
                         Debug.LogWarning($"[{actor.Name}] 의상을 벗지 못했습니다.");
                     }
+                    if (bubble != null) bubble.Hide();
                 }
             }
             catch (Exception ex)
             {
                 Debug.LogError($"[{actor.Name}] HandleRemoveClothing 오류: {ex.Message}");
             }
-            
-            await SimDelay.DelaySimMinutes(1); // 옷 벗기에는 1분 소요
+
+            //await SimDelay.DelaySimMinutes(1); // 옷 벗기에는 1분 소요
         }
 
         /// <summary>
@@ -77,7 +91,7 @@ namespace Agent.ActionHandlers
         {
             if (actor.CurrentOutfit?.Name == clothingName)
                 return actor.CurrentOutfit;
-            
+
             return null;
         }
     }

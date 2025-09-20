@@ -59,9 +59,9 @@ namespace Agent.ActionHandlers
                     if (actor.HandItem is IUsable usable)
                     {
                         Debug.Log($"[{actor.Name}] {actor.HandItem.Name}의 기본 사용 기능 실행");
-                        var result = usable.Use(actor, null);
+                        var result = await usable.Use(actor, null, token);
                         Debug.Log($"[{actor.Name}] {actor.HandItem.Name} 사용 결과: {result}");
-                        await SimDelay.DelaySimMinutes(2);
+                        await SimDelay.DelaySimMinutes(2, token);
                     }
                     else
                     {
@@ -90,7 +90,7 @@ namespace Agent.ActionHandlers
                 Debug.Log($"[{actor.Name}] {clothing.Name} 착용 시작");
                 
                 // Clothing.Use() 메서드 호출 (Wear 호출)
-                var result = clothing.Use(actor, null);
+                var result = await clothing.Use(actor, null, token);
                 Debug.Log($"[{actor.Name}] Clothing 착용 결과: {result}");
                 actor.brain.memoryManager.AddShortTermMemory("action", $"착용 완료: {clothing.Name} - {result}");
                 
@@ -127,15 +127,15 @@ namespace Agent.ActionHandlers
                 switch (command.ToLower())
                 {
                     case "chat":
-                        await HandleiPhoneChat(iphone, parameters);
+                        await HandleiPhoneChat(iphone, parameters, token);
                         break;
 
                     case "read":
-                        await HandleiPhoneRead(iphone, parameters);
+                        await HandleiPhoneRead(iphone, parameters, token);
                         break;
 
                     case "continue":
-                        await HandleiPhoneContinue(iphone, parameters);
+                        await HandleiPhoneContinue(iphone, parameters, token);
                         break;
 
                     default:
@@ -156,7 +156,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// iPhone Chat 명령을 처리합니다.
         /// </summary>
-        private async UniTask HandleiPhoneChat(iPhone iphone, Dictionary<string, object> parameters)
+        private async UniTask HandleiPhoneChat(iPhone iphone, Dictionary<string, object> parameters, CancellationToken token)
         {
             if (parameters.TryGetValue("target_actor", out var targetActorObj) && 
                 parameters.TryGetValue("message", out var messageObj))
@@ -169,11 +169,11 @@ namespace Agent.ActionHandlers
                 {
                     Debug.Log($"[{actor.Name}] iPhone으로 {target.Name}에게 메시지 전송: {message}");
                     // iPhone의 Use 메서드 호출 (Chat 명령)
-                    var result = iphone.Use(actor, new object[] { "Chat", target, message });
+                    var result = await iphone.Use(actor, new object[] { "Chat", target, message }, token);
                     Debug.Log($"[{actor.Name}] iPhone Chat 결과: {result}");
                     actor.brain.memoryManager.AddShortTermMemory("action", $"iPhone 메시지 전송: {result}");
                     
-                    await SimDelay.DelaySimMinutes(3);
+                    await SimDelay.DelaySimMinutes(3, token);
                 }
                 else
                 {
@@ -185,7 +185,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// iPhone Read 명령을 처리합니다.
         /// </summary>
-        private async UniTask HandleiPhoneRead(iPhone iphone, Dictionary<string, object> parameters)
+        private async UniTask HandleiPhoneRead(iPhone iphone, Dictionary<string, object> parameters, CancellationToken token)
         {
             if (parameters.TryGetValue("target_actor", out var readTargetObj) &&
                 parameters.TryGetValue("message_count", out var countObj))
@@ -198,11 +198,11 @@ namespace Agent.ActionHandlers
                 {
                     Debug.Log($"[{actor.Name}] iPhone으로 {readTargetActor.Name}의 메시지 {count}개 읽기");
                     // iPhone의 Use 메서드 호출 (Read 명령)
-                    var result = iphone.Use(actor, new object[] { "Read", readTargetActor, count });
+                    var result = await iphone.Use(actor, new object[] { "Read", readTargetActor, count }, token);
                     Debug.Log($"[{actor.Name}] iPhone Read 결과: {result}");
                     actor.brain.memoryManager.AddShortTermMemory("action",$"iPhone 메시지 읽기: {result}");
                     
-                    await SimDelay.DelaySimMinutes(2);
+                    await SimDelay.DelaySimMinutes(2, token);
                 }
             }
         }
@@ -210,7 +210,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// iPhone Continue 명령을 처리합니다.
         /// </summary>
-        private async UniTask HandleiPhoneContinue(iPhone iphone, Dictionary<string, object> parameters)
+        private async UniTask HandleiPhoneContinue(iPhone iphone, Dictionary<string, object> parameters, CancellationToken token)
         {
             if (parameters.TryGetValue("target_actor", out var continueTargetObj) &&
                 parameters.TryGetValue("message_count", out var continueCountObj))
@@ -223,11 +223,11 @@ namespace Agent.ActionHandlers
                 {
                     Debug.Log($"[{actor.Name}] iPhone으로 {continueTargetActor.Name}의 메시지 {continueCount}개 계속 읽기");
                     // iPhone의 Use 메서드 호출 (Continue 명령)
-                    var result = iphone.Use(actor, new object[] { "Continue", continueTargetActor, continueCount });
+                    var result = await iphone.Use(actor, new object[] { "Continue", continueTargetActor, continueCount }, token);
                     Debug.Log($"[{actor.Name}] iPhone Continue 결과: {result}");
                     actor.brain.memoryManager.AddShortTermMemory("action",$"iPhone 메시지 계속 읽기: {result}");
                     
-                    await SimDelay.DelaySimMinutes(2);
+                    await SimDelay.DelaySimMinutes(2, token);
                 }
             }
         }
@@ -248,13 +248,13 @@ namespace Agent.ActionHandlers
                 string action = actionObj.ToString();
                 Debug.Log($"[{actor.Name}] Note 사용: {action} 액션 실행");
 
-                // Note의 기본 Use 메서드 호출
-                var result = note.Use(actor, parameters);
+                // Note의 Use (async)
+                var result = await note.Use(actor, parameters, token);
                 Debug.Log($"[{actor.Name}] Note 사용 결과: {result}");
                 actor.brain.memoryManager.AddShortTermMemory("action", $"Note 사용 완료: {action} - {result}");
 
                 // 통일된 SimDelay (2분)
-                await SimDelay.DelaySimMinutes(2);
+                await SimDelay.DelaySimMinutes(2, token);
                 Debug.Log($"[{actor.Name}] Note {action} 완료");
             }
             catch (OperationCanceledException)
@@ -274,47 +274,23 @@ namespace Agent.ActionHandlers
         {
             try
             {
-                if (!parameters.TryGetValue("action", out var actionObj) || actionObj == null)
+                // BookUseParameterAgent는 page_number만 전달
+                int page = 1;
+                if (parameters != null)
                 {
-                    Debug.LogWarning($"[{actor.Name}] Book 사용: action 파라미터가 없습니다.");
-                    return;
+                    if (parameters.TryGetValue("page_number", out var pn) && pn is int i1) page = i1;
+                    else if (parameters.TryGetValue("page", out var pAlt) && pAlt is int i2) page = i2;
                 }
 
-                string action = actionObj.ToString();
-                Debug.Log($"[{actor.Name}] Book 사용: {action} 액션 실행");
+                Debug.Log($"[{actor.Name}] Book 읽기 시작: {page}페이지");
 
-                // Book의 기본 Use 메서드 호출
-                var result = book.Use(actor, parameters);
-                Debug.Log($"[{actor.Name}] Book 사용 결과: {result}");
-                actor.brain.memoryManager.AddShortTermMemory("action", $"Book 사용 완료: {action} - {result}");
+                // Book은 기본적으로 읽기(read)
+                var result = await book.Use(actor, page, token);
+                Debug.Log($"[{actor.Name}] Book 읽기 결과: {result}");
+                actor.brain.memoryManager.AddShortTermMemory("action", $"Book 읽기 완료: p{page} - {result}");
 
-                switch (action.ToLower())
-                {
-                    case "read":
-                        Debug.Log($"[{actor.Name}] Book 읽기 완료");
-                        await SimDelay.DelaySimMinutes(3);
-                        break;
-                    case "study":
-                        Debug.Log($"[{actor.Name}] Book 공부 완료");
-                        await SimDelay.DelaySimMinutes(5);
-                        break;
-                    case "skim":
-                        Debug.Log($"[{actor.Name}] Book 훑어보기 완료");
-                        await SimDelay.DelaySimMinutes(1);
-                        break;
-                    case "bookmark":
-                        Debug.Log($"[{actor.Name}] Book 북마크 완료");
-                        await SimDelay.DelaySimMinutes(1);
-                        break;
-                    case "close":
-                        Debug.Log($"[{actor.Name}] Book 닫기 완료");
-                        await SimDelay.DelaySimMinutes(1);
-                        break;
-                    default:
-                        Debug.Log($"[{actor.Name}] Book 기본 사용 완료");
-                        await SimDelay.DelaySimMinutes(2);
-                        break;
-                }
+                // 읽기 소요 시간 고정
+                await SimDelay.DelaySimMinutes(3, token);
             }
             catch (OperationCanceledException)
             {

@@ -77,14 +77,27 @@ public class HostClubWorker : NPC
                 return;
             }
 
-            ShowSpeech($"{locationKey}로 이동합니다.");
+            var bubble = activityBubbleUI;
             var token = currentActionCancellation != null ? currentActionCancellation.Token : CancellationToken.None;
-            await MoveToLocationAsync(locationKey, token);
+            try
+            {
+                if (bubble != null)
+                {
+                    bubble.SetFollowTarget(transform);
+                    bubble.Show($"{locationKey}로 이동 중", 0);
+                }
+                //ShowSpeech($"{locationKey}로 이동합니다.");
+                await MoveToLocationAsync(locationKey, token);
+            }
+            finally
+            {
+                if (bubble != null) bubble.Hide();
+            }
         }
         catch (OperationCanceledException)
         {
             Debug.LogWarning($"[{Name}] Move 액션이 취소되었습니다.");
-            ShowSpeech("이동을 취소합니다.");
+            //ShowSpeech("이동을 취소합니다.");
         }
         catch (Exception ex)
         {

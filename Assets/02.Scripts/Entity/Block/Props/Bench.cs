@@ -144,27 +144,47 @@ public class Bench : SitableProp
 
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
     {
-        await SimDelay.DelaySimMinutes(1, cancellationToken);
-        // 이미 앉아있는지 확인
-        for (int i = 0; i < seatedActors.Length; i++)
+        ActivityBubbleUI bubble = null;
+        try
         {
-            if (seatedActors[i] == actor)
+            if (actor is MainActor ma && ma.activityBubbleUI != null)
             {
-                StandUp(actor);
-                return "벤치에서 일어났습니다.";
+                bubble = ma.activityBubbleUI;
+                bubble.SetFollowTarget(actor.transform);
             }
-        }
 
-        if (sitPositions == null || GetAvailablePosition() == -1)
+            await SimDelay.DelaySimMinutes(1, cancellationToken);
+            // 이미 앉아있는지 확인
+            for (int i = 0; i < seatedActors.Length; i++)
+            {
+                if (seatedActors[i] == actor)
+                {
+                    if (bubble != null) bubble.Show("벤치에서 일어나는 중", 0);
+                    await SimDelay.DelaySimMinutes(1, cancellationToken);
+                    StandUp(actor);
+                    //await SimDelay.DelaySimMinutes(1, cancellationToken);
+                    return "벤치에서 일어났습니다.";
+                }
+            }
+
+            if (sitPositions == null || GetAvailablePosition() == -1)
+            {
+                return "벤치에 빈 좌석이 없습니다.";
+            }
+
+            if (bubble != null) bubble.Show("벤치에 앉는 중", 0);
+            await SimDelay.DelaySimMinutes(1, cancellationToken);
+            if (TrySit(actor))
+            {
+                //await SimDelay.DelaySimMinutes(1, cancellationToken);
+                return "벤치에 앉았습니다.";
+            }
+
+            return "벤치에 앉을 수 없습니다.";
+        }
+        finally
         {
-            return "벤치에 빈 좌석이 없습니다.";
+            if (bubble != null) bubble.Hide();
         }
-
-        if (TrySit(actor))
-        {
-            return "벤치에 앉았습니다.";
-        }
-
-        return "벤치에 앉을 수 없습니다.";
     }
 }

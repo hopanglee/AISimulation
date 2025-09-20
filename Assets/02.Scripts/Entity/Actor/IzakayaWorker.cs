@@ -139,8 +139,21 @@ public class IzakayaWorker : NPC
             await MoveToKitchenAsync(token);
 
             // 조리 시작
-            Debug.Log($"{dishKey}를 조리합니다.");
-            await SimDelay.DelaySimMinutes(cookSimMinutes, token);
+            var bubble = activityBubbleUI;
+            try
+            {
+                if (bubble != null)
+                {
+                    bubble.SetFollowTarget(transform);
+                    bubble.Show($"{dishKey} 조리 중", 0);
+                }
+                Debug.Log($"{dishKey}를 조리합니다.");
+                await SimDelay.DelaySimMinutes(cookSimMinutes, token);
+            }
+            finally
+            {
+                if (bubble != null) bubble.Hide();
+            }
 
             // 프리팹 인스턴스화 (OnEnable 전에 curLocation을 설정하기 위해 비활성 부모 아래에서 생성)
             var prefab = cookablePrefabs[dishKey];
@@ -165,7 +178,22 @@ public class IzakayaWorker : NPC
             Destroy(tempParent);
 
             // 손(우선) 또는 인벤토리에 보관 시도
-            bool picked = PickUp(cookedFood);
+            bool picked = false;
+            try
+            {
+                var bubble2 = activityBubbleUI;
+                if (bubble2 != null)
+                {
+                    bubble2.SetFollowTarget(transform);
+                    bubble2.Show($"{dishKey} 담는 중", 0);
+                }
+                picked = PickUp(cookedFood);
+            }
+            finally
+            {
+                var bubble2 = activityBubbleUI;
+                if (bubble2 != null) bubble2.Hide();
+            }
             if (!picked)
             {
                 // PickUp 실패 시 현재 위치에 두기 (curLocation은 이미 설정됨)

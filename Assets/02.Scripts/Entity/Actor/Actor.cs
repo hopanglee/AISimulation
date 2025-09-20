@@ -927,6 +927,10 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     [Header("Speech Bubble")]
     public SpeechBubbleUI speechBubble;
 
+    [Header("Activity Bubble")]
+    [SerializeField, Tooltip("활동 진행 상황을 표시할 UI (NPC 포함)")]
+    public ActivityBubbleUI activityBubbleUI;
+
     /// <summary>
     /// SpeechBubbleUI 초기화
     /// </summary>

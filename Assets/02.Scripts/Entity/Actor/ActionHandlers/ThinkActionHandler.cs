@@ -102,24 +102,34 @@ namespace Agent.ActionHandlers
         private async UniTask<ThinkResult> PerformInteractiveThinkingAsync(string thinkScope, string topic, int duration, CancellationToken token)
         {
             var thoughtChain = new List<string>();
-           // var insights = new List<string>();
+            // var insights = new List<string>();
 
             try
             {
                 // 메모리 정보 수집
                 string memoryContext = await GatherMemoryContextAsync(thinkScope);
-                
+
                 // 대화 초기화
                 questionAgent.ResetConversation();
                 answerAgent.ResetConversation();
-                
-                // 각 질문-답변 라운드마다 시뮬레이션 시간 5분 소모
-                int thinkingTimeMinutes = 5; // 5분
+
+                // 각 질문-답변 라운드마다 시뮬레이션 시간 6분 소모
+                int thinkingTimeMinutes = 6; // 6분
                 // 설정된 시간에 따라 반복 횟수 결정
                 int thinkingRounds = Math.Max(1, duration / thinkingTimeMinutes);
-                
+
                 string previousAnswer = ""; // 첫 질문을 위한 빈 답변
-                
+                                            // UI: 아이템 주는 중
+                ActivityBubbleUI bubble = null;
+                if (actor is MainActor bubbleOwner)
+                {
+                    bubble = bubbleOwner.activityBubbleUI;
+                }
+                if (bubble != null)
+                {
+                    bubble.SetFollowTarget(actor.transform);
+                    bubble.Show($"생각 중: {topic}", 0);
+                }
                 for (int round = 0; round < thinkingRounds && !token.IsCancellationRequested; round++)
                 {
                     // 질문 생성 (이전 답변을 기반으로)
@@ -129,11 +139,12 @@ namespace Agent.ActionHandlers
                         previousAnswer,
                         memoryContext
                     );
-
+                    bubble.Show($"생각 중: {questionResult}", 0);
                     thoughtChain.Add(questionResult);
-
+                    await SimDelay.DelaySimMinutes(thinkingTimeMinutes/2, token);
                     // 답변 생성 (질문을 기반으로)
                     var answerResult = await answerAgent.GenerateAnswerAsync(questionResult, thinkScope, topic, memoryContext);
+                    bubble.Show($"생각 중: {answerResult}", 0);
                     thoughtChain.Add(answerResult);
 
                     // 다음 라운드를 위해 현재 답변 저장
@@ -142,8 +153,8 @@ namespace Agent.ActionHandlers
                     Debug.Log($"[{actor.Name}] Think Round {round + 1}: {thinkingTimeMinutes}분 깊이 생각 중...");
                     Debug.Log($"[{actor.Name}] Q: {questionResult}");
                     Debug.Log($"[{actor.Name}] A: {answerResult}");
-                    
-                    await SimDelay.DelaySimMinutes(thinkingTimeMinutes, token);
+
+                    await SimDelay.DelaySimMinutes(thinkingTimeMinutes/2, token);
 
                     // 통찰 추출 (홀수 라운드마다, MainActor의 설정에 따라)
                     // if (round % 2 == 1 && actor is MainActor mainActorForInsight && mainActorForInsight.useInsightAgent)
@@ -159,7 +170,7 @@ namespace Agent.ActionHandlers
 
                 // 최종 결론 생성
                 var conclusionResult = await conclusionAgent.GenerateFinalConclusionsAsync(topic, thoughtChain);
-
+                if (bubble != null) bubble.Hide();
                 return new ThinkResult
                 {
                     ThoughtChain = thoughtChain,

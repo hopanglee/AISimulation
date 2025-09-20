@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-
+using System.Threading;
+using Cysharp.Threading.Tasks;
 [System.Serializable]
 public class iPhone : Item, IUsable
 {
@@ -42,8 +43,23 @@ public class iPhone : Item, IUsable
     /// - Read: ["Read", target Actor, number of messages to read (int)]
     /// - Continue: ["Continue", target Actor, number of additional messages to read (int)]
     /// </summary>
-    public string Use(Actor actor, object variable)
+    public async UniTask<string> Use(Actor actor, object variable, CancellationToken token = default)
     {
+        var bubble = actor?.activityBubbleUI;
+        if (bubble != null)
+        {
+            bubble.SetFollowTarget(actor.transform);
+            if (variable is object[] pre && pre.Length > 0 && pre[0] is string preCmd)
+            {
+                var t = preCmd.ToLower();
+                if (t == "chat") bubble.Show("아이폰 채팅 중", 0);
+                else if (t == "read") bubble.Show("아이폰 읽는 중", 0);
+                else if (t == "continue") bubble.Show("아이폰 계속 읽는 중", 0);
+                else bubble.Show("아이폰 사용 중", 0);
+            }
+            else bubble.Show("아이폰 사용 중", 0);
+        }
+        await SimDelay.DelaySimMinutes(2, token);
         if (variable is object[] args && args.Length >= 3 && args[0] is string command)
         {
             string cmd = ((string)args[0]).ToLower();
@@ -51,6 +67,8 @@ public class iPhone : Item, IUsable
             {
                 if (args[1] is Actor target && args[2] is string text)
                 {
+                    bubble.Show($"아이폰 {target.Name}과 채팅 중: {text}", 0);
+                    await SimDelay.DelaySimMinutes(2, token);
                     return Chat(actor, target, text);
                 }
                 else
@@ -60,6 +78,8 @@ public class iPhone : Item, IUsable
             {
                 if (args[1] is Actor target)
                 {
+                    bubble.Show($"아이폰 {target.Name}과 채팅 읽는 중", 0);
+                    await SimDelay.DelaySimMinutes(2, token);
                     return Read(actor, target, 10);
                 }
                 else
@@ -69,6 +89,8 @@ public class iPhone : Item, IUsable
             {
                 if (args[1] is Actor target)
                 {
+                    bubble.Show($"아이폰 {target.Name}과 채팅 계속 읽는 중", 0);
+                    await SimDelay.DelaySimMinutes(2, token);
                     return Continue(actor, target, 10);
                 }
                 else
@@ -79,6 +101,7 @@ public class iPhone : Item, IUsable
                 return "Unknown command.";
             }
         }
+        if (bubble != null) bubble.Hide();
         return "Invalid input value.";
     }
 
@@ -98,7 +121,7 @@ public class iPhone : Item, IUsable
             {
                 return "The target does not have an iPhone.";
             }
-            
+
             string time = GetTime();
             ChatMessage msg = new ChatMessage(time, actor.Name, text);
 
@@ -122,7 +145,7 @@ public class iPhone : Item, IUsable
             targetIPhone.chatNotification = true;
             string notificationMessage = $"New message from {actor.Name} at {time}";
             targetIPhone.notifications.Add(notificationMessage);
-            
+
             // ExternalEventService에 iPhone 알림 발생을 알림
             Services.Get<IExternalEventService>().NotifyiPhoneNotification(target, notificationMessage);
 
