@@ -65,6 +65,12 @@ public class LocationTransitionTrigger : MonoBehaviour
 
         if (trigger == null)
             return;
+
+        if (trigger.curLocation is SitableProp sitable)
+        {
+            return;
+        }
+
         var prevArea = Services.Get<ILocationService>().GetArea(trigger.curLocation);
         var nextLoc = GetEnterRoom();
         trigger.SetCurrentRoom(nextLoc);

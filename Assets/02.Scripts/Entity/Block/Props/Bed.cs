@@ -218,23 +218,10 @@ public class Bed : SitableProp
             isOccupied = false;
             sleepingActor = null;
 
-            // 액터가 여전히 Bed 하위라면 curLocation을 Bed의 curLocation으로 설정 (부모 이동 포함)
-            if (actor != null && actor.transform != null)
-            {
-                Transform t = actor.transform;
-                while (t != null && t.parent != null)
-                {
-                    if (t.parent == transform)
-                    {
-                        actor.curLocation = this.curLocation;
-                        break;
-                    }
-                    t = t.parent;
-                }
-            }
+            base.StandUp(actor);
 
             // MainActor인 경우 WakeUp 함수 호출
-            if (actor is MainActor mainActor)
+            if (actor is MainActor mainActor && mainActor.IsSleeping)
             {
                 _ = mainActor.WakeUp();
             }
@@ -243,9 +230,7 @@ public class Bed : SitableProp
 
     public override bool IsActorSeated(Actor actor)
     {
-        // Bed는 앉기와 잠자기를 구분해서 관리
-        // 현재는 앉기 상태를 별도로 추적하지 않으므로 false 반환
-        return false;
+        return isOccupied && sleepingActor == actor;
     }
 
     public override bool IsOccupied()

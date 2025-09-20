@@ -53,6 +53,9 @@ public class Brain
 
     public PerceptionResult recentPerceptionResult;
 
+    // Perception 최초 캐시 체크 플래그를 Brain 단에서 관리
+    public bool HasCheckedPerceptionCacheOnce = false;
+
     // --- Test Settings ---
     private bool forceNewDayPlan = false; // 기존 계획 무시하고 새로 생성 (테스트용)
     private bool planOnly = false; // 첫 계획 생성까지만 실행하고 그 이후에는 멈춤 (테스트용)
@@ -289,7 +292,7 @@ public class Brain
                 await relationshipMemoryManager.ProcessRelationshipUpdatesAsync(perceptionResult);
 
                 // === 계획 유지/수정 결정 및 필요 시 재계획 (DayPlanner 내부로 캡슐화) ===
-                await dayPlanner.DecideAndMaybeReplanAsync();
+                await dayPlanner.DecideAndMaybeReplanAsync(perceptionResult);
             }
 
 

@@ -69,6 +69,11 @@ public class ActivityBubbleUI : MonoBehaviour
         isVisible = true;
         gameObject.SetActive(true);
 
+		// 즉시 텍스트 반영 (totalSeconds가 0이어도 텍스트가 보이도록)
+		activityText.text = remainingSeconds > 0
+			? $"{activityName}  {remainingSeconds}초"
+			: activityName;
+
         countdownCts = new CancellationTokenSource();
         if (!countdownRunning && totalSeconds > 0)
         {

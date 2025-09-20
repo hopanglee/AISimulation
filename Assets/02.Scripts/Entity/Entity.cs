@@ -280,6 +280,11 @@ public abstract class Entity : MonoBehaviour, ILocation
         // Actor의 location을 포함하는지 확인 (계층 구조에서)
         var currentLocation = curLocation;
         var actorLocation = actor.curLocation;
+
+        if (actorLocation is SitableProp sitable)
+        {
+            actorLocation = sitable.curLocation;
+        }
         
         // Actor의 location까지 올라가면서 중복되는 부분 찾기
         while (currentLocation != null && currentLocation != actorLocation)
@@ -315,7 +320,10 @@ public abstract class Entity : MonoBehaviour, ILocation
                 if (i > 0) sb.Append(":");
                 sb.Append(chain[i].GetLocalizedName());
             }
-            sb.Append(":");
+            if(chain.Count > 0)
+            {
+                sb.Append(":");
+            }
             sb.Append(subjectName);
             
             return sb.ToString();

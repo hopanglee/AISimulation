@@ -86,6 +86,7 @@ public class Bench : SitableProp
             if (seatedActors[i] == actor)
             {
                 seatedActors[i] = null;
+                base.StandUp(actor);
                 break;
             }
         }

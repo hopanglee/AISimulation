@@ -250,13 +250,13 @@ namespace Agent.ActionHandlers
                 {
                     if (sitable.IsActorSeated(actor))
                     {
-                        ActivityBubbleUI bubble = null;
-                        if (actor is MainActor bubbleOwner)
-                        {
-                            bubble = bubbleOwner.activityBubbleUI;
-                        }
-                        if (bubble != null) bubble.Show("일어나는 중", 0);
-                        await SimDelay.DelaySimMinutes(1, token);
+                        // ActivityBubbleUI bubble = null;
+                        // if (actor is MainActor bubbleOwner)
+                        // {
+                        //     bubble = bubbleOwner.activityBubbleUI;
+                        // }
+                        //if (bubble != null) bubble.Show("일어나는 중", 0);
+                        //await SimDelay.DelaySimMinutes(1, token);
                         sitable.StandUp(actor);
                         Debug.Log($"[{actor.Name}] 이동 전에 일어섰습니다.");
                     }

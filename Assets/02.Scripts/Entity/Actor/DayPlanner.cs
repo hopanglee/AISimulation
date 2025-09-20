@@ -242,7 +242,7 @@ public class DayPlanner
     /// <summary>
     /// Perception 결과를 바탕으로 계획 유지/수정을 결정하고 필요한 경우 재계획을 수행합니다.
     /// </summary>
-    public async UniTask DecideAndMaybeReplanAsync()
+    public async UniTask DecideAndMaybeReplanAsync(PerceptionResult perceptionResult)
     {
         var timeService = Services.Get<ITimeService>();
         var currentTime = timeService.CurrentTime;
@@ -250,6 +250,7 @@ public class DayPlanner
 
         var decisionInput = new PlanDecisionAgent.PlanDecisionInput
         {
+            perception = perceptionResult,
             currentPlan = currentPlan,
             currentTime = currentTime
         };

@@ -156,7 +156,6 @@ public class RelationshipAgent : GPT
                 { "situation_interpretation", perceptionResult.situation_interpretation },
                 { "thought_chain", string.Join(" -> ", perceptionResult.thought_chain ?? new List<string>()) },
                 { "emotions", FormatEmotions(perceptionResult.emotions) },
-                {"current_relationships", actor.LoadRelationships() }
             };
 
             string systemPrompt = LoadRelationshipAgentPrompt();

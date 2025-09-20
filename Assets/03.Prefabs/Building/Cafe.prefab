@@ -3997,7 +3997,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
   isClean: 1
   isOccupied: 0
@@ -10843,6 +10842,14 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 13
       objectReference: {fileID: 0}
+    - target: {fileID: 1747247371922712710, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.719
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747247371922712710, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.023
+      objectReference: {fileID: 0}
     - target: {fileID: 7030879534070716823, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -13035,6 +13042,14 @@ PrefabInstance:
     - target: {fileID: 1498733329319372783, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
       propertyPath: m_Layer
       value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747247371922712710, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.739
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747247371922712710, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.106
       objectReference: {fileID: 0}
     - target: {fileID: 7030879534070716823, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
       propertyPath: m_RootOrder
@@ -15253,6 +15268,14 @@ PrefabInstance:
     - target: {fileID: 1498733329319372783, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
       propertyPath: m_Layer
       value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747247371922712710, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.605
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747247371922712710, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.372
       objectReference: {fileID: 0}
     - target: {fileID: 7030879534070716823, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
       propertyPath: m_RootOrder
@@ -18681,6 +18704,14 @@ PrefabInstance:
     - target: {fileID: 1498733329319372783, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
       propertyPath: m_Name
       value: Chair
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747247371922712710, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.76
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747247371922712710, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.335
       objectReference: {fileID: 0}
     - target: {fileID: 7030879534070716823, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
       propertyPath: m_LocalPosition.x
@@ -27959,7 +27990,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
   supplies:
   - itemKey: Coffee Bag
@@ -29519,6 +29549,14 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 13
       objectReference: {fileID: 0}
+    - target: {fileID: 1747247371922712710, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.714
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747247371922712710, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.037
+      objectReference: {fileID: 0}
     - target: {fileID: 7030879534070716823, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -30260,7 +30298,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
   isWaterRunning: 0
   waterTemperature: 20
@@ -36673,6 +36710,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Chair
       objectReference: {fileID: 0}
+    - target: {fileID: 1747247371922712710, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747247371922712710, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.092
+      objectReference: {fileID: 0}
     - target: {fileID: 7030879534070716823, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -36816,6 +36861,14 @@ PrefabInstance:
     - target: {fileID: 1498733329319372783, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
       propertyPath: m_Layer
       value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747247371922712710, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.73
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747247371922712710, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.049
       objectReference: {fileID: 0}
     - target: {fileID: 7030879534070716823, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
       propertyPath: m_RootOrder
@@ -48665,7 +48718,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
   items: []
@@ -50300,7 +50352,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
 --- !u!4 &2637115673104244786 stripped
 Transform:
@@ -50342,7 +50393,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
   maxItems: 0
   items: []
@@ -50381,7 +50431,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 4939089539691640050}
   supplies:
   - itemKey: Blueberry Basket
@@ -50415,7 +50464,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 7149293229181246106}
   supplies:
   - itemKey: Corn Bread
@@ -51346,7 +51394,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
   supplies:
   - itemKey: Caffe Latte
@@ -55796,6 +55843,14 @@ PrefabInstance:
     - target: {fileID: 1498733329319372783, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
       propertyPath: m_Name
       value: Chair (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747247371922712710, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.63
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747247371922712710, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.424
       objectReference: {fileID: 0}
     - target: {fileID: 7030879534070716823, guid: 1c6c8f7fb15ff2e478151f5f0b1d90cd, type: 3}
       propertyPath: m_RootOrder
