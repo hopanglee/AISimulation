@@ -124,8 +124,6 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     // Event History는 ThinkingActor로 이동
     #endregion
 
-    // timeService는 ThinkingActor로 이동
-
     protected override void Awake()
     {
         base.Awake();

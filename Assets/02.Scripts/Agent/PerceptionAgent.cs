@@ -20,9 +20,6 @@ public class PerceptionAgentGroup
     private IdAgent idAgent;
     private EgoAgent egoAgent;
 
-    // 최초 1회 캐시 체크용
-    private bool firstCacheCheckDone = false;
-
     public PerceptionAgentGroup(Actor actor)
     {
         this.actor = actor;
@@ -110,10 +107,12 @@ public class PerceptionAgentGroup
             var timeService = Services.Get<ITimeService>();
             var currentDate = timeService.CurrentTime;
 
+            MainActor mainActor = actor as MainActor;
+
             // 최초 1회: 캐시된 Ego 결과가 있으면 그것을 사용
-            if (!firstCacheCheckDone)
+            if (!mainActor.brain.HasCheckedPerceptionCacheOnce)
             {
-                firstCacheCheckDone = true;
+                mainActor.brain.HasCheckedPerceptionCacheOnce = true;
                 var cachedEgo = LoadResultIfExists<EgoResult>(currentDate, "ego");
                 if (cachedEgo != null)
                 {

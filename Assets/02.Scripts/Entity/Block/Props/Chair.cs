@@ -54,6 +54,7 @@ public class Chair : SitableProp
         if (IsActorSeated(actor))
         {
             seatedActor = null;
+            base.StandUp(actor);
         }
     }
     

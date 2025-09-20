@@ -37,6 +37,7 @@ Transform:
   - {fileID: 1030979320}
   - {fileID: 1030979324}
   - {fileID: 7755958601388666157}
+  - {fileID: 8485929385056485755}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!205 &1030979309
@@ -107,13 +108,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Sofa
+  _nameKr: 
   _currentStatusDescription: 
-  Description: 
+  _currentStatusDescriptionKr: 
   toMovePos: {fileID: 0}
+  standUpPosition: {fileID: 8485929385056485755}
   maxOccupants: 4
-  sitHeight: 0.5
   sitPositions:
   - {fileID: 7755958601388666157}
   seatedActors: []
@@ -461,6 +464,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1030979323}
   m_Mesh: {fileID: 4300006, guid: abc00000000014525022306102247295, type: 3}
+--- !u!1 &3377003189494604915
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8485929385056485755}
+  m_Layer: 6
+  m_Name: Standup Pos
+  m_TagString: Untagged
+  m_Icon: {fileID: 3443629218296621865, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &8485929385056485755
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3377003189494604915}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.811, y: 0, z: 0.119}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1030979308}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5392477862830712500
 GameObject:
   m_ObjectHideFlags: 0

@@ -24,8 +24,8 @@ public class RelationshipMemoryManager
             this.localizationService = Services.Get<ILocalizationService>();
             if (this.localizationService != null)
             {
-                var characterPath = Path.GetDirectoryName(this.localizationService.GetCharacterInfoPath(actor.Name));
-                this.basePath = Path.Combine(characterPath, "memory", "relationship");
+                //var characterPath = Path.GetDirectoryName(this.localizationService.GetCharacterInfoPath(actor.Name));
+                this.basePath = Path.Combine("Assets/11.GameDatas/Character", actor.Name, "memory", "relationship");
             }
             else
             {

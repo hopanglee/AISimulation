@@ -35,6 +35,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7077007765765577844}
+  - {fileID: 42875830164705893}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &153598624774490129
@@ -148,14 +149,48 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Chair
+  _nameKr: 
   _currentStatusDescription: 
-  Description: 
+  _currentStatusDescriptionKr: 
   toMovePos: {fileID: 0}
+  standUpPosition: {fileID: 42875830164705893}
   isComfortable: 1
   sitPosition: {fileID: 7077007765765577844}
   seatedActor: {fileID: 0}
+--- !u!1 &6086946910786741812
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 42875830164705893}
+  m_Layer: 6
+  m_Name: StandUp Pos
+  m_TagString: Untagged
+  m_Icon: {fileID: 3443629218296621865, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &42875830164705893
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6086946910786741812}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.106, y: 0, z: -0.791}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3859139268901537716}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8286227210713775482
 GameObject:
   m_ObjectHideFlags: 0

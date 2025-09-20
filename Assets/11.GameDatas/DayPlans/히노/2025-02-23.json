@@ -10,7 +10,28 @@
           "description": "협탁으로 가서 ‘히노의 일기’를 펼쳐 정확히 5분 읽는다(핵심 문장 1~2개 속으로 암송). 시계를 한번 보고 오늘 아침 목표를 속삭여 정렬한다. 일기를 덮어 협탁 위에 단정히 올려두고 가볍게 어깨를 돌려 몸을 깨운다.",
           "duration_minutes": 20,
           "location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:거실",
-          "specific_actions": []
+          "specific_actions": [
+            {
+              "action_type": "MoveToArea",
+              "description": "협탁 옆으로 가서 자리를 잡는다. (단계: 거실에서 협탁 쪽으로 걸어가서 협탁 앞에 선다, 자세를 편하게 잡는다, 히노의 일기를 손에 든다.)",
+              "duration_minutes": 5
+            },
+            {
+              "action_type": "UseObject",
+              "description": "히노의 일기를 펼쳐 정확히 5분 동안 정독한다. 읽는 동안 핵심 문장 1~2개를 속으로 암송하며 의미를 느낀다(타이머는 마음속으로 설정).",
+              "duration_minutes": 5
+            },
+            {
+              "action_type": "PerformActivity",
+              "description": "시계를 한 번 보고(눈으로 확인) 오늘 아침 목표를 낮은 목소리로 속삭여 정렬한다. 일기를 조용히 덮어 협탁 위에 단정히 올려둔다. (단계: 시계 확인 → 목표 속삭임 → 일기 덮기 및 정돈)",
+              "duration_minutes": 5
+            },
+            {
+              "action_type": "PerformActivity",
+              "description": "가볍게 어깨 돌리기·목·등 풀기·팔 흔들기 등으로 5분간 몸을 깨운다. 마무리로 깊게 2회 호흡하고 오늘 리듬을 외치며 미소로 마친다.",
+              "duration_minutes": 5
+            }
+          ]
         },
         {
           "activity_name": "가벼운 아침 — 도넛 하나+물 한 컵",

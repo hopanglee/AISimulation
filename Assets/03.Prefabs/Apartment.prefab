@@ -2572,6 +2572,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6861762158413994431}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3123770944437019035
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8778835131258777240}
+  m_Layer: 6
+  m_Name: WakeUpPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8778835131258777240
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3123770944437019035}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.93, y: 0, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7754750512229850492}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3124663139202103507
 GameObject:
   m_ObjectHideFlags: 0
@@ -3095,6 +3126,37 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!1 &3683342077099640602
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1608557693390319888}
+  m_Layer: 6
+  m_Name: StandUp Pos
+  m_TagString: Untagged
+  m_Icon: {fileID: 4422084297763085224, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1608557693390319888
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3683342077099640602}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.568, y: 0, z: 0.018}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8420966775952307562}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3773315375044014244
 GameObject:
   m_ObjectHideFlags: 0
@@ -4506,6 +4568,37 @@ Transform:
   - {fileID: 8384302536847240831}
   m_Father: {fileID: 7578380262669965409}
   m_LocalEulerAnglesHint: {x: 0, y: -183.997, z: 0}
+--- !u!1 &5071197690721055343
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7967217782637005423}
+  m_Layer: 6
+  m_Name: StandUp Pos
+  m_TagString: Untagged
+  m_Icon: {fileID: 4422084297763085224, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7967217782637005423
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5071197690721055343}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.49551314, z: -0, w: -0.8686005}
+  m_LocalPosition: {x: -0.681, y: 0, z: -0.082}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4673078749071095755}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5077985497865189177
 GameObject:
   m_ObjectHideFlags: 0
@@ -17238,6 +17331,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 400000, guid: e178e8136625b044b88ca3c44768f5db, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6951535062731810788}
+    - targetCorrespondingSourceObject: {fileID: 400000, guid: e178e8136625b044b88ca3c44768f5db, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7967217782637005423}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 100000, guid: e178e8136625b044b88ca3c44768f5db, type: 3}
       insertIndex: -1
@@ -17269,6 +17365,7 @@ MonoBehaviour:
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
   toMovePos: {fileID: 0}
+  standUpPosition: {fileID: 7967217782637005423}
   isComfortable: 1
   sitPosition: {fileID: 6951535062731810788}
   seatedActor: {fileID: 0}
@@ -23038,12 +23135,19 @@ PrefabInstance:
       propertyPath: _curLocation
       value: 
       objectReference: {fileID: 7845839950389305091}
+    - target: {fileID: 6162088561761804479, guid: 3582d8b46612b674db0e34b92b98fbba, type: 3}
+      propertyPath: standUpPosition
+      value: 
+      objectReference: {fileID: 8778835131258777240}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 4550849828388228, guid: 3582d8b46612b674db0e34b92b98fbba, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4717288901987327308}
+    - targetCorrespondingSourceObject: {fileID: 4550849828388228, guid: 3582d8b46612b674db0e34b92b98fbba, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8778835131258777240}
     - targetCorrespondingSourceObject: {fileID: 4550849828388228, guid: 3582d8b46612b674db0e34b92b98fbba, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3772354109032120151}
@@ -24301,6 +24405,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 400000, guid: e178e8136625b044b88ca3c44768f5db, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5008572683708592581}
+    - targetCorrespondingSourceObject: {fileID: 400000, guid: e178e8136625b044b88ca3c44768f5db, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1608557693390319888}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 100000, guid: e178e8136625b044b88ca3c44768f5db, type: 3}
       insertIndex: -1
@@ -24337,6 +24444,7 @@ MonoBehaviour:
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
   toMovePos: {fileID: 0}
+  standUpPosition: {fileID: 1608557693390319888}
   isComfortable: 1
   sitPosition: {fileID: 5008572683708592581}
   seatedActor: {fileID: 0}

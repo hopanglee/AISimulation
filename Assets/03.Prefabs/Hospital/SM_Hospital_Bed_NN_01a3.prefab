@@ -31,6 +31,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1740242643094956121}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1823090439762269284
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1391118892999474701}
+  m_Layer: 0
+  m_Name: Standup Position
+  m_TagString: Untagged
+  m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1391118892999474701
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1823090439762269284}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.003, y: 0.339, z: 1.602}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1740242643094956121}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2513550940114472060
 GameObject:
   m_ObjectHideFlags: 0
@@ -510,6 +541,7 @@ Transform:
   - {fileID: 1023616086736214565}
   - {fileID: 8840417381644468641}
   - {fileID: 5951692853433621949}
+  - {fileID: 1391118892999474701}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!205 &5509004731212788910
@@ -565,11 +597,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: on
+  _prepositionKr: 
   _isHideChild: 0
   _name: Hospital Bed
+  _nameKr: 
   _currentStatusDescription: 
-  Description: 
+  _currentStatusDescriptionKr: 
   toMovePos: {fileID: 0}
+  standUpPosition: {fileID: 1391118892999474701}
   isOccupied: 0
   sleepingActor: {fileID: 0}
   sleepPosition: {fileID: 5951692853433621949}

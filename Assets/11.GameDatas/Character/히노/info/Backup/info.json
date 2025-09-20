@@ -58,9 +58,9 @@
   "emotions": {
     "curiosity": 0.8,
     "optimism": 0.9,
-    "calmness": 0.7,
-    "impulsiveness": 0.6,
-    "happiness": 0.8
+    "responsibility": 0.85,
+    "impulsiveness": 0.65,
+    "desire": 0.8
   },
-  "last_updated": "2025-09-19T22:34:20.806077+09:00"
+  "last_updated": "2025-09-20T19:28:33.626458+09:00"
 }

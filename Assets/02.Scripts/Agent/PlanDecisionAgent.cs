@@ -198,14 +198,27 @@ public class PlanDecisionAgent : GPT
 	{
 		var localizationService = Services.Get<ILocalizationService>();
 
+		// null 방어 처리
+		var perception = input.perception;
+		var situation = perception?.situation_interpretation ?? string.Empty;
+		var thoughts = perception?.thought_chain != null ? string.Join("->", perception.thought_chain) : string.Empty;
+		var currentPlanString = input.currentPlan != null ? input.currentPlan.ToString() : string.Empty;
+
 		// 프롬프트 치환 정보
 		var replacements = new Dictionary<string, string>
 		{
-			{ "perception_situation", input.perception.situation_interpretation },
-			{ "perception_thoughts", string.Join("->", input.perception.thought_chain) },
+			{ "perception_situation", situation },
+			{ "perception_thoughts", thoughts },
 			{ "current_time", $"{input.currentTime.year}년 {input.currentTime.month}월 {input.currentTime.day}일 {input.currentTime.GetDayOfWeek()} {input.currentTime.hour:D2}:{input.currentTime.minute:D2}" },
-			{ "current_plan", input.currentPlan.ToString() }
+			{ "current_plan", currentPlanString }
 		};
+
+		// 로컬라이제이션 서비스 폴백
+		if (localizationService == null)
+		{
+			// 간단한 템플릿 폴백
+			return $"상황: {situation}\n생각: {thoughts}\n현재시각: {replacements["current_time"]}\n현재계획: {currentPlanString}";
+		}
 
 		return localizationService.GetLocalizedText("PlanDecisionAgentPrompt", replacements);
 	}

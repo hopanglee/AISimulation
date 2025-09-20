@@ -135,7 +135,7 @@ public class GPT
             logContent.AppendLine($"=== GPT Conversation Log ===");
             logContent.AppendLine($"Actor: {actorName}");
             logContent.AppendLine($"Agent Type: {effectiveAgentType}");
-            logContent.AppendLine($"Game Time: {System.DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            logContent.AppendLine($"Game Time: {Services.Get<ITimeService>().CurrentTime.ToString()}");
             logContent.AppendLine($"Real Time: {System.DateTime.Now:yyyy-MM-dd HH:mm:ss}");
             logContent.AppendLine($"=====================================");
             logContent.AppendLine();

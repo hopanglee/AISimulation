@@ -26,9 +26,9 @@ public abstract class MainActor : Actor
 	[Header("Items")]
 	public iPhone iPhone;
 
-    // ActivityBubbleUI는 Actor로 이동했습니다 (NPC 포함 공용)
+	// ActivityBubbleUI는 Actor로 이동했습니다 (NPC 포함 공용)
 
-	#if UNITY_EDITOR
+#if UNITY_EDITOR
 	[FoldoutGroup("Debug UI"), Button("Test Activity Bubble: 5s Walk to Kitchen")]
 	private async void Debug_TestActivityBubble_Walk()
 	{
@@ -53,7 +53,7 @@ public abstract class MainActor : Actor
 			activityBubbleUI.Hide();
 		}
 	}
-	#endif
+#endif
 
 	[Header("Sleep System")]
 	[SerializeField, Range(0, 23)]
@@ -286,17 +286,10 @@ public abstract class MainActor : Actor
 		Stamina = Mathf.Min(100, Stamina + 30); // 수면으로 체력 회복
 
 		// 부모 체인 중 Bed가 있으면 Actor의 curLocation을 Bed의 curLocation으로 설정한다
-		Transform t = transform;
-		while (t != null && t.parent != null)
+
+		if (curLocation is SitableProp sitable)
 		{
-			var parentBed = t.parent.GetComponent<Bed>();
-			if (parentBed != null)
-			{
-				// LocationService 일관성을 위해 curLocation 사용 (부모 변경 포함)
-				curLocation = parentBed.curLocation;
-				break;
-			}
-			t = t.parent;
+			sitable.StandUp(this);
 		}
 
 		Debug.Log($"[{Name}] Woke up at {currentTime}. Stamina restored to {Stamina}");
@@ -625,14 +618,14 @@ public abstract class MainActor : Actor
 		}
 	}
 
-	#if UNITY_EDITOR
+#if UNITY_EDITOR
 	[FoldoutGroup("Debug"), Button("Toggle Force New DayPlan (Per-Actor)")]
 	private void ToggleForceNewDayPlanForThisActor()
 	{
 		ForceNewDayPlanForThisActor = !ForceNewDayPlanForThisActor;
 		Debug.Log($"[{Name}] Per-actor force new day plan {(ForceNewDayPlanForThisActor ? "enabled" : "disabled")}");
 	}
-	#endif
+#endif
 }
 
 

@@ -528,7 +528,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 2549633706802496949}
 --- !u!1 &656708575590996825
 GameObject:
@@ -2827,7 +2826,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 4161202060202280351}
   maxItems: 0
   items:
@@ -3189,7 +3187,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 78646622005641093}
 --- !u!1 &3037567719425678885
 GameObject:
@@ -6602,6 +6599,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6141015407014743884}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6113986805679582427
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 298490122703697572}
+  m_Layer: 10
+  m_Name: StandUp Pos
+  m_TagString: Untagged
+  m_Icon: {fileID: 3306451490063965843, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &298490122703697572
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6113986805679582427}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.339, y: 0.007, z: -0.301}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6779491485701026988}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6174130789466526547
 GameObject:
   m_ObjectHideFlags: 0
@@ -7742,7 +7770,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 782598410456960110}
   maxItems: 0
   items:
@@ -7856,6 +7883,37 @@ Transform:
   - {fileID: 6409368559907230780}
   - {fileID: 5743192113729863508}
   m_Father: {fileID: 1131941680545327557}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7834386632840227915
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5145381085343772130}
+  m_Layer: 10
+  m_Name: StandUp Pos
+  m_TagString: Untagged
+  m_Icon: {fileID: 3306451490063965843, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5145381085343772130
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7834386632840227915}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.338, y: 0.011, z: 0.077}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6326017546265988040}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7863407002943385506
 GameObject:
@@ -9697,7 +9755,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   material: Cotton
   isClean: 1
   isWet: 0
@@ -11046,7 +11103,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &355305217999545794 stripped
 Transform:
@@ -11790,7 +11846,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &524359049994464978 stripped
 Transform:
@@ -12143,7 +12198,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &603296620636410226
 PrefabInstance:
@@ -12873,7 +12927,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: "\uC77C\uBC18"
   isClean: 1
   isWet: 0
@@ -13329,7 +13382,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &853838135808842346
 PrefabInstance:
@@ -13460,7 +13512,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &853838134824312426 stripped
 Transform:
@@ -13882,7 +13933,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &1019705885031886742 stripped
 Transform:
@@ -15039,7 +15089,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &1343007868551257194
 PrefabInstance:
@@ -15289,7 +15338,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &1391846099944070926
 PrefabInstance:
@@ -15841,7 +15889,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &1681304440703449660
 PrefabInstance:
@@ -17848,7 +17895,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
 --- !u!1001 &2160167139043085818
 PrefabInstance:
@@ -18054,7 +18100,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &2237002457901241506
 PrefabInstance:
@@ -18696,7 +18741,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &2368654661535201500
 PrefabInstance:
@@ -19876,7 +19920,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   material: Cotton
   isClean: 1
   isWet: 0
@@ -20574,7 +20617,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &2908679926083322572
 PrefabInstance:
@@ -21379,7 +21421,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &3011243826745570945 stripped
 Transform:
@@ -21825,7 +21866,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &3048349298473781006 stripped
 Transform:
@@ -22270,7 +22310,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   material: Cotton
   isClean: 1
   isWet: 0
@@ -24625,7 +24664,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &3888759048166642269
 PrefabInstance:
@@ -24756,7 +24794,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &3888759047553078877 stripped
 Transform:
@@ -25003,7 +25040,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &4012006146666286195
 PrefabInstance:
@@ -25486,7 +25522,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
 --- !u!4 &7260239089062774870 stripped
 Transform:
@@ -26666,7 +26701,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &4284816532943609126 stripped
 Transform:
@@ -27231,7 +27265,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &4391415636284565802
 PrefabInstance:
@@ -27574,7 +27607,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &4434698252387458313 stripped
 Transform:
@@ -28539,7 +28571,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   material: Cotton
   isClean: 1
   isWet: 0
@@ -28778,7 +28809,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &4719443318975763852 stripped
 Transform:
@@ -28919,7 +28949,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &4765414135183049951
 PrefabInstance:
@@ -29156,7 +29185,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &4772303473188082958 stripped
 Transform:
@@ -29802,7 +29830,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &4937606222114106799 stripped
 Transform:
@@ -29943,7 +29970,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &4978578912296312681
 PrefabInstance:
@@ -30290,7 +30316,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   material: Cotton
   isClean: 1
   isWet: 0
@@ -30993,7 +31018,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &5270201715062362816
 PrefabInstance:
@@ -31222,7 +31246,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &5271399528293631651 stripped
 Transform:
@@ -31845,7 +31868,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &5568797154551429306
 PrefabInstance:
@@ -32478,7 +32500,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &5743192113729863508 stripped
 Transform:
@@ -33058,7 +33079,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &6100557236862658389 stripped
 Transform:
@@ -33386,7 +33406,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &6234583044374447300 stripped
 Transform:
@@ -33803,6 +33822,34 @@ PrefabInstance:
       propertyPath: _curLocation
       value: 
       objectReference: {fileID: 9211203235102727888}
+    - target: {fileID: 6400738581234516593, guid: abc00000000004510409350908070486, type: 3}
+      propertyPath: maxOccupants
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6400738581234516593, guid: abc00000000004510409350908070486, type: 3}
+      propertyPath: standUpPosition
+      value: 
+      objectReference: {fileID: 5145381085343772130}
+    - target: {fileID: 6400738581234516593, guid: abc00000000004510409350908070486, type: 3}
+      propertyPath: 'sitPositions.Array.data[0]'
+      value: 
+      objectReference: {fileID: 4435827718456532910}
+    - target: {fileID: 6400738581234516593, guid: abc00000000004510409350908070486, type: 3}
+      propertyPath: 'sitPositions.Array.data[1]'
+      value: 
+      objectReference: {fileID: 8456666694817745380}
+    - target: {fileID: 6400738581234516593, guid: abc00000000004510409350908070486, type: 3}
+      propertyPath: 'sitPositions.Array.data[2]'
+      value: 
+      objectReference: {fileID: 9170589170608982181}
+    - target: {fileID: 6400738581234516593, guid: abc00000000004510409350908070486, type: 3}
+      propertyPath: 'sitPositions.Array.data[3]'
+      value: 
+      objectReference: {fileID: 8051460148760328105}
+    - target: {fileID: 6400738581234516593, guid: abc00000000004510409350908070486, type: 3}
+      propertyPath: 'sitPositions.Array.data[4]'
+      value: 
+      objectReference: {fileID: 8371144874056883191}
     - target: {fileID: 7755066854638353872, guid: abc00000000004510409350908070486, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -33814,12 +33861,40 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 7086497173953940360, guid: abc00000000004510409350908070486, type: 3}
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1030996512, guid: abc00000000004510409350908070486, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5145381085343772130}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000004510409350908070486, type: 3}
+--- !u!4 &4435827718456532910 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7657736473223861830, guid: abc00000000004510409350908070486, type: 3}
+  m_PrefabInstance: {fileID: 6326017546757687784}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6326017546265988040 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1030996512, guid: abc00000000004510409350908070486, type: 3}
+  m_PrefabInstance: {fileID: 6326017546757687784}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8051460148760328105 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4068455986027036225, guid: abc00000000004510409350908070486, type: 3}
+  m_PrefabInstance: {fileID: 6326017546757687784}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8371144874056883191 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2586966795174760991, guid: abc00000000004510409350908070486, type: 3}
+  m_PrefabInstance: {fileID: 6326017546757687784}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8456666694817745380 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2492349853420240908, guid: abc00000000004510409350908070486, type: 3}
+  m_PrefabInstance: {fileID: 6326017546757687784}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &9170589170608982181 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2922551601183850829, guid: abc00000000004510409350908070486, type: 3}
   m_PrefabInstance: {fileID: 6326017546757687784}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6346094536864638244
@@ -33956,7 +34031,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &6373087200098042391
 PrefabInstance:
@@ -34254,7 +34328,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &6409368559907230780 stripped
 Transform:
@@ -35022,7 +35095,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &6590584811538611561 stripped
 Transform:
@@ -35163,7 +35235,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &6624557424808228011
 PrefabInstance:
@@ -35964,6 +36035,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7788430314627412137}
     - target: {fileID: 6400738581234516593, guid: abc00000000004510409350908070486, type: 3}
+      propertyPath: maxOccupants
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6400738581234516593, guid: abc00000000004510409350908070486, type: 3}
+      propertyPath: standUpPosition
+      value: 
+      objectReference: {fileID: 298490122703697572}
+    - target: {fileID: 6400738581234516593, guid: abc00000000004510409350908070486, type: 3}
       propertyPath: 'sitPositions.Array.data[0]'
       value: 
       objectReference: {fileID: 3769558146352341194}
@@ -35986,7 +36065,10 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 7086497173953940360, guid: abc00000000004510409350908070486, type: 3}
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1030996512, guid: abc00000000004510409350908070486, type: 3}
+      insertIndex: 5
+      addedObject: {fileID: 298490122703697572}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: abc00000000004510409350908070486, type: 3}
 --- !u!4 &3769558146352341194 stripped
@@ -37514,7 +37596,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &7061476396453004892 stripped
 Transform:
@@ -38369,7 +38450,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &7226079564198878965
 PrefabInstance:
@@ -38717,7 +38797,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &7334718749743486335
 PrefabInstance:
@@ -39158,7 +39237,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   toMovePos: {fileID: 0}
 --- !u!1001 &7415446124693909459
 PrefabInstance:
@@ -39395,7 +39473,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &7437865124514850943 stripped
 Transform:
@@ -40532,7 +40609,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &7845941993769307236
 PrefabInstance:
@@ -40774,7 +40850,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &7877968389016992406
 PrefabInstance:
@@ -41016,7 +41091,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   material: Cotton
   isClean: 1
   isWet: 0
@@ -41369,7 +41443,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &7926222863478118064 stripped
 Transform:
@@ -41812,7 +41885,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &8020405010782130757
 PrefabInstance:
@@ -42254,7 +42326,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &8149417404347546806
 PrefabInstance:
@@ -43687,7 +43758,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!1001 &8550014347250326102
 PrefabInstance:
@@ -44531,7 +44601,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &8684608901144285773 stripped
 Transform:
@@ -46483,7 +46552,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &9195555942919492899 stripped
 Transform:
@@ -46733,7 +46801,6 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
   brand: Generic
 --- !u!4 &9222637563082259691 stripped
 Transform:
