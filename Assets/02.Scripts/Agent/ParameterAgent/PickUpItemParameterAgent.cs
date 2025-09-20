@@ -23,6 +23,7 @@ namespace Agent
         public PickUpItemParameterAgent(Actor actor) : base(actor)
         {
             var itemList = GetCurrentCollectibleItemKeys();
+            itemList.Add("null");
             systemPrompt = PromptLoader.LoadPrompt("PickUpItemParameterAgentPrompt.txt", "You are a PickUpItem parameter generator.");
             SetAgentType(nameof(PickUpItemParameterAgent));
             this.options = new ChatCompletionOptions
@@ -68,6 +69,12 @@ namespace Agent
                 Intention = request.Intention,
                 PreviousFeedback = request.PreviousFeedback
             });
+
+            if (param == null || string.IsNullOrEmpty(param.ItemName) || param.ItemName == "null")
+            {
+                Debug.LogWarning("[PickUpItemParameterAgent] item_name이 null이므로 액션을 취소합니다.");
+                return null;
+            }
             
             return new ActParameterResult
             {

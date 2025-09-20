@@ -33,7 +33,7 @@ namespace Agent
         private IToolExecutor toolExecutor;
         private DayPlanner dayPlanner; // DayPlanner 참조 추가
 
-        public ActSelectorAgent(Actor actor) : base("gpt-5")
+        public ActSelectorAgent(Actor actor) : base()
         {
             this.actor = actor;
             this.toolExecutor = new ActorToolExecutor(actor);
@@ -91,10 +91,12 @@ namespace Agent
                 ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.ItemManagement);
             }
             // WorldInfo: GetWorldAreaInfo, GetCurrentTime, FindBuildingAreaPath, FindShortestAreaPathFromActor, GetWorldAreaStructureText
-            ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
+            //ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
             // Relationship memory 전용: location memories (관계는 캐릭터간 상호작용 문맥으로 여기서 location memories만 노출)
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemoriesFiltered);
+            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
+            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetWorldAreaInfo);
         }
 
         /// <summary>
@@ -134,6 +136,7 @@ namespace Agent
                     { "personality", actor.LoadPersonality() },
                     { "info", actor.LoadCharacterInfo() },
                     { "memory", actor.LoadCharacterMemory() },
+                    { "relationship", actor.LoadRelationships() },
                     {"available_act", FormatAvailableActionsToString(GetCurrentAvailableActions())}
                 });
             messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
@@ -180,7 +183,7 @@ namespace Agent
                     for (int i = 0; i < specificActions.Count; i++)
                     {
                         var action = specificActions[i];
-                        var isCurrent = (action == currentAction) ? " [CURRENT]" : "";
+                        var isCurrent = (action == currentAction) ? " [현재 시간 행동]" : "";
                         allActionsText.Add($"{i + 1}. {action.ActionType}{isCurrent}: {action.Description}");
                     }
 
@@ -222,7 +225,8 @@ namespace Agent
                         { "parent_task", currentActivity.ParentHighLevelTask?.TaskName ?? "Unknown" },
                         { "activity_start_time", $"{activityStartTime.hour:D2}:{activityStartTime.minute:D2}" },
                         { "activity_duration_minutes", currentActivity.DurationMinutes.ToString() },
-                        { "all_actions_in_activity", string.Join("\n", allActionsText) }
+                        { "all_actions_in_activity", string.Join("\n", allActionsText) },
+                        {"all_actions_start_time", dayPlanner.GetPlanStartTime().ToString() }
                     };
 
                     var userMessage = localizationService.GetLocalizedText("current_action_context_prompt", replacements);

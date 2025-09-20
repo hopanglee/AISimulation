@@ -101,7 +101,7 @@ namespace PlanStructures
     [System.Serializable]
     public class SpecificAction
     {
-        [JsonProperty("action_type")] public string ActionType { get; set; } = "";
+        [JsonProperty("action_name")] public string ActionType { get; set; } = "";
         [JsonProperty("description")] public string Description { get; set; } = "";
         [JsonProperty("duration_minutes")] public int DurationMinutes { get; set; } = 0;
         // [JsonProperty("parameters")] public Dictionary<string, object> Parameters { get; set; } = new Dictionary<string, object>();

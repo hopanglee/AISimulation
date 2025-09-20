@@ -99,14 +99,14 @@ public class NPCActionAgent : GPT
                     ""description"": ""상호작용할 대상 액터의 키 (대상이 필요없으면 null)""
                 }},
                 ""parameters"": {{
-                    ""type"": ""array"",
+                    ""type"": [""array"", ""null""],
                     ""items"": {{
                         ""type"": ""string""
                     }},
                     ""description"": ""액션에 대한 파라미터들 (파라미터가 필요없으면 null)""
                 }}
             }},
-            ""required"": [""actionType""]
+            ""required"": [""actionType"", ""target_key"", ""parameters""]
         }}";
     }
 

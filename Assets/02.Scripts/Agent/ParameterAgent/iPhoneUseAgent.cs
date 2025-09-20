@@ -49,39 +49,29 @@ namespace Agent
                     jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
                         $@"{{
                             ""type"": ""object"",
-                            ""oneOf"": [
-                                {{
-                                    ""type"": ""object"",
-                                    ""additionalProperties"": false,
-                                    ""properties"": {{
-                                        ""command"": {{ ""type"": ""string"", ""const"": ""chat"" }},
-                                        ""target_actor"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(GetCurrentAvailableActors())} }},
-                                        ""message"": {{ ""type"": ""string"" }}
-                                    }},
-                                    ""required"": [""command"", ""target_actor"", ""message""]
+                            ""description"": ""iPhone 사용을 위한 파라미터 스키마"",
+                            ""additionalProperties"": false,
+                            ""properties"": {{
+                                ""command"": {{
+                                    ""type"": ""string"",
+                                    ""enum"": [""chat"", ""read"", ""continue""],
+                                    ""description"": ""수행할 iPhone 명령어: chat(메시지 보내기), read(메시지 읽기), continue(이어 읽기)""
                                 }},
-                                {{
-                                    ""type"": ""object"",
-                                    ""additionalProperties"": false,
-                                    ""properties"": {{
-                                        ""command"": {{ ""type"": ""string"", ""const"": ""read"" }},
-                                        ""target_actor"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(GetCurrentAvailableActors())} }},
-                                        ""message_count"": {{ ""type"": ""integer"" }}
-                                    }},
-                                    ""required"": [""command"", ""target_actor"", ""message_count""]
+                                ""target_actor"": {{
+                                    ""type"": ""string"",
+                                    ""enum"": {JsonConvert.SerializeObject(GetCurrentAvailableActors())},
+                                    ""description"": ""대화 대상 인물 이름""
                                 }},
-                                {{
-                                    ""type"": ""object"",
-                                    ""additionalProperties"": false,
-                                    ""properties"": {{
-                                        ""command"": {{ ""type"": ""string"", ""const"": ""continue"" }},
-                                        ""target_actor"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(GetCurrentAvailableActors())} }},
-                                        ""message_count"": {{ ""type"": ""integer"" }}
-                                    }},
-                                    ""required"": [""command"", ""target_actor"", ""message_count""]
+                                ""message"": {{
+                                    ""type"": [""string"", ""null""],
+                                    ""description"": ""보낼 메시지 내용 (command=chat일 때 사용, 그 외 null)""
+                                }},
+                                ""message_count"": {{
+                                    ""type"": [""integer"", ""null""],
+                                    ""description"": ""읽을/이어 읽을 메시지 개수 (command=read/continue일 때 사용, 그 외 null)""
                                 }}
-                            ],
-                            ""additionalProperties"": false
+                            }},
+                            ""required"": [""command"", ""target_actor"", ""message"", ""message_count""]
                         }}"
                     )),
                     jsonSchemaIsStrict: true
@@ -129,30 +119,21 @@ namespace Agent
         {
             try
             {
-                if (actor?.sensor != null)
-                {
-                    var lookableEntities = actor.sensor.GetLookableEntities();
-                    var actorNames = new List<string>();
-                    
-                    foreach (var kv in lookableEntities)
-                    {
-                        if (kv.Value is Actor targetActor && targetActor != actor)
-                        {
-                            actorNames.Add(targetActor.Name);
-                        }
-                    }
-                    
-                    return actorNames.Distinct().ToList();
-                }
-            }
+				var names = new List<string>();
+				var mains = UnityEngine.Object.FindObjectsByType<MainActor>(UnityEngine.FindObjectsInactive.Exclude, UnityEngine.FindObjectsSortMode.None);
+				foreach (var m in mains)
+				{
+					if (m == null) continue;
+					if (actor != null && ReferenceEquals(m, actor)) continue;
+					if (!string.IsNullOrEmpty(m.Name)) names.Add(m.Name);
+				}
+				return names.Distinct().OrderBy(n => n).ToList();
+			}
             catch (Exception ex)
             {
                 Debug.LogWarning($"[iPhoneUseAgent] 주변 Actor 목록 가져오기 실패: {ex.Message}");
-                throw new System.InvalidOperationException($"iPhoneUseAgent 주변 Actor 목록 가져오기 실패: {ex.Message}");
+				return new List<string>();
             }
-            
-            // 기본값 반환
-            return new List<string>();
         }
 
         private string BuildUserMessage(CommonContext context)

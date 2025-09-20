@@ -47,39 +47,29 @@ namespace Agent
                     jsonSchemaFormatName: "note_use_parameter",
                     jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
                         $@"{{
-                            ""oneOf"": [
-                                {{
-                                    ""type"": ""object"",
-                                    ""additionalProperties"": false,
-                                    ""properties"": {{
-                                        ""action"": {{ ""type"": ""string"", ""const"": ""write"" }},
-                                        ""page_number"": {{ ""type"": ""integer"" }},
-                                        ""text"": {{ ""type"": ""string"" }}
-                                    }},
-                                    ""required"": [""action"", ""page_number"", ""text""]
+                            ""type"": ""object"",
+                            ""description"": ""노트 사용을 위한 파라미터 스키마"",
+                            ""additionalProperties"": false,
+                            ""properties"": {{
+                                ""action"": {{
+                                    ""type"": ""string"",
+                                    ""enum"": [""write"", ""read"", ""rewrite""],
+                                    ""description"": ""수행할 동작: write(쓰기), read(읽기), rewrite(수정)""
                                 }},
-                                {{
-                                    ""type"": ""object"",
-                                    ""additionalProperties"": false,
-                                    ""properties"": {{
-                                        ""action"": {{ ""type"": ""string"", ""const"": ""read"" }},
-                                        ""page_number"": {{ ""type"": ""integer"" }}
-                                    }},
-                                    ""required"": [""action"", ""page_number""]
+                                ""page_number"": {{
+                                    ""type"": ""integer"",
+                                    ""description"": ""대상 페이지 번호""
                                 }},
-                                {{
-                                    ""type"": ""object"",
-                                    ""additionalProperties"": false,
-                                    ""properties"": {{
-                                        ""action"": {{ ""type"": ""string"", ""const"": ""rewrite"" }},
-                                        ""page_number"": {{ ""type"": ""integer"" }},
-                                        ""line_number"": {{ ""type"": ""integer"" }},
-                                        ""text"": {{ ""type"": ""string"" }}
-                                    }},
-                                    ""required"": [""action"", ""page_number"", ""line_number"", ""text""]
+                                ""line_number"": {{
+                                    ""type"": [""integer"", ""null""],
+                                    ""description"": ""대상 줄 번호 (rewrite일 때 사용, 그 외 null)""
+                                }},
+                                ""text"": {{
+                                    ""type"": [""string"", ""null""],
+                                    ""description"": ""작성/수정할 텍스트 (write/rewrite일 때 사용, 그 외 null)""
                                 }}
-                            ],
-                            ""additionalProperties"": false
+                            }},
+                            ""required"": [""action"", ""page_number"", ""line_number"", ""text""]
                         }}"
                     )),
                     jsonSchemaIsStrict: true

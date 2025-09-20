@@ -74,14 +74,14 @@ public class SpecificPlannerAgent : GPT
                                         ""type"": ""object"",
                                         ""additionalProperties"": false,
                                         ""properties"": {{
-                                            ""action_type"": {{ ""type"": ""string"", ""enum"": [{actionTypeValues}], ""description"": ""실행가능한 활동의 이름"" }},
-                                            ""description"": {{ ""type"": ""string"", ""description"": ""실행가능한 활동의 목적 및 파라미터 등 설명 "" }},
-                                            ""duration_minutes"": {{ ""type"": ""integer"", ""maximum"": 30, ""minimum"": 5, ""description"": ""활동에 소요되는 시간 (분 단위, 5~30분)"" }},
+                                            ""action_name"": {{ ""type"": ""string"", ""description"": ""구체적 단위 활동의 이름"" }},
+                                            ""description"": {{ ""type"": ""string"", ""description"": ""구체적 단위 활동의 설명(목적, 이유, 파라미터 등)"" }},
+                                            ""duration_minutes"": {{ ""type"": ""integer"", ""maximum"": 30, ""minimum"": 5, ""description"": ""활동에 소요할 시간 (분 단위, 5~30분)"" }},
                                             ""location"": {{ ""type"": ""string"", ""enum"": {areaEnumJson}, ""description"": ""활동이 일어나는 장소 (시스템에서 제공된 전체 경로 형식 사용. 예: '아파트:부엌')"" }}
                                         }},
-                                        ""required"": [""action_type"", ""description"", ""duration_minutes"", ""location""]
+                                        ""required"": [""action_name"", ""description"", ""duration_minutes"", ""location""]
                                     }},
-                                    ""description"": ""주어진 세부적 행동의 목표를 이루기 위한 가장 작은 단위의 act 2개 이상을 연속으로 연결한 체인""
+                                    ""description"": ""주어진 세부적 행동의 목표를 이루기 위한 구체적 단위 활동 2개 이상을 연속으로 연결한 체인""
                                 }}
                             }},
                             ""required"": [""specific_actions""]
@@ -92,9 +92,13 @@ public class SpecificPlannerAgent : GPT
             ),
         };
 
-        // 월드 정보 도구 추가
-        ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
-        ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Plan);
+        // // 월드 정보 도구 추가
+        // ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
+        // ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Plan);
+        options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
+        options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
+        options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemoriesFiltered);
+        options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetWorldAreaInfo);
     }
 
     private static string BuildLocationEnumJson()

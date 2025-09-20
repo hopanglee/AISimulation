@@ -172,7 +172,7 @@ public class ThinkParameterAgent : ParameterAgentBase
             _ => // "current_analysis" and default
                 // 현재 분석: 최근 STM + 관련 LTM
                 string.Join("\n\n", new[] {
-                    "최근 경험들:\n" + string.Join("\n", shortTermMemories.OrderByDescending(m => m.timestamp).Take(15).Select(m => $"[{m.type}] {m.content}")),
+                    "최근 경험들:\n" + string.Join("\n", shortTermMemories.OrderByDescending(m => m.timestamp.ToDateTime()).Take(15).Select(m => $"[{m.type}] {m.content}")),
                     "관련 기억들:\n" + string.Join("\n", longTermMemories.TakeLast(5).Select(m => 
                         $"[{m.timestamp}] {m.content}"))
                 })
@@ -197,7 +197,7 @@ public class ThinkParameterAgent : ParameterAgentBase
         }
         
         // 최근 Short Term Memory (최대 10개)
-        var recentSTM = shortTermMemories.OrderByDescending(m => m.timestamp).Take(10).ToList();
+        var recentSTM = shortTermMemories.OrderByDescending(m => m.timestamp.ToDateTime()).Take(10).ToList();
         var stmText = string.Join("\n", recentSTM.Select(m => $"[{m.type}] {m.content}"));
         
         // 최근 Long Term Memory (최대 5개)

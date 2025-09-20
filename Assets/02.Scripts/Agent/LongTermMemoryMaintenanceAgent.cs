@@ -163,7 +163,7 @@ public class LongTermMemoryMaintenanceAgent : GPT
                                                 ""description"": ""행동에 대한 추론""
                                             }
                                         },
-                                        ""required"": [""memory_index"", ""surprise_score"", ""importance_score"", ""relevance_score"", ""action"", ""reasoning""]
+                                        ""required"": [""memory_index"", ""surprise_score"", ""importance_score"", ""relevance_score"", ""action"", ""reasoning"", ""merge_target_index"", ""modified_content""]
                                     }
                                 },
                                 ""maintenance_reasoning"": {

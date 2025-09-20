@@ -182,7 +182,7 @@ namespace Agent.Tools
             // 현재 액터의 location_memories.json 전체 반환
             public static readonly ChatTool GetActorLocationMemories = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetActorLocationMemories),
-                functionDescription: "Return this actor's full location_memories.json content as JSON text."
+                functionDescription: "Return this actor's location memories that include all the information where every entities are located."
             );
 
             // 현재 액터의 location_memories.json에서 주어진 범위/키로 필터링해 반환
@@ -724,23 +724,7 @@ namespace Agent.Tools
                     return "No current plan available";
                 }
 
-                // 간단한 계획 정보 포맷팅
-                var planInfo = new List<string>();
-
-                // 고수준 작업들만 간단히 표시
-                if (currentPlan.HighLevelTasks != null && currentPlan.HighLevelTasks.Count > 0)
-                {
-                    foreach (var hlt in currentPlan.HighLevelTasks)
-                    {
-                        planInfo.Add($"• {hlt.TaskName} ({hlt.DurationMinutes}분)");
-                    }
-                }
-                else
-                {
-                    planInfo.Add("No tasks planned");
-                }
-
-                return string.Join("\n", planInfo);
+                return currentPlan.ToString();
             }
             catch (Exception ex)
             {

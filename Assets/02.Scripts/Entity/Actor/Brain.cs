@@ -305,6 +305,19 @@ public class Brain
             actSelectorAgent.SetDayPlanner(dayPlanner); // DayPlanner 설정
             var selection = await actSelectorAgent.SelectActAsync(perceptionResult);
 
+            // 기존 버블 팝업 제거 → SimulationController의 텍스트로 대체
+            try
+            {
+                if (selection != null && SimulationController.Instance != null)
+                {
+                    string text = !string.IsNullOrEmpty(selection.Intention)
+                        ? $"의도: {selection.Intention}"
+                        : $"행동 선택: {selection.ActType}";
+                    SimulationController.Instance.SetActorActivityText(actor.Name, text);
+                }
+            }
+            catch { }
+
             // Enhanced Memory System: ActSelector 결과를 Short Term Memory에 추가 (일단 보류)
             //memoryManager.AddActSelectorResult(selection);
 
@@ -417,7 +430,17 @@ public class Brain
                 Intention = selection.Intention,
                 ActType = selection.ActType
             };
-            return await parameterAgent.GenerateParametersAsync(request);
+            var result = await parameterAgent.GenerateParametersAsync(request);
+            if (result == null)
+            {
+                Debug.LogWarning($"[{actor.Name}] 파라미터 생성이 null로 반환됨 - 액션 취소 후 재선택으로 회귀");
+                // 재선택: 최신 Perception 유지하여 다시 SelectAct 수행
+                var selectionRetry = new ActSelectorAgent(actor);
+                selectionRetry.SetDayPlanner(dayPlanner);
+                var selectionRetryResult = await selectionRetry.SelectActAsync(recentPerceptionResult);
+                return await GenerateActionParameters(selectionRetryResult);
+            }
+            return result;
         }
         else
         {
@@ -493,6 +516,16 @@ public class Brain
             var characterInfo = characterMemoryManager.GetCharacterInfo();
             characterInfo.SetEmotions(recentPerceptionResult.emotions);
             await characterMemoryManager.SaveCharacterInfoAsync();
+
+            // 기존 버블 팝업 제거 → SimulationController의 텍스트로 대체
+            try
+            {
+                if (!string.IsNullOrEmpty(recentPerceptionResult?.situation_interpretation) && SimulationController.Instance != null)
+                {
+                    SimulationController.Instance.SetActorActivityText(actor.Name, $"상황 인식: {recentPerceptionResult.situation_interpretation}");
+                }
+            }
+            catch { }
 
             return recentPerceptionResult;
         }

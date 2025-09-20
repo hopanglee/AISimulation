@@ -39,6 +39,10 @@ public class SimulationController : MonoBehaviour
     [SerializeField]
     private Button focusKamiyaButton;
 
+    [Header("Actor Activity Texts")]
+    public TextMeshProUGUI kamiyaActivityText;
+    public TextMeshProUGUI hinoActivityText;
+
     [Header("AI Settings")]
     [SerializeField]
     private Toggle globalGPTToggle; // 모든 Actor의 GPT 사용 여부 토글
@@ -185,17 +189,17 @@ public class SimulationController : MonoBehaviour
         UpdateUI();
 
         // 승인 팝업 열려있을 때 방향키로 원형 네비게이션
-        if (gptApprovalPopup != null && gptApprovalPopup.activeSelf && gptApprovalService != null)
-        {
-            if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.DownArrow))
-            {
-                gptApprovalService.MoveSelection(1);
-            }
-            else if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.UpArrow))
-            {
-                gptApprovalService.MoveSelection(-1);
-            }
-        }
+        // if (gptApprovalPopup != null && gptApprovalPopup.activeSelf && gptApprovalService != null)
+        // {
+        //     if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.DownArrow))
+        //     {
+        //         gptApprovalService.MoveSelection(1);
+        //     }
+        //     else if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.UpArrow))
+        //     {
+        //         gptApprovalService.MoveSelection(-1);
+        //     }
+        // }
     }
 
     private void UpdateUI()
@@ -238,6 +242,66 @@ public class SimulationController : MonoBehaviour
             var currentTime = timeService.CurrentTime;
             dateTimeText.text = $"{currentTime.year}년 {currentTime.month}월 {currentTime.day}일 시간 : {currentTime.hour:D2}:{currentTime.minute:D2}:00";
         }
+    }
+
+    public void SetActorActivityText(string actorName, string text)
+    {
+        if (string.IsNullOrEmpty(actorName)) return;
+
+        bool isKamiya = IsKamiya(actorName);
+        bool isHino = IsHino(actorName);
+
+        if (isKamiya && kamiyaActivityText != null)
+        {
+            kamiyaActivityText.text = "카미야: " + (text ?? string.Empty);
+            ForceTextLayoutUpdate(kamiyaActivityText);
+        }
+        if (isHino && hinoActivityText != null)
+        {
+            hinoActivityText.text = "히노: " + (text ?? string.Empty);
+            ForceTextLayoutUpdate(hinoActivityText);
+        }
+    }
+
+    private void ForceTextLayoutUpdate(TextMeshProUGUI tmp)
+    {
+        if (tmp == null) return;
+        try
+        {
+            // TMP 내부 메쉬 업데이트 → Canvas → 대상 및 상위 RectTransform 강제 리빌드
+            tmp.ForceMeshUpdate();
+            Canvas.ForceUpdateCanvases();
+
+            var rt = tmp.rectTransform;
+            if (rt != null)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
+                var parent = rt.parent as RectTransform;
+                if (parent != null)
+                {
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(parent);
+                }
+            }
+
+            Canvas.ForceUpdateCanvases();
+        }
+        catch { }
+    }
+
+    private bool IsKamiya(string name)
+    {
+        var tokens = name.Split((char[])null, System.StringSplitOptions.RemoveEmptyEntries);
+        var first = tokens.Length > 0 ? tokens[0] : name;
+        var lower = first.ToLowerInvariant();
+        return lower == "kamiya" || lower == "카미야";
+    }
+
+    private bool IsHino(string name)
+    {
+        var tokens = name.Split((char[])null, System.StringSplitOptions.RemoveEmptyEntries);
+        var first = tokens.Length > 0 ? tokens[0] : name;
+        var lower = first.ToLowerInvariant();
+        return lower == "hino" || lower == "히노";
     }
 
     [Button("Start Simulation")]
@@ -461,6 +525,18 @@ public class SimulationController : MonoBehaviour
         gptApprovalPopup.SetActive(true);
         
         Debug.Log($"[SimulationController] GPT 승인 팝업창 표시: {request.ActorName} - {request.AgentType}");
+    }
+
+    /// <summary>
+    /// 팝업이 비활성 상태여도 강제로 활성화 후 표시합니다.
+    /// </summary>
+    public void ForceShowGPTApprovalPopup(GPTApprovalRequest request)
+    {
+        if (gptApprovalPopup != null && !gptApprovalPopup.activeSelf)
+        {
+            gptApprovalPopup.SetActive(true);
+        }
+        ShowGPTApprovalPopup(request);
     }
 
     /// <summary>
