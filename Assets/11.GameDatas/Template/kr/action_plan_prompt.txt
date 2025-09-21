@@ -8,7 +8,6 @@
 현재 상황
 {interpretation}
 
-
 오늘 하루 전체 계획:
 {today_plan}
 

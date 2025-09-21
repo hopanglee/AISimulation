@@ -385,7 +385,7 @@ public class MemoryManager
     /// </summary>
     public void AddActSelectorResult(ActSelectorAgent.ActSelectionResult actSelection)
     {
-        string content = $"{actSelection.ActType}를 하기로 결정했다.";
+        string content = $"{actSelection.ActType.ToKorean()}을/를 하기로 결정했다.";
         string details = $"이유: {actSelection.Reasoning}, 의도: {actSelection.Intention}";
         // string details = JsonConvert.SerializeObject(new
         // {

@@ -72,7 +72,7 @@ public class DetailedPlannerAgent : GPT
 
         // 월드 정보 도구 추가
         //ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
-        if (Services.Get<GameService>().UseDayPlanner)
+        if (Services.Get<IGameService>().IsDayPlannerEnabled())
         {
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
         }

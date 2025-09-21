@@ -41,38 +41,7 @@ namespace Agent
             SetAgentType(nameof(ActSelectorAgent));
 
 
-            // Options 초기화
-            options = new ChatCompletionOptions
-            {
-                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "act_selection_result",
-                    jsonSchema: BinaryData.FromBytes(
-                        System.Text.Encoding.UTF8.GetBytes(
-                            $@"{{
-                                ""type"": ""object"",
-                                ""additionalProperties"": false,
-                                ""properties"": {{
-                                    ""act_type"": {{
-                                        ""type"": ""string"",
-                                        ""enum"": [ {string.Join(", ", Enum.GetNames(typeof(ActionType)).Select(n => $"\"{n}\""))} ],
-                                        ""description"": ""수행할 액션의 유형""
-                                    }},
-                                    ""reasoning"": {{
-                                        ""type"": ""string"",
-                                        ""description"": ""이 액션을 선택한 이유""
-                                    }},
-                                    ""intention"": {{
-                                        ""type"": ""string"",
-                                        ""description"": ""이 액션으로 달성하려는 목표""
-                                    }}
-                                }},
-                                ""required"": [""act_type"", ""reasoning"", ""intention""]
-                            }}"
-                        )
-                    ),
-                    jsonSchemaIsStrict: true
-                )
-            };
+            UpdateResponseFormatSchema();
 
             // 모든 도구 추가 (액션 정보 + 아이템 관리)
             // 제한된 도구만 추가: 손/인벤토리 스왑 + 월드 정보 + 관계 메모리 조회
@@ -95,7 +64,7 @@ namespace Agent
             // Relationship memory 전용: location memories (관계는 캐릭터간 상호작용 문맥으로 여기서 location memories만 노출)
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemoriesFiltered);
-            if (Services.Get<GameService>().UseDayPlanner)
+            if (Services.Get<IGameService>().IsDayPlannerEnabled())
             {
                 options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
             }
@@ -187,7 +156,7 @@ namespace Agent
                         {"short_term_memory", actor.LoadShortTermMemory()},
                     };
 
-            if (Services.Get<GameService>().UseDayPlanner)
+            if (Services.Get<IGameService>().IsDayPlannerEnabled())
             {
                 // 현재 행동 정보 추가
                 if (dayPlanner != null)

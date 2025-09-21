@@ -93,7 +93,7 @@ public class SpecificPlannerAgent : GPT
         };
 
         // 월드 정보 도구 추가
-        if (Services.Get<GameService>().UseDayPlanner)
+        if (Services.Get<IGameService>().IsDayPlannerEnabled())
         {
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
         }

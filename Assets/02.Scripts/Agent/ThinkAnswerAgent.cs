@@ -21,7 +21,7 @@ namespace Agent
             SetAgentType(nameof(ThinkAnswerAgent));
             options = new ChatCompletionOptions
             {
-                Temperature = 0.7f
+                // 일부 모델은 사용자 지정 temperature를 허용하지 않음 → 기본값(1) 사용
             };
         }
 

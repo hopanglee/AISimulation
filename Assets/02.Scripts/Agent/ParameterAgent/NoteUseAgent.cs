@@ -22,7 +22,7 @@ namespace Agent
             public int PageNumber { get; set; }
             
             [JsonProperty("line_number")]
-            public int LineNumber { get; set; } // rewrite 명령어일 때만 사용
+            public int? LineNumber { get; set; } // rewrite 명령어일 때만 사용
             
             [JsonProperty("text")]
             public string Text { get; set; } // write/rewrite 명령어일 때만 사용

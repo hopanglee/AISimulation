@@ -8,6 +8,7 @@ using OpenAI.Chat;
 using Agent.Tools;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
+using PlanStructures;
 
 /// <summary>
 /// 이성 에이전트 - 선한 특성을 가진 도덕적 판단 담당
@@ -17,7 +18,7 @@ public class SuperegoAgent : GPT
 {
     private Actor actor;
     private IToolExecutor toolExecutor;
-
+    private DayPlanner dayPlanner; // DayPlanner 참조 추가
     public SuperegoAgent(Actor actor) : base()
     {
         this.actor = actor;
@@ -27,7 +28,13 @@ public class SuperegoAgent : GPT
 
         InitializeOptions();
     }
-
+    /// <summary>
+    /// DayPlanner 참조를 설정합니다.
+    /// </summary>
+    public void SetDayPlanner(DayPlanner dayPlanner)
+    {
+        this.dayPlanner = dayPlanner;
+    }
     /// <summary>
     /// 시스템 프롬프트를 로드합니다.
     /// </summary>
@@ -37,7 +44,7 @@ public class SuperegoAgent : GPT
         {
             // 캐릭터 정보와 기억을 동적으로 로드
             var characterInfo = actor.LoadCharacterInfo();
-            var characterMemory = actor.LoadCharacterMemory();
+            var characterMemory = actor.LoadLongTermMemory();
 
             // 플레이스홀더 교체를 위한 딕셔너리 생성
             var replacements = new Dictionary<string, string>
@@ -45,7 +52,7 @@ public class SuperegoAgent : GPT
                 { "character_name", actor.Name },
                 { "personality", actor.LoadPersonality() },
                 { "info", characterInfo },
-                { "memory", characterMemory },
+                { "long_term_memory", characterMemory },
                 { "character_situation", actor.LoadActorSituation() }
             };
 
@@ -145,7 +152,86 @@ public class SuperegoAgent : GPT
             var hour = timeService.CurrentTime.hour;
             var minute = timeService.CurrentTime.minute;
             // 사용자 메시지 구성
-            var userMessage = $"현재 시간: \n{year}년 {month}월 {day}일 {hour:D2}:{minute:D2}";//\n\n현재 시각정보:\n{string.Join("\n", visualInformation)}";
+            var localizationService = Services.Get<ILocalizationService>();
+            var replacements = new Dictionary<string, string>
+            {
+                {"character_name", actor.Name},
+                { "current_time", $"{year}년 {month}월 {day}일 {hour:D2}:{minute:D2}" },
+                {"short_term_memory", actor.LoadShortTermMemory()}
+            };
+
+            if (Services.Get<IGameService>().IsDayPlannerEnabled())
+            {
+                // 현재 행동 정보 추가
+                if (dayPlanner != null)
+                {
+                    try
+                    {
+
+                        Debug.Log("[ActSelectorAgent][DBG-AS-1] dayPlanner is set - starting context build");
+                        var currentAction = await dayPlanner.GetCurrentSpecificActionAsync();
+                        if (currentAction == null)
+                        {
+                            Debug.LogError("[ActSelectorAgent][DBG-AS-2] currentAction is null (GetCurrentSpecificActionAsync returned null)");
+                            throw new NullReferenceException("currentAction is null");
+                        }
+
+                        var currentActivity = currentAction.ParentDetailedActivity;
+                        if (currentActivity == null)
+                        {
+                            Debug.LogError("[ActSelectorAgent][DBG-AS-3] currentActivity is null (ParentDetailedActivity)");
+                            throw new NullReferenceException("currentActivity is null");
+                        }
+
+                        Debug.Log($"[ActSelectorAgent][DBG-AS-4] currentActivity: {currentActivity.ActivityName}, duration: {currentActivity.DurationMinutes}");
+
+                        // DayPlanner의 메서드를 사용하여 활동 시작 시간 계산
+                        var activityStartTime = dayPlanner.GetActivityStartTime(currentActivity);
+                        Debug.Log($"[ActSelectorAgent][DBG-AS-5] activityStartTime: {activityStartTime.hour:D2}:{activityStartTime.minute:D2}");
+
+                        // 모든 SpecificAction 나열 (null 방어)
+                        var allActionsText = new List<string>();
+                        var specificActions = currentActivity.SpecificActions ?? new List<SpecificAction>();
+                        if (currentActivity.SpecificActions == null)
+                        {
+                            Debug.LogWarning("[ActSelectorAgent][DBG-AS-6] currentActivity.SpecificActions is null - using empty list");
+                        }
+
+                        for (int i = 0; i < specificActions.Count; i++)
+                        {
+                            var action = specificActions[i];
+                            var isCurrent = (action == currentAction) ? " [현재 시간]" : "";
+                            allActionsText.Add($"{i + 1}. {action.ActionType}{isCurrent}: {action.Description}");
+                        }
+
+                        var plan_replacements = new Dictionary<string, string>
+                        {
+                            { "parent_activity", currentActivity.ActivityName },
+                            {"parent_task", currentActivity.ParentHighLevelTask?.TaskName ?? "Unknown"},
+                            {"activity_start_time", $"{activityStartTime.hour:D2}:{activityStartTime.minute:D2}"},
+                            {"activity_duration_minutes", currentActivity.DurationMinutes.ToString()},
+                            {"all_actions_in_activity", string.Join("\n", allActionsText)},
+                            {"all_actions_start_time", dayPlanner.GetPlanStartTime().ToString()},
+                            {"plan_notify", ""},
+                        };
+
+                        var current_plan_template = localizationService.GetLocalizedText("current_plan_template", plan_replacements);
+                        replacements.Add("current_plan", current_plan_template);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"[ActSelectorAgent] 현재 행동 정보 가져오기 실패 (DBG markers above). Error: {ex}");
+                        return null;
+                    }
+                }
+            }
+            else
+            {
+                replacements.Add("current_plan", string.Empty);
+            }
+
+            var userMessage = localizationService.GetLocalizedText("superego_agent_template", replacements);
             messages.Add(new UserChatMessage(userMessage));
 
             // GPT 호출

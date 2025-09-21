@@ -35,9 +35,7 @@ public interface IGameService : IService
     /// </summary>
     bool IsGPTApprovalEnabled();
 
-    /// <summary>
-    /// GPT 승인 시스템 사용 여부 설정
-    /// </summary>
+    bool IsDayPlannerEnabled();
 }
 
 public class GameService : MonoBehaviour, IGameService
@@ -90,7 +88,7 @@ public class GameService : MonoBehaviour, IGameService
     [SerializeField]
     private bool enableGPTLogging = true; // GPT 대화 로그 저장 활성화 여부
 
-    public bool UseDayPlanner = true;
+    [SerializeField] private bool useDayPlanner = true;
 
     // [SerializeField]
     // private bool runThinkOnce = false; // 인스펙터에서 체크
@@ -128,6 +126,11 @@ public class GameService : MonoBehaviour, IGameService
         {
             Services.Get<IExternalEventService>().Update();
         }
+    }
+
+    public bool IsDayPlannerEnabled()
+    {
+        return useDayPlanner;
     }
 
     public UniTask StartSimulation()

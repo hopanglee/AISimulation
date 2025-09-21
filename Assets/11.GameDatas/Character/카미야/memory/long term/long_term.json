@@ -81,6 +81,24 @@
     "location": "도쿄:신주쿠:카부키쵸:1-chome-3:카페 모카하우스:홀"
   },
   {
+    "timestamp": "2025-01-22T20:42:00Z",
+    "type": "event",
+    "category": "social",
+    "content": "저녁에 연락처를 교환했다. 내일 같은 자리에서 보기로 했다. 간단했지만 오래 남았다.",
+    "emotions": { "설렘": 0.5, "안정": 0.5 },
+    "relatedActors": ["히노"],
+    "location": "도쿄:신주쿠:카부키쵸:1-chome-3:카페 모카하우스:홀"
+  },
+  {
+    "timestamp": "2025-01-23T19:12:00Z",
+    "type": "experience",
+    "category": "iPhone message",
+    "content": "저녁엔 서로 조금 편해졌다. 말 대신 고개 끄덕임으로 충분했던 날.",
+    "emotions": { "차분": 0.6, "안도": 0.4 },
+    "relatedActors": ["히노"],
+    "location": "도쿄:신주쿠:카부키쵸:1-chome-3:카페 모카하우스:홀"
+  },
+  {
     "timestamp": "2025-01-25T14:40:00Z",
     "type": "experience",
     "category": "social",
@@ -144,6 +162,24 @@
     "location": "도쿄:신주쿠:카부키쵸:1-chome-3:카페 모카하우스:홀"
   },
   {
+    "timestamp": "2025-02-11T08:12:00Z",
+    "type": "knowledge",
+    "category": "iPhone message",
+    "content": "이름을 먼저 불러 주기로 했다. 단순하지만 도움이 됐다.",
+    "emotions": { "배려": 0.6, "확신": 0.5 },
+    "relatedActors": ["히노"],
+    "location": "도쿄:신주쿠:카부키쵸:1-chome-3:카페 모카하우스:홀"
+  },
+  {
+    "timestamp": "2025-02-13T21:05:00Z",
+    "type": "experience",
+    "category": "iPhone message",
+    "content": "그녀가 잠깐 울었다. 나는 옆에서 기다렸다. 말이 적을수록 괜찮았다.",
+    "emotions": { "연민": 0.7, "차분": 0.6 },
+    "relatedActors": ["히노"],
+    "location": "도쿄:신주쿠:카부키쵸:1-chome-3:카페 모카하우스:홀"
+  },
+  {
     "timestamp": "2025-02-16T13:50:00Z",
     "type": "event",
     "category": "social",
@@ -178,6 +214,24 @@
     "emotions": { "결의": 0.8, "슬픔": 0.5, "사랑": 0.7 },
     "relatedActors": ["히노"],
     "location": "도쿄:세타가와:미나미 카라스야마:5-chome-3"
+  },
+  {
+    "timestamp": "2025-02-18T08:03:00Z",
+    "type": "experience",
+    "category": "iPhone message",
+    "content": "아침마다 처음처럼 다시 시작했다. 우리 방식이 정해졌다.",
+    "emotions": { "인내": 0.7, "안정": 0.6 },
+    "relatedActors": ["히노"],
+    "location": "도쿄:신주쿠:카부키쵸:1-chome-3:카페 모카하우스:홀"
+  },
+  {
+    "timestamp": "2025-02-19T08:07:10Z",
+    "type": "knowledge",
+    "category": "iPhone message",
+    "content": "오늘의 문장: '같은 자리에 오래 있기'. 서로를 지키는 말이 됐다.",
+    "emotions": { "이해": 0.6, "연결": 0.6 },
+    "relatedActors": ["히노"],
+    "location": "도쿄:신주쿠:카부키쵸:1-chome-3"
   },
   {
     "timestamp": "2025-02-20T10:30:00Z",
@@ -234,5 +288,6 @@
     "relatedActors": [],
     "location": "도쿄:세타가와:미나미 카라스야마:5-chome-3:카미야 집:거실"
   }
+
 
 ]

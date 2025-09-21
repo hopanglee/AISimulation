@@ -23,7 +23,7 @@ namespace Agent
             public string Message { get; set; } // chat 명령어일 때만 사용
             
             [JsonProperty("message_count")]
-            public int MessageCount { get; set; } // read/continue 명령어일 때만 사용
+            public int? MessageCount { get; set; } // read/continue 명령어일 때만 사용
         }
 
         private readonly string systemPrompt;

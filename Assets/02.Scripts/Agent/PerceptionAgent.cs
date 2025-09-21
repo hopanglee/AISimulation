@@ -14,27 +14,32 @@ using Newtonsoft.Json;
 public class PerceptionAgentGroup
 {
     private Actor actor;
-    
+
     // 새로운 3-에이전트 구조
     private SuperegoAgent superegoAgent;
     private IdAgent idAgent;
     private EgoAgent egoAgent;
 
-    public PerceptionAgentGroup(Actor actor)
+    public PerceptionAgentGroup(Actor actor, DayPlanner dayPlanner = null)
     {
         this.actor = actor;
-        
+
         // 3-에이전트 초기화
-        InitializeThreeAgents();
+        InitializeThreeAgents(dayPlanner);
     }
 
     /// <summary>
     /// 3-에이전트를 초기화합니다.
     /// </summary>
-    private void InitializeThreeAgents()
+    private void InitializeThreeAgents(DayPlanner dayPlanner)
     {
         superegoAgent = new SuperegoAgent(actor);
         idAgent = new IdAgent(actor);
+        if (dayPlanner != null && Services.Get<IGameService>().IsDayPlannerEnabled())
+        {
+            superegoAgent.SetDayPlanner(dayPlanner);
+            idAgent.SetDayPlanner(dayPlanner);
+        }
         egoAgent = new EgoAgent(actor);
     }
 
@@ -125,24 +130,42 @@ public class PerceptionAgentGroup
                     };
                 }
             }
-            
+
             // 1. 이성 에이전트 실행
             var superegoResult = await superegoAgent.InterpretAsync(visualInformation);
             Debug.Log($"[PerceptionAgent {actor.Name}] 이성 에이전트 완료");
-            
+            // 기존 버블 팝업 제거 → SimulationController의 텍스트로 대체
+
+            if (!string.IsNullOrEmpty(superegoResult?.situation_interpretation) && SimulationController.Instance != null)
+            {
+                SimulationController.Instance.SetActorActivityText(actor.Name, $"상황 인식: {superegoResult.situation_interpretation}");
+            }
+
+
             // 2. 본능 에이전트 실행
             var idResult = await idAgent.InterpretAsync(visualInformation);
             Debug.Log($"[PerceptionAgent {actor.Name}] 본능 에이전트 완료");
-            
+            if (!string.IsNullOrEmpty(idResult?.situation_interpretation) && SimulationController.Instance != null)
+            {
+                SimulationController.Instance.SetActorActivityText(actor.Name, $"상황 인식: {idResult.situation_interpretation}");
+            }
+
+
             // 3. 자아 에이전트로 타협
             var egoResult = await egoAgent.MediateAsync(superegoResult, idResult);
             Debug.Log($"[PerceptionAgent {actor.Name}] 자아 에이전트 완료");
+
+            if (!string.IsNullOrEmpty(egoResult?.situation_interpretation) && SimulationController.Instance != null)
+            {
+                SimulationController.Instance.SetActorActivityText(actor.Name, $"상황 인식: {egoResult.situation_interpretation}");
+            }
+
 
             // 결과 저장 (동일 부모 폴더: Assets/11.GameDatas/Perception)
             SaveResultIfPresent(currentDate, "superego", superegoResult);
             SaveResultIfPresent(currentDate, "id", idResult);
             SaveResultIfPresent(currentDate, "ego", egoResult);
-            
+
             // 4. EgoResult를 PerceptionResult로 변환
             var finalResult = new PerceptionResult
             {
@@ -150,7 +173,7 @@ public class PerceptionAgentGroup
                 thought_chain = egoResult.thought_chain,
                 emotions = egoResult.emotions ?? new Dictionary<string, float>()
             };
-            
+
             Debug.Log($"[PerceptionAgent {actor.Name}] 3-에이전트 해석 완료");
             return finalResult;
         }

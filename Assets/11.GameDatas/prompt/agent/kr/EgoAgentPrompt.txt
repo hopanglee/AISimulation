@@ -12,8 +12,6 @@
 
 {character_name}의 현재 상태
 {character_situation}
-
-{memory}
 ---
 
 작업 지침

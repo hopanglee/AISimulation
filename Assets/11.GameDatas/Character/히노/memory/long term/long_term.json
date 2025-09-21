@@ -14,7 +14,7 @@
 		"category": "personal",
 		"content": "본가를 떠나 혼자 사는 연습. 불을 끄고 침대에 누우면, 공간이 한 사람을 기준으로 정리되는 느낌이 들었다.",
 		"emotions": { "자유": 0.6, "쓸쓸함": 0.4 },
-		"relatedActors": ["부모님"],
+		"relatedActors": [],
 		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:거실"
 	},
 	{
@@ -149,7 +149,7 @@
 		"category": "health",
 		"content": "병원 로비에서 울먹이는 아이에게 종이학을 접어 건넸다. 기다림의 시간도 작게 나눌 수 있음을 배웠다.",
 		"emotions": { "두려움": 0.6, "차분": 0.4 },
-		"relatedActors": ["멜라"],
+		"relatedActors": [],
 		"location": "도쿄:신주쿠:카부키쵸:1-chome-7:세이메이 종합병원:로비"
 	},
 	{

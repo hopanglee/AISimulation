@@ -127,7 +127,7 @@ public class GPT
                 Directory.CreateDirectory(characterDirectoryPath);
 
             // 파일명: 세션+캐릭터+에이전트 조합 (세션이 바뀌면 새 파일)
-            string fileName = $"ConversationLog_{sessionDirectoryName ?? "Session"}_{actorName}_{effectiveAgentType}.txt";
+            string fileName = $"ConversationLog_{sessionDirectoryName ?? "Session"}_{actorName}_{System.DateTime.Now:HH-mm-ss}_{effectiveAgentType}.txt";
             string filePath = Path.Combine(characterDirectoryPath, fileName);
 
             // 로그 내용 생성

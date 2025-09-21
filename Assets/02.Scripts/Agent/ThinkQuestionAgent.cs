@@ -21,7 +21,7 @@ namespace Agent
             SetAgentType(nameof(ThinkQuestionAgent));
             options = new ChatCompletionOptions
             {
-                Temperature = 0.8f // 창의적인 질문을 위해 높은 온도
+                // 일부 모델은 사용자 지정 temperature를 허용하지 않음 → 기본값(1) 사용
             };
         }
 
@@ -33,7 +33,7 @@ namespace Agent
         /// <param name="previousAnswer">이전 답변 (대화 이어가기용)</param>
         /// <param name="memoryContext">관련 메모리 정보</param>
         /// <returns>생각을 유도하는 질문</returns>
-        public async UniTask<string> GenerateThinkingQuestionAsync(string thinkScope, string topic, string previousAnswer, string memoryContext)
+        public async UniTask<string> GenerateThinkingQuestionAsync(string thinkScope, string topic, string previousAnswer, string memoryContext = null)
         {
             try
             {

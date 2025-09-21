@@ -62,6 +62,8 @@ public class Brain
 
     private bool planPlug = false; // 계획 생성을 플러그로 처리하고 싶을 때
 
+    private bool firstThink = true; // 첫 번째 Think 여부
+
     public Brain(Actor actor)
     {
         this.actor = actor;
@@ -113,7 +115,7 @@ public class Brain
     public async UniTask StartDayPlan()
     {
         // 현재 설정된 강제 새 계획 플래그를 DayPlanner에 반영 (방어적 동기화)
-        try { dayPlanner?.SetForceNewDayPlan(forceNewDayPlan); } catch {}
+        try { dayPlanner?.SetForceNewDayPlan(forceNewDayPlan); } catch { }
         // PerceptionAgent를 통해 시각정보 해석
         var perceptionResult = await InterpretVisualInformationAsync();
         Debug.Log($"[{actor.Name}] DayPlan 시작");
@@ -168,7 +170,7 @@ public class Brain
     /// </summary>
     private async UniTask StartDayPlanAndThinkAsync()
     {
-        if (Services.Get<GameService>().UseDayPlanner)
+        if (Services.Get<IGameService>().IsDayPlannerEnabled())
         {
             await StartDayPlan();
         }
@@ -266,7 +268,7 @@ public class Brain
             #region DayPlanner 실행
             // PerceptionAgent를 통해 시각정보 해석
             //var perceptionResult = await InterpretVisualInformationAsync();
-            if (planPlug && Services.Get<GameService>().UseDayPlanner)
+            if (planPlug && Services.Get<IGameService>().IsDayPlannerEnabled())
             {
                 Debug.Log($"[{actor.Name}] DayPlan 시작");
                 await dayPlanner.PlanToday();
@@ -286,18 +288,27 @@ public class Brain
                 }
 
                 planPlug = false;
+                firstThink = false;
             }
             #endregion
             else
             {
-                // RelationshipAgent: 관계 수정 여부 결정 및 적용
-                var relationshipMemoryManager = new RelationshipMemoryManager(actor);
-                await relationshipMemoryManager.ProcessRelationshipUpdatesAsync(perceptionResult);
-
-                // === 계획 유지/수정 결정 및 필요 시 재계획 (DayPlanner 내부로 캡슐화) ===
-                if (Services.Get<GameService>().UseDayPlanner)
+                if (firstThink)
                 {
-                    await dayPlanner.DecideAndMaybeReplanAsync(perceptionResult);
+                    firstThink = false;
+                    return (null, null);
+                }
+                else
+                {
+                    // RelationshipAgent: 관계 수정 여부 결정 및 적용
+                    var relationshipMemoryManager = new RelationshipMemoryManager(actor);
+                    await relationshipMemoryManager.ProcessRelationshipUpdatesAsync(perceptionResult);
+
+                    // === 계획 유지/수정 결정 및 필요 시 재계획 (DayPlanner 내부로 캡슐화) ===
+                    if (Services.Get<IGameService>().IsDayPlannerEnabled())
+                    {
+                        await dayPlanner.DecideAndMaybeReplanAsync(perceptionResult);
+                    }
                 }
             }
 
@@ -518,23 +529,13 @@ public class Brain
         if (actor is MainActor mainActor)
         {
             var visualInformation = mainActor.sensor.GetLookableEntityDescriptions();
-            var perceptionAgent = new PerceptionAgentGroup(actor);
+            var perceptionAgent = new PerceptionAgentGroup(actor, dayPlanner);
             recentPerceptionResult = await perceptionAgent.InterpretVisualInformationAsync(visualInformation);
 
             CharacterMemoryManager characterMemoryManager = new CharacterMemoryManager(actor);
             var characterInfo = characterMemoryManager.GetCharacterInfo();
             characterInfo.SetEmotions(recentPerceptionResult.emotions);
             await characterMemoryManager.SaveCharacterInfoAsync();
-
-            // 기존 버블 팝업 제거 → SimulationController의 텍스트로 대체
-            try
-            {
-                if (!string.IsNullOrEmpty(recentPerceptionResult?.situation_interpretation) && SimulationController.Instance != null)
-                {
-                    SimulationController.Instance.SetActorActivityText(actor.Name, $"상황 인식: {recentPerceptionResult.situation_interpretation}");
-                }
-            }
-            catch { }
 
             return recentPerceptionResult;
         }

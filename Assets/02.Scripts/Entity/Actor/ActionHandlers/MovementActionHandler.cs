@@ -352,6 +352,7 @@ namespace Agent.ActionHandlers
                 {
                     await moveCompleted.Task;
                 }
+                await SimDelay.DelaySimMinutes(1, token);
                 Debug.Log($"[{actor.Name}] {targetName}에 도착했습니다.");
             }
             catch (OperationCanceledException)

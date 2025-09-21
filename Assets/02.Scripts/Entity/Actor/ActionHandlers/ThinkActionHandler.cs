@@ -107,7 +107,7 @@ namespace Agent.ActionHandlers
             try
             {
                 // 메모리 정보 수집
-                string memoryContext = await GatherMemoryContextAsync(thinkScope);
+                // string memoryContext = await GatherMemoryContextAsync(thinkScope);
 
                 // 대화 초기화
                 questionAgent.ResetConversation();
@@ -137,13 +137,13 @@ namespace Agent.ActionHandlers
                         thinkScope,
                         topic,
                         previousAnswer,
-                        memoryContext
+                        null//memoryContext
                     );
                     bubble.Show($"생각 중: {questionResult}", 0);
                     thoughtChain.Add(questionResult);
                     await SimDelay.DelaySimMinutes(thinkingTimeMinutes/2, token);
                     // 답변 생성 (질문을 기반으로)
-                    var answerResult = await answerAgent.GenerateAnswerAsync(questionResult, thinkScope, topic, memoryContext);
+                    var answerResult = await answerAgent.GenerateAnswerAsync(questionResult, thinkScope, topic, null);
                     bubble.Show($"생각 중: {answerResult}", 0);
                     thoughtChain.Add(answerResult);
 
@@ -199,67 +199,70 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// 사색 범위에 따라 관련 메모리를 수집합니다.
         /// </summary>
-        private UniTask<string> GatherMemoryContextAsync(string thinkScope)
-        {
-            try
-            {
-                if (!(actor is MainActor mainActor) || mainActor.brain?.memoryManager == null)
-                {
-                    return UniTask.FromResult("관련 기억을 찾을 수 없습니다.");
-                }
+        // private UniTask<string> GatherMemoryContextAsync(string thinkScope)
+        // {
+        //     try
+        //     {
+        //         if (!(actor is MainActor mainActor) || mainActor.brain?.memoryManager == null)
+        //         {
+        //             return UniTask.FromResult("관련 기억을 찾을 수 없습니다.");
+        //         }
 
-                var shortTermMemories = mainActor.brain.memoryManager.GetShortTermMemory() ?? new List<ShortTermMemoryEntry>();
-                var longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories() ?? new List<LongTermMemory>();
+        //         var shortTermMemories = mainActor.brain.memoryManager.GetShortTermMemory() ?? new List<ShortTermMemoryEntry>();
+        //         var longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories() ?? new List<LongTermMemory>();
 
-                var contextParts = new List<string>();
+        //         var contextParts = new List<string>();
 
-                // 사색 범위에 따라 다른 메모리 선택
-                switch (thinkScope)
-                {
-                    case "past_reflection":
-                        // 장기 기억 위주
-                        var pastMemories = longTermMemories.TakeLast(3).ToList();
-                        if (pastMemories.Count > 0)
-                        {
-                            contextParts.Add("=== 과거 기억 ===");
-                            contextParts.AddRange(pastMemories.Select(m =>
-                                $"[{m.timestamp}] {m.content}"));
-                        }
-                        break;
+        //         // 사색 범위에 따라 다른 메모리 선택
+        //         switch (thinkScope)
+        //         {
+        //             case "past_reflection":
+        //                 // 장기 기억 위주
+        //                 var pastMemories = longTermMemories.TakeLast(3).ToList();
+        //                 if (pastMemories.Count > 0)
+        //                 {
+        //                     contextParts.Add("=== 과거 기억 ===");
+        //                     contextParts.AddRange(pastMemories.Select(m =>
+        //                         $"[{m.timestamp}] {m.content}"));
+        //                 }
+        //                 break;
 
-                    case "future_planning":
-                        // 최근 계획과 활동 위주
-                        var planMemories = shortTermMemories.Where(m => m.type == "plan_created").Take(3).ToList();
-                        if (planMemories.Count > 0)
-                        {
-                            contextParts.Add("=== 최근 계획 ===");
-                            contextParts.AddRange(planMemories.Select(m => $"[{m.timestamp:MM-dd HH:mm}] {m.content}"));
-                        }
-                        break;
+        //             case "future_planning":
+        //                 // 최근 계획과 활동 위주
+        //                 var planMemories = shortTermMemories.Where(m => m.type == "plan").Take(3).ToList();
+        //                 if (planMemories.Count > 0)
+        //                 {
+        //                     contextParts.Add("=== 최근 계획 ===");
+        //                     contextParts.AddRange(planMemories.Select(m => $"[{m.timestamp:MM-dd HH:mm}] {m.content}"));
+        //                 }
+        //                 break;
 
-                    case "current_analysis":
-                    default:
-                        // 최근 단기 기억 위주
-                        var recentMemories = shortTermMemories.OrderByDescending(m => m.timestamp).Take(5).ToList();
-                        if (recentMemories.Count > 0)
-                        {
-                            contextParts.Add("=== 최근 기억 ===");
-                            contextParts.AddRange(recentMemories.Select(m => $"[{m.timestamp:MM-dd HH:mm}] {m.content}"));
-                        }
-                        break;
-                }
+        //             case "current_analysis":
+        //             default:
+        //                 // 최근 단기 기억 위주
+        //                 var recentMemories = shortTermMemories
+        //                     .OrderByDescending(m => m.timestamp.ToMinutes())
+        //                     .Take(5)
+        //                     .ToList();
+        //                 if (recentMemories.Count > 0)
+        //                 {
+        //                     contextParts.Add("=== 최근 기억 ===");
+        //                     contextParts.AddRange(recentMemories.Select(m => $"[{m.timestamp:MM-dd HH:mm}] {m.content}"));
+        //                 }
+        //                 break;
+        //         }
 
-                var result = contextParts.Count > 0
-                    ? string.Join("\n", contextParts)
-                    : "관련 기억이 없습니다.";
+        //         var result = contextParts.Count > 0
+        //             ? string.Join("\n", contextParts)
+        //             : "관련 기억이 없습니다.";
 
-                return UniTask.FromResult(result);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"[{actor.Name}] 메모리 수집 실패: {ex.Message}");
-                return UniTask.FromResult("기억을 불러오는 중 오류가 발생했습니다.");
-            }
-        }
+        //         return UniTask.FromResult(result);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         Debug.LogError($"[{actor.Name}] 메모리 수집 실패: {ex.Message}");
+        //         return UniTask.FromResult("기억을 불러오는 중 오류가 발생했습니다.");
+        //     }
+        // }
     }
 }

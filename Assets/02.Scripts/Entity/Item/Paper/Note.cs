@@ -476,4 +476,9 @@ public class Note : Item, IUsable
         }
         return "The page does not exist.";
     }
+
+    public override string Get()
+    {
+        return base.Get();
+    }
 }

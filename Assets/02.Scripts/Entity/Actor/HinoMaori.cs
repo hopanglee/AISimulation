@@ -62,9 +62,9 @@ public class HinoMaori : MainActor
     protected override void Awake()
 	{
 		base.Awake();
-		brain = new(this);
+		//brain = new(this);
 		brain.memoryManager.ClearShortTermMemory();
-		brain?.memoryManager?.AddShortTermMemory(yesterdaySleepTime, "event_occurred", "교통 사고", $"{yesterdaySleepLocation}에서 교통사고가 발생", null);
+		brain.memoryManager.AddShortTermMemory(yesterdaySleepTime, "event_occurred", "차가 매우 빠르게 다가와 부딪침", $"위치: {yesterdaySleepLocation}", null);
 	}
     public override async UniTask Sleep(int? minutes = null)
     {

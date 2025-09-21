@@ -1374,12 +1374,21 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                         }
                         else
                         {
-                            timestamp = $"{memory.timestamp.GetDaysSince(Services.Get<ITimeService>().CurrentTime)}일 전 {memory.timestamp.hour:D2}:{memory.timestamp.minute:D2}";
+                            timestamp = $"어제";
+                            // var daysSince = -memory.timestamp.GetDaysSince(Services.Get<ITimeService>().CurrentTime);
+                            // if(daysSince <= 1)
+                            // {
+                            //     timestamp = $"{daysSince}일 전 {memory.timestamp.hour:D2}:{memory.timestamp.minute:D2}";
+                            // }
+                            // else
+                            // {
+                            //     timestamp = $"날짜&시간 모름";
+                            // }
                         }
                     }
                     else
                     {
-                        timestamp = "시간 미상";
+                        timestamp = "날짜&시간 모름";
                     }
                     var emotions = memory.emotions != null && memory.emotions.Count > 0
                         ? $"<감정: {string.Join(", ", memory.emotions.Select(e => $"{e.Key}:{e.Value:F1}"))}> "
@@ -1411,12 +1420,19 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                     var timestamp = "";
                     if (memory.timestamp != null)
                     {
-                        var daysSince = memory.timestamp.GetDaysSince(Services.Get<ITimeService>().CurrentTime);
-                        timestamp = $"{memory.timestamp.ToKoreanString()}({daysSince}일 전)";
+                        var daysSince = -memory.timestamp.GetDaysSince(Services.Get<ITimeService>().CurrentTime);
+                        if (daysSince <= 31)
+                        {
+                            timestamp = $"{memory.timestamp.ToKoreanString()}({-daysSince}일 전)";
+                        }
+                        else
+                        {
+                            timestamp = $"{memory.timestamp.ToKoreanString()}";
+                        }
                     }
                     else
                     {
-                        timestamp = "시간 모름";
+                        timestamp = "날짜&시간 모름";
                     }
                     var emotions = memory.emotions != null && memory.emotions.Count > 0
                         ? $"<감정: {string.Join(", ", memory.emotions.Select(e => $"{e.Key}:{e.Value:F1}"))}>"
@@ -1425,7 +1441,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                         ? $" [관련인물: {string.Join(", ", memory.relatedActors)}]"
                         : "";
                     var location = !string.IsNullOrEmpty(memory.location)
-                        ? $" [장소: {memory.location}]"
+                        ? $" [장소: {GetLastTwoLocationSegments(memory.location)}]"
                         : "";
 
                     memoryText += $"[{timestamp}] {emotions}{location} {memory.content} {relatedActors}\n";
@@ -1435,6 +1451,24 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             return memoryText.Trim();
         }
         return "";
+    }
+
+    private static string GetLastTwoLocationSegments(string location)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(location)) return "";
+            var parts = location.Split(':');
+            if (parts.Length == 0) return location;
+            if (parts.Length == 1) return parts[0];
+            int start = parts.Length - 2;
+            if (start < 0) start = 0;
+            return string.Join(":", parts.Skip(start));
+        }
+        catch
+        {
+            return location;
+        }
     }
 
     public string LoadPersonality()
