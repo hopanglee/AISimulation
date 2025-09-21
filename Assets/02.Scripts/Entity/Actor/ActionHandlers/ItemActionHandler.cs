@@ -23,7 +23,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// 아이템을 집는 액션을 처리합니다.
         /// </summary>
-        public async UniTask HandlePickUpItem(Dictionary<string, object> parameters, CancellationToken token = default)
+        public async UniTask<bool> HandlePickUpItem(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             // accept both new key (item_name) and legacy key (target_item)
             string itemName = null;
@@ -57,14 +57,16 @@ namespace Agent.ActionHandlers
                             bubble.SetFollowTarget(actor.transform);
                             bubble.Show($"{itemName}을(를) 집는 중", 0);
                         }
-                        await SimDelay.DelaySimMinutes(2,token);
+                        await SimDelay.DelaySimMinutes(2, token);
                         if (actor.PickUp(item))
                         {
                             Debug.Log($"[{actor.Name}] 아이템을 성공적으로 집었습니다: {itemName}");
+                            return true;
                         }
                         else
                         {
                             Debug.LogWarning($"[{actor.Name}] 손과 인벤토리가 모두 가득 찼습니다: {itemName}");
+                            return false;
                         }
                     }
                     finally
@@ -107,10 +109,12 @@ namespace Agent.ActionHandlers
                                         if (actor.PickUp(itemAfterMove))
                                         {
                                             Debug.Log($"[{actor.Name}] 아이템을 성공적으로 집었습니다: {itemName}");
+                                            return true;
                                         }
                                         else
                                         {
                                             Debug.LogWarning($"[{actor.Name}] 손과 인벤토리가 모두 가득 찼습니다: {itemName}");
+                                            return false;
                                         }
                                     }
                                     finally
@@ -122,6 +126,7 @@ namespace Agent.ActionHandlers
                                 {
                                     Debug.LogWarning($"[{actor.Name}] 이동 후에도 집을 수 있는 거리/상태가 아님: {itemName}");
                                     mainActor.brain.memoryManager.AddShortTermMemory("action_fail", $"이동 후에도 집을 수 있는 거리가 아님: {itemName}");
+
                                 }
                             }
                             else
@@ -137,26 +142,26 @@ namespace Agent.ActionHandlers
                     }
                 }
             }
-
+            return false;
         }
 
         /// <summary>
         /// 아이템을 내려놓는 액션을 처리합니다.
         /// </summary>
-        public async UniTask HandlePutDown(Dictionary<string, object> parameters, CancellationToken token)
+        public async UniTask<bool> HandlePutDown(Dictionary<string, object> parameters, CancellationToken token)
         {
             try
             {
                 if (actor.HandItem == null)
                 {
                     Debug.LogWarning($"[{actor.Name}] PutDown: 손에 아이템이 없습니다.");
-                    return;
+                    return false;
                 }
 
                 if (!parameters.TryGetValue("target_key", out var targetKeyObj) || targetKeyObj == null)
                 {
                     Debug.LogWarning($"[{actor.Name}] PutDown: target_key가 제공되지 않았습니다.");
-                    return;
+                    return false;
                 }
 
                 string targetKey = targetKeyObj.ToString();
@@ -180,12 +185,13 @@ namespace Agent.ActionHandlers
                             {
                                 Debug.LogWarning($"[{actor.Name}] 이동 후에도 ILocation을 찾을 수 없습니다: {targetKey}");
                                 mainActor.brain.memoryManager.AddShortTermMemory("action_fail", $"찾을 수 없는 위치임: {targetKey}");
-                                return;
+                                return false;
                             }
                         }
                         catch (System.Exception ex)
                         {
                             Debug.LogWarning($"[{actor.Name}] PutDown 이동 중 오류: {ex.Message}");
+                            return false;
                         }
                     }
                 }
@@ -207,8 +213,9 @@ namespace Agent.ActionHandlers
                     await SimDelay.DelaySimMinutes(2, token);
                     actor.PutDown(targetLocation);
                     await SimDelay.DelaySimMinutes(1, token);
-                    
+
                     Debug.Log($"[{actor.Name}] PutDown 완료: {actor.HandItem?.Name ?? "아이템"}을(를) {targetKey}에 내려놓았습니다.");
+                    return true;
                 }
                 finally
                 {
@@ -218,7 +225,9 @@ namespace Agent.ActionHandlers
             catch (Exception ex)
             {
                 Debug.LogError($"[{actor.Name}] HandlePutDown 오류: {ex.Message}");
+
             }
+            return false;
         }
 
         /// <summary>
@@ -282,7 +291,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// 돈을 주는 액션을 처리합니다.
         /// </summary>
-        public async UniTask HandleGiveMoney(Dictionary<string, object> parameters, CancellationToken token = default)
+        public async UniTask<bool> HandleGiveMoney(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             if (parameters.TryGetValue("target_character", out var targetCharacterObj) && targetCharacterObj is string targetCharacter &&
                 parameters.TryGetValue("amount", out var amountObj) && amountObj is int amount)
@@ -312,10 +321,12 @@ namespace Agent.ActionHandlers
                             Debug.LogWarning($"[{actor.Name}] GiveMoney 기능을 사용할 수 없습니다.");
                         }
                         Debug.Log($"[{actor.Name}] {targetActor.Name}에게 {amount}원을 성공적으로 주었습니다.");
+                        return true;
                     }
                     catch (System.Exception ex)
                     {
                         Debug.LogWarning($"[{actor.Name}] 돈 주기 실패: {ex.Message}");
+                        return false;
                     }
                     finally
                     {
@@ -356,6 +367,7 @@ namespace Agent.ActionHandlers
                                             await SimDelay.DelaySimMinutes(1, token);
                                         }
                                         Debug.Log($"[{actor.Name}] {targetActor.Name}에게 {amount}원을 성공적으로 주었습니다.");
+                                        return true;
                                     }
                                     finally
                                     {
@@ -383,14 +395,16 @@ namespace Agent.ActionHandlers
             else
             {
                 Debug.LogWarning($"[{actor.Name}] 돈 주기 파라미터가 올바르지 않음");
+                return false;
             }
+            return false;
             //await SimDelay.DelaySimMinutes(5, token);
         }
 
         /// <summary>
         /// 아이템을 주는 액션을 처리합니다.
         /// </summary>
-        public async UniTask HandleGiveItem(Dictionary<string, object> parameters, CancellationToken token = default)
+        public async UniTask<bool> HandleGiveItem(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             if (parameters.TryGetValue("target_character", out var targetCharacterObj) && targetCharacterObj is string targetCharacter)
             {
@@ -400,7 +414,7 @@ namespace Agent.ActionHandlers
                 {
                     Debug.LogWarning($"[{actor.Name}] 손에 아이템이 없습니다.");
                     //await SimDelay.DelaySimMinutes(1);
-                    return;
+                    return false;
                 }
 
                 var targetActor = EntityFinder.FindActorByName(actor, targetCharacter);
@@ -422,6 +436,7 @@ namespace Agent.ActionHandlers
                     await SimDelay.DelaySimMinutes(1, token);
                     Debug.Log($"[{actor.Name}] {targetActor.Name}에게 {actor.HandItem?.Name ?? "아이템"}을 성공적으로 주었습니다.");
                     if (bubble != null) bubble.Hide();
+                    return true;
                 }
                 else
                 {
@@ -456,6 +471,7 @@ namespace Agent.ActionHandlers
                                     await SimDelay.DelaySimMinutes(1, token);
                                     Debug.Log($"[{actor.Name}] {targetActor.Name}에게 {actor.HandItem?.Name ?? "아이템"}을 성공적으로 주었습니다.");
                                     if (bubble != null) bubble.Hide();
+                                    return true;
                                 }
                                 else
                                 {
@@ -472,6 +488,7 @@ namespace Agent.ActionHandlers
                     catch (System.Exception ex)
                     {
                         Debug.LogWarning($"[{actor.Name}] GiveItem Fallback 처리 중 오류: {ex.Message}");
+                        return false;
                     }
                 }
             }
@@ -479,7 +496,8 @@ namespace Agent.ActionHandlers
             {
                 Debug.LogWarning($"[{actor.Name}] 아이템 주기 파라미터가 올바르지 않음");
             }
-           // await SimDelay.DelaySimMinutes(2);
+            // await SimDelay.DelaySimMinutes(2);
+            return false;
         }
     }
 }

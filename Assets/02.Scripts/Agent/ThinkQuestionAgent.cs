@@ -13,16 +13,13 @@ namespace Agent
     public class ThinkQuestionAgent : GPT
     {
         private readonly Actor actor;
+        private string lastInitialUserMessage = null;
 
         public ThinkQuestionAgent(Actor actor) : base()
         {
             this.actor = actor;
             SetActorName(actor.Name);
             SetAgentType(nameof(ThinkQuestionAgent));
-            options = new ChatCompletionOptions
-            {
-                // 일부 모델은 사용자 지정 temperature를 허용하지 않음 → 기본값(1) 사용
-            };
 
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemoriesFiltered);
@@ -56,6 +53,7 @@ namespace Agent
                     messages.Add(new SystemChatMessage(systemPrompt));
                     // 첫 질문 생성을 위한 메시지 구성
                     var initialUserMessage = LoadFirstUserMessage(topic);
+                    lastInitialUserMessage = initialUserMessage; // 저장
                     messages.Add(new UserChatMessage(initialUserMessage));
 
                     var initialResponse = await SendGPTAsync<string>(messages, options);
@@ -67,6 +65,15 @@ namespace Agent
                     }
 
                     return initialResponse;
+                }
+                else
+                {
+                    // 이전에 저장된 초기 사용자 메시지가 있으면 제거
+                    if (!string.IsNullOrEmpty(lastInitialUserMessage))
+                    {
+                        messages.RemoveAll(m => m is UserChatMessage u && string.Equals(u.Content?.ToString(), lastInitialUserMessage, StringComparison.Ordinal));
+                        lastInitialUserMessage = null; // 제거 후 초기화
+                    }
                 }
 
                 // 이전 답변을 user message로 추가
@@ -133,6 +140,7 @@ namespace Agent
         public void ResetConversation()
         {
             messages.Clear();
+            lastInitialUserMessage = null;
         }
 
         /// <summary>

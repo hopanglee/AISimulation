@@ -63,7 +63,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// Think 액션을 처리합니다.
         /// </summary>
-        public async UniTask HandleThink(Dictionary<string, object> parameters, CancellationToken token = default)
+        public async UniTask<bool> HandleThink(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             try
             {
@@ -85,15 +85,17 @@ namespace Agent.ActionHandlers
                     var thinkingSummary = $"주제 '{topic}'에 대해 {duration}분간 사색함. " +
                                         $"결론: {thinkResult.Conclusions}";
 
-                    mainActor.brain.memoryManager.AddActionComplete(ActionType.Think, thinkingSummary);
+                    mainActor.brain.memoryManager.AddShortTermMemory("action_complete", thinkingSummary, "생각 완료");
 
                     Debug.Log($"[{actor.Name}] Think 액션 완료: {thinkResult.Conclusions}");
+                    return true;
                 }
             }
             catch (Exception ex)
             {
                 Debug.LogError($"[{actor.Name}] Think 액션 처리 실패: {ex.Message}");
             }
+            return false;
         }
 
         /// <summary>
@@ -128,9 +130,9 @@ namespace Agent.ActionHandlers
                 if (bubble != null)
                 {
                     bubble.SetFollowTarget(actor.transform);
-                    var displayTopic = topic ?? string.Empty;
-                    if (displayTopic.Length > 20) displayTopic = displayTopic.Substring(0, 20);
-                    bubble.Show($"{displayTopic}에 대해 생각 중...", 0);
+                    // var displayTopic = topic ?? string.Empty;
+                    // if (displayTopic.Length > 20) displayTopic = displayTopic.Substring(0, 20);
+                    bubble.Show($"{topic}에 대해 생각 중...", 0);
                 }
                 for (int round = 0; round < thinkingRounds && !token.IsCancellationRequested; round++)
                 {
@@ -143,14 +145,14 @@ namespace Agent.ActionHandlers
                     );
 
                     var displayQuestion = questionResult ?? string.Empty;
-                    if (displayQuestion.Length > 20) displayQuestion = displayQuestion.Substring(0, 20);
+                    // if (displayQuestion.Length > 20) displayQuestion = displayQuestion.Substring(0, 20);
                     bubble.Show($"생각 중: {displayQuestion}", 0);
                     thoughtChain.Add(questionResult);
                     await SimDelay.DelaySimMinutes(thinkingTimeMinutes/2, token);
                     // 답변 생성 (질문을 기반으로)
                     var answerResult = await answerAgent.GenerateAnswerAsync(questionResult, thinkScope, topic, null);
                     var displayAnswer = answerResult ?? string.Empty;
-                    if (displayAnswer.Length > 20) displayAnswer = displayAnswer.Substring(0, 20);
+                    // if (displayAnswer.Length > 20) displayAnswer = displayAnswer.Substring(0, 20);
                     bubble.Show($"생각 중: {displayAnswer}", 0);
                     thoughtChain.Add(answerResult);
 

@@ -17,7 +17,7 @@ public class PlanDecisionAgent : GPT
 	private readonly Actor actor;
 	private readonly IToolExecutor toolExecutor;
 
-	public PlanDecisionAgent(Actor actor) : base("gpt-4o-mini")
+	public PlanDecisionAgent(Actor actor) : base()// "gpt-4o-mini"
 	{
 		this.actor = actor;
 		this.toolExecutor = new ActorToolExecutor(actor);
@@ -29,8 +29,6 @@ public class PlanDecisionAgent : GPT
 
 	protected virtual void InitializeOptions()
 	{
-		// options 초기화
-		options = new ChatCompletionOptions();
 
 		// JSON 스키마 기반 응답 형식 설정
 		options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(

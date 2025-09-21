@@ -72,11 +72,6 @@ public class PutDownParameterAgent : ParameterAgentBase
             new UserChatMessage(userMessage)
         };
 
-        var options = new ChatCompletionOptions
-        {
-            Temperature = 0.1f
-        };
-
         try
         {
             var response = await SendGPTAsync<PutDownParameter>(messages, options);
@@ -137,10 +132,16 @@ public class PutDownParameterAgent : ParameterAgentBase
                 //return locationNames.Distinct().ToList();
 
                 var lookable = actor.sensor.GetLookableEntities();
-                var keys = lookable.Keys.ToList();
+                var keys = new List<string>();
+                foreach (var kv in lookable)
+                {
+                    if (kv.Value is ILocation)
+                    {
+                        keys.Add(kv.Key);
+                    }
+                }
+                //var keys = lookable.Keys.ToList();
                 return keys.Distinct().ToList();
-
-
             }
         }
         catch (System.Exception ex)

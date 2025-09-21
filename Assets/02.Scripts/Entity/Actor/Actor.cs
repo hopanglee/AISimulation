@@ -1391,11 +1391,11 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                         timestamp = "날짜&시간 모름";
                     }
                     var emotions = memory.emotions != null && memory.emotions.Count > 0
-                        ? $"<감정: {string.Join(", ", memory.emotions.Select(e => $"{e.Key}:{e.Value:F1}"))}> "
+                        ? $"감정: {string.Join(", ", memory.emotions.Select(e => $"{e.Key}"))}"
                         : "";
                     var details = !string.IsNullOrEmpty(memory.details) ? $" ({memory.details})" : "";
 
-                    memoryText += $"[{timestamp}] {emotions}{memory.content} {details}\n";
+                    memoryText += $"[{timestamp}] {memory.content} {details} {emotions}\n";
                 }
             }
 

@@ -104,8 +104,16 @@ namespace Agent
                     // return keys.Distinct().ToList();
 
                     var lookable = actor.sensor.GetLookableEntities();
-                    var keys = lookable.Keys.ToList();
-                    return keys.Distinct().ToList();
+                    var interactable = new List<string>();
+                    foreach (var kv in lookable)
+                    {
+                        if (kv.Value is IInteractable)
+                        {
+                            interactable.Add(kv.Key);
+                        }
+                    }
+                    //var keys = lookable.Keys.ToList();
+                    return interactable.Distinct().ToList();
                 }
             }
             catch (Exception ex)

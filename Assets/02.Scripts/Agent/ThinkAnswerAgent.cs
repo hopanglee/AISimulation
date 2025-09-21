@@ -19,11 +19,6 @@ namespace Agent
             this.actor = actor;
             SetActorName(actor.Name);
             SetAgentType(nameof(ThinkAnswerAgent));
-            options = new ChatCompletionOptions
-            {
-                // 일부 모델은 사용자 지정 temperature를 허용하지 않음 → 기본값(1) 사용
-            };
-
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemoriesFiltered);
             

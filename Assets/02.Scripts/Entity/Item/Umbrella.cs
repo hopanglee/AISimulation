@@ -8,7 +8,7 @@ public class Umbrella : Item, IUsable
     /// <summary>
     /// IUsable 인터페이스 구현
     /// </summary>
-    public async UniTask<string> Use(Actor actor, object variable, CancellationToken token = default)
+    public async UniTask<(bool, string)> Use(Actor actor, object variable, CancellationToken token = default)
     {
         var bubble = actor?.activityBubbleUI;
         if (bubble != null)
@@ -18,6 +18,6 @@ public class Umbrella : Item, IUsable
         }
         await SimDelay.DelaySimMinutes(1, token);
         if (bubble != null) bubble.Hide();
-        return $"{actor.Name}이(가) 우산을 펼쳤습니다.";
+        return (true, $"{actor.Name}이(가) 우산을 펼쳤습니다.");
     }
 }

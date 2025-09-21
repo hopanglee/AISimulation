@@ -385,7 +385,7 @@ public class MemoryManager
     /// </summary>
     public void AddActSelectorResult(ActSelectorAgent.ActSelectionResult actSelection)
     {
-        string content = $"{actSelection.ActType.ToKorean()}을/를 하기로 결정했다.";
+        string content = $"{actSelection.ActType.ToKorean()}을(를) 하기로 결정했다.";
         string details = $"이유: {actSelection.Reasoning}, 의도: {actSelection.Intention}";
         // string details = JsonConvert.SerializeObject(new
         // {
@@ -402,7 +402,7 @@ public class MemoryManager
     /// </summary>
     public void AddActionStart(ActionType actionType, Dictionary<string, object> parameters)
     {
-        string content = $"{actionType.ToKorean()}을/를 시작했다.";
+        string content = $"{actionType.ToKorean()}을(를) 시작했다.";
         string details = $"파라미터: {JsonConvert.SerializeObject(parameters)}";
         // string details = JsonConvert.SerializeObject(new
         // {
@@ -415,7 +415,7 @@ public class MemoryManager
 
     public void AddActionStart(string actionType, Dictionary<string, object> parameters)
     {
-        string content = $"{actionType}을/를 시작했다.";
+        string content = $"{actionType}을(를) 시작했다.";
         string details = $"파라미터: {JsonConvert.SerializeObject(parameters)}";
 
         // string details = null;
@@ -434,10 +434,10 @@ public class MemoryManager
     /// <summary>
     /// 행동 완료를 Short Term Memory에 추가합니다.
     /// </summary>
-    public void AddActionComplete(ActionType actionType, string result, bool isSuccess = true)
+    public void AddActionComplete(ActionType actionType, Dictionary<string, object> parameters, bool isSuccess = true)
     {
-        string content = $"{actionType.ToKorean()}을/를 완료했다.";
-        string details = $"{result}, 성공 여부: {isSuccess}";
+        string content = $"{actionType.ToKorean()}을(를) 완료했다.";
+        string details = $"파라미터: {JsonConvert.SerializeObject(parameters)}, 성공 여부: {isSuccess}";
         // string details = JsonConvert.SerializeObject(new
         // {
         //     action_type = actionType.ToString(),
@@ -451,7 +451,7 @@ public class MemoryManager
     public void AddActionComplete(string actionType, string result, bool isSuccess = true)
     {
         Debug.Log($"[{owner.Name}] AddActionComplete: {actionType} - {result}");
-        string content = $"{actionType}을/를 완료했다.";
+        string content = $"{actionType}을(를) 완료했다.";
         string details = $"결과: {result}, 성공 여부: {isSuccess}";
         // string details = JsonConvert.SerializeObject(new
         // {
@@ -468,7 +468,7 @@ public class MemoryManager
     /// </summary>
     public void AddActionInterrupted(ActionType actionType)
     {
-        string content = $"{actionType.ToKorean()}을/를 중단했다.";
+        string content = $"{actionType.ToKorean()}을(를) 중단했다.";
         string details = $"외부 이벤트로 인한 중단";
         // string details = JsonConvert.SerializeObject(new
         // {
@@ -562,6 +562,87 @@ public class MemoryManager
         }
     }
 
+
+    public async UniTask ProcessCircleEndMemoryAsync()
+    {
+        try
+        {
+            var timeService = Services.Get<ITimeService>();
+            var currentTime = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 8, 0);
+
+            Debug.Log($"[MemoryManager] Starting circle-end memory processing at {currentTime.year}-{currentTime.month:D2}-{currentTime.day:D2} {currentTime.hour:D2}:{currentTime.minute:D2}");
+
+            // 0. 현재 STM 분리: 최신 20개는 유지, 그 외는 정리 대상으로 사용
+            var numberOfStmToKeep = 20;
+
+            var allStm = GetShortTermMemory();
+            var orderedDesc = allStm
+                .OrderByDescending(e => e.timestamp.ToMinutes())
+                .ToList();
+
+            var latest = orderedDesc.Take(numberOfStmToKeep).ToList();
+            var toProcess = orderedDesc.Skip(numberOfStmToKeep).ToList();
+
+            if (toProcess.Count == 0)
+            {
+                Debug.Log($"[MemoryManager] No memories to consolidate (less than or equal to {numberOfStmToKeep} STM entries)");
+                return;
+            }
+
+            // 1. Long Term Memory 유지보수 (기존 LTM 정리)
+            //await PerformLongTermMemoryMaintenanceAsync();
+
+            // 2. Short Term Memory 통합 (오래된 항목들만)
+            var consolidationAgent = new LongTermMemoryConsolidationAgent(owner);
+            var consolidationResult = await consolidationAgent.ConsolidateMemoriesAsync(toProcess);
+            if (consolidationResult?.ConsolidatedChunks == null || consolidationResult.ConsolidatedChunks.Count == 0)
+            {
+                Debug.Log("[MemoryManager] No memories to consolidate from older STM");
+                return;
+            }
+
+            // 3. 필터링 (상위 70% 선별)
+            var filterAgent = new LongTermMemoryFilterAgent(owner);
+            var filterResult = await filterAgent.FilterMemoriesAsync(consolidationResult.ConsolidatedChunks);
+            if (filterResult?.KeptChunks == null || filterResult.KeptChunks.Count == 0)
+            {
+                Debug.Log("[MemoryManager] No memories passed filtering from older STM");
+                return;
+            }
+
+            // 4. Long Term Memory로 변환 및 저장
+            var keptChunks = filterAgent.GetKeptChunks(consolidationResult.ConsolidatedChunks, filterResult);
+            var filteredConsolidationResult = new MemoryConsolidationResult
+            {
+                ConsolidatedChunks = keptChunks,
+                ConsolidationReasoning = consolidationResult.ConsolidationReasoning
+            };
+
+            var newLongTermMemories = consolidationAgent.ConvertToLongTermFormat(filteredConsolidationResult, currentTime);
+
+            // 4.1. Long Term Memory 저장
+            AddLongTermMemories(newLongTermMemories);
+
+            // 5. 성격 변화 처리 (STM 정리 전에 수행)
+            await ProcessPersonalityChangeAsync(filteredConsolidationResult);
+
+            // 6. Short Term Memory 정리: 최신 20개만 남기고 나머지 제거
+            if (shortTermMemory?.entries != null)
+            {
+                var keepSet = new HashSet<ShortTermMemoryEntry>(latest);
+                shortTermMemory.entries = shortTermMemory.entries.Where(e => keepSet.Contains(e)).ToList();
+                SaveShortTermMemory();
+                Debug.Log($"[MemoryManager] STM trimmed: kept {shortTermMemory.entries.Count} latest entries ({numberOfStmToKeep} target)");
+            }
+
+            Debug.Log($"[MemoryManager] Circle-end processing completed. Saved {newLongTermMemories.Count} new long-term memories from older STM");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[MemoryManager] Failed to process circle-end memory: {ex.Message}");
+        }
+    }
+
     /// <summary>
     /// 성격 변화를 처리합니다.
     /// </summary>
@@ -646,6 +727,66 @@ public class MemoryManager
         catch (Exception ex)
         {
             Debug.LogError($"[MemoryManager] Failed to perform memory maintenance: {ex.Message}");
+        }
+    }
+
+    public async UniTask PerformLongTermMemoryMaintenanceForCircleAsync()
+    {
+        try
+        {
+            var timeService = Services.Get<ITimeService>();
+            var currentTime = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 8, 0);
+
+            Debug.Log("[MemoryManager] Starting circle-based long-term memory maintenance");
+
+            // Long Term Memory 로드 및 분리: 가장 오래된 20개 vs 나머지
+            var allLtm = GetLongTermMemories();
+            if (allLtm == null || allLtm.Count == 0)
+            {
+                Debug.Log("[MemoryManager] No long-term memories to maintain");
+                return;
+            }
+
+            const int numberOfOldestToProcess = 20;
+            var orderedByDate = allLtm
+                .OrderBy(m => m.timestamp.ToMinutes())
+                .ToList();
+
+            var oldest20 = orderedByDate.Take(numberOfOldestToProcess).ToList();
+            var remainingLtm = orderedByDate.Skip(numberOfOldestToProcess).ToList();
+
+            if (oldest20.Count == 0)
+            {
+                Debug.Log("[MemoryManager] No oldest memories to process for maintenance");
+                return;
+            }
+
+            Debug.Log($"[MemoryManager] Processing {oldest20.Count} oldest LTM entries for maintenance");
+
+            // 가장 오래된 20개만 유지보수 처리
+            var maintenanceAgent = new LongTermMemoryMaintenanceAgent(owner);
+            var maintenanceResult = await maintenanceAgent.MaintainMemoriesAsync(oldest20, currentTime);
+            
+            if (maintenanceResult != null)
+            {
+                var maintainedMemories = maintenanceAgent.ApplyMaintenanceResult(oldest20, maintenanceResult);
+
+                // 유지보수된 메모리 + 나머지 메모리 합치기
+                var finalLtmList = new List<LongTermMemory>();
+                finalLtmList.AddRange(maintainedMemories);
+                finalLtmList.AddRange(remainingLtm);
+
+                // Long Term Memory 저장
+                UpdateLongTermMemories(finalLtmList);
+
+                Debug.Log($"[MemoryManager] Circle maintenance completed. " +
+                         $"Processed: {oldest20.Count}, Maintained: {maintainedMemories.Count}, " +
+                         $"Remaining: {remainingLtm.Count}, Total: {finalLtmList.Count}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[MemoryManager] Failed to perform circle-based memory maintenance: {ex.Message}");
         }
     }
 

@@ -23,7 +23,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// 옷을 벗는 액션을 처리합니다.
         /// </summary>
-        public async UniTask HandleRemoveClothing(Dictionary<string, object> parameters, CancellationToken token = default)
+        public async UniTask<bool> HandleRemoveClothing(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             try
             {
@@ -53,12 +53,16 @@ namespace Agent.ActionHandlers
                     if (removed)
                     {
                         Debug.Log($"[{actor.Name}] {outfit.Name} 세트를 벗었습니다. (손 → 인벤토리 → 바닥 순 처리)");
+                        if (bubble != null) bubble.Hide();
+                        return true;
                     }
                     else
                     {
                         Debug.LogWarning($"[{actor.Name}] 의상을 벗지 못했습니다.");
+
                     }
                     if (bubble != null) bubble.Hide();
+                    return false;
                 }
             }
             catch (Exception ex)
@@ -67,6 +71,7 @@ namespace Agent.ActionHandlers
             }
 
             //await SimDelay.DelaySimMinutes(1); // 옷 벗기에는 1분 소요
+            return false;
         }
 
         /// <summary>

@@ -194,7 +194,7 @@ namespace Agent
 
                 var options = new ChatCompletionOptions
                 {
-                    Temperature = 0.7f,
+                    //Temperature = 0.7f,
                     ResponseFormat = responseFormat
                 };
 

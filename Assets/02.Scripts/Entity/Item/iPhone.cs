@@ -48,7 +48,7 @@ public class iPhone : Item, IUsable
     /// - Read: ["Read", target Actor, number of messages to read (int)]
     /// - Continue: ["Continue", target Actor, number of additional messages to read (int)]
     /// </summary>
-    public async UniTask<string> Use(Actor actor, object variable, CancellationToken token = default)
+    public async UniTask<(bool, string)> Use(Actor actor, object variable, CancellationToken token = default)
     {
         var bubble = actor?.activityBubbleUI;
         if (bubble != null)
@@ -74,10 +74,10 @@ public class iPhone : Item, IUsable
                 {
                     bubble.Show($"아이폰 {target.Name}과 채팅 중: {text}", 0);
                     await SimDelay.DelaySimMinutes(2, token);
-                    return Chat(actor, target, text);
+                    return (true, Chat(actor, target, text));
                 }
                 else
-                    return "Invalid input value.";
+                    return (false, "유효하지 않은 입력값입니다.");
             }
             else if (cmd == "read")
             {
@@ -85,10 +85,10 @@ public class iPhone : Item, IUsable
                 {
                     bubble.Show($"아이폰 {target.Name}과 채팅 읽는 중", 0);
                     await SimDelay.DelaySimMinutes(2, token);
-                    return Read(actor, target, 10);
+                    return (true, Read(actor, target, 10));
                 }
                 else
-                    return "Invalid input value.";
+                    return (false, "유효하지 않은 입력값입니다.");
             }
             else if (cmd == "continue")
             {
@@ -96,18 +96,18 @@ public class iPhone : Item, IUsable
                 {
                     bubble.Show($"아이폰 {target.Name}과 채팅 계속 읽는 중", 0);
                     await SimDelay.DelaySimMinutes(2, token);
-                    return Continue(actor, target, 10);
+                    return (true, Continue(actor, target, 10));
                 }
                 else
-                    return "Invalid input value.";
+                    return (false, "유효하지 않은 입력값입니다.");
             }
             else
             {
-                return "Unknown command.";
+                return (false, "알 수 없는 값입니다.");
             }
         }
         if (bubble != null) bubble.Hide();
-        return "Invalid input value.";
+        return (false, "유효하지 않은 입력값입니다.");
     }
 
     /// <summary>

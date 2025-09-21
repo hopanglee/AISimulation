@@ -33,11 +33,13 @@ public class EgoAgent : GPT
     /// </summary>
     private void LoadSystemPrompt()
     {
+
         try
         {
             // 캐릭터 정보와 기억을 동적으로 로드
             var characterInfo = actor.LoadCharacterInfo();
             var characterMemory = actor.LoadCharacterMemory();
+
 
             // 플레이스홀더 교체를 위한 딕셔너리 생성
             var replacements = new Dictionary<string, string>
@@ -53,6 +55,8 @@ public class EgoAgent : GPT
             var promptText = PromptLoader.LoadPromptWithReplacements("EgoAgentPrompt.txt", replacements);
 
             messages.Add(new SystemChatMessage(promptText));
+
+
         }
         catch (Exception ex)
         {

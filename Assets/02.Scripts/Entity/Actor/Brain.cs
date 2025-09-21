@@ -292,7 +292,7 @@ public class Brain
     /// Think 프로세스를 실행합니다.
     /// 현재 상황을 분석하고 다음 행동을 결정합니다.
     /// </summary>
-    public async UniTask<(ActSelectorAgent.ActSelectionResult, ActParameterResult)> Think(PerceptionResult perceptionResult)
+    public async UniTask<(ActSelectorAgent.ActSelectionResult, ActParameterResult)> Think(PerceptionResult perceptionResult, int cycle)
     {
         try
         {
@@ -301,7 +301,7 @@ public class Brain
 
             // ActSelectorAgent를 통해 행동 선택 (Tool을 통해 동적으로 액션 정보 제공)
             // AI Agent 초기화
-            var actSelectorAgent = new ActSelectorAgent(actor);
+            var actSelectorAgent = new ActSelectorAgent(actor, cycle);
             actSelectorAgent.SetDayPlanner(dayPlanner); // DayPlanner 설정
             var selection = await actSelectorAgent.SelectActAsync(perceptionResult);
 
@@ -358,14 +358,14 @@ public class Brain
 
             // ActionPerformer를 통해 액션 실행
             bool isSuccess = true;
-            string completionReason = "성공적으로 완료";
+            //string completionReason = "성공적으로 완료";
 
             MainActor mainActor = actor as MainActor;
             try
             {
 
                 mainActor.CurrentActivity = paramResult.ActType.ToString();
-                await actionPerformer.ExecuteAction(action, token);
+                isSuccess = await actionPerformer.ExecuteAction(action, token);
             }
             catch (OperationCanceledException)
             {
@@ -387,7 +387,7 @@ public class Brain
                 // 정상 완료된 경우에만 완료 기록
                 if (isSuccess)
                 {
-                    memoryManager.AddActionComplete(paramResult.ActType, $"파라미터: {paramResult.Parameters}", true);
+                    memoryManager.AddActionComplete(paramResult.ActType, paramResult.Parameters, true);
                 }
                 mainActor.CurrentActivity = "Idle";
             }
@@ -421,6 +421,16 @@ public class Brain
             };
             var useActionManager = new UseActionManager(actor);
             return await useActionManager.ExecuteUseActionAsync(request);
+        }
+
+        // 매개변수가 필요 없는 액션들은 바로 반환
+        if (selection.ActType == ActionType.Wait || selection.ActType == ActionType.ObserveEnvironment || selection.ActType == ActionType.RemoveClothing)
+        {
+            return new ActParameterResult
+            {
+                ActType = selection.ActType,
+                Parameters = new Dictionary<string, object>()
+            };
         }
 
         // 다른 액션들은 필요할 때마다 ParameterAgent를 생성하여 처리
@@ -555,6 +565,29 @@ public class Brain
         }
     }
 
+    public async UniTask ProcessCircleEndMemoryAsync()
+    {
+        try
+        {
+            Debug.Log($"[{actor.Name}] 원형 종료 - Long Term Memory 통합 시작");
+
+            // STM 개수 확인 후 임계치(12) 초과일 때만 처리
+            int stmCount = memoryManager != null ? memoryManager.GetShortTermMemoryCount() : 0;
+            const int StmKeepThreshold = 50; // MemoryManager의 보존 갯수와 일치
+            if (stmCount <= StmKeepThreshold)
+            {
+                Debug.Log($"[{actor.Name}] STM {stmCount}개 → 보존 임계치 {StmKeepThreshold} 이하, 서클 정리 스킵");
+                return;
+            }
+
+            await memoryManager.ProcessCircleEndMemoryAsync();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[{actor.Name}] Circle End Memory 처리 실패: {ex.Message}");
+        }
+    }
+
     /// <summary>
     /// Long Term Memory 정기 정리를 실행합니다.
     /// </summary>
@@ -564,7 +597,16 @@ public class Brain
         {
             Debug.Log($"[{actor.Name}] Long Term Memory 정기 정리 시작");
 
-            await memoryManager.PerformLongTermMemoryMaintenanceAsync();
+            // LTM 개수 임계치 확인 후에만 정리 실행
+            int ltmCount = memoryManager != null ? memoryManager.GetLongTermMemories().Count : 0;
+            const int LtmMaintenanceThreshold = 100; // 임계치. 필요시 조정 가능
+            if (ltmCount <= LtmMaintenanceThreshold)
+            {
+                Debug.Log($"[{actor.Name}] LTM {ltmCount}개 → 임계치 {LtmMaintenanceThreshold} 이하, 정기 정리 스킵");
+                return;
+            }
+
+            await memoryManager.PerformLongTermMemoryMaintenanceForCircleAsync();
         }
         catch (Exception ex)
         {

@@ -32,13 +32,14 @@ namespace Agent
         private Actor actor;
         private IToolExecutor toolExecutor;
         private DayPlanner dayPlanner; // DayPlanner 참조 추가
-
-        public ActSelectorAgent(Actor actor) : base()
+        private int cycle;
+        public ActSelectorAgent(Actor actor, int cycle) : base()
         {
             this.actor = actor;
             this.toolExecutor = new ActorToolExecutor(actor);
             SetActorName(actor.Name);
             SetAgentType(nameof(ActSelectorAgent));
+            this.cycle = cycle;
 
 
             UpdateResponseFormatSchema();
@@ -372,7 +373,11 @@ namespace Agent
                 availableActions.Add(ActionType.RemoveClothing);
                 availableActions.Add(ActionType.Wait);
                 availableActions.Add(ActionType.Think);
-                availableActions.Add(ActionType.ObserveEnvironment);
+
+                if(cycle > 0)
+                {
+                    availableActions.Add(ActionType.ObserveEnvironment);
+                }
 
                 // 상황 기반 필터링
                 if (actor is MainActor thinkingActor)

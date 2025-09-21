@@ -118,7 +118,7 @@ public class Clothing : Item, IUsable
     /// <summary>
     /// IUsable 인터페이스 구현 - 옷을 입습니다
     /// </summary>
-    public virtual async UniTask<string> Use(Actor actor, object variable, CancellationToken token = default)
+    public virtual async UniTask<(bool, string)> Use(Actor actor, object variable, CancellationToken token = default)
     {
         var bubble = actor?.activityBubbleUI;
         if (bubble != null)
@@ -129,7 +129,7 @@ public class Clothing : Item, IUsable
         await SimDelay.DelaySimMinutes(1, token);
         var result = Wear(actor);
         if (bubble != null) bubble.Hide();
-        return result;
+        return (true, result);
     }
     
     public override string Get()

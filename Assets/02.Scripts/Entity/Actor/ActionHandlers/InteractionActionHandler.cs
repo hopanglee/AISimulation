@@ -23,7 +23,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// 캐릭터와 대화하는 액션을 처리합니다.
         /// </summary>
-        public async UniTask HandleSpeakToCharacter(Dictionary<string, object> parameters, CancellationToken token = default)
+        public async UniTask<bool> HandleSpeakToCharacter(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             if (parameters.TryGetValue("character_name", out var characterNameObj) && characterNameObj is string characterName)
             {
@@ -59,6 +59,7 @@ namespace Agent.ActionHandlers
                                 // 성공적인 대화에 대한 피드백
                                 var feedback = $"Successfully spoke to {targetActor.Name}: '{message}'. The conversation was delivered.";
                                 await SimDelay.DelaySimMinutes(1, token);
+                                return true;
                             }
                             finally
                             {
@@ -76,6 +77,7 @@ namespace Agent.ActionHandlers
                         Debug.LogWarning($"[{actor.Name}] 캐릭터를 찾을 수 없음: {characterName}");
                         // 실패에 대한 피드백
                         var feedback = $"Failed to speak to {characterName}: Character not found in current location.";
+                        return false;
                     }
                 }
                 else
@@ -84,12 +86,13 @@ namespace Agent.ActionHandlers
                 }
             }
             //await SimDelay.DelaySimMinutes(2);
+            return false;
         }
 
         /// <summary>
         /// 오브젝트와 상호작용하는 액션을 처리합니다.
         /// </summary>
-        public async UniTask HandleInteractWithObject(Dictionary<string, object> parameters, CancellationToken token = default)
+        public async UniTask<bool> HandleInteractWithObject(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             if (parameters.TryGetValue("object_name", out var objectNameObj) && objectNameObj is string objectName)
             {
@@ -109,12 +112,12 @@ namespace Agent.ActionHandlers
                             {
                                 string result = await interactable.TryInteract(actor, token);
                                 Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
-                                return;
+                                return true;
                             }
                             catch (OperationCanceledException)
                             {
                                 Debug.Log($"[{actor.Name}] 상호작용이 취소되었습니다.");
-                                return;
+                                return false;
                             }
                         }
                     }
@@ -128,12 +131,12 @@ namespace Agent.ActionHandlers
                             {
                                 string result = await interactable.TryInteract(actor, token);
                                 Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
-                                return;
+                                return true;
                             }
                             catch (OperationCanceledException)
                             {
                                 Debug.Log($"[{actor.Name}] 상호작용이 취소되었습니다.");
-                                return;
+                                return false;
                             }
                         }
                     }
@@ -147,12 +150,12 @@ namespace Agent.ActionHandlers
                             {
                                 string result = await interactable.TryInteract(actor, token);
                                 Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
-                                return;
+                                return true;
                             }
                             catch (OperationCanceledException)
                             {
                                 Debug.Log($"[{actor.Name}] 상호작용이 취소되었습니다.");
-                                return;
+                                return false;
                             }
                         }
                     }
@@ -173,41 +176,45 @@ namespace Agent.ActionHandlers
                                 {
                                     string result = await interProp.TryInteract(actor, token);
                                     Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
-                                    return;
+                                    await SimDelay.DelaySimMinutes(1, token);
+                                    return true;
                                 }
                                 if (interactableEntities.buildings.ContainsKey(objectName) && interactableEntities.buildings[objectName] is IInteractable interBld)
                                 {
                                     string result = await interBld.TryInteract(actor, token);
                                     Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
-                                    return;
+                                    await SimDelay.DelaySimMinutes(1, token);
+                                    return true;
                                 }
                                 if (interactableEntities.items.ContainsKey(objectName) && interactableEntities.items[objectName] is IInteractable interItem)
                                 {
                                     string result = await interItem.TryInteract(actor, token);
                                     Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
-                                    return;
+                                    await SimDelay.DelaySimMinutes(1, token);
+                                    return true;
                                 }
 
                                 // 여전히 불가 → 워닝 후 Perception 재실행
                                 Debug.LogWarning($"[{actor.Name}] 이동 후에도 상호작용 불가: {objectName}");
                                 thinkingActor.brain.memoryManager.AddShortTermMemory("action_fail", $"{objectName}으로 이동했으나, 상호작용 범위에 없음");
-                                return;
+
                             }
                             catch (OperationCanceledException)
                             {
                                 Debug.Log($"[{actor.Name}] 이동/상호작용 시도가 취소되었습니다.");
-                                return;
+
                             }
                             catch (System.Exception ex)
                             {
                                 Debug.LogError($"[{actor.Name}] Interact Fallback 처리 중 오류: {ex.Message}");
-                                return;
+
                             }
                         }
                         else
                         {
                             Debug.LogWarning($"[{actor.Name}] 오브젝트를 찾을 수 없음: {objectName}");
                             thinkingActor.brain.memoryManager.AddShortTermMemory("action_fail", $"찾을 수 없음: {objectName}");
+
                         }
                     }
                 }
@@ -219,12 +226,13 @@ namespace Agent.ActionHandlers
 
             // 기본적으로 1분 지연 (SimDelay(1))
             await SimDelay.DelaySimMinutes(1, token);
+            return false;
         }
 
         /// <summary>
         /// 활동을 수행하는 액션을 처리합니다.
         /// </summary>
-        public async UniTask HandlePerformActivity(Dictionary<string, object> parameters, CancellationToken token = default)
+        public async UniTask<bool> HandlePerformActivity(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             string activityName = "Activity";
             string resultText = null;
@@ -290,12 +298,13 @@ namespace Agent.ActionHandlers
                     stmActor.brain.memoryManager.AddShortTermMemory("activity_result", $"활동 '{activityName}'을(를) 마쳤다.");
                 }
             }
+            return true;
         }
 
         /// <summary>
         /// 대기하는 액션을 처리합니다.
         /// </summary>
-        public async UniTask HandleWait(Dictionary<string, object> parameters, CancellationToken token = default)
+        public async UniTask<bool> HandleWait(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             Debug.Log($"[{actor.Name}] 대기 중...");
             // UI 표시: 대기 중
@@ -317,6 +326,7 @@ namespace Agent.ActionHandlers
             {
                 if (bubble != null) bubble.Hide();
             }
+            return true;
         }
     }
 }

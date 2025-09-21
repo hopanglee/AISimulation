@@ -40,11 +40,14 @@ public class IdAgent : GPT
     /// </summary>
     private void LoadSystemPrompt()
     {
+        MainActor mainActor = actor as MainActor;
         try
         {
             // 캐릭터 정보와 기억을 동적으로 로드
             var characterInfo = actor.LoadCharacterInfo();
             var characterMemory = actor.LoadLongTermMemory();
+            var recentPerceptionInterpretation = mainActor.brain?.recentPerceptionResult?.situation_interpretation;
+            
 
             // 플레이스홀더 교체를 위한 딕셔너리 생성
             var replacements = new Dictionary<string, string>
@@ -53,13 +56,16 @@ public class IdAgent : GPT
                 { "personality", actor.LoadPersonality() },
                 { "info", characterInfo },
                 { "long_term_memory", characterMemory },
-                { "character_situation", actor.LoadActorSituation() }
+                { "character_situation", actor.LoadActorSituation() },
             };
 
             // PromptLoader를 사용하여 프롬프트 로드 및 플레이스홀더 교체
             var promptText = PromptLoader.LoadPromptWithReplacements("IdAgentPrompt.txt", replacements);
 
             messages.Add(new SystemChatMessage(promptText));
+            
+            if(recentPerceptionInterpretation != null)
+                messages.Add(new UserChatMessage($"가장 최근 상황 인식: {recentPerceptionInterpretation}"));
         }
         catch (Exception ex)
         {

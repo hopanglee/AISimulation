@@ -25,7 +25,7 @@ public class Shampoo : Item, IUsable
     /// <summary>
     /// IUsable 인터페이스 구현 - 머리를 감습니다
     /// </summary>
-    public async UniTask<string> Use(Actor actor, object variable, CancellationToken token = default)
+    public async UniTask<(bool, string)> Use(Actor actor, object variable, CancellationToken token = default)
     {
         var bubble = actor?.activityBubbleUI;
         if (bubble != null)
@@ -36,6 +36,6 @@ public class Shampoo : Item, IUsable
         await SimDelay.DelaySimMinutes(2, token);
         UseShampoo(actor);
         if (bubble != null) bubble.Hide();
-        return $"{actor.Name}이(가) 샴푸로 머리를 감았습니다.";
+        return (true, $"{actor.Name}이(가) 샴푸로 머리를 감았습니다.");
     }
 }

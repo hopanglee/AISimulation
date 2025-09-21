@@ -427,10 +427,10 @@ public class LongTermMemoryMaintenanceAgent : GPT
 
         // 5. 종합 점수 계산 (휴리스틱)
         evaluation.OverallScore =
-            evaluation.RecencyScore * 0.2f +
-            evaluation.SurpriseScore * 0.3f +
+            evaluation.RecencyScore * 0.1f +
+            evaluation.SurpriseScore * 0.25f +
             evaluation.ImportanceScore * 0.4f +
-            evaluation.RelevanceScore * 0.1f;
+            evaluation.RelevanceScore * 0.25f;
     }
 
     /// <summary>

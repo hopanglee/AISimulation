@@ -12,6 +12,6 @@ public interface IUsable
     /// <param name="actor">사용하는 Actor</param>
     /// <param name="variable">사용 시 필요한 추가 변수</param>
     /// <returns>사용 결과 메시지</returns>
-    UniTask<string> Use(Actor actor, object variable, CancellationToken token = default);
+    UniTask<(bool, string)> Use(Actor actor, object variable, CancellationToken token = default);
 }
 

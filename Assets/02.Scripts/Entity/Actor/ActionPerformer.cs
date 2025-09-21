@@ -52,7 +52,7 @@ public class ActionPerformer
     /// <summary>
     /// 액션을 실행합니다.
     /// </summary>
-    public async UniTask ExecuteAction(AgentAction action, CancellationToken token)
+    public async UniTask<bool> ExecuteAction(AgentAction action, CancellationToken token)
     {
         try
         {
@@ -78,6 +78,7 @@ public class ActionPerformer
                 
                 // 액션 완료를 ExternalEventService에 알림
                 Services.Get<IExternalEventService>().NotifyActionCompleted(actor, action.ActionType);
+                return true;
             }
             else
             {
@@ -90,6 +91,7 @@ public class ActionPerformer
                 {
                     Debug.LogWarning($"[{actor.Name}] 재시도 권장됨");
                 }
+                return false;
             }
         }
         catch (OperationCanceledException)
@@ -100,10 +102,12 @@ public class ActionPerformer
             {
                 actor.MoveController.Reset();
             }
+            return false;
         }
         catch (Exception ex)
         {
             Debug.LogError($"[{actor.Name}] 액션 실행 실패 ({action.ActionType}): {ex.Message}");
+            return false;
         }
     }
 
@@ -181,6 +185,17 @@ public class ActionPerformer
         actionExecutor.RegisterHandler(
             ActionType.Think,
             async (parameters) => await thinkHandler.HandleThink(parameters, currentToken)
+        );
+
+        // ObserveEnvironment: 간단 처리(즉시 완료로 간주). Perception에 맡겨 다음 사이클로
+        actionExecutor.RegisterHandler(
+            ActionType.ObserveEnvironment,
+            async (parameters) =>
+            {
+                // 짧은 멈춤으로 관찰 제스처
+                await SimDelay.DelaySimSeconds(1, currentToken);
+                return true;
+            }
         );
     }
 }

@@ -245,7 +245,7 @@ public class Book : Item, IUsable
     /// <summary>
     /// IUsable 인터페이스 구현
     /// </summary>
-    public async UniTask<string> Use(Actor actor, object parameters, CancellationToken token = default)
+    public async UniTask<(bool, string)> Use(Actor actor, object parameters, CancellationToken token = default)
     {
         var bubble = actor?.activityBubbleUI;
         if (bubble != null)
@@ -259,17 +259,17 @@ public class Book : Item, IUsable
         {
             if (pageNumber < 1 || pageNumber > maxPageNum)
             {
-                return $"페이지 번호는 1부터 {maxPageNum}까지 유효합니다.";
+                return (false, $"페이지 번호는 1부터 {maxPageNum}까지 유효합니다.");
             }
 
             if (pages.ContainsKey(pageNumber))
             {
                 await SimDelay.DelaySimMinutes(20, token);
-                return pages[pageNumber].Read() + $"\n{pageNumber}페이지를 읽었습니다.";
+                return (true, pages[pageNumber].Read() + $"\n{pageNumber}페이지를 읽었습니다.");
             }
-            return "해당 페이지의 내용이 비어있습니다.";
+            return (false, "해당 페이지의 내용이 비어있습니다.");
         }
         if (bubble != null) bubble.Hide();
-        return "잘못된 입력값입니다.";
+        return (false, "잘못된 입력값입니다.");
     }
 }

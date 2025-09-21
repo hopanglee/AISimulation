@@ -10,7 +10,7 @@ using UnityEngine;
 /// </summary>
 public class ActionExecutor
 {
-    private Dictionary<ActionType, Func<Dictionary<string, object>, UniTask>> actionHandlers = new();
+    private Dictionary<ActionType, Func<Dictionary<string, object>, UniTask<bool>>> actionHandlers = new();
     //private float actionDelay = 5f; // 기본 5초 딜레이
 
     /// <summary>
@@ -18,7 +18,7 @@ public class ActionExecutor
     /// </summary>
     public void RegisterHandler(
         ActionType actionType,
-        Func<Dictionary<string, object>, UniTask> handler
+        Func<Dictionary<string, object>, UniTask<bool>> handler
     )
     {
         actionHandlers[actionType] = handler;
@@ -40,7 +40,11 @@ public class ActionExecutor
             try
             {
                 // 핸들러 실행을 await로 기다림
-                await handler(action.Parameters);
+                var result = await handler(action.Parameters);
+                if(result == false)
+                {
+                    return Fail($"Action {action.ActionType} executed failed");
+                }
                 //await SimDelay.DelaySimMinutes(1);
                 return Success($"Action {action.ActionType} executed successfully");
             }
