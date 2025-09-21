@@ -1108,13 +1108,13 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         var currentTime = timeService.CurrentTime;
 
         // 기본 정보 준비
-        var handItem = HandItem?.Name ?? "Empty";
+        var handItem = $"- {HandItem?.Name} => {HandItem?.Get()}";
         var inventoryItems = new List<string>();
         for (int i = 0; i < InventoryItems.Length; i++)
         {
             if (InventoryItems[i] != null)
             {
-                inventoryItems.Add($"Slot {i + 1}: {InventoryItems[i].Name}");
+                inventoryItems.Add($"Slot {i + 1}: {InventoryItems[i].Name} => {InventoryItems[i].Get()}");
             }
             else
             {
@@ -1291,7 +1291,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
         if (relationships != null && relationships.Count > 0)
         {
-            infoText += $"아는 인물은 {string.Join(", ", relationships)}이고 이외에는 전혀 모르는 사람이다.";
+            infoText += $"기억에 있는 인물: {string.Join(", ", relationships)}.";
         }
 
         // 추가설정 정보 추가
@@ -1318,10 +1318,11 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         if (this is MainActor mainActor)
         {
             var memoryText = "";
-
-            memoryText += LoadShortTermMemory();
-            memoryText += "\n";
             memoryText += LoadLongTermMemory();
+            memoryText += "\n\n";
+            memoryText += LoadShortTermMemory();
+
+
 
             return memoryText.Trim();
         }
@@ -1391,11 +1392,11 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                         timestamp = "날짜&시간 모름";
                     }
                     var emotions = memory.emotions != null && memory.emotions.Count > 0
-                        ? $"감정: {string.Join(", ", memory.emotions.Select(e => $"{e.Key}"))}"
+                        ? $", 당시 감정: {string.Join(", ", memory.emotions.OrderByDescending(e => e.Value).Take(2).Select(e => $"{e.Key}"))}"
                         : "";
                     var details = !string.IsNullOrEmpty(memory.details) ? $" ({memory.details})" : "";
 
-                    memoryText += $"[{timestamp}] {memory.content} {details} {emotions}\n";
+                    memoryText += $"[{timestamp}] {memory.content} {details}{emotions}\n";
                 }
             }
 
@@ -1435,7 +1436,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                         timestamp = "날짜&시간 모름";
                     }
                     var emotions = memory.emotions != null && memory.emotions.Count > 0
-                        ? $"<감정: {string.Join(", ", memory.emotions.Select(e => $"{e.Key}:{e.Value:F1}"))}>"
+                        ? $", 당시 감정: {string.Join(", ", memory.emotions.OrderByDescending(e => e.Value).Take(2).Select(e => $"{e.Key}:{e.Value*100:F1}%"))}"
                         : "";
                     var relatedActors = memory.relatedActors != null && memory.relatedActors.Count > 0
                         ? $" [관련인물: {string.Join(", ", memory.relatedActors)}]"
@@ -1444,7 +1445,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                         ? $" [장소: {GetLastTwoLocationSegments(memory.location)}]"
                         : "";
 
-                    memoryText += $"[{timestamp}] {emotions}{location} {memory.content} {relatedActors}\n";
+                    memoryText += $"[{timestamp}] {location} {memory.content} {relatedActors}{emotions}\n";
                 }
             }
 
@@ -1614,13 +1615,13 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 }
                 else
                 {
-                    relationshipText += $"- {relationshipName}: 관계 정보 없음\n";
+                    relationshipText += $"- {relationshipName}: 기억나지 않는다다\n";
                 }
             }
         }
         else
         {
-            relationshipText = "현재 특별한 관계가 없습니다.";
+            relationshipText = "현재 특별한 관계가 없는 것 같다.";
         }
 
         return relationshipText.Trim();
@@ -1744,13 +1745,13 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 }
                 else
                 {
-                    relationshipText += $"- {relationshipName}: 모르는 인물";
+                    relationshipText += $"- {relationshipName}: 기억나지 않는다..";
                 }
             }
         }
         else
         {
-            relationshipText = "모르는 인물";
+            relationshipText = "기억나지 않는다..";
         }
 
         return relationshipText.Trim();

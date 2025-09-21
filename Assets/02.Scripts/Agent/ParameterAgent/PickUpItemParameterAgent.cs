@@ -100,7 +100,7 @@ namespace Agent
                     var collectible = new List<string>();
                     foreach (var kv in lookable)
                     {
-                        if (kv.Value is ICollectible)
+                        if (kv.Value is ICollectible && !actor.sensor.IsItemInActorPossession(kv.Value as Item))
                         {
                             collectible.Add(kv.Key);
                         }

@@ -1,3 +1,4 @@
 추론: {reasoning}
 의도: {intention}
+---
 주울 수 있는 아이템들: {items}

@@ -229,6 +229,7 @@ namespace Agent
             else
             {
                 replacements.Add("current_plan", string.Empty);
+                replacements.Add("plan_notify", string.Empty);
             }
 
             var userMessage = localizationService.GetLocalizedText("current_action_context_prompt", replacements);
@@ -317,8 +318,8 @@ namespace Agent
             try
             {
                 // 배우 상태 참조
-                var handItem = (actor as Actor)?.HandItem;
-                var money = (actor as Actor)?.Money ?? 0;
+                var handItem = actor?.HandItem;
+                var money = actor?.Money ?? 0;
 
                 switch (actType)
                 {

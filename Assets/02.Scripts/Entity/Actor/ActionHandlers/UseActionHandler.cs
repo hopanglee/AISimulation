@@ -188,7 +188,7 @@ namespace Agent.ActionHandlers
                 // {
                 Debug.Log($"[{actor.Name}] iPhone으로 {targetActorName}에게 메시지 전송: {message}");
                 // iPhone의 Use 메서드 호출 (Chat 명령)
-                var (isSuccess, result) = await iphone.Use(actor, new object[] { "Chat", targetActorName, message }, token);
+                var (isSuccess, result) = await iphone.Use(actor, parameters, token);
                 if (isSuccess)
                 {
                     actor.brain.memoryManager.AddShortTermMemory("action_success", $"iPhone 메시지 전송: {result}");
@@ -226,7 +226,7 @@ namespace Agent.ActionHandlers
                 // {
                 Debug.Log($"[{actor.Name}] iPhone으로 {readTargetName}의 메시지 {count}개 읽기");
                 // iPhone의 Use 메서드 호출 (Read 명령)
-                var (isSuccess, result) = await iphone.Use(actor, new object[] { "Read", readTargetName, count }, token);
+                var (isSuccess, result) = await iphone.Use(actor, parameters, token);
                 if (isSuccess)
                 {
                     actor.brain.memoryManager.AddShortTermMemory("action_success", $"iPhone 메시지 읽기: {result}");
@@ -260,7 +260,7 @@ namespace Agent.ActionHandlers
                 // {
                 Debug.Log($"[{actor.Name}] iPhone으로 {continueTargetName}의 메시지 {continueCount}개 계속 읽기");
                 // iPhone의 Use 메서드 호출 (Continue 명령)
-                var (isSuccess, result) = await iphone.Use(actor, new object[] { "Continue", continueTargetName, continueCount }, token);
+                var (isSuccess, result) = await iphone.Use(actor, parameters, token);
                 if (isSuccess)
                 {
                     actor.brain.memoryManager.AddShortTermMemory("action_success", $"iPhone 메시지 계속 읽기: {result}");

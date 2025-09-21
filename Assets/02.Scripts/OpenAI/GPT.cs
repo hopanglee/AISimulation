@@ -19,6 +19,8 @@ public class GPT
     private string agentTypeOverride = null;
     // 도구 호출 라운드 최대 횟수 (기본 2)
     protected int maxToolCallRounds = 3;
+
+    private string modelName = "gpt-5-mini";
     public void SetMaxToolCallRounds(int maxRounds)
     {
         maxToolCallRounds = maxRounds < 0 ? 0 : maxRounds;
@@ -56,7 +58,7 @@ public class GPT
     public GPT(string version)
     {
         var apiKey = "OPENAI_API_KEY";
-
+        modelName = version;
         var userPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         var authPath = $"{userPath}/.openai/auth.json";
         if (File.Exists(authPath))
@@ -232,7 +234,7 @@ public class GPT
             // 간소화된 요청 페이로드 구성
             var requestPayload = new
             {
-                model = "gpt-4o-mini",
+                model = modelName,
                 response_format = options?.ResponseFormat?.GetType()?.Name ?? "null",
                 messages = BuildSerializableMessages(messages)
             };

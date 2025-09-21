@@ -135,7 +135,7 @@ public class PutDownParameterAgent : ParameterAgentBase
                 var keys = new List<string>();
                 foreach (var kv in lookable)
                 {
-                    if (kv.Value is ILocation)
+                    if (kv.Value is ILocation && !actor.sensor.IsItemInActorPossession(kv.Value as Item))
                     {
                         keys.Add(kv.Key);
                     }

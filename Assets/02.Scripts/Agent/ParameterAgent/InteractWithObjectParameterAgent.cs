@@ -107,7 +107,7 @@ namespace Agent
                     var interactable = new List<string>();
                     foreach (var kv in lookable)
                     {
-                        if (kv.Value is IInteractable)
+                        if (kv.Value is IInteractable && !actor.sensor.IsItemInActorPossession(kv.Value as Item))
                         {
                             interactable.Add(kv.Key);
                         }

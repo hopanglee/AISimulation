@@ -82,7 +82,7 @@ public class ActionPerformer
             }
             else
             {
-                Debug.LogError($"[{actor.Name}] 액션 실패: {action.ActionType} - {result.Message}");
+                Debug.LogWarning($"[{actor.Name}] 액션 실패: {action.ActionType} - {result.Message}");
                 if (!string.IsNullOrEmpty(result.Feedback))
                 {
                     Debug.LogWarning($"[{actor.Name}] 실패 피드백: {result.Feedback}");

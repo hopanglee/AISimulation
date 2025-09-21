@@ -444,7 +444,7 @@ public class Note : Item, IUsable
     {
         if (pages.ContainsKey(pageNum))
         {
-            return pages[pageNum].Read();
+            return "\n"+pages[pageNum].Read();
         }
         return "The page does not exist.";
     }

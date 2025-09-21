@@ -73,10 +73,10 @@ public class Sensor
                 }
             }
         }
-        
+
         // Enhanced Memory System: location.json 업데이트
         UpdateLocationMemory();
-        
+
         // 관계의 last_interaction 업데이트
         UpdateRelationshipLastInteraction();
     }
@@ -96,6 +96,10 @@ public class Sensor
         foreach (Entity entity in entities)
         {
             string baseKey = GetEntityBaseKey(entity);
+
+            // if(IsItemInActorPossession(entity as Item))
+            //     continue;
+
             AddEntityWithUniqueKey(lookable, baseKey, entity);
 
             if (entity.IsHideChild)
@@ -203,10 +207,10 @@ public class Sensor
                 return entityName + "_" + suffix.ToString() + locationPart;
             }
         }
-        
+
         // Entity가 없거나 preposition을 찾을 수 없으면 일반적인 전치사들로 시도
         string[] commonSeparators = { " in ", " on ", " at ", " near ", " under ", " above " };
-        
+
         foreach (string separator in commonSeparators)
         {
             int index = baseKey.IndexOf(separator);
@@ -217,7 +221,7 @@ public class Sensor
                 return entityName + "_" + suffix.ToString() + locationPart;
             }
         }
-        
+
         // 전치사를 찾을 수 없으면 끝에 붙임
         return baseKey + "_" + suffix.ToString();
     }
@@ -229,7 +233,7 @@ public class Sensor
     private string GetEntityBaseKey(Entity entity)
     {
         string key;
-        
+
         if (entity is Actor actor)
         {
             key = actor.GetSimpleKeyRelativeToActor(owner);
@@ -266,13 +270,16 @@ public class Sensor
     }
 
     // Getter 메서드들 (lookable 기반 필터 산출)
-    public SerializableDictionary<string, Entity> GetLookableEntities() => lookable;
+    public SerializableDictionary<string, Entity> GetLookableEntities()
+    {
+        UpdateLookableEntities();
+        return lookable;
+    }
 
     public SerializableDictionary<string, Entity> GetCollectibleEntities()
     {
         var result = new SerializableDictionary<string, Entity>();
-        if (lookable == null || lookable.Count == 0)
-            UpdateLookableEntities();
+        UpdateLookableEntities();
 
         Vector3 curPos = owner.transform.position;
         foreach (var kv in lookable)
@@ -287,6 +294,10 @@ public class Sensor
                 var distance = MathExtension.SquaredDistance2D(curPos, t.position);
                 if (distance <= interactionRange * interactionRange)
                 {
+                    // 액터의 손이나 인벤토리에 이미 있는 아이템은 제외
+                    if (IsItemInActorPossession(kv.Value as Item))
+                        continue;
+
                     // lookable의 키를 그대로 사용
                     result.Add(kv.Key, kv.Value);
                 }
@@ -298,8 +309,7 @@ public class Sensor
     public EntityDictionary GetInteractableEntities()
     {
         var result = new EntityDictionary();
-        if (lookable == null || lookable.Count == 0)
-            UpdateLookableEntities();
+        UpdateLookableEntities();
 
         Vector3 curPos = owner.transform.position;
         foreach (var kv in lookable)
@@ -346,6 +356,10 @@ public class Sensor
                     var d = MathExtension.SquaredDistance2D(curPos, item.transform.position);
                     if (d <= interactionRange * interactionRange)
                     {
+                        // 액터의 손이나 인벤토리에 이미 있는 아이템은 제외
+                        if (IsItemInActorPossession(item))
+                            continue;
+
                         // lookable의 키를 그대로 사용
                         result.items.Add(kv.Key, item);
                     }
@@ -353,6 +367,30 @@ public class Sensor
             }
         }
         return result;
+    }
+
+    /// <summary>
+    /// 아이템이 액터의 손이나 인벤토리에 있는지 확인합니다.
+    /// </summary>
+    public bool IsItemInActorPossession(Item item)
+    {
+        if (item == null) return false;
+
+        // 손에 있는 아이템 확인
+        if (owner.HandItem == item)
+            return true;
+
+        // 인벤토리에 있는 아이템 확인
+        if (owner.InventoryItems != null)
+        {
+            foreach (var inventoryItem in owner.InventoryItems)
+            {
+                if (inventoryItem == item)
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -433,8 +471,7 @@ public class Sensor
     public SerializableDictionary<string, Vector3> GetMovablePositions()
     {
         var result = new SerializableDictionary<string, Vector3>();
-        if (lookable == null || lookable.Count == 0)
-            UpdateLookableEntities();
+        UpdateLookableEntities();
 
         // 1. 기존 lookable 엔티티들의 위치 추가
         foreach (var kv in lookable)
@@ -475,7 +512,7 @@ public class Sensor
         {
             var locationManager = Services.Get<ILocationService>();
             var curArea = locationManager.GetArea(owner.curLocation);
-            
+
             if (curArea != null && curArea is Area area)
             {
                 foreach (var connectedArea in area.connectedAreas)
@@ -490,7 +527,7 @@ public class Sensor
                                 if (kv.Key == area && kv.Value != null)
                                 {
                                     string uniqueKey = GetUniqueKey(result, connectedArea.locationName);
-                                     Debug.Log($"[{owner.Name}] Add {uniqueKey} {connectedArea.gameObject.name}");
+                                    Debug.Log($"[{owner.Name}] Add {uniqueKey} {connectedArea.gameObject.name}");
                                     result.Add(uniqueKey, kv.Value.position);
                                 }
                             }
@@ -499,7 +536,7 @@ public class Sensor
                         {
                             // toMovePos가 없으면 Area 자체의 위치 사용
                             string uniqueKey = GetUniqueKey(result, connectedArea.locationName);
-                           
+
                             result.Add(uniqueKey, connectedArea.transform.position);
                         }
                     }
@@ -535,7 +572,7 @@ public class Sensor
         {
             var locationManager = Services.Get<ILocationService>();
             var curArea = locationManager.GetArea(owner.curLocation);
-            
+
             if (curArea != null && curArea is Area area)
             {
                 // 현재 Area에서 연결된 Area들 추가
@@ -552,7 +589,7 @@ public class Sensor
         {
             Debug.LogWarning($"[Sensor] 연결된 Area 목록 가져오기 실패: {ex.Message}");
         }
-        
+
         return result;
     }
 
@@ -612,7 +649,7 @@ public class Sensor
     public bool IsInteractable(Entity entity)
     {
         var inter = GetInteractableEntities();
-        
+
         // 고유한 키를 사용하는 Dictionary에서 Entity를 찾기 위해 값으로 검색
         if (entity is Actor actor)
         {
@@ -633,7 +670,7 @@ public class Sensor
 
         return false;
     }
-    
+
     /// <summary>
     /// Enhanced Memory System과 연동하여 location.json을 업데이트합니다.
     /// </summary>
@@ -646,7 +683,7 @@ public class Sensor
             {
                 var locationManager = Services.Get<ILocationService>();
                 var curArea = locationManager.GetArea(owner.curLocation);
-                
+
                 if (curArea != null)
                 {
                     // 분류된 데이터 수집
@@ -655,7 +692,7 @@ public class Sensor
                     var actors = new List<string>();
                     var buildings = new List<string>();
                     var connectedAreas = new List<string>();
-                    
+
                     foreach (var kv in lookable)
                     {
                         if (kv.Value is Actor actor && actor != owner)
@@ -675,7 +712,7 @@ public class Sensor
                             buildings.Add(building.GetSimpleKeyRelativeToActor(owner));
                         }
                     }
-                    
+
                     // Connected areas 정보 수집
                     if (curArea.connectedAreas != null)
                     {
@@ -684,11 +721,11 @@ public class Sensor
                             connectedAreas.Add(connectedArea.locationName ?? connectedArea.LocationToString());
                         }
                     }
-                    
+
                     // Enhanced Memory Agent를 통해 location memory 업데이트
                     string locationName = curArea.LocationToString();
                     mainActor.brain.memoryManager.UpdateLocationMemory(
-                        locationName, 
+                        locationName,
                         items,
                         props,
                         actors,
@@ -703,7 +740,7 @@ public class Sensor
             Debug.LogWarning($"[Sensor] Location Memory 업데이트 실패: {ex.Message}");
         }
     }
-    
+
     /// <summary>
     /// lookable에 있는 Actor들과의 관계의 last_interaction을 현재 시간으로 업데이트합니다.
     /// </summary>
@@ -716,15 +753,15 @@ public class Sensor
             {
                 var timeService = Services.Get<ITimeService>();
                 if (timeService == null) return;
-                
+
                 var currentTime = timeService.CurrentTime;
-                
+
                 foreach (var kv in lookable)
                 {
                     if (kv.Value is Actor otherActor && otherActor != owner)
                     {
                         // 관계의 last_interaction을 현재 시간으로 업데이트
-                        var relationshipMemoryManager = new RelationshipMemoryManager(mainActor);   
+                        var relationshipMemoryManager = new RelationshipMemoryManager(mainActor);
                         var relationship = relationshipMemoryManager.GetRelationship(otherActor.Name);
                         if (relationship != null)
                         {
