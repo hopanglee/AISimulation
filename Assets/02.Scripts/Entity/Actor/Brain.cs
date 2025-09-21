@@ -6,6 +6,7 @@ using Agent;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using PlanStructures;
+using OpenAI.Chat;
 
 /// <summary>
 /// Actor의 인지 시스템을 담당하는 조정자 클래스
@@ -60,9 +61,9 @@ public class Brain
     private bool forceNewDayPlan = false; // 기존 계획 무시하고 새로 생성 (테스트용)
     private bool planOnly = false; // 첫 계획 생성까지만 실행하고 그 이후에는 멈춤 (테스트용)
 
-    private bool planPlug = false; // 계획 생성을 플러그로 처리하고 싶을 때
+    [HideInInspector] public bool havePlan = false; // 계획 생성을 플러그로 처리하고 싶을 때
 
-    private bool firstThink = true; // 첫 번째 Think 여부
+    [HideInInspector] public bool firstThink = true; // 첫 번째 Think 여부
 
     public Brain(Actor actor)
     {
@@ -134,13 +135,6 @@ public class Brain
         {
             Debug.Log($"[{actor.Name}] Plan only mode - 계획 생성 완료, Think 루프 시작하지 않음");
         }
-    }
-
-
-    public void SetPlanPlug(bool plug)
-    {
-        planPlug = plug;
-        Debug.Log($"[{actor.Name}] Plan plug {(plug ? "enabled" : "disabled")}");
     }
 
     /// <summary>
@@ -223,96 +217,85 @@ public class Brain
         }
     }
 
+    public async UniTask<PerceptionResult> Perception()
+    {
+        // GPT 사용이 비활성화된 경우 기본 Wait 액션 반환
+        if (!actor.UseGPT)
+        {
+            Debug.Log($"[{actor.Name}] GPT 비활성화됨 - Think 프로세스 건너뜀, Wait 액션 반환");
+
+            // 기본 PerceptionResult 생성
+            var defaultPerceptionResult = new PerceptionResult
+            {
+                situation_interpretation = "GPT 비활성화로 인한 기본 상황 해석",
+                thought_chain = new List<string> { "GPT 비활성화", "기본 대기 모드" }
+            };
+
+            return defaultPerceptionResult;
+        }
+
+        // PerceptionAgent를 통해 시각정보 해석
+        var perceptionResult = await InterpretVisualInformationAsync();
+
+        // Enhanced Memory System: Perception 결과를 Short Term Memory에 추가
+        memoryManager.AddPerceptionResult(perceptionResult);
+        
+        return perceptionResult;
+    }
+
+    public async UniTask DayPlan()
+    {
+        if (!havePlan && Services.Get<IGameService>().IsDayPlannerEnabled())
+        {
+            Debug.Log($"[{actor.Name}] DayPlan 시작");
+            await dayPlanner.PlanToday();
+
+            // Enhanced Memory System: 계획 생성을 Short Term Memory에 추가
+            var dayPlan = dayPlanner.GetCurrentDayPlan();
+            if (dayPlan?.HighLevelTasks != null && dayPlan.HighLevelTasks.Count > 0)
+            {
+                var planDescription = $"오늘의 계획: {string.Join(", ", dayPlan.HighLevelTasks.ConvertAll(t => t.Description))}";
+                memoryManager.AddPlanCreated(planDescription);
+            }
+
+            // planOnly가 true이면 계획 생성 후 종료
+            if (planOnly)
+            {
+                Debug.Log($"[{actor.Name}] Plan only mode - 계획 생성 완료, Think 루프 시작하지 않음");
+            }
+
+            havePlan = true;
+        }
+    }
+
+    public async UniTask UpdateRelationship(PerceptionResult perceptionResult)
+    {
+        if (firstThink)
+        {
+            firstThink = false;
+        }
+        else
+        {
+            // RelationshipAgent: 관계 수정 여부 결정 및 적용
+            var relationshipMemoryManager = new RelationshipMemoryManager(actor);
+            await relationshipMemoryManager.ProcessRelationshipUpdatesAsync(perceptionResult);
+
+            // === 계획 유지/수정 결정 및 필요 시 재계획 (DayPlanner 내부로 캡슐화) ===
+            if (Services.Get<IGameService>().IsDayPlannerEnabled())
+            {
+                await dayPlanner.DecideAndMaybeReplanAsync(perceptionResult);
+            }
+        }
+    }
+
     /// <summary>
     /// Think 프로세스를 실행합니다.
     /// 현재 상황을 분석하고 다음 행동을 결정합니다.
     /// </summary>
-    public async UniTask<(ActSelectorAgent.ActSelectionResult, ActParameterResult)> Think()
+    public async UniTask<(ActSelectorAgent.ActSelectionResult, ActParameterResult)> Think(PerceptionResult perceptionResult)
     {
         try
         {
-            // GPT 사용이 비활성화된 경우 기본 Wait 액션 반환
-            if (!actor.UseGPT)
-            {
-                Debug.Log($"[{actor.Name}] GPT 비활성화됨 - Think 프로세스 건너뜀, Wait 액션 반환");
-
-                // 기본 Wait 액션 결과 생성
-                var defaultSelection = new ActSelectorAgent.ActSelectionResult
-                {
-                    ActType = ActionType.Wait,
-                    Reasoning = "GPT 비활성화로 인한 기본 대기",
-                    Intention = "수동 제어 모드에서 대기"
-                };
-                var defaultParamResult = new ActParameterResult
-                {
-                    ActType = ActionType.Wait,
-                    Parameters = new Dictionary<string, object>()
-                };
-
-                // 기본 PerceptionResult 생성
-                var defaultPerceptionResult = new PerceptionResult
-                {
-                    situation_interpretation = "GPT 비활성화로 인한 기본 상황 해석",
-                    thought_chain = new List<string> { "GPT 비활성화", "기본 대기 모드" }
-                };
-
-                return (defaultSelection, defaultParamResult);
-            }
-
-            // PerceptionAgent를 통해 시각정보 해석
-            var perceptionResult = await InterpretVisualInformationAsync();
-
-            // Enhanced Memory System: Perception 결과를 Short Term Memory에 추가
-            memoryManager.AddPerceptionResult(perceptionResult);
-
-            #region DayPlanner 실행
-            // PerceptionAgent를 통해 시각정보 해석
-            //var perceptionResult = await InterpretVisualInformationAsync();
-            if (planPlug && Services.Get<IGameService>().IsDayPlannerEnabled())
-            {
-                Debug.Log($"[{actor.Name}] DayPlan 시작");
-                await dayPlanner.PlanToday();
-
-                // Enhanced Memory System: 계획 생성을 Short Term Memory에 추가
-                var dayPlan = dayPlanner.GetCurrentDayPlan();
-                if (dayPlan?.HighLevelTasks != null && dayPlan.HighLevelTasks.Count > 0)
-                {
-                    var planDescription = $"오늘의 계획: {string.Join(", ", dayPlan.HighLevelTasks.ConvertAll(t => t.Description))}";
-                    memoryManager.AddPlanCreated(planDescription);
-                }
-
-                // planOnly가 true이면 계획 생성 후 종료
-                if (planOnly)
-                {
-                    Debug.Log($"[{actor.Name}] Plan only mode - 계획 생성 완료, Think 루프 시작하지 않음");
-                }
-
-                planPlug = false;
-                firstThink = false;
-            }
-            #endregion
-            else
-            {
-                if (firstThink)
-                {
-                    firstThink = false;
-                    return (null, null);
-                }
-                else
-                {
-                    // RelationshipAgent: 관계 수정 여부 결정 및 적용
-                    var relationshipMemoryManager = new RelationshipMemoryManager(actor);
-                    await relationshipMemoryManager.ProcessRelationshipUpdatesAsync(perceptionResult);
-
-                    // === 계획 유지/수정 결정 및 필요 시 재계획 (DayPlanner 내부로 캡슐화) ===
-                    if (Services.Get<IGameService>().IsDayPlannerEnabled())
-                    {
-                        await dayPlanner.DecideAndMaybeReplanAsync(perceptionResult);
-                    }
-                }
-            }
-
-
             // 상황 설명 생성 (기존 방식과 PerceptionAgent 결과를 결합)
             //var enhancedDescription = $"{situationDescription}\n\n=== Perception Analysis ===\n{perceptionResult.situation_interpretation}\n\n생각 Chainn: {string.Join(" -> ", perceptionResult.thought_chain)}";
 
@@ -345,7 +328,7 @@ public class Brain
             Services.Get<IActorService>().StoreActResult(actor, selection);
 
             // 선택된 행동에 대한 파라미터 생성
-            var paramResult = await GenerateActionParameters(selection);
+            var paramResult = await GenerateActionParameters(selection, actSelectorAgent);
 
             return (selection, paramResult);
         }
@@ -404,7 +387,7 @@ public class Brain
                 // 정상 완료된 경우에만 완료 기록
                 if (isSuccess)
                 {
-                    memoryManager.AddActionComplete(paramResult.ActType, completionReason, true);
+                    memoryManager.AddActionComplete(paramResult.ActType, $"파라미터: {paramResult.Parameters}", true);
                 }
                 mainActor.CurrentActivity = "Idle";
             }
@@ -419,7 +402,7 @@ public class Brain
     /// <summary>
     /// 선택된 행동에 대한 파라미터를 생성합니다.
     /// </summary>
-    private async UniTask<ActParameterResult> GenerateActionParameters(ActSelectorAgent.ActSelectionResult selection)
+    private async UniTask<ActParameterResult> GenerateActionParameters(ActSelectorAgent.ActSelectionResult selection, ActSelectorAgent actSelectorAgent)
     {
         // UseGPT가 false이고 MainActor인 경우 Inspector 값 사용
         if (!actor.UseGPT && actor is MainActor mainActor)
@@ -455,10 +438,11 @@ public class Brain
             {
                 Debug.LogWarning($"[{actor.Name}] 파라미터 생성이 null로 반환됨 - 액션 취소 후 재선택으로 회귀");
                 // 재선택: 최신 Perception 유지하여 다시 SelectAct 수행
-                var selectionRetry = new ActSelectorAgent(actor);
-                selectionRetry.SetDayPlanner(dayPlanner);
-                var selectionRetryResult = await selectionRetry.SelectActAsync(recentPerceptionResult);
-                return await GenerateActionParameters(selectionRetryResult);
+                // var selectionRetry = new ActSelectorAgent(actor);
+                // selectionRetry.SetDayPlanner(dayPlanner);
+                actSelectorAgent.messages.Add(new UserChatMessage("잘못된 행동 선택, 다시 선택해주세요. 행동에 대한 대상과 충분히 가까운지, 존재하는지 확인해주세요."));
+                var selectionRetryResult = await actSelectorAgent.SelectActAsync(recentPerceptionResult);
+                return await GenerateActionParameters(selectionRetryResult, actSelectorAgent);
             }
             return result;
         }
@@ -552,18 +536,6 @@ public class Brain
         // {
         //     // GPT 클래스에 로깅 설정 메서드가 있다면 호출
         // }
-    }
-
-    // === Legacy Methods (for backward compatibility) ===
-
-    /// <summary>
-    /// [Legacy] 이전 Think/Act 메서드 (호환성을 위해 유지)
-    /// </summary>
-    [System.Obsolete("Use Think() and Act() methods instead")]
-    public async UniTask ThinkAndAct()
-    {
-        var (selection, paramResult) = await Think();
-        await Act(paramResult, CancellationToken.None);
     }
 
     /// <summary>

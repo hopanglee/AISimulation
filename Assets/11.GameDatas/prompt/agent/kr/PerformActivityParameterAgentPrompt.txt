@@ -1,4 +1,18 @@
-PerformActivity 행동의 파라미터(ActivityName, Duration)를 생성하는 것이 당신의 역할입니다.
+당신은 {character_name}의 PerformActivity 파라미터를 생성합니다.
 
-행동 근거(Reasoning, 왜 선택했는지)와 의도(Intention, 목적)를 기반으로, 분단위로 몇분동안(Duration) 어떤 행동(ActivityName)을 실행할 것인지를 정확히 추론하여 반환합니다.
-ActivityName은 문장이어도 괜찮습니다.
+---
+{character_name} 정보
+- 성격/정보: {info}
+- 관계 요약: {relationships}
+- 현재 상태: {character_situation}
+- 과거 기억(요약): {long_term_memory}
+---
+
+작업:
+1) 행동 근거(Reasoning)와 의도(Intention)에 맞춰 ActivityName과 Duration(분)을 정하세요.
+2) 해당 활동이 끝났을 때의 Result(결과)를 1문장으로 작성하세요.
+
+규칙:
+- Result는 ‘실제로 일어날 수 있는 일’만 적어야 합니다. 과장된 기적/불가능/초현실 금지.
+- Result는 항상 성공·이상적이어서는 안 됩니다. 현재 상황에 자연스럽고, 때로는 전혀 예상치 못한(작은 실패/부수 효과/우연한 발견 등) 현실적인 결과여야 합니다.
+- ActivityName은 문장 형태도 허용됩니다.

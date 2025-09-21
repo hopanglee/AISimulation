@@ -227,6 +227,7 @@ namespace Agent.ActionHandlers
         public async UniTask HandlePerformActivity(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             string activityName = "Activity";
+            string resultText = null;
             if (parameters.TryGetValue("activity_name", out var activityNameObj) && activityNameObj is string actName)
             {
                 activityName = actName;
@@ -245,6 +246,11 @@ namespace Agent.ActionHandlers
             if (parameters.TryGetValue("duration", out var durationObj))
             {
                 delay = (int)durationObj;
+            }
+
+            if (parameters.TryGetValue("result", out var resultObj) && resultObj is string r)
+            {
+                resultText = r;
             }
 
             // UI 표시: 씬에 존재하는 ActivityBubbleUI를 찾아 on/off 및 텍스트/초 갱신
@@ -270,6 +276,19 @@ namespace Agent.ActionHandlers
             finally
             {
                 if (bubble != null) bubble.Hide();
+            }
+
+            // 활동 종료 후 결과를 STM에 기록 (가능한 경우)
+            if (actor is MainActor stmActor && stmActor.brain?.memoryManager != null)
+            {
+                try
+                {
+                    stmActor.brain.memoryManager.AddShortTermMemory("activity_result", $"활동 '{activityName}'을(를) 마쳤다.", $"결과: {resultText}");
+                }
+                catch
+                {
+                    stmActor.brain.memoryManager.AddShortTermMemory("activity_result", $"활동 '{activityName}'을(를) 마쳤다.");
+                }
             }
         }
 

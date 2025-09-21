@@ -22,6 +22,10 @@ public abstract class MainActor : Actor
 	[SerializeField, Tooltip("Think 액션에서 Insight 추출 기능을 사용할지 여부")]
 	public bool useInsightAgent = true;
 
+	[Header("Perception Settings")]
+	[SerializeField, Tooltip("Perception 시 캐시된 Ego 결과를 사용할지 여부 (최초 1회)")]
+	public bool useCachedEgo = true;
+
 
 	[Header("Items")]
 	public iPhone iPhone;
@@ -60,7 +64,7 @@ public abstract class MainActor : Actor
 	private int sleepHour = 22; // 취침 시간
 
 	[SerializeField, Range(0, 100)]
-	private int sleepinessThreshold = 80; // 강제 수면 임계값
+	private int sleepinessThreshold = 90; // 강제 수면 임계값
 
 	[SerializeField]
 	protected bool isSleeping = false;
@@ -252,8 +256,15 @@ public abstract class MainActor : Actor
 		// Enhanced Memory System: 하루 종료 - Long Term Memory 통합 처리
 		await ProcessDayEndMemoryAsync();
 
-		// STM 초기화 후 수면 시작을 새로운 STM에 추가
-		brain?.memoryManager?.AddActionStart("수면", null);
+		// Enhanced Memory System: 기상을 STM에 추가 (예외 방어)
+		try
+		{
+			brain?.memoryManager?.AddShortTermMemory(yesterdaySleepTime, "sleep_start", "수면", $"{curLocation.LocationToString()}에서 취침", null);
+		}
+		catch (Exception ex)
+		{
+			Debug.LogWarning($"[{Name}] AddActionComplete 실패: {ex.Message}");
+		}
 	}
 
 	/// <summary>
@@ -296,25 +307,14 @@ public abstract class MainActor : Actor
 		}
 
 		Debug.Log($"[{Name}] Woke up at {currentTime}. Stamina restored to {Stamina}");
-
+		brain?.memoryManager?.AddShortTermMemory(currentTime, "wake up", $"{curLocation.LocationToString()}에서 일어남", $"체력 조금 회복");
 		// DayPlan 생성 전 안내 로그를 먼저 출력
 		Debug.Log($"[{Name}] 기상! DayPlan 및 Think 시작");
-
-		// Enhanced Memory System: 기상을 STM에 추가 (예외 방어)
-		try
-		{
-			brain?.memoryManager?.AddShortTermMemory(yesterdaySleepTime, "sleep_start", "수면", $"{curLocation.LocationToString()}에서 취침", null);
-		}
-		catch (Exception ex)
-		{
-			Debug.LogWarning($"[{Name}] AddActionComplete 실패: {ex.Message}");
-		}
 
 		// DayPlan 생성 (await) - 예외 방어
 		try
 		{
-			//await brain.StartDayPlan();
-			brain.SetPlanPlug(true);
+			brain.havePlan = false;
 		}
 		catch (Exception ex)
 		{
@@ -426,26 +426,26 @@ public abstract class MainActor : Actor
 
 	public void OnSimulationTimeChanged(GameTime currentTime)
 	{
+		// 생일 체크 및 나이 증가 처리
+		CheckBirthdayAndAgeUp(currentTime); // async 함수를 백그라운드로 호출
+
+		// 청결도 감소 처리 (시뮬레이션 시간 기준)
+		UpdateCleanlinessDecay(currentTime);
+
+		if(!useGPT) return;
+		
 		// 기상 시간 처리 - wakeUpTime과 비교
 		if (isSleeping && wakeUpTime != null && currentTime.Equals(wakeUpTime))
 		{
 			Debug.Log($"[{Name}] WakeUpTime: {wakeUpTime.ToString()}, CurrentTime: {currentTime.ToString()}");
 			_ = WakeUp(); // async WakeUp 백그라운드 호출
 		}
-
-
-
-		// 생일 체크 및 나이 증가 처리
-		_ = CheckBirthdayAndAgeUp(currentTime); // async 함수를 백그라운드로 호출
-
-		// 청결도 감소 처리 (시뮬레이션 시간 기준)
-		UpdateCleanlinessDecay(currentTime);
 	}
 
 	/// <summary>
 	/// 생일 체크 및 나이 증가 처리
 	/// </summary>
-	private async UniTask CheckBirthdayAndAgeUp(GameTime currentTime)
+	private async void CheckBirthdayAndAgeUp(GameTime currentTime)
 	{
 		try
 		{

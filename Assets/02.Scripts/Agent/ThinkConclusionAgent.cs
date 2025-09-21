@@ -45,10 +45,10 @@ namespace Agent
                     new UserChatMessage(userMessage)
                 };
 
-                var options = new ChatCompletionOptions
-                {
-                    Temperature = 0.7f // 창의적이면서도 논리적인 결론
-                };
+                // var options = new ChatCompletionOptions
+                // {
+                //     Temperature = 0.7f // 창의적이면서도 논리적인 결론
+                // };
 
                 var response = await SendGPTAsync<string>(messages, options);
                 if (string.IsNullOrEmpty(response))

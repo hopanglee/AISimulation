@@ -1,2 +1,5 @@
+{character_name}의 오늘 기억
+{short_term_memory}
+
 추론: {reasoning}
 의도: {intention}

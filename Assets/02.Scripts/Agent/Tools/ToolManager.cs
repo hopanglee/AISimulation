@@ -204,6 +204,26 @@ namespace Agent.Tools
                     )
                 )
             );
+
+            // 특정 인물의 관계기억 요약을 불러옵니다 (actor.LoadRelationships(targetName) 사용)
+            public static readonly ChatTool LoadRelationshipByName = ChatTool.CreateFunctionTool(
+                functionName: nameof(LoadRelationshipByName),
+                functionDescription: "Load relationship memory summary for a specific person by name (uses actor.LoadRelationships(targetName)).",
+                functionParameters: System.BinaryData.FromBytes(
+                    System.Text.Encoding.UTF8.GetBytes(
+                        @"{
+                            ""type"": ""object"",
+                            ""properties"": {
+                                ""targetName"": {
+                                    ""type"": ""string"",
+                                    ""description"": ""Exact name of the person to load relationship memory for""
+                                }
+                            },
+                            ""required"": [""targetName""]
+                        }"
+                    )
+                )
+            );
         }
 
         // 도구 세트 정의
@@ -232,7 +252,7 @@ namespace Agent.Tools
             /// <summary>
             /// 메모리 관련 도구들
             /// </summary>
-            public static readonly ChatTool[] Memory = { ToolDefinitions.GetUserMemory, ToolDefinitions.GetShortTermMemory, ToolDefinitions.GetLongTermMemory, ToolDefinitions.GetMemoryStats, ToolDefinitions.GetActorLocationMemories, ToolDefinitions.GetActorLocationMemoriesFiltered };
+            public static readonly ChatTool[] Memory = { ToolDefinitions.GetUserMemory, ToolDefinitions.GetShortTermMemory, ToolDefinitions.GetLongTermMemory, ToolDefinitions.GetMemoryStats, ToolDefinitions.GetActorLocationMemories, ToolDefinitions.GetActorLocationMemoriesFiltered, ToolDefinitions.LoadRelationshipByName };
 
             /// <summary>
             /// 계획 관련 도구들
@@ -242,7 +262,7 @@ namespace Agent.Tools
             /// <summary>
             /// 모든 도구들
             /// </summary>
-            public static readonly ChatTool[] All = { ToolDefinitions.SwapInventoryToHand, ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetUserMemory, ToolDefinitions.GetShortTermMemory, ToolDefinitions.GetLongTermMemory, ToolDefinitions.GetMemoryStats, ToolDefinitions.GetCurrentTime, ToolDefinitions.GetCurrentPlan, ToolDefinitions.GetCurrentSpecificAction, ToolDefinitions.FindBuildingAreaPath, ToolDefinitions.FindShortestAreaPathFromActor };
+            public static readonly ChatTool[] All = { ToolDefinitions.SwapInventoryToHand, ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetUserMemory, ToolDefinitions.GetShortTermMemory, ToolDefinitions.GetLongTermMemory, ToolDefinitions.GetMemoryStats, ToolDefinitions.GetCurrentTime, ToolDefinitions.GetCurrentPlan, ToolDefinitions.GetCurrentSpecificAction, ToolDefinitions.FindBuildingAreaPath, ToolDefinitions.FindShortestAreaPathFromActor, ToolDefinitions.LoadRelationshipByName };
         }
 
         /// <summary>
@@ -319,6 +339,8 @@ namespace Agent.Tools
                     return GetCurrentPlan();
                 case nameof(GetCurrentSpecificAction):
                     return GetCurrentSpecificAction();
+                case nameof(LoadRelationshipByName):
+                    return LoadRelationshipByName(toolCall.FunctionArguments);
                 default:
                     return $"Error: Unknown tool '{toolCall.FunctionName}'";
             }
@@ -778,6 +800,28 @@ namespace Agent.Tools
             catch (Exception ex)
             {
                 Debug.LogError($"[ActorToolExecutor] GetCurrentSpecificAction error: {ex.Message}");
+                return $"Error: {ex.Message}";
+            }
+        }
+
+        private string LoadRelationshipByName(System.BinaryData arguments)
+        {
+            try
+            {
+                if (actor == null) return "Error: No actor bound";
+                using var args = System.Text.Json.JsonDocument.Parse(arguments.ToString());
+                if (!args.RootElement.TryGetProperty("targetName", out var nameEl))
+                    return "Error: targetName parameter is required";
+                var targetName = nameEl.GetString();
+                if (string.IsNullOrWhiteSpace(targetName))
+                    return "Error: targetName is empty";
+
+                // Actor의 LoadRelationships(targetName) 사용
+                return actor.LoadRelationships(targetName);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[ActorToolExecutor] LoadRelationshipByName error: {ex.Message}");
                 return $"Error: {ex.Message}";
             }
         }

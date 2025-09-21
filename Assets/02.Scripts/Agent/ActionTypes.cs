@@ -25,7 +25,8 @@ public enum ActionType
     //ObserveEnvironment,
     PerformActivity,//
     Wait,//
-    Think //
+    Think,//
+    ObserveEnvironment // 주변을 둘러보고 상황 파악
 }
 
 public class ActionReasoning
@@ -60,6 +61,7 @@ public static class ActionTypeExtensions
 			case ActionType.PerformActivity: return "행동 수행";
 			case ActionType.Wait: return "대기";
 			case ActionType.Think: return "생각";
+			case ActionType.ObserveEnvironment: return "주변 살피기";
 			default: return actionType.ToString();
 		}
 	}

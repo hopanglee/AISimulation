@@ -4999,6 +4999,37 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!1 &5363120390387019325
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4863492912886166851}
+  m_Layer: 0
+  m_Name: MovePos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4863492912886166851
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5363120390387019325}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1.374}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2820973760842645982}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5437016181067577471
 GameObject:
   m_ObjectHideFlags: 0
@@ -14349,13 +14380,46 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4657316673178702, guid: d25e847924ba226498480d67f48edf72, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2256267595485953176}
-    m_AddedComponents: []
+    - targetCorrespondingSourceObject: {fileID: 4657316673178702, guid: d25e847924ba226498480d67f48edf72, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4863492912886166851}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1157726198028000, guid: d25e847924ba226498480d67f48edf72, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 920552316648465609}
   m_SourcePrefab: {fileID: 100100000, guid: d25e847924ba226498480d67f48edf72, type: 3}
 --- !u!4 &2820973760842645982 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4657316673178702, guid: d25e847924ba226498480d67f48edf72, type: 3}
   m_PrefabInstance: {fileID: 2825612385762413968}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2824473351279860592 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1157726198028000, guid: d25e847924ba226498480d67f48edf72, type: 3}
+  m_PrefabInstance: {fileID: 2825612385762413968}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &920552316648465609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2824473351279860592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c58f572d14e15a74d8934090d2889aa8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3164435457798945682}
+  _preposition: 
+  _prepositionKr: 
+  _isHideChild: 1
+  _name: Door
+  _nameKr: "\uD604\uAD00\uBB38"
+  _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
+  toMovePos: {fileID: 4863492912886166851}
+  isOpen: 0
 --- !u!1001 &2835476498160426156
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17036,13 +17100,43 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 7dc9a4345a58d7d459c1e5d3038079ab, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6142061054533475344}
   m_SourcePrefab: {fileID: 100100000, guid: 7dc9a4345a58d7d459c1e5d3038079ab, type: 3}
 --- !u!4 &4524474112811909162 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 7dc9a4345a58d7d459c1e5d3038079ab, type: 3}
   m_PrefabInstance: {fileID: 4524474112812047018}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &4524474112812080138 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: 7dc9a4345a58d7d459c1e5d3038079ab, type: 3}
+  m_PrefabInstance: {fileID: 4524474112812047018}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6142061054533475344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4524474112812080138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c58f572d14e15a74d8934090d2889aa8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _curLocation: {fileID: 3164435457798945682}
+  _preposition: 
+  _prepositionKr: 
+  _isHideChild: 1
+  _name: Door
+  _nameKr: "\uD654\uC7A5\uC2E4\uBB38"
+  _currentStatusDescription: 
+  _currentStatusDescriptionKr: 
+  toMovePos: {fileID: 0}
+  isOpen: 1
 --- !u!1001 &4541272933802222007
 PrefabInstance:
   m_ObjectHideFlags: 0

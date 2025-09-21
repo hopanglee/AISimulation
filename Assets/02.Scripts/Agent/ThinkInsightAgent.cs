@@ -19,10 +19,6 @@ namespace Agent
             this.actor = actor;
             SetActorName(actor.Name);
             SetAgentType(nameof(ThinkInsightAgent));
-            options = new ChatCompletionOptions
-            {
-                Temperature = 0.6f // 균형있는 창의성
-            };
         }
 
         /// <summary>

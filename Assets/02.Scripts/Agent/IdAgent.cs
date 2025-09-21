@@ -113,8 +113,10 @@ public class IdAgent : GPT
             )
         };
 
-        // 월드 정보와 계획 조회 도구 추가
+        // 월드 정보와 계획 조회, 메모리/관계 도구 추가
         ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
+        options.Tools.Add(ToolManager.ToolDefinitions.LoadRelationshipByName);
+        
         // TODO: GetCurrentPlan 도구 추가
     }
 
@@ -159,7 +161,9 @@ public class IdAgent : GPT
                 { "current_time", $"{year}년 {month}월 {day}일 {hour:D2}:{minute:D2}" },
                 {"short_term_memory", actor.LoadShortTermMemory()}
             };
-            if (Services.Get<IGameService>().IsDayPlannerEnabled())
+
+            MainActor mainActor = actor as MainActor;
+            if (Services.Get<IGameService>().IsDayPlannerEnabled() && mainActor.brain.havePlan)
             {
                 // 현재 행동 정보 추가
                 if (dayPlanner != null)

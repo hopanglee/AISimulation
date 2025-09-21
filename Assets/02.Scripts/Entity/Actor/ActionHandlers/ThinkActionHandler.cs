@@ -128,7 +128,9 @@ namespace Agent.ActionHandlers
                 if (bubble != null)
                 {
                     bubble.SetFollowTarget(actor.transform);
-                    bubble.Show($"생각 중: {topic}", 0);
+                    var displayTopic = topic ?? string.Empty;
+                    if (displayTopic.Length > 20) displayTopic = displayTopic.Substring(0, 20);
+                    bubble.Show($"{displayTopic}에 대해 생각 중...", 0);
                 }
                 for (int round = 0; round < thinkingRounds && !token.IsCancellationRequested; round++)
                 {
@@ -139,12 +141,17 @@ namespace Agent.ActionHandlers
                         previousAnswer,
                         null//memoryContext
                     );
-                    bubble.Show($"생각 중: {questionResult}", 0);
+
+                    var displayQuestion = questionResult ?? string.Empty;
+                    if (displayQuestion.Length > 20) displayQuestion = displayQuestion.Substring(0, 20);
+                    bubble.Show($"생각 중: {displayQuestion}", 0);
                     thoughtChain.Add(questionResult);
                     await SimDelay.DelaySimMinutes(thinkingTimeMinutes/2, token);
                     // 답변 생성 (질문을 기반으로)
                     var answerResult = await answerAgent.GenerateAnswerAsync(questionResult, thinkScope, topic, null);
-                    bubble.Show($"생각 중: {answerResult}", 0);
+                    var displayAnswer = answerResult ?? string.Empty;
+                    if (displayAnswer.Length > 20) displayAnswer = displayAnswer.Substring(0, 20);
+                    bubble.Show($"생각 중: {displayAnswer}", 0);
                     thoughtChain.Add(answerResult);
 
                     // 다음 라운드를 위해 현재 답변 저장

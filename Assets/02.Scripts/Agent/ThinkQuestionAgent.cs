@@ -23,6 +23,17 @@ namespace Agent
             {
                 // 일부 모델은 사용자 지정 temperature를 허용하지 않음 → 기본값(1) 사용
             };
+
+            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
+            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemoriesFiltered);
+            
+            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.LoadRelationshipByName);
+            if (Services.Get<IGameService>().IsDayPlannerEnabled())
+            {
+                options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
+            }
+            //options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
+            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetWorldAreaInfo);
         }
 
         /// <summary>

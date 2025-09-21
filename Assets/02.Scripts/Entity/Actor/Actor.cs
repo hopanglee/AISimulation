@@ -1221,16 +1221,16 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         var dailySchedule = characterInfo.DailySchedule;
         var additionalInfo = characterInfo.AdditionalInfo;
 
-        var infoText = $"이름은 {name}이고, {age}세 {gender}입니다. ";
+        var infoText = $"이름은 {name}이고, {age}세 {gender}이다. ";
 
         if (birthday != null)
         {
-            infoText += $"생일은 {birthday.month}월 {birthday.day}일입니다. ";
+            infoText += $"생일은 {birthday.month}월 {birthday.day}일이다. ";
         }
 
         if (!string.IsNullOrEmpty(job))
         {
-            infoText += $"당신의 직업은 {job}입니다. ";
+            infoText += $"당신의 직업은 {job}이다. ";
         }
 
         // 추가설정 정보 추가
@@ -1241,7 +1241,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
         if (!string.IsNullOrEmpty(dailySchedule))
         {
-            infoText += $"하루 스케줄은 다음과 같습니다: {dailySchedule}";
+            infoText += $"하루 스케줄은 다음과 같다: {dailySchedule}";
         }
         if (characterInfo.Emotions != null && characterInfo.Emotions.Count > 0)
         {
@@ -1272,16 +1272,16 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         var dailySchedule = characterInfo.DailySchedule;
         var additionalInfo = characterInfo.AdditionalInfo;
 
-        var infoText = $"이름은 {name}이고, {age}세 {gender}입니다. ";
+        var infoText = $"이름은 {name}이고, {age}세 {gender}이다. ";
 
         if (birthday != null)
         {
-            infoText += $"생일은 {birthday.month}월 {birthday.day}일입니다. ";
+            infoText += $"생일은 {birthday.month}월 {birthday.day}일이다. ";
         }
 
         if (!string.IsNullOrEmpty(job))
         {
-            infoText += $"직업은 {job}입니다. ";
+            infoText += $"직업은 {job}이다. ";
         }
 
         if (!string.IsNullOrEmpty(houseLocation))
@@ -1291,7 +1291,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
         if (relationships != null && relationships.Count > 0)
         {
-            infoText += $"주요 관계는 {string.Join(", ", relationships)}입니다. ";
+            infoText += $"아는 인물은 {string.Join(", ", relationships)}이고 이외에는 전혀 모르는 사람이다.";
         }
 
         // 추가설정 정보 추가
@@ -1302,7 +1302,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
         if (!string.IsNullOrEmpty(dailySchedule))
         {
-            infoText += $"하루 스케줄은 다음과 같습니다: {dailySchedule}";
+            infoText += $"하루 스케줄은 다음과 같다: {dailySchedule}";
         }
 
         if (characterInfo.Emotions != null && characterInfo.Emotions.Count > 0)
@@ -1621,6 +1621,136 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         else
         {
             relationshipText = "현재 특별한 관계가 없습니다.";
+        }
+
+        return relationshipText.Trim();
+    }
+
+    public string LoadRelationships(string targetName)
+    {
+        var characterMemoryManager = new CharacterMemoryManager(this);
+        var characterInfo = characterMemoryManager.GetCharacterInfo();
+        var relationships = characterInfo.Relationships;
+        var relationshipMemoryManager = new RelationshipMemoryManager(this);
+
+        var relationshipText = "";
+
+        if (relationships != null && relationships.Count > 0)
+        {
+            foreach (var relationshipName in relationships)
+            {
+                if (relationshipName != targetName) continue;
+                var relationshipMemory = relationshipMemoryManager.GetRelationship(relationshipName);
+                if (relationshipMemory != null)
+                {
+                    relationshipText += $"- {relationshipMemory.Name} ({relationshipMemory.RelationshipType})\n";
+
+                    // 나이
+                    if (relationshipMemory.Age > 0)
+                    {
+                        relationshipText += $"  나이: {relationshipMemory.Age}세\n";
+                    }
+                    else
+                    {
+                        relationshipText += $"  나이: 아직 모름\n";
+                    }
+
+                    // 생일
+                    if (!string.IsNullOrEmpty(relationshipMemory.Birthday))
+                    {
+                        relationshipText += $"  생일: {relationshipMemory.Birthday}\n";
+                    }
+                    else
+                    {
+                        relationshipText += $"  생일: 아직 모름\n";
+                    }
+
+                    // 사는 곳
+                    if (!string.IsNullOrEmpty(relationshipMemory.HouseLocation))
+                    {
+                        relationshipText += $"  사는 곳: {relationshipMemory.HouseLocation}\n";
+                    }
+                    else
+                    {
+                        relationshipText += $"  사는 곳: 아직 모름\n";
+                    }
+
+                    // 친밀도와 신뢰도
+                    relationshipText += $"  친밀도: {relationshipMemory.Closeness:F1}, 신뢰도: {relationshipMemory.Trust:F1}\n";
+
+                    // 마지막 상호작용
+                    if (relationshipMemory.LastInteraction != default(GameTime))
+                    {
+                        relationshipText += $"  마지막 상호작용: {relationshipMemory.LastInteraction}\n";
+                    }
+                    else
+                    {
+                        relationshipText += $"  마지막 상호작용: 없음\n";
+                    }
+
+                    // 성격 특성
+                    if (relationshipMemory.PersonalityTraits != null && relationshipMemory.PersonalityTraits.Count > 0)
+                    {
+                        relationshipText += $"  성격 특성: {string.Join(", ", relationshipMemory.PersonalityTraits)}\n";
+                    }
+                    else
+                    {
+                        relationshipText += $"  성격 특성: 아직 모름\n";
+                    }
+
+                    // 공통 관심사
+                    if (relationshipMemory.SharedInterests != null && relationshipMemory.SharedInterests.Count > 0)
+                    {
+                        relationshipText += $"  공통 관심사: {string.Join(", ", relationshipMemory.SharedInterests)}\n";
+                    }
+                    else
+                    {
+                        relationshipText += $"  공통 관심사: 아직 모름\n";
+                    }
+
+                    // 공유 기억
+                    if (relationshipMemory.SharedMemories != null && relationshipMemory.SharedMemories.Count > 0)
+                    {
+                        relationshipText += $"  공유 기억: {string.Join(", ", relationshipMemory.SharedMemories)}\n";
+                    }
+                    else
+                    {
+                        relationshipText += $"  공유 기억: 없음\n";
+                    }
+
+                    // 상호작용 이력
+                    if (relationshipMemory.InteractionHistory != null && relationshipMemory.InteractionHistory.Count > 0)
+                    {
+                        relationshipText += $"  상호작용 이력: {string.Join(", ", relationshipMemory.InteractionHistory)}\n";
+                    }
+                    else
+                    {
+                        relationshipText += $"  상호작용 이력: 없음\n";
+                    }
+
+                    // 메모
+                    if (relationshipMemory.Notes != null && relationshipMemory.Notes.Count > 0)
+                    {
+                        relationshipText += $"  메모: {string.Join(", ", relationshipMemory.Notes)}\n";
+                    }
+                    else
+                    {
+                        relationshipText += $"  메모: 없음\n";
+                    }
+
+                    relationshipText += "\n";
+
+                    return relationshipText.Trim();
+                }
+                else
+                {
+                    relationshipText += $"- {relationshipName}: 모르는 인물";
+                }
+            }
+        }
+        else
+        {
+            relationshipText = "모르는 인물";
         }
 
         return relationshipText.Trim();

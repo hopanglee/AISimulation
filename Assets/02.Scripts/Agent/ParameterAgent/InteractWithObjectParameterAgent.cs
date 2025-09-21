@@ -61,7 +61,7 @@ namespace Agent
 
         public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
-            
+
             var param = await GenerateParametersAsync(new CommonContext
             {
                 Reasoning = request.Reasoning,
@@ -96,46 +96,16 @@ namespace Agent
                 if (actor?.sensor != null)
                 {
                     // Actor의 sensor를 통해 현재 주변 객체들을 가져와서 목록 업데이트
-                    var interactableEntities = actor.sensor.GetInteractableEntities();
-                    var objectNames = new List<string>();
-                    
-                    // Props에서 상호작용 가능한 객체들 추가
-                    foreach (var prop in interactableEntities.props.Values)
-                    {
-                        if (prop != null && prop is IInteractable)
-                        {
-                            objectNames.Add(prop.GetSimpleKeyRelativeToActor(actor));
-                        }
-                    }
+                    // var interactableEntities = actor.sensor.GetInteractableEntities();
+                    // var keys = interactableEntities.props.Keys.ToList();
+                    // keys.AddRange(interactableEntities.items.Keys);
+                    // keys.AddRange(interactableEntities.buildings.Keys);
+                    // keys.AddRange(interactableEntities.actors.Keys);
+                    // return keys.Distinct().ToList();
 
-                    foreach (var item in interactableEntities.items.Values)
-                    {
-                        if (item != null && item is IInteractable)
-                        {
-                            objectNames.Add(item.GetSimpleKeyRelativeToActor(actor));
-                        }
-                    }
-                    
-                    // Buildings에서 상호작용 가능한 객체들 추가
-                    // foreach (var building in interactableEntities.buildings.Values)
-                    // {
-                    //     if (building != null && building is IInteractable)
-                    //     {
-                    //         objectNames.Add(building.GetSimpleKeyRelativeToActor(actor));
-                    //     }
-                    // }
-                    
-                    // Items에서 상호작용 가능한 객체들 추가
-                    foreach (var item in interactableEntities.items.Values)
-                    {
-                        if (item != null && item is IInteractable)
-                        {
-                            objectNames.Add(item.GetSimpleKeyRelativeToActor(actor));
-                        }
-                    }
-                    
-                    // 중복 제거
-                    return objectNames.Distinct().ToList();
+                    var lookable = actor.sensor.GetLookableEntities();
+                    var keys = lookable.Keys.ToList();
+                    return keys.Distinct().ToList();
                 }
             }
             catch (Exception ex)
@@ -143,7 +113,7 @@ namespace Agent
                 Debug.LogWarning($"[InteractWithObjectParameterAgent] 주변 객체 목록 가져오기 실패: {ex.Message}");
                 throw new System.InvalidOperationException($"InteractWithObjectParameterAgent 주변 객체 목록 가져오기 실패: {ex.Message}");
             }
-            
+
             // 기본값 반환
             return new List<string>();
         }
@@ -157,8 +127,8 @@ namespace Agent
                 { "intention", context.Intention },
                 { "objects", string.Join(", ", GetCurrentAvailableObjects()) }
             };
-            
+
             return localizationService.GetLocalizedText("parameter_message_with_objects", replacements);
         }
     }
-} 
+}

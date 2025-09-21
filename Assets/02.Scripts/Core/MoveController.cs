@@ -13,6 +13,9 @@ public class MoveController : MonoBehaviour
 
     private Entity entity;
     private float baseMaxSpeed = 0f;
+    // 마지막 목표 (거리 기반 도착 판정 보강용)
+    private Vector3? lastTargetPosition = null;
+    private Transform lastTargetTransform = null;
 
     private void Awake()
     {
@@ -34,10 +37,12 @@ public class MoveController : MonoBehaviour
 
     public void SetTarget(Vector3 vector)
     {
-		followerEntity?.SetDestination(vector);
+        followerEntity?.SetDestination(vector);
+        lastTargetPosition = vector;
+        lastTargetTransform = null;
 
 		// 시뮬레이션 시간 배속에 따라 속도 보정
-		ApplyTimeScaledSpeed();
+		//ApplyTimeScaledSpeed();
 
         StartCoroutine(CheckArrival());
     }
@@ -56,8 +61,11 @@ public class MoveController : MonoBehaviour
             followerEntity?.SetDestination(transform.position);
         }
 
+        lastTargetTransform = transform;
+        lastTargetPosition = null;
+
 		// 시뮬레이션 시간 배속에 따라 속도 보정
-		ApplyTimeScaledSpeed();
+		//ApplyTimeScaledSpeed();
 
 		StartCoroutine(CheckArrival());
     }
@@ -87,7 +95,7 @@ public class MoveController : MonoBehaviour
 				if (followerEntity != null) followerEntity.isStopped = false;
 
 				// 재개 시 현재 배속으로 속도 재보정
-				ApplyTimeScaledSpeed();
+				//ApplyTimeScaledSpeed();
 			}
 
             bool reached = false;
@@ -97,8 +105,38 @@ public class MoveController : MonoBehaviour
                 reached = followerEntity.reachedCrowdedEndOfPath
                           || followerEntity.reachedEndOfPath
                           || followerEntity.reachedDestination;
-            }
 
+                // 보강: 목표와의 거리 기반 도착 판정 (네비 리포트 누락 방지)
+                // if (!reached)
+                // {
+                //     try
+                //     {
+                //         var currentPos = followerEntity.transform.position;
+                //         float dist = float.MaxValue;
+                //         if (lastTargetPosition.HasValue)
+                //         {
+                //             dist = MathExtension.SquaredDistance2D(currentPos, lastTargetPosition.Value);
+                //         }
+                //         else if (lastTargetTransform != null)
+                //         {
+                //             dist = MathExtension.SquaredDistance2D(currentPos, lastTargetTransform.position);
+                //         }
+                //         if (dist <= 0.15f)
+                //         {
+                //             reached = true;
+                //         }
+                //         if (dist < float.MaxValue)
+                //         {
+                //             Debug.Log($"[{entity.Name}] CheckArrival dist={dist:F3}, flags={(followerEntity.reachedDestination||followerEntity.reachedEndOfPath||followerEntity.reachedCrowdedEndOfPath)}");
+                //         }
+                //     }
+                //     catch { }
+                // }
+            }
+            else
+            {
+                Debug.Log($"followerEntity NULL");
+            }
             if (reached)
                 break;
 

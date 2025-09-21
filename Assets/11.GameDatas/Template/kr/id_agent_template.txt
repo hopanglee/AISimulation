@@ -1,6 +1,6 @@
 오늘 날짜와 시간: {current_time}
 
-{character_name}의 전날 마지막과 오늘의 기억입니다.
+{character_name}의 기억에 남은 마지막 기억부터 오늘의 기억입니다.
 {short_term_memory}
 
 {current_plan}

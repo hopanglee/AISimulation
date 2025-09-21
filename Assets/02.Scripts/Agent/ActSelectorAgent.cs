@@ -64,6 +64,8 @@ namespace Agent
             // Relationship memory 전용: location memories (관계는 캐릭터간 상호작용 문맥으로 여기서 location memories만 노출)
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemoriesFiltered);
+            
+            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.LoadRelationshipByName);
             if (Services.Get<IGameService>().IsDayPlannerEnabled())
             {
                 options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
@@ -208,11 +210,12 @@ namespace Agent
                             {"activity_duration_minutes", currentActivity.DurationMinutes.ToString()},
                             {"all_actions_in_activity", string.Join("\n", allActionsText)},
                             {"all_actions_start_time", dayPlanner.GetPlanStartTime().ToString()},
-                            {"plan_notify", "현재 시간의 행동은 계획일 뿐, 이전 계획의 내용도 실행되지 않았을 수도 있습니다.반드시 계획대로 수행할 필요는 없습니다."},
+                            
                         };
 
                         var current_plan_template = localizationService.GetLocalizedText("current_plan_template", plan_replacements);
                         replacements.Add("current_plan", current_plan_template);
+                        replacements.Add("plan_notify", "현재 시간의 행동은 계획일 뿐, 이전 계획의 내용도 실행되지 않았을 수도 있습니다.반드시 계획대로 수행할 필요는 없습니다.");
 
                     }
                     catch (Exception ex)
@@ -369,6 +372,7 @@ namespace Agent
                 availableActions.Add(ActionType.RemoveClothing);
                 availableActions.Add(ActionType.Wait);
                 availableActions.Add(ActionType.Think);
+                availableActions.Add(ActionType.ObserveEnvironment);
 
                 // 상황 기반 필터링
                 if (actor is MainActor thinkingActor)

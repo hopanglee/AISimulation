@@ -28,7 +28,7 @@ namespace Agent.ActionHandlers
         public async UniTask HandleMoveToArea(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             // 앉아있는 상태면 자동으로 일어나기
-            await TryStandUpIfSeated(token);
+            TryStandUpIfSeated();
 
             string targetValue = null;
             
@@ -92,7 +92,7 @@ namespace Agent.ActionHandlers
         public async UniTask HandleMoveToEntity(Dictionary<string, object> parameters, CancellationToken token = default)
         {
             // 앉아있는 상태면 자동으로 일어나기
-            await TryStandUpIfSeated(token);
+            TryStandUpIfSeated();
 
             string targetValue = null;
             
@@ -242,7 +242,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// Actor가 앉아있는 상태라면 일어나도록 시도합니다.
         /// </summary>
-        private async UniTask TryStandUpIfSeated(CancellationToken token)
+        private void TryStandUpIfSeated()
         {
             try
             {
@@ -352,7 +352,7 @@ namespace Agent.ActionHandlers
                 {
                     await moveCompleted.Task;
                 }
-                await SimDelay.DelaySimMinutes(1, token);
+                // 도착 직후 즉시 반환하여 다음 Think로 진행되도록 대기 제거
                 Debug.Log($"[{actor.Name}] {targetName}에 도착했습니다.");
             }
             catch (OperationCanceledException)

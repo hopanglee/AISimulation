@@ -1,9 +1,7 @@
 {
   "connected_areas": [
-    "카운터",
-    "상품 진열대"
+    "상품 진열대",
+    "카운터"
   ],
-  "buildings": [
-    "네코마트"
-  ]
+  "buildings": []
 }

@@ -114,8 +114,8 @@ public class PerceptionAgentGroup
 
             MainActor mainActor = actor as MainActor;
 
-            // 최초 1회: 캐시된 Ego 결과가 있으면 그것을 사용
-            if (!mainActor.brain.HasCheckedPerceptionCacheOnce)
+            // 최초 1회: 캐시된 Ego 결과 사용 옵션이 켜져 있고, 결과가 있으면 그것을 사용
+            if (mainActor.useCachedEgo && !mainActor.brain.HasCheckedPerceptionCacheOnce)
             {
                 mainActor.brain.HasCheckedPerceptionCacheOnce = true;
                 var cachedEgo = LoadResultIfExists<EgoResult>(currentDate, "ego");

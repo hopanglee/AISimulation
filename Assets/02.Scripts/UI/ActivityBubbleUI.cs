@@ -69,10 +69,14 @@ public class ActivityBubbleUI : MonoBehaviour
         isVisible = true;
         gameObject.SetActive(true);
 
-		// 즉시 텍스트 반영 (totalSeconds가 0이어도 텍스트가 보이도록)
-		activityText.text = remainingSeconds > 0
-			? $"{activityName}"
-			: activityName;
+        // 즉시 텍스트 반영 (totalSeconds가 0이어도 텍스트가 보이도록)
+        var displayText = activityName ?? string.Empty;
+        if (displayText.Length > 20) displayText = displayText.Substring(0, 20);
+        activityText.text = remainingSeconds > 0
+            ? $"{displayText}"
+            : displayText;
+
+        Canvas.ForceUpdateCanvases();
 
         countdownCts = new CancellationTokenSource();
         if (!countdownRunning && totalSeconds > 0)
@@ -109,9 +113,11 @@ public class ActivityBubbleUI : MonoBehaviour
             {
                 if (activityText != null)
                 {
+                    var displayText = activityName ?? string.Empty;
+                    if (displayText.Length > 20) displayText = displayText.Substring(0, 20);
                     activityText.text = remainingSeconds > 0
-                        ? $"{activityName}"
-                        : activityName;
+                        ? $"{displayText}"
+                        : displayText;
                 }
 
                 if (remainingSeconds <= 0)

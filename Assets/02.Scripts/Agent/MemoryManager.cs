@@ -437,7 +437,7 @@ public class MemoryManager
     public void AddActionComplete(ActionType actionType, string result, bool isSuccess = true)
     {
         string content = $"{actionType.ToKorean()}을/를 완료했다.";
-        string details = $"결과: {result}, 성공 여부: {isSuccess}";
+        string details = $"{result}, 성공 여부: {isSuccess}";
         // string details = JsonConvert.SerializeObject(new
         // {
         //     action_type = actionType.ToString(),

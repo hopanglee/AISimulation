@@ -56,16 +56,16 @@ public class PutDownParameterAgent : ParameterAgentBase
     public async UniTask<PutDownParameter> GenerateParametersAsync(CommonContext context)
     {
         var localizationService = Services.Get<ILocalizationService>();
-        
+
         var replacements = new Dictionary<string, string>
         {
             {"reasoning", context.Reasoning},
             {"intention", context.Intention},
             {"available_locations", string.Join(", ", GetCurrentAvailableLocations())}
         };
-        
+
         var userMessage = localizationService.GetLocalizedText("put_down_parameter_message", replacements);
-        
+
         var messages = new List<ChatMessage>
         {
             new SystemChatMessage(systemPrompt),
@@ -119,32 +119,28 @@ public class PutDownParameterAgent : ParameterAgentBase
             if (actor?.sensor != null)
             {
                 // Actor의 sensor를 통해 현재 주변 위치들을 가져와서 목록 업데이트
-                var interactableEntities = actor.sensor.GetInteractableEntities();
-                var locationNames = new List<string>();
+                // var interactableEntities = actor.sensor.GetInteractableEntities();
+                // var locationNames = new List<string>();
 
-                // null 옵션 추가 (현재 위치에 놓기)
-                locationNames.Add("null");
+                // // null 옵션 추가 (현재 위치에 놓기)
+                // locationNames.Add("null");
 
-                // Props에서 위치 가능한 곳들 추가
-                foreach (var prop in interactableEntities.props.Values)
-                {
-                    if (prop != null || prop is ILocation)
-                    {
-                        locationNames.Add(prop.GetSimpleKeyRelativeToActor(actor));
-                    }
-                }
-
-                // // Buildings에서 위치 가능한 곳들 추가
-                // foreach (var building in interactableEntities.buildings.Values)
+                // // Props에서 위치 가능한 곳들 추가
+                // foreach (var (key, prop) in interactableEntities.props)
                 // {
-                //     if (building != null)
+                //     if (prop != null && prop is ILocation)
                 //     {
-                //         locationNames.Add(building.GetSimpleKey());
+                //         locationNames.Add(key);
                 //     }
                 // }
-
                 // 중복 제거
-                return locationNames.Distinct().ToList();
+                //return locationNames.Distinct().ToList();
+
+                var lookable = actor.sensor.GetLookableEntities();
+                var keys = lookable.Keys.ToList();
+                return keys.Distinct().ToList();
+
+
             }
         }
         catch (System.Exception ex)

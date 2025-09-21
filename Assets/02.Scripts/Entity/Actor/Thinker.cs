@@ -25,6 +25,11 @@ public class Thinker
     private readonly Brain brain;
     private CancellationTokenSource thinkActCts;
 
+    // Dynamic cycle budget: starts at 5, increases by 5 (max 20) after each uninterrupted batch
+    private const int BaseCycleCount = 5;
+    private const int MaxCycleCount = 25;
+    private int currentCycleBudget = BaseCycleCount;
+
     public Thinker(Actor actor, Brain brain)
     {
         this.actor = actor;
@@ -43,14 +48,14 @@ public class Thinker
             Debug.Log($"[{actor.Name}] GPT 비활성화됨 - Think/Act 루프 시작 안함");
             return;
         }
-        
+
         // 기존 루프 취소
         thinkActCts?.Cancel();
         thinkActCts = new CancellationTokenSource();
         var token = thinkActCts.Token;
-        
+
         Debug.Log($"[{actor.Name}] Think/Act 루프 시작");
-        
+
         try
         {
             while (!token.IsCancellationRequested)
@@ -61,16 +66,53 @@ public class Thinker
                     Debug.Log($"[{actor.Name}] 런타임에서 GPT 비활성화됨 - Think/Act 루프 중단");
                     break;
                 }
-                
-                // 1. Think - 행동 선택
-                var (selection, paramResult) = await brain.Think();
+
+                // 0. 상황 인식
+                var perceptionResult = await brain.Perception();
                 token.ThrowIfCancellationRequested();
-                
-                // 2. Act - 선택한 행동 실행
-                await brain.Act(paramResult, token);
+
+                await SimDelay.DelaySimSeconds(1, token);
                 token.ThrowIfCancellationRequested();
-                
-                // 3. Act가 끝나면 다시 Think (루프로 계속)
+            
+                // 1. DayPlanner 실행
+                await brain.DayPlan();
+                token.ThrowIfCancellationRequested();
+
+                // 2. 관계 수정
+                await brain.UpdateRelationship(perceptionResult);
+                token.ThrowIfCancellationRequested();
+
+                // 3. Think - 행동 선택
+                // Think → Act를 currentCycleBudget 회 번갈아 실행
+                for (int i = 0; i < currentCycleBudget; i++)
+                {
+                    // 외부 이벤트/취소 확인
+                    token.ThrowIfCancellationRequested();
+
+                    var (selection, paramResult) = await brain.Think(perceptionResult);
+                    token.ThrowIfCancellationRequested();
+
+                    // 관찰 액션은 루프를 빠져나가 다음 Perception/사이클로 넘어가도록 처리
+                    if (selection != null && selection.ActType == ActionType.ObserveEnvironment)
+                    {
+                        Debug.Log($"[{actor.Name}] ObserveEnvironment 선택됨 - 반복 루프 종료 후 다음 사이클로");
+                        break;
+                    }
+
+                    // 4. Act - 선택한 행동 실행
+                    await brain.Act(paramResult, token);
+                    token.ThrowIfCancellationRequested();
+
+                    await SimDelay.DelaySimSeconds(1, token);
+                }
+
+                token.ThrowIfCancellationRequested();
+                // 취소 없이 배치를 마쳤다면 다음 배치 예산을 +5 (최대 20)
+                if (currentCycleBudget < MaxCycleCount)
+                {
+                    currentCycleBudget = Math.Min(MaxCycleCount, currentCycleBudget + 5);
+                }
+                // 5. Act가 끝나면 다시 Think (루프로 계속)
                 // 외부 이벤트가 발생하면 OnExternalEvent()에서 이 루프를 취소하고 새로 시작
             }
         }
@@ -78,6 +120,8 @@ public class Thinker
         {
             // 이벤트로 인해 취소된 경우
             Debug.Log($"[{actor.Name}] Think/Act 루프가 외부 이벤트로 취소됨");
+            // 외부 이벤트로 재시작되면 5회부터 다시 시작
+            currentCycleBudget = BaseCycleCount;
         }
         catch (Exception ex)
         {
@@ -91,7 +135,7 @@ public class Thinker
     /// </summary>
     public async void OnExternalEventAsync()
     {
-        
+
         try
         {
             Debug.Log($"[{actor.Name}] 외부 이벤트 발생 - Think/Act 루프 재시작");
@@ -128,4 +172,4 @@ public class Thinker
     {
         return thinkActCts?.Token ?? CancellationToken.None;
     }
-} 
+}
