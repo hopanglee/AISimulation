@@ -72,7 +72,10 @@ public class DetailedPlannerAgent : GPT
 
         // 월드 정보 도구 추가
         //ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
-        options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
+        if (Services.Get<GameService>().UseDayPlanner)
+        {
+            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
+        }
         options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
         options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemoriesFiltered);
         options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetWorldAreaInfo);

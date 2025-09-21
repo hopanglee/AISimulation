@@ -11,13 +11,13 @@ public class HinoMaori : MainActor
     private async UniTask BackupAllMemoryFiles()
     {
         if (!useMemoryResetSystem) return;
-        
+
         try
         {
             // CharacterInfo 백업
             var characterMemoryManager = new CharacterMemoryManager(this);
             await characterMemoryManager.BackupCharacterInfoAsync();
-            
+
             // Short-term, Long-term Memory 백업 (MemoryManager를 통해)
             if (brain?.memoryManager != null)
             {
@@ -33,17 +33,16 @@ public class HinoMaori : MainActor
             Debug.LogError($"[{Name}] Failed to backup memory files: {e.Message}");
         }
     }
-    
     private async UniTask RestoreAllMemoryFiles()
     {
         if (!useMemoryResetSystem) return;
-        
+
         try
         {
             // CharacterInfo 복원
             var characterMemoryManager = new CharacterMemoryManager(this);
             await characterMemoryManager.RestoreCharacterInfoAsync();
-            
+
             // Short-term, Long-term Memory 복원 (MemoryManager를 통해)
             if (brain?.memoryManager != null)
             {
@@ -59,7 +58,14 @@ public class HinoMaori : MainActor
             Debug.LogError($"[{Name}] Failed to restore memory files: {e.Message}");
         }
     }
-    
+
+    protected override void Awake()
+	{
+		base.Awake();
+		brain = new(this);
+		brain.memoryManager.ClearShortTermMemory();
+		brain?.memoryManager?.AddShortTermMemory(yesterdaySleepTime, "event_occurred", "교통 사고", $"{yesterdaySleepLocation}에서 교통사고가 발생", null);
+	}
     public override async UniTask Sleep(int? minutes = null)
     {
         if (!useMemoryResetSystem)
@@ -67,7 +73,7 @@ public class HinoMaori : MainActor
             await base.Sleep(minutes);
             return;
         }
-        
+
         // 메모리 초기화 시스템이 활성화된 경우
         if (isSleeping)
         {
@@ -80,7 +86,7 @@ public class HinoMaori : MainActor
 
         // 기상 시간 계산
         var currentTime = timeService.CurrentTime;
-        
+
         if (minutes.HasValue)
         {
             // 지정된 시간(분) 후에 일어나도록 설정
@@ -114,11 +120,11 @@ public class HinoMaori : MainActor
 
         isSleeping = true;
         Debug.Log($"[{Name}] Started sleeping at {sleepStartTime}. Will wake up at {wakeUpTime}");
-        
+
         // 잠들 때 메모리 복원 (그날의 초기 상태로 되돌림)
         await RestoreAllMemoryFiles();
     }
-    
+
     public override async UniTask WakeUp()
     {
         if (!useMemoryResetSystem)
@@ -126,17 +132,17 @@ public class HinoMaori : MainActor
             await base.WakeUp();
             return;
         }
-        
+
         if (!isSleeping)
         {
             Debug.LogWarning($"[{Name}] Not sleeping!");
             return;
         }
 
-        
+
         // 기상 시 메모리 백업 (그날의 초기 상태 저장)
         await BackupAllMemoryFiles();
-        
+
         // 백업 완료 후 평범한 base.WakeUp() 실행
         await base.WakeUp();
     }

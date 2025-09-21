@@ -1,21 +1,15 @@
-현재 시간 : {current_time}
+오늘 날짜와 시간 : {current_time}
 
 {character_name}의 상황 인식
 {interpretation}
 
-생각 체인
+{character_name}의 현재 생각 체인
 {thought_chain}
 
-=== 현재 행동 맥락 ===
-상위 활동: {parent_activity}
-상위 작업: {parent_task}
-활동 시작 시간: {activity_start_time}
-활동 지속 시간: {activity_duration_minutes}분
+{current_plan}
 
-=== 현재 계획의 모든 행동 ===
-계획 시작 시간: {all_actions_start_time}
-{all_actions_in_activity}
+{character_name}의 전날 마지막과 오늘의 기억입니다.
+{short_term_memory}
 
-현재 시간의 행동은 계획일 뿐, 이전 계획의 내용도 실행되지 않았을 수도 있습니다.
-단기 기억을 확실하게 파악하여 행동 완료 여부나 어떤 행동을 하는 것이 가장 적절한지 파악하세요.
-반드시 계획대로 수행할 필요는 없습니다.
+{plan_notify}
+단기 기억 연결을 확실하게 분석하여 행동 완료 여부를 파악하고, 가장 자연스러운 다음 행동을 고르세요.

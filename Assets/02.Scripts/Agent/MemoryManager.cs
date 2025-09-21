@@ -370,11 +370,12 @@ public class MemoryManager
     public void AddPerceptionResult(PerceptionResult perceptionResult)
     {
         string content = $"상황 인식: {perceptionResult.situation_interpretation}";
-        string details = JsonConvert.SerializeObject(new
-        {
-            thought_chain = perceptionResult.thought_chain,
-            situation_interpretation = perceptionResult.situation_interpretation
-        });
+        string details = $"생각 체인: {string.Join(" -> ", perceptionResult.thought_chain)}";
+        // string details = JsonConvert.SerializeObject(new
+        // {
+        //     thought_chain = perceptionResult.thought_chain,
+        //     situation_interpretation = perceptionResult.situation_interpretation
+        // });
 
         AddShortTermMemory("perception", content, details, perceptionResult.emotions);
     }
@@ -384,13 +385,14 @@ public class MemoryManager
     /// </summary>
     public void AddActSelectorResult(ActSelectorAgent.ActSelectionResult actSelection)
     {
-        string content = $"행동 결정: {actSelection.ActType} - {actSelection.Reasoning}";
-        string details = JsonConvert.SerializeObject(new
-        {
-            act_type = actSelection.ActType.ToString(),
-            reasoning = actSelection.Reasoning,
-            intention = actSelection.Intention
-        });
+        string content = $"{actSelection.ActType}를 하기로 결정했다.";
+        string details = $"이유: {actSelection.Reasoning}, 의도: {actSelection.Intention}";
+        // string details = JsonConvert.SerializeObject(new
+        // {
+        //     act_type = actSelection.ActType.ToString(),
+        //     reasoning = actSelection.Reasoning,
+        //     intention = actSelection.Intention
+        // });
 
         AddShortTermMemory("thinking", content, details);
     }
@@ -400,30 +402,32 @@ public class MemoryManager
     /// </summary>
     public void AddActionStart(ActionType actionType, Dictionary<string, object> parameters)
     {
-        string content = $"행동 시작: {actionType}";
-        string details = JsonConvert.SerializeObject(new
-        {
-            action_type = actionType.ToString(),
-            parameters = parameters
-        });
+        string content = $"{actionType.ToKorean()}을/를 시작했다.";
+        string details = $"파라미터: {JsonConvert.SerializeObject(parameters)}";
+        // string details = JsonConvert.SerializeObject(new
+        // {
+        //     action_type = actionType.ToString(),
+        //     parameters = parameters
+        // });
 
         AddShortTermMemory("action_start", content, details);
     }
 
     public void AddActionStart(string actionType, Dictionary<string, object> parameters)
     {
-        string content = $"행동 시작: {actionType}";
+        string content = $"{actionType}을/를 시작했다.";
+        string details = $"파라미터: {JsonConvert.SerializeObject(parameters)}";
 
-        string details = null;
+        // string details = null;
 
-        if (parameters != null)
-        {
-            details = JsonConvert.SerializeObject(new
-            {
-                action_type = actionType,
-                parameters = parameters
-            });
-        }
+        // if (parameters != null)
+        // {
+        //     details = JsonConvert.SerializeObject(new
+        //     {
+        //         action_type = actionType,
+        //         parameters = parameters
+        //     });
+        // }
         AddShortTermMemory("action_start", content, details);
     }
 
@@ -432,13 +436,14 @@ public class MemoryManager
     /// </summary>
     public void AddActionComplete(ActionType actionType, string result, bool isSuccess = true)
     {
-        string content = $"행동 완료: {actionType} - {result}";
-        string details = JsonConvert.SerializeObject(new
-        {
-            action_type = actionType.ToString(),
-            result = result,
-            success = isSuccess
-        });
+        string content = $"{actionType.ToKorean()}을/를 완료했다.";
+        string details = $"결과: {result}, 성공 여부: {isSuccess}";
+        // string details = JsonConvert.SerializeObject(new
+        // {
+        //     action_type = actionType.ToString(),
+        //     result = result,
+        //     success = isSuccess
+        // });
 
         AddShortTermMemory("action_complete", content, details);
     }
@@ -446,13 +451,14 @@ public class MemoryManager
     public void AddActionComplete(string actionType, string result, bool isSuccess = true)
     {
         Debug.Log($"[{owner.Name}] AddActionComplete: {actionType} - {result}");
-        string content = $"행동 완료: {actionType} - {result}";
-        string details = JsonConvert.SerializeObject(new
-        {
-            action_type = actionType,
-            result = result,
-            success = isSuccess
-        });
+        string content = $"{actionType}을/를 완료했다.";
+        string details = $"결과: {result}, 성공 여부: {isSuccess}";
+        // string details = JsonConvert.SerializeObject(new
+        // {
+        //     action_type = actionType,
+        //     result = result,
+        //     success = isSuccess
+        // });
 
         AddShortTermMemory("action_complete", content, details);
     }
@@ -462,12 +468,13 @@ public class MemoryManager
     /// </summary>
     public void AddActionInterrupted(ActionType actionType)
     {
-        string content = $"행동 중단: {actionType}";
-        string details = JsonConvert.SerializeObject(new
-        {
-            action_type = actionType.ToString(),
-            interruption_reason = "외부 이벤트"
-        });
+        string content = $"{actionType.ToKorean()}을/를 중단했다.";
+        string details = $"외부 이벤트로 인한 중단";
+        // string details = JsonConvert.SerializeObject(new
+        // {
+        //     action_type = actionType.ToString(),
+        //     interruption_reason = "외부 이벤트"
+        // });
 
         AddShortTermMemory("action_interrupt", content, details);
     }
@@ -579,10 +586,10 @@ public class MemoryManager
                     Debug.Log($"[MemoryManager] {owner.Name}: 성격 변화 적용 완료");
 
                     // 성격 변화를 새로운 STM에 기록
-                    AddShortTermMemory("personality_change",
-                        $"성격 변화 발생: 제거된 특성 [{string.Join(", ", changeResult.traits_to_remove)}], " +
-                        $"추가된 특성 [{string.Join(", ", changeResult.traits_to_add)}]",
-                        JsonConvert.SerializeObject(changeResult));
+                    // AddShortTermMemory("personality_change",
+                    //     $"앞으로는 [{string.Join(", ", changeResult.traits_to_remove)}]보다는 " +
+                    //     $"[{string.Join(", ", changeResult.traits_to_add)}] 처럼 살아가야겠다고 다짐했다.",
+                    //     $"이유: {changeResult.reasoning}");
                 }
                 else
                 {

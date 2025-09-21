@@ -106,6 +106,49 @@ public struct GameTime
         return $"{year:D4}년 {month:D2}월 {day:D2}일 {GetDayOfWeek()} {hour:D2}:{minute:D2}";
     }
 
+    public bool IsToday()
+    {
+        return year == Services.Get<ITimeService>().CurrentTime.year &&
+            month == Services.Get<ITimeService>().CurrentTime.month &&
+            day == Services.Get<ITimeService>().CurrentTime.day;
+    }
+
+    public int GetDaysSince(GameTime other)
+    {
+        try
+        {
+            // 시간은 무시하고 날짜(Y-M-D)만 비교
+            var dtThis = new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Unspecified);
+            var dtOther = new DateTime(other.year, other.month, other.day, 0, 0, 0, DateTimeKind.Unspecified);
+            return (dtThis - dtOther).Days;
+        }
+        catch (Exception)
+        {
+            // DateTime 생성이 불가능한 경우, 달력 일수를 이용해 날짜만으로 차이를 계산 (시간 무시)
+            int DaysFromEpoch(int y, int m, int d)
+            {
+                // 기준: 2025-01-01 → 0일
+                int days = 0;
+                if (y >= 2025)
+                {
+                    for (int yy = 2025; yy < y; yy++) days += IsLeapYear(yy) ? 366 : 365;
+                }
+                else
+                {
+                    for (int yy = y; yy < 2025; yy++) days -= IsLeapYear(yy) ? 366 : 365;
+                }
+
+                for (int mm = 1; mm < m; mm++) days += GetDaysInMonth(y, mm);
+                days += (d - 1); // 1일은 0 오프셋
+                return days;
+            }
+
+            int thisDays = DaysFromEpoch(year, month, day);
+            int otherDays = DaysFromEpoch(other.year, other.month, other.day);
+            return thisDays - otherDays;
+        }
+    }
+
     public override bool Equals(object obj)
     {
         if (obj is GameTime other)

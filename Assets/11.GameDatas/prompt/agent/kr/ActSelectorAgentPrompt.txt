@@ -11,7 +11,8 @@
 {character_name}의 현재 상태
 {character_situation}
 
-{memory}
+{character_name}의 과거의 기억들입니다.
+{long_term_memory}
 
 {character_name}의 인물 관계
 {relationship}

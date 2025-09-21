@@ -77,9 +77,9 @@ public abstract class MainActor : Actor
 
 	[Header("Cleanliness Decay System")]
 	[SerializeField, Tooltip("청결도가 감소하는 간격 (분)")]
-	private int cleanlinessDecayIntervalMinutes = 30; // 30분마다
+	private int cleanlinessDecayIntervalMinutes = 10; // 10분마다
 	[SerializeField, Tooltip("한 번에 감소하는 청결도")]
-	private int cleanlinessDecayAmount = 3;
+	private int cleanlinessDecayAmount = 1;
 	private GameTime lastCleanlinessDecayTime;
 
 	[Header("Activity System")]
@@ -119,6 +119,9 @@ public abstract class MainActor : Actor
 	[SerializeField] private ManualActionController manualActionController = new();
 
 	private ITimeService timeService;
+
+	[SerializeField] protected GameTime yesterdaySleepTime;
+	[SerializeField] protected string yesterdaySleepLocation;
 
 	public override string Get()
 	{
@@ -171,7 +174,7 @@ public abstract class MainActor : Actor
 		brain.memoryManager.ClearShortTermMemory();
 		// STM 초기화 후 수면 시작을 새로운 STM에 추가
 		//brain?.memoryManager?.AddActionStart("수면", null);
-		brain?.memoryManager?.AddShortTermMemory(new GameTime(2025, 2, 22, 22, 0), "action_start", "수면", "거실 침대에서 취침", null);
+		brain?.memoryManager?.AddShortTermMemory(yesterdaySleepTime, "sleep_start", "수면", $"{yesterdaySleepLocation}에서 취침", null);
 		manualActionController.Initialize(this);
 		// Per-Actor 강제 계획 생성 플래그를 Brain에 반영
 		TryApplyForcePlanFlagToBrain();
@@ -300,8 +303,7 @@ public abstract class MainActor : Actor
 		// Enhanced Memory System: 기상을 STM에 추가 (예외 방어)
 		try
 		{
-			brain?.memoryManager?.AddActionComplete("수면",
-				$"수면 완료 - 잠에서 깨어남. 체력 {Stamina}로 회복됨", true);
+			brain?.memoryManager?.AddShortTermMemory(yesterdaySleepTime, "sleep_start", "수면", $"{curLocation.LocationToString()}에서 취침", null);
 		}
 		catch (Exception ex)
 		{

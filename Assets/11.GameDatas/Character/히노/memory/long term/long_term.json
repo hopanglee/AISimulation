@@ -214,5 +214,104 @@
 		"emotions": { "평온": 0.8, "집중": 0.6 },
 		"relatedActors": [],
 		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:거실"
+	},
+	{
+		"timestamp": "2025-01-12T07:30:00Z",
+		"type": "experience",
+		"category": "personal",
+		"content": "알람이 두 번째로 울릴 때 눈을 떴다. 오늘은 카페 브루랩에서 책을 읽기로 했다는 생각이 먼저 떠올랐다.",
+		"emotions": { "차분": 0.6, "기대": 0.4 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:침실"
+	},
+	{
+		"timestamp": "2025-01-12T07:50:00Z",
+		"type": "experience",
+		"category": "personal",
+		"content": "토스트 한 장과 티백 티. 잔의 온기를 두 손으로 감싸니 마음이 가벼워졌다.",
+		"emotions": { "안온": 0.7, "기대": 0.3 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:부얶"
+	},
+	{
+		"timestamp": "2025-01-12T08:10:00Z",
+		"type": "event",
+		"category": "personal",
+		"content": "읽던 책과 작은 노트를 가방에 넣었다. 오늘은 밑줄을 덜 긋고, 그냥 읽어보기로 했다.",
+		"emotions": { "정리": 0.6, "평온": 0.4 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:거실"
+	},
+	{
+		"timestamp": "2025-01-12T08:35:00Z",
+		"type": "event",
+		"category": "location",
+		"content": "현관에서 신발끈을 조이고 나섰다. 공기가 차고 맑았다.",
+		"emotions": { "상쾌": 0.6, "집중": 0.4 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:현관"
+	},
+	{
+		"timestamp": "2025-01-12T09:05:00Z",
+		"type": "experience",
+		"category": "location",
+		"content": "가방을 한 번 더 확인했다. 책, 노트, 펜.",
+		"emotions": { "점검": 0.6, "차분": 0.4 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-14"
+	},
+	{
+		"timestamp": "2025-01-12T09:40:00Z",
+		"type": "experience",
+		"category": "location",
+		"content": "5-chome-14를 지나 5-chome-1로 걸었다. 숨이 조금 가빠지자 보폭을 반 박자 줄였다.",
+		"emotions": { "몰입": 0.6, "안정": 0.4 },
+		"relatedActors": [],
+		"location": "도쿄:세타가와:미나미 카라스야마:5-chome-1"
+	},
+	{
+		"timestamp": "2025-01-12T10:20:00Z",
+		"type": "event",
+		"category": "location",
+		"content": "5-chome-1에서 길을 건너 카부키쵸 1-chome-8로 들어섰다. 표지판을 한 번 확인하고 방향을 정했다.",
+		"emotions": { "경계": 0.5, "차분": 0.5 },
+		"relatedActors": [],
+		"location": "도쿄:신주쿠:카부키쵸:1-chome-8"
+	},
+	{
+		"timestamp": "2025-01-12T11:30:00Z",
+		"type": "experience",
+		"category": "location",
+		"content": "1-chome-8에서 1-chome-1로 이어지는 길을 따라 걸었다. 소음은 배경이 되고, 보폭은 일정해졌다.",
+		"emotions": { "적응": 0.6, "여유": 0.4 },
+		"relatedActors": [],
+		"location": "도쿄:신주쿠:카부키쵸:1-chome-1"
+	},
+	{
+		"timestamp": "2025-01-12T12:40:00Z",
+		"type": "knowledge",
+		"category": "personal",
+		"content": "지도를 열어 브루랩까지의 골목 경로를 확인했다. 1-chome-1에서 1-chome-2를 지나 1-chome-5로 향하면 된다고 적혀 있었다.",
+		"emotions": { "확신": 0.6, "주의": 0.4 },
+		"relatedActors": [],
+		"location": "도쿄:신주쿠:카부키쵸:1-chome-1"
+	},
+	{
+		"timestamp": "2025-01-12T13:50:00Z",
+		"type": "experience",
+		"category": "location",
+		"content": "1-chome-2를 지나 1-chome-5로 향하던 길, 교차로 신호를 기다리며 이어폰 줄을 정리했다.",
+		"emotions": { "차분": 0.6, "경계": 0.4 },
+		"relatedActors": [],
+		"location": "도쿄:신주쿠:카부키쵸:1-chome-2"
+	},
+	{
+		"timestamp": "2025-01-12T14:55:00Z",
+		"type": "event",
+		"category": "location",
+		"content": "1-chome-5에서 1-chome-6으로 이어지는 교차로 소리가 유난히 컸다. 잠깐 주변을 확인하고 브루랩 방향으로 발을 내딛기 직전이었다.",
+		"emotions": { "경계": 0.7, "집중": 0.6 },
+		"relatedActors": [],
+		"location": "도쿄:신주쿠:카부키쵸:1-chome-6:교차로"
 	}
 ]

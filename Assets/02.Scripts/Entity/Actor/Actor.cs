@@ -1365,13 +1365,28 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 memoryText += "- 단기 기억들:\n";
                 foreach (var memory in shortTermMemories)
                 {
-                    var timestamp = memory.timestamp != null ? memory.timestamp.ToKoreanString() : "시간 미상";
+                    var timestamp = "";
+                    if (timestamp != null)
+                    {
+                        if (memory.timestamp.IsToday())
+                        {
+                            timestamp = $"오늘 {memory.timestamp.hour:D2}:{memory.timestamp.minute:D2}";
+                        }
+                        else
+                        {
+                            timestamp = $"{memory.timestamp.GetDaysSince(Services.Get<ITimeService>().CurrentTime)}일 전 {memory.timestamp.hour:D2}:{memory.timestamp.minute:D2}";
+                        }
+                    }
+                    else
+                    {
+                        timestamp = "시간 미상";
+                    }
                     var emotions = memory.emotions != null && memory.emotions.Count > 0
-                        ? string.Join(", ", memory.emotions.Select(e => $"{e.Key}:{e.Value:F1}"))
-                        : "감정 없음";
+                        ? $"<감정: {string.Join(", ", memory.emotions.Select(e => $"{e.Key}:{e.Value:F1}"))}> "
+                        : "";
                     var details = !string.IsNullOrEmpty(memory.details) ? $" ({memory.details})" : "";
 
-                    memoryText += $"[{timestamp}] <감정: {emotions}> {memory.content} ({details})\n";
+                    memoryText += $"[{timestamp}] {emotions}{memory.content} {details}\n";
                 }
             }
 
@@ -1393,10 +1408,19 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 memoryText += "- 장기 기억들:\n";
                 foreach (var memory in longTermMemories)
                 {
-                    var timestamp = memory.timestamp != null ? memory.timestamp.ToKoreanString() : "시간 미상";
+                    var timestamp = "";
+                    if (memory.timestamp != null)
+                    {
+                        var daysSince = memory.timestamp.GetDaysSince(Services.Get<ITimeService>().CurrentTime);
+                        timestamp = $"{memory.timestamp.ToKoreanString()}({daysSince}일 전)";
+                    }
+                    else
+                    {
+                        timestamp = "시간 모름";
+                    }
                     var emotions = memory.emotions != null && memory.emotions.Count > 0
-                        ? string.Join(", ", memory.emotions.Select(e => $"{e.Key}:{e.Value:F1}"))
-                        : "감정 없음";
+                        ? $"<감정: {string.Join(", ", memory.emotions.Select(e => $"{e.Key}:{e.Value:F1}"))}>"
+                        : "";
                     var relatedActors = memory.relatedActors != null && memory.relatedActors.Count > 0
                         ? $" [관련인물: {string.Join(", ", memory.relatedActors)}]"
                         : "";
@@ -1404,7 +1428,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                         ? $" [장소: {memory.location}]"
                         : "";
 
-                    memoryText += $"[{timestamp}] <감정: {emotions}> <장소: {location}> {memory.content} ({relatedActors})\n";
+                    memoryText += $"[{timestamp}] {emotions}{location} {memory.content} {relatedActors}\n";
                 }
             }
 
@@ -1424,18 +1448,18 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         var personalityText = "";
         var allTraits = characterInfo.GetAllTraits();
 
-        if(allTraits != null && allTraits.Count > 0)
+        if (allTraits != null && allTraits.Count > 0)
         {
             personalityText += $"{string.Join(", ", allTraits)}";
         }
         //if (temperament != null && temperament.Count > 0)
         //{
-            //personalityText += $"기질은 {string.Join(", ", temperament)}입니다. ";
+        //personalityText += $"기질은 {string.Join(", ", temperament)}입니다. ";
         //}
 
         //if (personality != null && personality.Count > 0)
         //{
-            //personalityText += $"성격은 {string.Join(", ", personality)}입니다.";
+        //personalityText += $"성격은 {string.Join(", ", personality)}입니다.";
         //}
 
         return personalityText;
@@ -1458,7 +1482,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 if (relationshipMemory != null)
                 {
                     relationshipText += $"- {relationshipMemory.Name} ({relationshipMemory.RelationshipType})\n";
-                    
+
                     // 나이
                     if (relationshipMemory.Age > 0)
                     {
@@ -1468,7 +1492,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                     {
                         relationshipText += $"  나이: 아직 모름\n";
                     }
-                    
+
                     // 생일
                     if (!string.IsNullOrEmpty(relationshipMemory.Birthday))
                     {
@@ -1478,7 +1502,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                     {
                         relationshipText += $"  생일: 아직 모름\n";
                     }
-                    
+
                     // 사는 곳
                     if (!string.IsNullOrEmpty(relationshipMemory.HouseLocation))
                     {
@@ -1488,10 +1512,10 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                     {
                         relationshipText += $"  사는 곳: 아직 모름\n";
                     }
-                    
+
                     // 친밀도와 신뢰도
                     relationshipText += $"  친밀도: {relationshipMemory.Closeness:F1}, 신뢰도: {relationshipMemory.Trust:F1}\n";
-                    
+
                     // 마지막 상호작용
                     if (relationshipMemory.LastInteraction != default(GameTime))
                     {

@@ -95,7 +95,11 @@ namespace Agent
             // Relationship memory 전용: location memories (관계는 캐릭터간 상호작용 문맥으로 여기서 location memories만 노출)
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemoriesFiltered);
-            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
+            if (Services.Get<GameService>().UseDayPlanner)
+            {
+                options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
+            }
+            //options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetWorldAreaInfo);
         }
 
@@ -135,7 +139,7 @@ namespace Agent
                     { "character_name", actor.Name },
                     { "personality", actor.LoadPersonality() },
                     { "info", actor.LoadCharacterInfo() },
-                    { "memory", actor.LoadCharacterMemory() },
+                    { "long_term_memory", actor.LoadLongTermMemory() },
                     { "relationship", actor.LoadRelationships() },
                     {"available_act", FormatAvailableActionsToString(GetCurrentAvailableActions())}
                 });
@@ -146,111 +150,125 @@ namespace Agent
 
             //string userMessage = $"{actor.Name}이 인식한 상황\n" + situation;
 
-            // 현재 행동 정보 추가
-            if (dayPlanner != null)
+            // 서비스 조회
+            var localizationService = Services.Get<ILocalizationService>();
+            if (localizationService == null)
             {
-                try
-                {
-                    Debug.Log("[ActSelectorAgent][DBG-AS-1] dayPlanner is set - starting context build");
-                    var currentAction = await dayPlanner.GetCurrentSpecificActionAsync();
-                    if (currentAction == null)
-                    {
-                        Debug.LogError("[ActSelectorAgent][DBG-AS-2] currentAction is null (GetCurrentSpecificActionAsync returned null)");
-                        throw new NullReferenceException("currentAction is null");
-                    }
+                Debug.LogError("[ActSelectorAgent][DBG-AS-7] LocalizationService is null");
+                throw new NullReferenceException("LocalizationService is null");
+            }
 
-                    var currentActivity = currentAction.ParentDetailedActivity;
-                    if (currentActivity == null)
-                    {
-                        Debug.LogError("[ActSelectorAgent][DBG-AS-3] currentActivity is null (ParentDetailedActivity)");
-                        throw new NullReferenceException("currentActivity is null");
-                    }
+            var timeService = Services.Get<ITimeService>();
+            if (timeService == null)
+            {
+                Debug.LogError("[ActSelectorAgent][DBG-AS-8] TimeService is null");
+                throw new NullReferenceException("TimeService is null");
+            }
 
-                    Debug.Log($"[ActSelectorAgent][DBG-AS-4] currentActivity: {currentActivity.ActivityName}, duration: {currentActivity.DurationMinutes}");
+            var year = timeService.CurrentTime.year;
+            var month = timeService.CurrentTime.month;
+            var day = timeService.CurrentTime.day;
+            var dayOfWeek = timeService.CurrentTime.GetDayOfWeek();
+            var hour = timeService.CurrentTime.hour;
+            var minute = timeService.CurrentTime.minute;
 
-                    // DayPlanner의 메서드를 사용하여 활동 시작 시간 계산
-                    var activityStartTime = dayPlanner.GetActivityStartTime(currentActivity);
-                    Debug.Log($"[ActSelectorAgent][DBG-AS-5] activityStartTime: {activityStartTime.hour:D2}:{activityStartTime.minute:D2}");
+            // perceptionResult 방어
+            if (perceptionResult == null)
+            {
+                Debug.LogWarning("[ActSelectorAgent][DBG-AS-9] perceptionResult is null - using empty strings");
+            }
 
-                    // 모든 SpecificAction 나열 (null 방어)
-                    var allActionsText = new List<string>();
-                    var specificActions = currentActivity.SpecificActions ?? new List<SpecificAction>();
-                    if (currentActivity.SpecificActions == null)
-                    {
-                        Debug.LogWarning("[ActSelectorAgent][DBG-AS-6] currentActivity.SpecificActions is null - using empty list");
-                    }
-
-                    for (int i = 0; i < specificActions.Count; i++)
-                    {
-                        var action = specificActions[i];
-                        var isCurrent = (action == currentAction) ? " [현재 시간 행동]" : "";
-                        allActionsText.Add($"{i + 1}. {action.ActionType}{isCurrent}: {action.Description}");
-                    }
-
-                    // 서비스 조회
-                    var localizationService = Services.Get<ILocalizationService>();
-                    if (localizationService == null)
-                    {
-                        Debug.LogError("[ActSelectorAgent][DBG-AS-7] LocalizationService is null");
-                        throw new NullReferenceException("LocalizationService is null");
-                    }
-
-                    var timeService = Services.Get<ITimeService>();
-                    if (timeService == null)
-                    {
-                        Debug.LogError("[ActSelectorAgent][DBG-AS-8] TimeService is null");
-                        throw new NullReferenceException("TimeService is null");
-                    }
-
-                    var year = timeService.CurrentTime.year;
-                    var month = timeService.CurrentTime.month;
-                    var day = timeService.CurrentTime.day;
-                    var dayOfWeek = timeService.CurrentTime.GetDayOfWeek();
-                    var hour = timeService.CurrentTime.hour;
-                    var minute = timeService.CurrentTime.minute;
-
-                    // perceptionResult 방어
-                    if (perceptionResult == null)
-                    {
-                        Debug.LogWarning("[ActSelectorAgent][DBG-AS-9] perceptionResult is null - using empty strings");
-                    }
-
-                    var replacements = new Dictionary<string, string>
+            var replacements = new Dictionary<string, string>
                     {
                         {"current_time", $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}" },
                         {"character_name", actor.Name},
                         {"interpretation", perceptionResult?.situation_interpretation ?? string.Empty},
                         {"thought_chain", string.Join(" -> ", perceptionResult?.thought_chain ?? new List<string>())},
-                        { "parent_activity", currentActivity.ActivityName },
-                        { "parent_task", currentActivity.ParentHighLevelTask?.TaskName ?? "Unknown" },
-                        { "activity_start_time", $"{activityStartTime.hour:D2}:{activityStartTime.minute:D2}" },
-                        { "activity_duration_minutes", currentActivity.DurationMinutes.ToString() },
-                        { "all_actions_in_activity", string.Join("\n", allActionsText) },
-                        {"all_actions_start_time", dayPlanner.GetPlanStartTime().ToString() }
+                        {"short_term_memory", actor.LoadShortTermMemory()},
                     };
 
-                    var userMessage = localizationService.GetLocalizedText("current_action_context_prompt", replacements);
-                    messages.Add(new UserChatMessage(userMessage));
-                    Debug.Log("[ActSelectorAgent][DBG-AS-10] Context message built and added");
-
-                    var response = await SendGPTAsync<ActSelectionResult>(messages, options);
-
-                    Debug.Log($"[ActSelectorAgent] Act: {response.ActType}, Reason: {response.Reasoning}, Intention: {response.Intention}");
-
-                    // 실행 가능 여부 검사 및 필요 시 한 번 재요청
-                    var validated = await ValidateAndMaybeReaskAsync(response);
-                    return validated;
-                }
-                catch (Exception ex)
+            if (Services.Get<GameService>().UseDayPlanner)
+            {
+                // 현재 행동 정보 추가
+                if (dayPlanner != null)
                 {
-                    Debug.LogError($"[ActSelectorAgent] 현재 행동 정보 가져오기 실패 (DBG markers above). Error: {ex}");
-                    return null;
+                    try
+                    {
+
+                        Debug.Log("[ActSelectorAgent][DBG-AS-1] dayPlanner is set - starting context build");
+                        var currentAction = await dayPlanner.GetCurrentSpecificActionAsync();
+                        if (currentAction == null)
+                        {
+                            Debug.LogError("[ActSelectorAgent][DBG-AS-2] currentAction is null (GetCurrentSpecificActionAsync returned null)");
+                            throw new NullReferenceException("currentAction is null");
+                        }
+
+                        var currentActivity = currentAction.ParentDetailedActivity;
+                        if (currentActivity == null)
+                        {
+                            Debug.LogError("[ActSelectorAgent][DBG-AS-3] currentActivity is null (ParentDetailedActivity)");
+                            throw new NullReferenceException("currentActivity is null");
+                        }
+
+                        Debug.Log($"[ActSelectorAgent][DBG-AS-4] currentActivity: {currentActivity.ActivityName}, duration: {currentActivity.DurationMinutes}");
+
+                        // DayPlanner의 메서드를 사용하여 활동 시작 시간 계산
+                        var activityStartTime = dayPlanner.GetActivityStartTime(currentActivity);
+                        Debug.Log($"[ActSelectorAgent][DBG-AS-5] activityStartTime: {activityStartTime.hour:D2}:{activityStartTime.minute:D2}");
+
+                        // 모든 SpecificAction 나열 (null 방어)
+                        var allActionsText = new List<string>();
+                        var specificActions = currentActivity.SpecificActions ?? new List<SpecificAction>();
+                        if (currentActivity.SpecificActions == null)
+                        {
+                            Debug.LogWarning("[ActSelectorAgent][DBG-AS-6] currentActivity.SpecificActions is null - using empty list");
+                        }
+
+                        for (int i = 0; i < specificActions.Count; i++)
+                        {
+                            var action = specificActions[i];
+                            var isCurrent = (action == currentAction) ? " [현재 시간]" : "";
+                            allActionsText.Add($"{i + 1}. {action.ActionType}{isCurrent}: {action.Description}");
+                        }
+
+                        var plan_replacements = new Dictionary<string, string>
+                        {
+                            { "parent_activity", currentActivity.ActivityName },
+                            {"parent_task", currentActivity.ParentHighLevelTask?.TaskName ?? "Unknown"},
+                            {"activity_start_time", $"{activityStartTime.hour:D2}:{activityStartTime.minute:D2}"},
+                            {"activity_duration_minutes", currentActivity.DurationMinutes.ToString()},
+                            {"all_actions_in_activity", string.Join("\n", allActionsText)},
+                            {"all_actions_start_time", dayPlanner.GetPlanStartTime().ToString()},
+                            {"plan_notify", "현재 시간의 행동은 계획일 뿐, 이전 계획의 내용도 실행되지 않았을 수도 있습니다.반드시 계획대로 수행할 필요는 없습니다."},
+                        };
+
+                        var current_plan_template = localizationService.GetLocalizedText("current_plan_template", plan_replacements);
+                        replacements.Add("current_plan", current_plan_template);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"[ActSelectorAgent] 현재 행동 정보 가져오기 실패 (DBG markers above). Error: {ex}");
+                        return null;
+                    }
                 }
             }
+            else
+            {
+                replacements.Add("current_plan", string.Empty);
+            }
 
-            Debug.LogError($"[ActSelectorAgent] 현재 행동 정보 가져오기 실패");
+            var userMessage = localizationService.GetLocalizedText("current_action_context_prompt", replacements);
+            messages.Add(new UserChatMessage(userMessage));
+            Debug.Log("[ActSelectorAgent][DBG-AS-10] Context message built and added");
 
-            return null;
+            var response = await SendGPTAsync<ActSelectionResult>(messages, options);
+
+            Debug.Log($"[ActSelectorAgent] Act: {response.ActType}, Reason: {response.Reasoning}, Intention: {response.Intention}");
+
+            // 실행 가능 여부 검사 및 필요 시 한 번 재요청
+            var validated = await ValidateAndMaybeReaskAsync(response);
+            return validated;
         }
 
         /// <summary>
@@ -303,34 +321,18 @@ namespace Agent
             if (first == null)
                 return null;
 
-            if (IsFeasible(first.ActType, out string reasonKo))
+            int retryCount = 0;
+            while (!IsFeasible(first.ActType, out string reasonKo) && retryCount < 3)
             {
-                return first;
-            }
+                // 제약 설명을 사용자 메시지로 추가하고 재요청
+                var constraintMsg = $"제약 사항: {reasonKo}\n현재 상태에서 실행 가능한 다른 행동을 선택해 주세요.";
+                messages.Add(new UserChatMessage(constraintMsg));
+                Debug.Log($"[ActSelectorAgent] Reasking due to infeasible act: {first.ActType} | {reasonKo}");
 
-            // 제약 설명을 사용자 메시지로 추가하고 재요청
-            var constraintMsg = $"제약 사항: {reasonKo}\n현재 상태에서 실행 가능한 다른 행동을 선택해 주세요.";
-            messages.Add(new UserChatMessage(constraintMsg));
-            Debug.Log($"[ActSelectorAgent] Reasking due to infeasible act: {first.ActType} | {reasonKo}");
-
-            try
-            {
-                var retry = await SendGPTAsync<ActSelectionResult>(messages, options);
-                if (IsFeasible(retry.ActType, out _))
-                    return retry;
+                first = await SendGPTAsync<ActSelectionResult>(messages, options);
+                retryCount++;
             }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[ActSelectorAgent] 재요청 실패: {ex.Message}");
-            }
-
-            // 최후 수단: 대기(Wait)
-            return new ActSelectionResult
-            {
-                ActType = ActionType.Wait,
-                Reasoning = "선택된 행동이 현재 조건에서 실행 불가하여 대기 행동으로 대체",
-                Intention = "상태 변화/기회 대기"
-            };
+            return first;
         }
 
         /// <summary>
@@ -427,9 +429,9 @@ namespace Agent
                         int actorsCount = 0, propsCount = 0, itemsCount = 0;
                         if (interactable != null)
                         {
-                            try { actorsCount = interactable.actors?.Count ?? 0; } catch {}
-                            try { propsCount = interactable.props?.Count ?? 0; } catch {}
-                            try { itemsCount = interactable.items?.Count ?? 0; } catch {}
+                            try { actorsCount = interactable.actors?.Count ?? 0; } catch { }
+                            try { propsCount = interactable.props?.Count ?? 0; } catch { }
+                            try { itemsCount = interactable.items?.Count ?? 0; } catch { }
                         }
 
                         // 주변에 이동 대상 엔티티 없으면 MoveToEntity 제한
@@ -470,7 +472,7 @@ namespace Agent
                     // 손에 없으면 PutDown 제거
                     // if (!hasHandItem)
                     // {
-                        
+
                     //     availableActions.Remove(ActionType.GiveItem);
                     // }
                     // 손과 인벤 모두 비어 있으면 UseObject/GiveItem 제거

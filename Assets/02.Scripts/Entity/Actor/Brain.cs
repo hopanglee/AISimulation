@@ -168,7 +168,10 @@ public class Brain
     /// </summary>
     private async UniTask StartDayPlanAndThinkAsync()
     {
-        await StartDayPlan();
+        if (Services.Get<GameService>().UseDayPlanner)
+        {
+            await StartDayPlan();
+        }
         StartThinkLoop();
     }
 
@@ -263,7 +266,7 @@ public class Brain
             #region DayPlanner 실행
             // PerceptionAgent를 통해 시각정보 해석
             //var perceptionResult = await InterpretVisualInformationAsync();
-            if (planPlug)
+            if (planPlug && Services.Get<GameService>().UseDayPlanner)
             {
                 Debug.Log($"[{actor.Name}] DayPlan 시작");
                 await dayPlanner.PlanToday();
@@ -292,7 +295,10 @@ public class Brain
                 await relationshipMemoryManager.ProcessRelationshipUpdatesAsync(perceptionResult);
 
                 // === 계획 유지/수정 결정 및 필요 시 재계획 (DayPlanner 내부로 캡슐화) ===
-                await dayPlanner.DecideAndMaybeReplanAsync(perceptionResult);
+                if (Services.Get<GameService>().UseDayPlanner)
+                {
+                    await dayPlanner.DecideAndMaybeReplanAsync(perceptionResult);
+                }
             }
 
 
@@ -318,8 +324,11 @@ public class Brain
             }
             catch { }
 
-            // Enhanced Memory System: ActSelector 결과를 Short Term Memory에 추가 (일단 보류)
-            //memoryManager.AddActSelectorResult(selection);
+            // Enhanced Memory System: ActSelector 결과를 Short Term Memory에 추가
+            if (selection != null)
+            {
+                memoryManager.AddActSelectorResult(selection);
+            }
 
             // ActSelectResult를 ActorManager에 저장
             Services.Get<IActorService>().StoreActResult(actor, selection);

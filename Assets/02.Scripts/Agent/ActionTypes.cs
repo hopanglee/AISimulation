@@ -39,3 +39,28 @@ public class AgentAction
     public ActionType ActionType { get; set; }
     public Dictionary<string, object> Parameters { get; set; }
 }
+
+public static class ActionTypeExtensions
+{
+	public static string ToKorean(this ActionType actionType)
+	{
+		switch (actionType)
+		{
+			case ActionType.Unknown: return "알 수 없음";
+			case ActionType.MoveToArea: return "이동";
+			case ActionType.MoveToEntity: return "이동";
+			case ActionType.Talk: return "대화";
+			case ActionType.UseObject: return "손에 든 물건 사용";
+			case ActionType.PickUpItem: return "물건 줍기";
+			case ActionType.InteractWithObject: return "물건과 상호작용";
+			case ActionType.PutDown: return "손에 든 물건 내려놓기";
+			case ActionType.GiveMoney: return "돈 주기";
+			case ActionType.GiveItem: return "물건 건네기";
+			case ActionType.RemoveClothing: return "옷 벗기";
+			case ActionType.PerformActivity: return "행동 수행";
+			case ActionType.Wait: return "대기";
+			case ActionType.Think: return "생각";
+			default: return actionType.ToString();
+		}
+	}
+}

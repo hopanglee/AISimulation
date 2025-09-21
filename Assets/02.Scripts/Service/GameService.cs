@@ -90,12 +90,15 @@ public class GameService : MonoBehaviour, IGameService
     [SerializeField]
     private bool enableGPTLogging = true; // GPT 대화 로그 저장 활성화 여부
 
+    public bool UseDayPlanner = true;
+
     // [SerializeField]
     // private bool runThinkOnce = false; // 인스펙터에서 체크
 
     [Header("Time Settings")]
     [SerializeField, Range(1f, 300f)]
     private float timeScale = 60f; // 시간 흐름 속도
+
 
     private bool isSimulationRunning = false;
     private List<Actor> allActors = new List<Actor>();

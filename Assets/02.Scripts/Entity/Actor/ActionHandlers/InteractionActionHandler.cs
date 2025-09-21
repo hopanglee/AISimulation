@@ -98,17 +98,53 @@ namespace Agent.ActionHandlers
                 if (actor is MainActor thinkingActor)
                 {
                     var interactableEntities = thinkingActor.sensor.GetInteractableEntities();
+
+                    // 1) 우선 prop에서 시도
                     if (interactableEntities.props.ContainsKey(objectName))
                     {
                         var prop = interactableEntities.props[objectName];
-                        Debug.Log($"[{actor.Name}] {prop.Name}와 상호작용");
-
-                        // 실제 상호작용 실행
                         if (prop is IInteractable interactable)
                         {
                             try
                             {
-                                // TryInteract를 await으로 기다림
+                                string result = await interactable.TryInteract(actor, token);
+                                Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
+                                return;
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                Debug.Log($"[{actor.Name}] 상호작용이 취소되었습니다.");
+                                return;
+                            }
+                        }
+                    }
+                    // 2) Building에서 시도
+                    else if (interactableEntities.buildings.ContainsKey(objectName))
+                    {
+                        var building = interactableEntities.buildings[objectName];
+                        if (building is IInteractable interactable)
+                        {
+                            try
+                            {
+                                string result = await interactable.TryInteract(actor, token);
+                                Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
+                                return;
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                Debug.Log($"[{actor.Name}] 상호작용이 취소되었습니다.");
+                                return;
+                            }
+                        }
+                    }
+                    // 3) Item에서 시도 (Item이 IInteractable인 경우)
+                    else if (interactableEntities.items.ContainsKey(objectName))
+                    {
+                        var item = interactableEntities.items[objectName];
+                        if (item is IInteractable interactable)
+                        {
+                            try
+                            {
                                 string result = await interactable.TryInteract(actor, token);
                                 Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
                                 return;
@@ -122,7 +158,57 @@ namespace Agent.ActionHandlers
                     }
                     else
                     {
-                        Debug.LogWarning($"[{actor.Name}] 오브젝트를 찾을 수 없음: {objectName}");
+                        // Interactable에는 없지만 lookable에 있다면: 이동 후 재시도
+                        var lookable = thinkingActor.sensor.GetLookableEntities();
+                        if (lookable.ContainsKey(objectName))
+                        {
+                            try
+                            {
+                                var mover = new MovementActionHandler(actor);
+                                await mover.HandleMoveToEntity(new Dictionary<string, object> { { "target_entity", objectName } }, token);
+
+                                // 이동 후 재확인
+                                interactableEntities = thinkingActor.sensor.GetInteractableEntities();
+                                if (interactableEntities.props.ContainsKey(objectName) && interactableEntities.props[objectName] is IInteractable interProp)
+                                {
+                                    string result = await interProp.TryInteract(actor, token);
+                                    Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
+                                    return;
+                                }
+                                if (interactableEntities.buildings.ContainsKey(objectName) && interactableEntities.buildings[objectName] is IInteractable interBld)
+                                {
+                                    string result = await interBld.TryInteract(actor, token);
+                                    Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
+                                    return;
+                                }
+                                if (interactableEntities.items.ContainsKey(objectName) && interactableEntities.items[objectName] is IInteractable interItem)
+                                {
+                                    string result = await interItem.TryInteract(actor, token);
+                                    Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
+                                    return;
+                                }
+
+                                // 여전히 불가 → 워닝 후 Perception 재실행
+                                Debug.LogWarning($"[{actor.Name}] 이동 후에도 상호작용 불가: {objectName}");
+                                thinkingActor.brain.memoryManager.AddShortTermMemory("action_fail", $"{objectName}으로 이동했으나, 상호작용 범위에 없음");
+                                return;
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                Debug.Log($"[{actor.Name}] 이동/상호작용 시도가 취소되었습니다.");
+                                return;
+                            }
+                            catch (System.Exception ex)
+                            {
+                                Debug.LogError($"[{actor.Name}] Interact Fallback 처리 중 오류: {ex.Message}");
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"[{actor.Name}] 오브젝트를 찾을 수 없음: {objectName}");
+                            thinkingActor.brain.memoryManager.AddShortTermMemory("action_fail", $"찾을 수 없음: {objectName}");
+                        }
                     }
                 }
                 else
