@@ -203,55 +203,26 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// iPhone용으로 맵 전체에서 Actor를 찾습니다. (상호작용 가능 여부와 관계없이)
         /// </summary>
-        public static Actor FindActorInWorld(Actor actor, string actorName)
+        public static Actor FindActorInWorld( string actorName)
         {
             if (string.IsNullOrEmpty(actorName))
                 return null;
 
-            // 1. LocationService를 통한 전체 맵 검색 (우선순위 1)
-            var locationService = Services.Get<ILocationService>();
-            if (locationService != null)
+            // 0. ActorService(ActorManager)의 전역 레지스트리에서 우선 검색
+            try
             {
-                // 현재 위치의 Actor들 검색
-                var currentArea = locationService.GetArea(actor.curLocation);
-                if (currentArea != null)
+                var actorService = Services.Get<IActorService>();
+                if (actorService != null && actorService.TryGetActor(actorName, out var registryActor) && registryActor != null)
                 {
-                    var actors = locationService.GetActor(currentArea, actor);
-                    foreach (var foundActor in actors)
-                    {
-                        if (foundActor.Name == actorName)
-                        {
-                            return foundActor;
-                        }
-                    }
-                }
-
-                // 다른 모든 Area에서도 검색 (Unity의 FindObjectsByType 사용)
-                try
-                {
-                    var allAreas = UnityEngine.Object.FindObjectsByType<Area>(FindObjectsSortMode.None);
-                    foreach (var area in allAreas)
-                    {
-                        if (area != currentArea) // 현재 위치는 이미 검색했으므로 제외
-                        {
-                            var actors = locationService.GetActor(area, actor);
-                            foreach (var foundActor in actors)
-                            {
-                                if (foundActor.Name == actorName)
-                                {
-                                    return foundActor;
-                                }
-                            }
-                        }
-                    }
-                }
-                catch (System.Exception ex)
-                {
-                    Debug.LogWarning($"[EntityFinder] Area 검색 중 오류: {ex.Message}");
+                    return registryActor;
                 }
             }
+            catch (System.Exception ex)
+            {
+                Debug.LogWarning($"[EntityFinder] ActorService 조회 실패: {ex.Message}");
+            }
 
-            // 2. Unity의 FindObjectsByType을 사용한 전체 Scene 검색 (우선순위 2)
+            // 1. Unity의 FindObjectsByType을 사용한 전체 Scene 검색 (우선순위 2)
             try
             {
                 var allActors = UnityEngine.Object.FindObjectsByType<Actor>(FindObjectsSortMode.None);
@@ -268,7 +239,7 @@ namespace Agent.ActionHandlers
                 Debug.LogWarning($"[EntityFinder] FindObjectsByType 검색 중 오류: {ex.Message}");
             }
 
-            Debug.LogWarning($"[{actor.Name}] iPhone으로 맵 전체에서 Actor를 찾을 수 없음: {actorName}");
+            Debug.LogWarning($"맵 전체에서 Actor를 찾을 수 없음: {actorName}");
             return null;
         }
     }

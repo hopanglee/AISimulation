@@ -94,7 +94,7 @@ public class IdAgent : GPT
                                     ""items"": {
                                         ""type"": ""string""
                                     },
-                                    ""description"": ""본능적 사고체인 (즉각적 욕구와 감정 기반), 최소 4단계를 거치세요.""
+                                    ""description"": ""단계별로 생각하세요.""
                                 },
                                 ""situation_interpretation"": {
                                     ""type"": ""string"",
@@ -118,6 +118,7 @@ public class IdAgent : GPT
                 jsonSchemaIsStrict: true
             )
         };
+        //options.Temperature = 0.7f;
 
         // 월드 정보와 계획 조회, 메모리/관계 도구 추가
         ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);

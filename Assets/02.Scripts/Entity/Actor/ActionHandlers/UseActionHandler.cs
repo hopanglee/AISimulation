@@ -58,17 +58,18 @@ namespace Agent.ActionHandlers
                     // 기본 아이템 사용 (IUsable 인터페이스 구현 여부 확인)
                     if (actor.HandItem is IUsable usable)
                     {
-                        Debug.Log($"[{actor.Name}] {actor.HandItem.Name}의 기본 사용 기능 실행");
+                        string usedItemName = actor.HandItem?.Name ?? "아이템";
+                        Debug.Log($"[{actor.Name}] {usedItemName}의 기본 사용 기능 실행");
                         var (isSuccess, result) = await usable.Use(actor, null, token);
                         if (isSuccess)
                         {
-                            actor.brain.memoryManager.AddShortTermMemory("action_success", $"{actor.HandItem.Name} 사용 완료: {result}");
+                            actor.brain.memoryManager.AddShortTermMemory("action_success", $"{usedItemName} 사용 완료: {result}");
                             await SimDelay.DelaySimMinutes(2, token);
                             return true;
                         }
                         else
                         {
-                            actor.brain.memoryManager.AddShortTermMemory("action_fail", $"{actor.HandItem.Name} 사용 실패: {result}");
+                            actor.brain.memoryManager.AddShortTermMemory("action_fail", $"{usedItemName} 사용 실패: {result}");
                             await SimDelay.DelaySimMinutes(2, token);
                             return false;
                         }
@@ -221,9 +222,7 @@ namespace Agent.ActionHandlers
                 string readTargetName = readTargetObj.ToString();
                 int count = countObj is int ? (int)countObj : 10;
 
-                //var readTargetActor = EntityFinder.FindActorByName(actor, readTargetName);
-                // if (readTargetActor != null)
-                // {
+
                 Debug.Log($"[{actor.Name}] iPhone으로 {readTargetName}의 메시지 {count}개 읽기");
                 // iPhone의 Use 메서드 호출 (Read 명령)
                 var (isSuccess, result) = await iphone.Use(actor, parameters, token);

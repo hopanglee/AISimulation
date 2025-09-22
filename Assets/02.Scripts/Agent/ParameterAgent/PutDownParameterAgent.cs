@@ -113,23 +113,6 @@ public class PutDownParameterAgent : ParameterAgentBase
         {
             if (actor?.sensor != null)
             {
-                // Actor의 sensor를 통해 현재 주변 위치들을 가져와서 목록 업데이트
-                // var interactableEntities = actor.sensor.GetInteractableEntities();
-                // var locationNames = new List<string>();
-
-                // // null 옵션 추가 (현재 위치에 놓기)
-                // locationNames.Add("null");
-
-                // // Props에서 위치 가능한 곳들 추가
-                // foreach (var (key, prop) in interactableEntities.props)
-                // {
-                //     if (prop != null && prop is ILocation)
-                //     {
-                //         locationNames.Add(key);
-                //     }
-                // }
-                // 중복 제거
-                //return locationNames.Distinct().ToList();
 
                 var lookable = actor.sensor.GetLookableEntities();
                 var keys = new List<string>();

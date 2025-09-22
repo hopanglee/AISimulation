@@ -19,9 +19,6 @@ public interface ILocation
 
     public bool IsHideChild { get; set; } // 자식들은 감지 될 수 있는가?
 
-    // public bool IsHideMe { get; set; } // 본인은 감지 되는가 안되는가.
-
-    //public void RegisterToLocationService();
 }
 
 public abstract class Entity : MonoBehaviour, ILocation
@@ -108,13 +105,6 @@ public abstract class Entity : MonoBehaviour, ILocation
         set { _isHideChild = value; }
     }
 
-    // [SerializeField]
-    // private bool _isHideMe;
-    // public bool IsHideMe
-    // {
-    //     get { return _isHideMe; }
-    //     set { _isHideMe = value; }
-    // }
 
     [SerializeField]
     private string _name; // Never change. ex. "iPhone", "box", "Table"
@@ -127,10 +117,7 @@ public abstract class Entity : MonoBehaviour, ILocation
     [FoldoutGroup("Localization")]
     [SerializeField]
     private string _nameKr;
-    // public string NameKr 
-    // {
-    //     get { return NameKr; }
-    // }
+
 
     [SerializeField, TextArea]
     private string _currentStatusDescription;
@@ -194,23 +181,6 @@ public abstract class Entity : MonoBehaviour, ILocation
         string parent = curLocation.LocationToString();
         string selfName = GetLocalizedName();
         return parent + ":" + selfName;
-        
-        // 기존 코드 (전치사 사용) - 주석처리로 보존
-        /*
-        // Language-aware relation text
-        var locService = Services.Get<ILocalizationService>();
-        string selfName = GetLocalizedName();
-        string prep = curLocation.GetLocalizedPreposition();
-        if (locService != null && locService.CurrentLanguage == Language.KR)
-        {
-            string parent = curLocation.LocationToString();
-            return parent + prep + selfName; // no spaces
-        }
-        else
-        {
-            return selfName + " " + prep + " " + curLocation.LocationToString();
-        }
-        */
     }
     
     /// <summary>
@@ -224,40 +194,6 @@ public abstract class Entity : MonoBehaviour, ILocation
         // 단순히 :로 구분하여 표시 (전체 경로)
         return curLocation.LocationToString() + ":" + GetLocalizedName();
         
-        // 기존 코드 (전치사 사용) - 주석처리로 보존
-        /*
-        // 더 상세한 위치 정보를 포함할지 여부 (언제든지 바꿀 수 있도록 if문 사용)
-        // if (false) // true: 상세한 위치 정보 포함, false: 간단한 위치 정보만
-        // {
-        //     // 한 단계까지만 더 나오는 상세한 위치 정보 사용
-        //     // 예: "Plate in Dining Table in Living Room"
-        //     if (curLocation.curLocation != null)
-        //     {
-        //         return $"{Name} in {curLocation.locationName} in {curLocation.curLocation.locationName}";
-        //     }
-        //     else
-        //         return $"{Name} in {curLocation.locationName}";
-        //     }
-        // }
-        // else
-        // {
-            // 현재 위치의 이름만 사용 (계층 구조 무시)
-            // 예: "Plate in Living Room"
-            var locService = Services.Get<ILocalizationService>();
-            bool isKr = locService != null && locService.CurrentLanguage == Language.KR;
-            string targetName = isKr ? GetLocalizedName() : Name;
-            string prep = curLocation.preposition;
-            string locName = isKr ? curLocation.GetLocalizedName() : curLocation.locationName;
-            if (isKr)
-            {
-                return $"{locName}{prep}{targetName}"; // no spaces
-            }
-            else
-            {
-                return $"{targetName} {prep} {locName}";
-            }
-        // }
-        */
     }
 
     /// <summary>
@@ -331,63 +267,6 @@ public abstract class Entity : MonoBehaviour, ILocation
 
         // 중복되는 부분을 찾지 못했으면 전체 키 반환
         return GetSimpleKey();
-        
-        // 기존 코드 (전치사 사용) - 주석처리로 보존
-        /*
-        // 중복되는 부분을 찾았으면 그 이전부터 키 생성
-        if (currentLocation == actorLocation)
-        {
-            // Actor의 location 이전까지만 포함
-            var relativeLocation = curLocation;
-            var locService = Services.Get<ILocalizationService>();
-            bool isKr = locService != null && locService.CurrentLanguage == Language.KR;
-            string result;
-            string subjectName = isKr ? GetLocalizedName() : Name;
-            if (isKr)
-            {
-                // Build chained KR: parent1+prep1 + parent2+prep2 + ... + relative+prepR + subject
-                System.Text.StringBuilder sb = new System.Text.StringBuilder();
-                // Collect chain from outermost to relativeLocation
-                System.Collections.Generic.List<ILocation> chain = new System.Collections.Generic.List<ILocation>();
-                var p = relativeLocation;
-                while (p != null && p != actorLocation)
-                {
-                    chain.Add(p);
-                    p = p.curLocation;
-                }
-                // Add remaining ancestors up to null (outermost first)
-                // Find outermost by traversing from relative up to root, then reverse
-                // We already built from inner to outer; reverse to get outer to inner
-                chain.Reverse();
-                foreach (var loc in chain)
-                {
-                    sb.Append(loc.GetLocalizedName());
-                    sb.Append(loc.preposition);
-                }
-                sb.Append(subjectName);
-                result = sb.ToString();
-            }
-            else
-            {
-                string firstPrep = relativeLocation.preposition;
-                string firstLocName = relativeLocation.locationName;
-                result = $"{subjectName} {firstPrep} {firstLocName}";
-                
-                // 더 상위 location이 있으면 추가
-                var parentLocation = relativeLocation.curLocation;
-                while (parentLocation != null && parentLocation != actorLocation)
-                {
-                    string pPrep = parentLocation.preposition;
-                    string pName = parentLocation.locationName;
-                    result += $" {pPrep} {pName}";
-                    parentLocation = parentLocation.curLocation;
-                }
-                return result;
-            }
-            
-            return result;
-        }
-        */
     }
 
     protected virtual void Awake()

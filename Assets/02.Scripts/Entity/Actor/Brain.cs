@@ -569,7 +569,7 @@ public class Brain
     {
         try
         {
-            Debug.Log($"[{actor.Name}] 원형 종료 - Long Term Memory 통합 시작");
+            Debug.Log($"[{actor.Name}] 사이클 종료 - Long Term Memory 통합 시작");
 
             // STM 개수 확인 후 임계치(12) 초과일 때만 처리
             int stmCount = memoryManager != null ? memoryManager.GetShortTermMemoryCount() : 0;

@@ -102,14 +102,4 @@ public class Area : MonoBehaviour, ILocation
             return _locationNameKr;
         return _locationName;
     }
-
-    // void Awake()
-    // {
-    //     RegisterToLocationService();
-    // }
-
-    // public void RegisterToLocationService()
-    // {
-    //     ;
-    // }
 }

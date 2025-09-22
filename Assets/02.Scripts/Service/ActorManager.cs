@@ -10,6 +10,12 @@ using Cysharp.Threading.Tasks;
 /// </summary>
 public interface IActorService : IService
 {
+    // === Actor Registry ===
+    void RegisterActor(Actor actor);
+    void UnregisterActor(Actor actor);
+    bool TryGetActor(string actorName, out Actor actor);
+    Dictionary<string, Actor> GetActorDictionary();
+
     void StoreActResult(Actor actor, ActSelectorAgent.ActSelectionResult actResult);
     ActSelectorAgent.ActSelectionResult GetActResult(Actor actor);
     ActSelectorAgent.ActSelectionResult GetActResult(string actorName);
@@ -30,6 +36,11 @@ public interface IActorService : IService
 public class ActorManager : IActorService
 {
     /// <summary>
+    /// 등록된 Actor를 이름으로 조회하기 위한 레지스트리
+    /// </summary>
+    private Dictionary<string, Actor> actorsByName = new Dictionary<string, Actor>();
+
+    /// <summary>
     /// Actor별 ActSelectResult를 저장하는 딕셔너리
     /// Key: Actor의 Name, Value: ActSelectResult
     /// </summary>
@@ -40,8 +51,54 @@ public class ActorManager : IActorService
     /// </summary>
     public void Initialize()
     {
+        actorsByName = new Dictionary<string, Actor>();
         actorActResults = new Dictionary<string, ActSelectorAgent.ActSelectionResult>();
         Debug.Log("[ActorManager] 초기화 완료");
+    }
+
+    // === Actor Registry ===
+    public void RegisterActor(Actor actor)
+    {
+        if (actor == null)
+        {
+            Debug.LogWarning("[ActorManager] RegisterActor: actor is null");
+            return;
+        }
+        var name = actor.Name;
+        if (string.IsNullOrEmpty(name))
+        {
+            Debug.LogWarning("[ActorManager] RegisterActor: actor has empty name");
+            return;
+        }
+        actorsByName[name] = actor;
+        Debug.Log($"[ActorManager] Actor 등록: {name}");
+    }
+
+    public void UnregisterActor(Actor actor)
+    {
+        if (actor == null) return;
+        var name = actor.Name;
+        if (string.IsNullOrEmpty(name)) return;
+        if (actorsByName.Remove(name))
+        {
+            Debug.Log($"[ActorManager] Actor 제거: {name}");
+        }
+    }
+
+    public bool TryGetActor(string actorName, out Actor actor)
+    {
+        if (string.IsNullOrEmpty(actorName))
+        {
+            actor = null;
+            return false;
+        }
+        return actorsByName.TryGetValue(actorName, out actor);
+    }
+
+    public Dictionary<string, Actor> GetActorDictionary()
+    {
+        // 외부 수정 방지를 위해 복사본 반환
+        return new Dictionary<string, Actor>(actorsByName);
     }
 
     /// <summary>

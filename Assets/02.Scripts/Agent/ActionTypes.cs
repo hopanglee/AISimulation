@@ -12,20 +12,19 @@ using System.Linq; // Added for .Select()
 public enum ActionType
 {
     Unknown = 0,
-    MoveToArea,//
-    MoveToEntity,//
-    Talk,//
+    MoveToArea,
+    MoveToEntity,
+    Talk,
     UseObject,
-    PickUpItem,//
+    PickUpItem,
     InteractWithObject,
-    PutDown, //
-    GiveMoney,//
-    GiveItem, //
-    RemoveClothing,//
-    //ObserveEnvironment,
-    PerformActivity,//
-    Wait,//
-    Think,//
+    PutDown,     
+	GiveMoney,
+    GiveItem,
+    RemoveClothing,
+    PerformActivity,
+    Wait,
+    Think,
     ObserveEnvironment // 주변을 둘러보고 상황 파악
 }
 

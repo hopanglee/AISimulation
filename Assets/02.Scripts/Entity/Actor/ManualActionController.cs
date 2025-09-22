@@ -655,7 +655,7 @@ public class ManualActionController
                 Debug.Log($"[ManualActionController] iPhone Chat - 사용 가능한 Actor 목록: {string.Join(", ", availableActors)}");
                 Debug.Log($"[ManualActionController] iPhone Chat - 찾으려는 Actor: '{targetActor}'");
                 
-                var actor = EntityFinder.FindActorInWorld(mainActor, targetActor);
+                var actor = EntityFinder.FindActorInWorld(targetActor);
                 if (actor != null)
                 {
                     var result = iphone.Use(mainActor, new object[] { "Chat", actor, message });
@@ -676,7 +676,7 @@ public class ManualActionController
                 Debug.Log($"[ManualActionController] iPhone Read - 사용 가능한 Actor 목록: {string.Join(", ", readAvailableActors)}");
                 Debug.Log($"[ManualActionController] iPhone Read - 찾으려는 Actor: '{readTargetActor}'");
                 
-                var readActor = EntityFinder.FindActorInWorld(mainActor, readTargetActor);
+                var readActor = EntityFinder.FindActorInWorld(readTargetActor);
                 if (readActor != null)
                 {
                     var result = iphone.Use(mainActor, new object[] { "Read", readActor, messageCount });
@@ -697,7 +697,7 @@ public class ManualActionController
                 Debug.Log($"[ManualActionController] iPhone Continue - 사용 가능한 Actor 목록: {string.Join(", ", continueAvailableActors)}");
                 Debug.Log($"[ManualActionController] iPhone Continue - 찾으려는 Actor: '{continueTargetActor}'");
                 
-                var continueActor = EntityFinder.FindActorInWorld(mainActor, continueTargetActor);
+                var continueActor = EntityFinder.FindActorInWorld(continueTargetActor);
                 if (continueActor != null)
                 {
                     var result = iphone.Use(mainActor, new object[] { "Continue", continueActor, continueCount });

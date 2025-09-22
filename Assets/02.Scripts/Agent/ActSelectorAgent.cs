@@ -60,9 +60,7 @@ namespace Agent
             {
                 ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.ItemManagement);
             }
-            // WorldInfo: GetWorldAreaInfo, GetCurrentTime, FindBuildingAreaPath, FindShortestAreaPathFromActor, GetWorldAreaStructureText
-            //ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
-            // Relationship memory 전용: location memories (관계는 캐릭터간 상호작용 문맥으로 여기서 location memories만 노출)
+
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemoriesFiltered);
             
@@ -71,7 +69,6 @@ namespace Agent
             {
                 options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
             }
-            //options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetWorldAreaInfo);
         }
 
@@ -448,12 +445,7 @@ namespace Agent
                         }
                     }
 
-                    // 손에 없으면 PutDown 제거
-                    // if (!hasHandItem)
-                    // {
 
-                    //     availableActions.Remove(ActionType.GiveItem);
-                    // }
                     // 손과 인벤 모두 비어 있으면 UseObject/GiveItem 제거
                     if (!hasHandItem && !hasInventoryItem)
                     {

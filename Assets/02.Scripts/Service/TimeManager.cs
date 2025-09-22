@@ -79,7 +79,7 @@ public interface ITimeService : IService
 }
 
 [System.Serializable]
-public struct GameTime
+public struct GameTime : IComparable<GameTime>, IComparable
 {
     public int year;
     public int month;
@@ -203,6 +203,19 @@ public struct GameTime
     public static bool operator >=(GameTime a, GameTime b)
     {
         return a > b || a == b;
+    }
+
+    public int CompareTo(GameTime other)
+    {
+        if (this < other) return -1;
+        if (this > other) return 1;
+        return 0;
+    }
+
+    int IComparable.CompareTo(object obj)
+    {
+        if (obj is GameTime other) return CompareTo(other);
+        throw new ArgumentException("Object is not a GameTime");
     }
 
     /// <summary>

@@ -138,14 +138,6 @@ namespace Agent
                 var consolidatedMemories = new List<ConsolidatedMemoryChunk>();
                 foreach (var chunk in filteredResult.ConsolidatedChunks)
                 {
-                    // var consolidatedMemory = new ConsolidatedMemory
-                    // {
-                    //     timestamp = chunk.TimeRange, // 기본값
-                    //     summary = chunk.Summary,
-                    //     keyPoints = chunk.MainEvents ?? new List<string>(),
-                    //     emotions = chunk.Emotions ?? new Dictionary<string, float>(),
-                    //     relatedMemories = new List<string>() // 청크 ID를 사용할 수 있음
-                    // };
                     consolidatedMemories.Add(chunk);
                 }
 

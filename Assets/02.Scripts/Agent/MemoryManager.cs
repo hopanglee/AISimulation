@@ -404,11 +404,6 @@ public class MemoryManager
     {
         string content = $"{actionType.ToKorean()}을(를) 시작했다.";
         string details = $"파라미터: {JsonConvert.SerializeObject(parameters)}";
-        // string details = JsonConvert.SerializeObject(new
-        // {
-        //     action_type = actionType.ToString(),
-        //     parameters = parameters
-        // });
 
         AddShortTermMemory("action_start", content, details);
     }
@@ -418,16 +413,6 @@ public class MemoryManager
         string content = $"{actionType}을(를) 시작했다.";
         string details = $"파라미터: {JsonConvert.SerializeObject(parameters)}";
 
-        // string details = null;
-
-        // if (parameters != null)
-        // {
-        //     details = JsonConvert.SerializeObject(new
-        //     {
-        //         action_type = actionType,
-        //         parameters = parameters
-        //     });
-        // }
         AddShortTermMemory("action_start", content, details);
     }
 
@@ -438,12 +423,6 @@ public class MemoryManager
     {
         string content = $"{actionType.ToKorean()}을(를) 완료했다.";
         string details = $"파라미터: {JsonConvert.SerializeObject(parameters)}, 성공 여부: {isSuccess}";
-        // string details = JsonConvert.SerializeObject(new
-        // {
-        //     action_type = actionType.ToString(),
-        //     result = result,
-        //     success = isSuccess
-        // });
 
         AddShortTermMemory("action_complete", content, details);
     }
@@ -453,12 +432,6 @@ public class MemoryManager
         Debug.Log($"[{owner.Name}] AddActionComplete: {actionType} - {result}");
         string content = $"{actionType}을(를) 완료했다.";
         string details = $"결과: {result}, 성공 여부: {isSuccess}";
-        // string details = JsonConvert.SerializeObject(new
-        // {
-        //     action_type = actionType,
-        //     result = result,
-        //     success = isSuccess
-        // });
 
         AddShortTermMemory("action_complete", content, details);
     }
@@ -470,11 +443,6 @@ public class MemoryManager
     {
         string content = $"{actionType.ToKorean()}을(를) 중단했다.";
         string details = $"외부 이벤트로 인한 중단";
-        // string details = JsonConvert.SerializeObject(new
-        // {
-        //     action_type = actionType.ToString(),
-        //     interruption_reason = "외부 이벤트"
-        // });
 
         AddShortTermMemory("action_interrupt", content, details);
     }
@@ -665,12 +633,6 @@ public class MemoryManager
                 if (success)
                 {
                     Debug.Log($"[MemoryManager] {owner.Name}: 성격 변화 적용 완료");
-
-                    // 성격 변화를 새로운 STM에 기록
-                    // AddShortTermMemory("personality_change",
-                    //     $"앞으로는 [{string.Join(", ", changeResult.traits_to_remove)}]보다는 " +
-                    //     $"[{string.Join(", ", changeResult.traits_to_add)}] 처럼 살아가야겠다고 다짐했다.",
-                    //     $"이유: {changeResult.reasoning}");
                 }
                 else
                 {

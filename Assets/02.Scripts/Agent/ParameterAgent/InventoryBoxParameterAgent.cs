@@ -122,18 +122,6 @@ namespace Agent
                     }
                 }
                 
-                // // Sensor를 통해 주변 수집 가능한 아이템들 추가
-                // if (actor?.sensor != null)
-                // {
-                //     var collectible = actor.sensor.GetCollectibleEntities();
-                //     foreach (var key in collectible.Keys)
-                //     {
-                //         if (!availableItems.Contains(key))
-                //         {
-                //             availableItems.Add(key);
-                //         }
-                //     }
-                // }
                 
                 return availableItems.Distinct().ToList();
             }

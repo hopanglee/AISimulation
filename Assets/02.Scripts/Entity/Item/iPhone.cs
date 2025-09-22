@@ -4,6 +4,7 @@ using System.Text;
 using UnityEngine;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Agent.ActionHandlers;
 [System.Serializable]
 public class iPhone : Item, IUsable
 {
@@ -73,42 +74,42 @@ public class iPhone : Item, IUsable
                 switch (cmd)
                 {
                     case "chat":
-                        if (dict.TryGetValue("target_actor", out var charTargetActorObj) && charTargetActorObj is Actor chatTarget &&
+                        if (dict.TryGetValue("target_actor", out var charTargetActorObj) && charTargetActorObj is string chatTargetName &&
                             dict.TryGetValue("message", out var messageObj) && messageObj is string text)
                         {
-                            bubble.Show($"아이폰 {chatTarget.Name}과 채팅 중: {text}", 0);
+                            bubble.Show($"아이폰 {chatTargetName}과 채팅 중: {text}", 0);
                             await SimDelay.DelaySimMinutes(2, token);
                             if (bubble != null) bubble.Hide();
-                            return (true, Chat(actor, chatTarget, text));
+                            return (true, Chat(actor, chatTargetName, text));
                         }
                         else
                             return (false, "유효하지 않은 입력값입니다.");
                     case "read":
-                        if (dict.TryGetValue("target_actor", out var readTargetActorObj) && readTargetActorObj is Actor readTarget)
+                        if (dict.TryGetValue("target_actor", out var readTargetActorObj) && readTargetActorObj is string readTargetName)
                         {
                             int count = 10;
                             if (dict.TryGetValue("message_count", out var messageCountObj) && messageCountObj is int messageCount)
                                 count = messageCount;
-                            
-                            bubble.Show($"아이폰 {readTarget.Name}과 채팅 읽는 중", 0);
+
+                            bubble.Show($"아이폰 {readTargetName}의 채팅 읽는 중", 0);
                             await SimDelay.DelaySimMinutes(2, token);
                             if (bubble != null) bubble.Hide();
-                            return (true, Read(actor, readTarget, count));
+                            return (true, Read(actor, readTargetName, count));
                         }
                         else
                             return (false, "유효하지 않은 입력값입니다.");
                     case "continue":
-                        if (dict.TryGetValue("target_actor", out var continueTargetActorObj) && continueTargetActorObj is Actor continueTarget)
+                        if (dict.TryGetValue("target_actor", out var continueTargetActorObj) && continueTargetActorObj is string continueTargetName)
                         {
                             int count = 10;
 
                             if (dict.TryGetValue("message_count", out var continueCountObj) && continueCountObj is int continueCount)
                                 count = continueCount;
-                            
-                            bubble.Show($"아이폰 {continueTarget.Name}과 채팅 계속 읽는 중", 0);
+
+                            bubble.Show($"아이폰 {continueTargetName}의 채팅 계속 읽는 중", 0);
                             await SimDelay.DelaySimMinutes(2, token);
                             if (bubble != null) bubble.Hide();
-                            return (true, Continue(actor, continueTarget, count));
+                            return (true, Continue(actor, continueTargetName, count));
                         }
                         else
                             return (false, "유효하지 않은 입력값입니다.");
@@ -126,9 +127,10 @@ public class iPhone : Item, IUsable
     /// The message is stored in both iPhones' conversation histories,
     /// and the target iPhone's notification flag and list are updated.
     /// </summary>
-    private string Chat(Actor actor, Actor target, string text)
+    private string Chat(Actor actor, string targetName, string text)
     {
         // Retrieve the target Actor's iPhone component
+        var target = EntityFinder.FindActorInWorld(targetName);
         if (target is MainActor thinkingTarget)
         {
             iPhone targetIPhone = thinkingTarget.iPhone;
@@ -141,7 +143,7 @@ public class iPhone : Item, IUsable
             ChatMessage msg = new ChatMessage(time, actor.Name, text);
 
             // Add the message to the conversation history on the sender's iPhone using the target's name as the key
-            string targetKey = target.Name;
+            string targetKey = targetName;
             if (!chatHistory.ContainsKey(targetKey))
             {
                 chatHistory[targetKey] = new List<ChatMessage>();
@@ -179,9 +181,9 @@ public class iPhone : Item, IUsable
     /// along with their timestamps and sender information.
     /// The starting index of the conversation is stored for paging purposes.
     /// </summary>
-    private string Read(Actor actor, Actor target, int count)
+    private string Read(Actor actor, string targetName, int count)
     {
-        string key = target.Name;
+        string key = targetName;
         if (!chatHistory.ContainsKey(key) || chatHistory[key].Count == 0)
         {
             return "읽을 내용이 없습니다.";
@@ -200,7 +202,7 @@ public class iPhone : Item, IUsable
         conversationReadIndices[key] = startIndex;
 
         // Process chat read: remove only the notifications related to the target conversation
-        notifications.RemoveAll(n => n.Contains($"from {target.Name}"));
+        notifications.RemoveAll(n => n.Contains($"from {targetName}"));
         if (notifications.Count == 0)
         {
             chatNotification = false;
@@ -217,9 +219,9 @@ public class iPhone : Item, IUsable
     /// <summary>
     /// Continue: Retrieves additional 'count' messages preceding the current messages from the conversation with the target Actor.
     /// </summary>
-    private string Continue(Actor actor, Actor target, int count)
+    private string Continue(Actor actor, string targetName, int count)
     {
-        string key = target.Name;
+        string key = targetName;
         if (!chatHistory.ContainsKey(key) || chatHistory[key].Count == 0)
         {
             return "There is no chat content to read.";

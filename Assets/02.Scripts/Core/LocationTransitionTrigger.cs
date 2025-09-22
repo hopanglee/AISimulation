@@ -14,13 +14,6 @@ public interface ILocationAware
 [RequireComponent(typeof(Collider))]
 public class LocationTransitionTrigger : MonoBehaviour
 {
-    // [Tooltip("forward 방향으로 도착하는 방")]
-    // [ValueDropdown(nameof(GetLocationComponents))]
-    // public MonoBehaviour forwardRoom;
-
-    // [Tooltip("backward 방향으로 도착하는 방")]
-    // [ValueDropdown(nameof(GetLocationComponents))]
-    // public MonoBehaviour backwardRoom;
 
     [Tooltip("Enter 방향으로 도착하는 방")]
     [ValueDropdown(nameof(GetLocationComponents))]

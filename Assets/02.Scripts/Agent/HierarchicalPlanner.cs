@@ -14,9 +14,6 @@ using PlanStructures;
 public class HierarchicalPlanner
 {
     private Actor actor;
-    // private HighLevelPlannerAgent highLevelPlannerAgent;
-    // private DetailedPlannerAgent detailedPlannerAgent;
-    // private SpecificPlannerAgent specificPlannerAgent;
     private Func<GameTime> getPlanStartTime; // 계획 시작 시간을 가져오는 델리게이트
 
     // Plan 관련 클래스들은 PlanStructures.cs로 이동됨
@@ -24,11 +21,6 @@ public class HierarchicalPlanner
     public HierarchicalPlanner(Actor actor)
     {
         this.actor = actor;
-        
-        // 3개의 분리된 Agent 초기화
-        // highLevelPlannerAgent = new HighLevelPlannerAgent(actor);
-        // detailedPlannerAgent = new DetailedPlannerAgent(actor);
-        // specificPlannerAgent = new SpecificPlannerAgent(actor);
     }
 
     /// <summary>
@@ -176,111 +168,6 @@ public class HierarchicalPlanner
             throw new System.InvalidOperationException($"HierarchicalPlanner 계획 파일 확인 실패: {ex.Message}");
         }
     }
-
-    /// <summary>
-    /// 생성용 HighLevel/Detailed 결과를 런타임 중첩 구조로 합칩니다.
-    /// </summary>
-    // private HierarchicalPlan BuildRuntimePlan(
-    //     HierarchicalPlan highLevelPlan,
-    //     HierarchicalPlan detailedPlan)
-    // {
-    //     var runtime = new HierarchicalPlan();
-
-    //     // HighLevelTasks 매핑
-    //     foreach (var hlt in detailedPlan.HighLevelTasks)
-    //     {
-    //         var rHlt = new HighLevelTask
-    //         {
-    //             TaskName = hlt.TaskName,
-    //             Description = hlt.Description,
-    //             StartTime = hlt.StartTime,
-    //             EndTime = hlt.EndTime
-    //             // DurationMinutes는 계산된 속성이므로 설정하지 않음
-    //         };
-
-    //         // DetailedActivities를 해당 HLT 시간범위로 필터링하여 매핑
-    //         foreach (var da in highLevelPlan.HighLevelTasks)
-    //         {
-    //             if (IsTimeInRange(da.StartTime, hlt.StartTime, hlt.EndTime))
-    //             {
-    //                 var rDa = new RuntimeDetailedActivity
-    //                 {
-    //                     ActivityName = da.ActivityName,
-    //                     Description = da.Description,
-    //                     StartTime = da.StartTime,
-    //                     EndTime = da.EndTime,
-    //                     // DurationMinutes는 계산된 속성이므로 설정하지 않음
-    //                     Location = da.Location,
-    //                     Status = da.Status,
-    //                     SpecificActions = new List<SpecificAction>()
-    //                 };
-
-    //                 // actionPlan이 제공된다면 해당 DetailedActivity 시간대의 SpecificActions 주입
-    //                 if (actionPlan != null)
-    //                 {
-    //                     foreach (var sa in actionPlan.SpecificActions)
-    //                     {
-    //                         if (IsTimeInRange(sa.StartTime, da.StartTime, da.EndTime))
-    //                         {
-    //                             rDa.SpecificActions.Add(sa);
-    //                         }
-    //                     }
-    //                 }
-
-    //                 rHlt.DetailedActivities.Add(rDa);
-    //             }
-    //         }
-
-    //         runtime.HighLevelTasks.Add(rHlt);
-    //     }
-
-    //     return runtime;
-    // }
-
-    // /// <summary>
-    // /// 런타임 DetailedActivity를 에이전트 DetailedActivity로 변환합니다.
-    // /// (재계획 입력에 사용)
-    // /// </summary>
-    // private DetailedPlannerAgent.DetailedActivity MapRuntimeToAgentDetailedActivity(DetailedActivity runtime)
-    // {
-    //     if (runtime == null) return null;
-    //     return new DetailedPlannerAgent.DetailedActivity
-    //     {
-    //         ActivityName = runtime.ActivityName,
-    //         Description = runtime.Description,
-    //         StartTime = runtime.StartTime,
-    //         EndTime = runtime.EndTime,
-    //         DurationMinutes = runtime.DurationMinutes,
-    //         Location = runtime.Location,
-    //         Status = runtime.Status
-    //     };
-    // }
-
-    // /// <summary>
-    // /// 런타임 계획을 에이전트용 HighLevelPlan으로 변환 (요약/기분/목표는 비움)
-    // /// </summary>
-    // private HighLevelPlannerAgent.HighLevelPlan BuildAgentHighLevelPlan(HierarchicalPlan runtimePlan)
-    // {
-    //     var agentPlan = new HighLevelPlannerAgent.HighLevelPlan
-    //     {
-    //         Summary = string.Empty,
-    //         Mood = string.Empty,
-    //         PriorityGoals = new List<string>()
-    //     };
-    //     agentPlan.HighLevelTasks = new List<HighLevelPlannerAgent.HighLevelTask>();
-    //     if (runtimePlan == null || runtimePlan.HighLevelTasks == null) return agentPlan;
-    //     foreach (var r in runtimePlan.HighLevelTasks)
-    //     {
-    //         agentPlan.HighLevelTasks.Add(new HighLevelPlannerAgent.HighLevelTask
-    //         {
-    //             TaskName = r.TaskName,
-    //             Description = r.Description,
-    //             StartTime = r.StartTime,
-    //             EndTime = r.EndTime
-    //         });
-    //     }
-    //     return agentPlan;
-    // }
 
     /// <summary>
     /// 문자열 시간("HH:MM")을 GameTime으로 파싱

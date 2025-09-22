@@ -228,7 +228,7 @@ public class GPT
             if (!Directory.Exists(sessionPath)) Directory.CreateDirectory(sessionPath);
             if (!Directory.Exists(characterDirectoryPath)) Directory.CreateDirectory(characterDirectoryPath);
 
-            string fileName = $"OutgoingRequestLog_{sessionDirectoryName ?? "Session"}_{actorName}_{agentType}.txt";
+            string fileName = $"OutgoingRequestLog_{sessionDirectoryName ?? "Session"}_{actorName}_{System.DateTime.Now:HH-mm-ss}_{agentType}.txt";
             string filePath = Path.Combine(characterDirectoryPath, fileName);
 
             // 간소화된 요청 페이로드 구성
@@ -282,7 +282,7 @@ public class GPT
             if (!Directory.Exists(sessionPath)) Directory.CreateDirectory(sessionPath);
             if (!Directory.Exists(characterDirectoryPath)) Directory.CreateDirectory(characterDirectoryPath);
 
-            string fileName = $"OutgoingRequestLog_{sessionDirectoryName ?? "Session"}_{actorName}_{agentType}.txt";
+            string fileName = $"OutgoingRequestLog_{sessionDirectoryName ?? "Session"}_{actorName}_{System.DateTime.Now:HH-mm-ss}_{agentType}.txt";
             string filePath = Path.Combine(characterDirectoryPath, fileName);
 
             using (var stream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))

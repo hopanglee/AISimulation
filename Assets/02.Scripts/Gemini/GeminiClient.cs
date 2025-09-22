@@ -1,0 +1,176 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
+using UnityEngine;
+
+public class GeminiClient : LLMClient
+{
+    private readonly HttpWebFetcher client;
+
+    public GeminiClient(LLMClientProps options)
+        : base(options)
+    {
+        client = new HttpWebFetcher("https://generativelanguage.googleapis.com");
+    }
+
+    public override async UniTask<T> Send<T>(//
+        List<AgentChatMessage> messages,
+        LLMClientSchema schema,
+        ChatDeserializer<T> deserializer = null
+    )
+    {
+        deserializer ??= JsonConvert.DeserializeObject<T>;
+        Debug.Log(schema.format.ToString());
+        Debug.Log(JsonConvert.SerializeObject(messages));
+        GeminiResponse response = await SendMessage(messages, schema);
+
+        GeminiContentPart part = response.candidates[0].content.parts.Find(p => p.text != null);
+        string responseText = part.text;
+        Debug.Log($"GPT Response: {responseText}");
+
+        if (typeof(T) == typeof(string))
+        {
+            return (T)(object)responseText;
+        }
+
+        try
+        {
+            return deserializer(responseText);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"JSON Deserialization Error: {ex.Message}");
+            throw new InvalidOperationException($"Failed to parse GPT response into {typeof(T)}");
+        }
+    }
+
+    public async UniTask<GeminiResponse> SendMessage(
+        List<AgentChatMessage> messages,
+        LLMClientSchema schema
+    )
+    {
+        var requestData = new
+        {
+            contents = messages.AsGeminiMessage(),
+            generationConfig = new { response_schema = schema.format },
+        };
+
+        var response = await client.Post<string>(
+            $"/v1beta/models/{options.model}:generateContent?key={options.apiKey}",
+            requestData
+        );
+
+        return JsonConvert.DeserializeObject<GeminiResponse>(response);
+    }
+
+    public override async UniTask<LLMClientToolResponse<T>> UseTools<T>(
+        List<AgentChatMessage> messages,
+        List<LLMClientSchema> toolSchemas,
+        ChatDeserializer<T> deserializer = null
+    )
+    {
+        deserializer ??= JsonConvert.DeserializeObject<T>;
+
+        var requestData = new
+        {
+            tools = new object[]
+            {
+                new
+                {
+                    function_declarations = toolSchemas
+                        .Select(s => new
+                        {
+                            name = s.name,
+                            description = s.description,
+                            parameters = s.format,
+                        })
+                        .ToList(),
+                },
+            },
+            tool_config = new { function_calling_config = new { mode = "ANY" } },
+            contents = messages.AsGeminiMessage(),
+        };
+
+        var response = await client.Post<GeminiResponse>(
+            $"/v1beta/models/{options.model}:generateContent?key={options.apiKey}",
+            requestData
+        );
+
+        GeminiContentPart part = response
+            .candidates[0]
+            .content.parts.Find(p => p.functionCall != null);
+        Debug.Log($"GPT Response: {part.functionCall.ToString()}");
+
+        if (typeof(T) == typeof(string))
+        {
+            return new()
+            {
+                name = part.functionCall.name,
+                args = (T)(object)part.functionCall.args,
+            };
+        }
+
+        try
+        {
+            return new()
+            {
+                name = part.functionCall.name,
+                args = deserializer(part.functionCall.args.ToString()),
+            };
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"JSON Deserialization Error: {ex.Message}");
+            throw new InvalidOperationException($"Failed to parse GPT response into {typeof(T)}");
+        }
+    }
+}
+
+[Serializable]
+public class GeminiContent
+{
+    public string role;
+    public List<GeminiContentPart> parts;
+}
+
+[Serializable]
+public class GeminiContentPart
+{
+    public string text;
+    public GeminiContentFunctionCall functionCall;
+}
+
+public class GeminiContentFunctionCall
+{
+    public string name;
+    public object args;
+}
+
+[Serializable]
+public class GeminiRequest
+{
+    public List<GeminiContent> contents;
+    public GeminiGenerationConfig generationConfig;
+}
+
+[Serializable]
+public class GeminiGenerationConfig
+{
+    public string response_mime_type = "application/json";
+    public object response_schema;
+}
+
+[Serializable]
+public class GeminiResponse
+{
+    public string modelVersion;
+    public List<GeminiResponseCandidate> candidates;
+}
+
+[Serializable]
+public class GeminiResponseCandidate
+{
+    public GeminiContent content;
+}

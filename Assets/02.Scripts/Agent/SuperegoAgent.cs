@@ -93,7 +93,7 @@ public class SuperegoAgent : GPT
                                     ""items"": {
                                         ""type"": ""string""
                                     },
-                                    ""description"": ""상황을 인식하는 사고체인, 최소 4단계를 거치세요.""
+                                    ""description"": ""단계별로 생각하세요.""
                                 },
                                 ""situation_interpretation"": {
                                     ""type"": ""string"",
@@ -118,6 +118,7 @@ public class SuperegoAgent : GPT
                 jsonSchemaIsStrict: true
             )
         };
+        //options.Temperature = 0.7f;
 
         // 월드 정보와 계획 조회, 메모리/관계 도구 추가
         ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);

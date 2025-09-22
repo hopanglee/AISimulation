@@ -92,9 +92,6 @@ namespace Agent
             {
                 if (actor?.sensor != null)
                 {
-                    // var collectible = actor.sensor.GetCollectibleEntities();
-                    // var keys = collectible.Keys.ToList();
-                    // return keys.Distinct().ToList();
 
                     var lookable = actor.sensor.GetLookableEntities();
                     var collectible = new List<string>();

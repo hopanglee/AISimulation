@@ -38,4 +38,3 @@
 
 {character_name}의 성격 특징({personality})이 매우 들어나게 작성해주세요.
 상황인식을 {character_name}이 혼잣말을 하는 말투로 말하시오.
-생각과정을 전부 thought_chain에 작성해주세요.

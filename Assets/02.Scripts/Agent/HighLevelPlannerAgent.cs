@@ -19,43 +19,6 @@ public class HighLevelPlannerAgent : GPT
     private MainActor actor;
     private IToolExecutor toolExecutor;
 
-    /// <summary>
-    /// 고수준 계획 구조
-    /// </summary>
-    // public class HighLevelPlan
-    // {
-    //     [JsonProperty("summary")]
-    //     public string Summary { get; set; } = "";
-
-    //     [JsonProperty("mood")]
-    //     public string Mood { get; set; } = "";
-
-    //     [JsonProperty("priority_goals")]
-    //     public List<string> PriorityGoals { get; set; } = new List<string>();
-
-    //     [JsonProperty("high_level_tasks")]
-    //     public List<HighLevelTask> HighLevelTasks { get; set; } = new List<HighLevelTask>();
-    // }
-
-    // /// <summary>
-    // /// 고수준 작업 (예: "아침 준비", "일하기", "저녁 식사")
-    // /// </summary>
-    // public class HighLevelTask
-    // {
-    //     [JsonProperty("task_name")]
-    //     public string TaskName { get; set; } = "";
-
-    //     [JsonProperty("description")]
-    //     public string Description { get; set; } = "";
-
-    //     [JsonProperty("start_time")]
-    //     public string StartTime { get; set; } = ""; // "HH:MM" 형식
-
-    //     [JsonProperty("end_time")]
-    //     public string EndTime { get; set; } = ""; // "HH:MM" 형식
-    // }
-
-
 
     public HighLevelPlannerAgent(Actor actor)
         : base()
@@ -101,13 +64,9 @@ public class HighLevelPlannerAgent : GPT
             ),
         };
 
-        // 월드 정보 도구 추가
-        //ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
         options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
         options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemoriesFiltered);
         options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetWorldAreaInfo);
-        // 메모리 도구 추가
-        //ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Memory);
     }
 
     // Tool 정의들

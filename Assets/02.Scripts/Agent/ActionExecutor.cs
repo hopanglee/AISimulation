@@ -11,7 +11,6 @@ using UnityEngine;
 public class ActionExecutor
 {
     private Dictionary<ActionType, Func<Dictionary<string, object>, UniTask<bool>>> actionHandlers = new();
-    //private float actionDelay = 5f; // 기본 5초 딜레이
 
     /// <summary>
     /// 액션 핸들러를 등록합니다.
@@ -45,12 +44,10 @@ public class ActionExecutor
                 {
                     return Fail($"Action {action.ActionType} executed failed");
                 }
-                //await SimDelay.DelaySimMinutes(1);
                 return Success($"Action {action.ActionType} executed successfully");
             }
             catch (Exception ex)
             {
-                //await SimDelay.DelaySimMinutes(1);
                 return Fail($"Error: {ex.Message}");
             }
         }

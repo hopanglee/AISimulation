@@ -106,32 +106,6 @@ public class MoveController : MonoBehaviour
                           || followerEntity.reachedEndOfPath
                           || followerEntity.reachedDestination;
 
-                // 보강: 목표와의 거리 기반 도착 판정 (네비 리포트 누락 방지)
-                // if (!reached)
-                // {
-                //     try
-                //     {
-                //         var currentPos = followerEntity.transform.position;
-                //         float dist = float.MaxValue;
-                //         if (lastTargetPosition.HasValue)
-                //         {
-                //             dist = MathExtension.SquaredDistance2D(currentPos, lastTargetPosition.Value);
-                //         }
-                //         else if (lastTargetTransform != null)
-                //         {
-                //             dist = MathExtension.SquaredDistance2D(currentPos, lastTargetTransform.position);
-                //         }
-                //         if (dist <= 0.15f)
-                //         {
-                //             reached = true;
-                //         }
-                //         if (dist < float.MaxValue)
-                //         {
-                //             Debug.Log($"[{entity.Name}] CheckArrival dist={dist:F3}, flags={(followerEntity.reachedDestination||followerEntity.reachedEndOfPath||followerEntity.reachedCrowdedEndOfPath)}");
-                //         }
-                //     }
-                //     catch { }
-                // }
             }
             else
             {

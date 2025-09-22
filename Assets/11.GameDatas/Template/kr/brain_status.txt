@@ -5,8 +5,14 @@
 
 인벤토리: {inventory}
 수면 상태: {sleepStatus}
-현재 상태: 배부름({hunger}/100), 목마름({thirst}/100), 체력({stamina}/100), 청결도({cleanliness}/100), 스트레스({stress}/100), 졸림({sleepiness}/100)
-(배부름·체력·청결도는 값이 높을수록 좋음(충족), 목마름·스트레스·졸림은 값이 낮을수록 좋음)
+현재 상태:
+{hunger}
+{thirst} 
+{stamina}
+{cleanliness}
+{stress}
+{sleepiness}
+{mental_pleasure}
 
 === 볼 수 있는 개체들 ===
 {lookableEntities}

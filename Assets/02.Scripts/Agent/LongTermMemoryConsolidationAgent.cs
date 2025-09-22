@@ -184,7 +184,19 @@ public class LongTermMemoryConsolidationAgent : GPT
                 };
             }
 
-            // 시간순으로 정렬
+            // 방어: null 엔트리 제거 및 유효 timestamp 보정
+            shortTermEntries = shortTermEntries?.Where(e => e != null).ToList() ?? new List<ShortTermMemoryEntry>();
+            // 일부 엔트리에 기본값/무효 값이 있을 수 있으므로 보정
+            var defaultTime = new GameTime(2024, 11, 14, 0, 0);
+            foreach (var entry in shortTermEntries)
+            {
+                if (entry.timestamp.year <= 0 || entry.timestamp.month <= 0 || entry.timestamp.day <= 0)
+                {
+                    entry.timestamp = defaultTime;
+                }
+            }
+
+            // 시간순으로 정렬 (GameTime IComparable 구현 사용)
             var sortedEntries = shortTermEntries.OrderBy(e => e.timestamp).ToList();
 
             // 메모리 엔트리들을 템플릿을 사용하여 문자열로 변환

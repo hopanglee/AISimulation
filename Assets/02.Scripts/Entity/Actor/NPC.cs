@@ -480,19 +480,6 @@ public abstract partial class NPC : Actor
         }
     }
     
-    /// <summary>
-    /// 현재 상황 정보를 로그로 출력 (디버깅용)
-    /// </summary>
-    
-    
-    /// <summary>
-    /// 요일을 한글로 반환합니다.
-    /// </summary>
-    
-    
-    /// <summary>
-    /// Actor의 간단한 상태를 반환합니다.
-    /// </summary>
     
     
     /// <summary>

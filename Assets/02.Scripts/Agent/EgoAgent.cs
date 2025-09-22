@@ -85,7 +85,7 @@ public class EgoAgent : GPT
                                     ""items"": {
                                         ""type"": ""string""
                                     },
-                                    ""description"": ""타협된 사고체인, 최소 4단계를 거치세요.""
+                                    ""description"": ""단계별로 생각하세요.""
                                 },  
                                 ""situation_interpretation"": {
                                     ""type"": ""string"",
@@ -110,6 +110,7 @@ public class EgoAgent : GPT
                 jsonSchemaIsStrict: true
             )
         };
+        //options.Temperature = 0.7f;
 
         // 월드 정보 도구 추가
         ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);

@@ -20,28 +20,6 @@ public class SpecificPlannerAgent : GPT
     private MainActor actor;
     private IToolExecutor toolExecutor;
 
-    /// <summary>
-    /// 구체적 행동 계획 구조
-    /// </summary>
-    // public class ActionPlan
-    // {
-    //     [JsonProperty("summary")]
-    //     public string Summary { get; set; } = "";
-
-    //     [JsonProperty("mood")]
-    //     public string Mood { get; set; } = "";
-
-    //     [JsonProperty("specific_actions")]
-    //     public List<SpecificAction> SpecificActions { get; set; } = new List<SpecificAction>();
-    // }
-
-    /// <summary>
-    /// 구체적 행동 (분 단위 세부 행동)
-    /// </summary>
-    // SpecificAction 클래스는 PlanStructures.cs로 이동됨
-
-
-
     public SpecificPlannerAgent(Actor actor)
         : base()
     {

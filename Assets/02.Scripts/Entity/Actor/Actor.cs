@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -183,6 +185,37 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         }
     }
 
+    protected virtual void Start()
+    {
+        // ActorManager(IActorService)에 등록
+        try
+        {
+            var actorService = Services.Get<IActorService>();
+            if (actorService != null)
+            {
+                actorService.RegisterActor(this);
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogWarning($"[Actor] RegisterActor 실패: {ex.Message}");
+        }
+    }
+
+    protected virtual void OnDestroy()
+    {
+        // ActorManager에서 해제
+        try
+        {
+            var actorService = Services.Get<IActorService>();
+            if (actorService != null)
+            {
+                actorService.UnregisterActor(this);
+            }
+        }
+        catch { }
+    }
+
     // OnEnable과 OnDisable은 ThinkingActor로 이동
 
     // Update Function들은 ThinkingActor로 이동
@@ -220,12 +253,18 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
     private void AttachToHand(Item item)
     {
+        if (HandItem.curLocation is InventoryBox inventoryBox)
+        {
+            inventoryBox.RemoveItem(HandItem);
+        }
+
         HandItem = item;
         HandItem.curLocation = Hand;
         if (Hand != null)
         {
             item.transform.SetParent(Hand.transform, false);
         }
+
         item.transform.localPosition = new Vector3(0f, 0f, 0f);
         item.transform.localRotation = Quaternion.identity;
         // localScale은 변경하지 않음 (요청사항)
@@ -775,37 +814,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             moveController.SetTarget(targetPos);
             moveController.OnReached += () =>
             {
-                // // 도착한 위치로 curLocation 설정
-                // var locationService = Services.Get<ILocationService>();
-                // var curArea = locationService.GetArea(curLocation);
 
-                // if (curArea != null)
-                // {
-                //     // Building에 도착한 경우
-                //     var buildings = locationService.GetBuilding(curArea);
-                //     foreach (var building in buildings)
-                //     {
-                //         if (building.GetSimpleKey() == locationKey)
-                //         {
-                //             curLocation = building;
-                //             Debug.Log($"[{Name}] {building.Name}에 도착했습니다. curLocation: {building.Name}");
-                //             return;
-                //         }
-                //     }
-                //     
-                //     // Area에 도착한 경우
-                //     foreach (var area in curArea.connectedAreas)
-                //     {
-                //         if (area.locationName == locationKey)
-                //         {
-                //             curLocation = area;
-                //             Debug.Log($"[{Name}] {area.locationName}에 도착했습니다. curLocation: {area.locationName}");
-                //             return;
-                //         }
-                //     }
-                // }
-
-                // Debug.Log($"[{Name}] {locationKey}에 도착했습니다.");
             };
             Debug.Log($"[{Name}] Moving to {locationKey} at position {targetPos}");
         }
@@ -1137,7 +1146,8 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             var lookableEntities = new List<string>();
             foreach (var entity in lookable)
             {
-                lookableEntities.Add($"- {entity.Key} => {entity.Value.Get()}");
+                var text = String.IsNullOrEmpty(entity.Value.Get()) ? "" : "=> " + entity.Value.Get();
+                lookableEntities.Add($"- {entity.Key} {text}");
             }
 
             var collectibleEntities = new List<string>();
@@ -1174,7 +1184,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             var sitText = "";
             if (curLocation is SitableProp sitableProp && sitableProp.IsActorSeated(this))
             {
-                if(sitableProp is Bed)
+                if (sitableProp is Bed)
                 {
                     sitText = "누워 있음";
                 }
@@ -1188,6 +1198,67 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 sitText = "서있음";
             }
 
+            var hungerText = "배고픔: ";
+            if (Hunger <= 10) hungerText += "위험! 기력이 끊기기 직전 (심각한 허기)";
+            else if (Hunger <= 30) hungerText += "심한 허기와 어지러움";
+            else if (Hunger <= 50) hungerText += "허기";
+            else if (Hunger <= 70) hungerText += "무난한 포만감";
+            else if (Hunger <= 90) hungerText += "충분한 포만과 만족";
+            else if (Hunger < 100) hungerText += "과식으로 속이 불편함";
+            else hungerText += "위험! 과도한 포만으로 구토감";
+
+
+            var thirstText = "갈증: ";
+            if (Thirst <= 10) thirstText += "위험! 탈수로 쓰러지기 직전";
+            else if (Thirst <= 30) thirstText += "심한 갈증과 입 마름";
+            else if (Thirst <= 50) thirstText += "갈증";
+            else if (Thirst <= 70) thirstText += "적당한 수분 상태";
+            else if (Thirst <= 90) thirstText += "수분 충분, 상쾌함";
+            else if (Thirst < 100) thirstText += "수분 과다로 속이 더부룩함";
+            else thirstText += "위험! 과도한 수분으로 불편";
+
+
+            var cleanlinessText = "청결도: ";
+            if (Cleanliness <= 10) cleanlinessText += "위험! 감염 위험이 큰 수준";
+            else if (Cleanliness <= 30) cleanlinessText += "매우 불결함";
+            else if (Cleanliness <= 50) cleanlinessText += "불결함";
+            else if (Cleanliness <= 70) cleanlinessText += "보통의 청결";
+            else if (Cleanliness <= 90) cleanlinessText += "청결하고 상쾌함";
+            else cleanlinessText += "매우 청결하고 쾌적함";
+
+            var staminaText = "체력: ";
+            if (Stamina <= 10) staminaText += "위험! 기력 소진으로 쓰러지기 직전";
+            else if (Stamina <= 30) staminaText += "기력이 매우 부족함";
+            else if (Stamina <= 50) staminaText += "기력이 부족함";
+            else if (Stamina <= 70) staminaText += "보통의 체력";
+            else if (Stamina <= 90) staminaText += "체력이 충분하고 가벼움";
+            else staminaText += "매우 좋은 컨디션";
+
+
+            var stressText = "스트레스: ";
+            if (Stress >= 90) stressText += "위험! 압도적인 스트레스";
+            else if (Stress >= 70) stressText += "스트레스가 매우 높음";
+            else if (Stress >= 50) stressText += "스트레스가 높음";
+            else if (Stress >= 30) stressText += "약간의 긴장";
+            else if (Stress >= 10) stressText += "차분함";
+            else stressText += "매우 평온하고 안정적임";
+
+            var mentalPleasureText = "정신적 쾌락: ";
+            if (MentalPleasure <= 0) mentalPleasureText = "";
+            else if (MentalPleasure >= 90) mentalPleasureText += "믿을 수 없는 쾌락과 충만함";
+            else if (MentalPleasure >= 70) mentalPleasureText += "편안하고 행복함";
+            else if (MentalPleasure >= 50) mentalPleasureText += "흥분스러움";
+            else if (MentalPleasure >= 30) mentalPleasureText += "작은 쾌락";
+            else mentalPleasureText += "아주 작은 만족";
+
+            var sleepinessText = "피곤도: ";
+            if (thinkingActor.Sleepiness >= 90) sleepinessText += "위험! 졸려서 쓰러지기 직전";
+            else if (thinkingActor.Sleepiness >= 70) sleepinessText += "매우 졸림";
+            else if (thinkingActor.Sleepiness >= 50) sleepinessText += "졸림";
+            else if (thinkingActor.Sleepiness >= 30) sleepinessText += "약간 졸림";
+            else if (thinkingActor.Sleepiness >= 10) sleepinessText += "또렷함";
+            else sleepinessText += "매우 또렷하고 상쾌함";
+
             // 통합 치환 정보
             var replacements = new Dictionary<string, string>
             {
@@ -1196,12 +1267,13 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 { "handItem", handItem },
                 { "inventory", string.Join(", ", inventoryItems) },
                 { "sleepStatus", sleepStatus },
-                { "hunger", Hunger.ToString() },
-                { "thirst", (100 - Thirst).ToString() },
-                { "cleanliness", Cleanliness.ToString() },
-                { "stamina", Stamina.ToString() },
-                { "stress", Stress.ToString() },
-                { "sleepiness", thinkingActor.Sleepiness.ToString() },
+                { "hunger", hungerText },
+                { "thirst", thirstText },
+                { "cleanliness", cleanlinessText },
+                { "stamina", staminaText },
+                { "stress", stressText },
+                { "sleepiness", sleepinessText },
+                { "mental_pleasure", mentalPleasureText },
                 { "lookableEntities", string.Join("\n", lookableEntities) },
                 { "collectibleEntities", string.Join(", ", collectibleEntities) },
                 { "interactableEntities", string.Join(", ", allInteractable) },
@@ -1395,15 +1467,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                         else
                         {
                             timestamp = $"어제";
-                            // var daysSince = -memory.timestamp.GetDaysSince(Services.Get<ITimeService>().CurrentTime);
-                            // if(daysSince <= 1)
-                            // {
-                            //     timestamp = $"{daysSince}일 전 {memory.timestamp.hour:D2}:{memory.timestamp.minute:D2}";
-                            // }
-                            // else
-                            // {
-                            //     timestamp = $"날짜&시간 모름";
-                            // }
+
                         }
                     }
                     else
@@ -1455,7 +1519,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                         timestamp = "날짜&시간 모름";
                     }
                     var emotions = memory.emotions != null && memory.emotions.Count > 0
-                        ? $", 당시 감정: {string.Join(", ", memory.emotions.OrderByDescending(e => e.Value).Take(2).Select(e => $"{e.Key}:{e.Value*100:F1}%"))}"
+                        ? $", 당시 감정: {string.Join(", ", memory.emotions.OrderByDescending(e => e.Value).Take(2).Select(e => $"{e.Key}:{e.Value * 100:F0}%"))}"
                         : "";
                     var relatedActors = memory.relatedActors != null && memory.relatedActors.Count > 0
                         ? $" [관련인물: {string.Join(", ", memory.relatedActors)}]"
@@ -1496,9 +1560,6 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         var characterMemoryManager = new CharacterMemoryManager(this);
         var characterInfo = characterMemoryManager.GetCharacterInfo();
 
-        //var temperament = characterInfo.Temperament;
-        //var personality = characterInfo.Personality;
-
         var personalityText = "";
         var allTraits = characterInfo.GetAllTraits();
 
@@ -1506,15 +1567,6 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         {
             personalityText += $"{string.Join(", ", allTraits)}";
         }
-        //if (temperament != null && temperament.Count > 0)
-        //{
-        //personalityText += $"기질은 {string.Join(", ", temperament)}입니다. ";
-        //}
-
-        //if (personality != null && personality.Count > 0)
-        //{
-        //personalityText += $"성격은 {string.Join(", ", personality)}입니다.";
-        //}
 
         return personalityText;
     }
@@ -1774,6 +1826,48 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         }
 
         return relationshipText.Trim();
+    }
+
+    /// <summary>
+    /// 캐릭터 폴더의 info/serihu.json을 읽어 대사 말투 예시를 문자열 배열로 반환합니다.
+    /// expectedPath: Assets/11.GameDatas/Character/{characterFolder}/info/serihu.json
+    /// characterFolder 예: "히노", "카미야" 등 폴더명 그대로 전달
+    /// </summary>
+    public string[] LoadSerihuSamples()
+    {
+        var characterFolder = Name;
+        if (string.IsNullOrEmpty(characterFolder)) return System.Array.Empty<string>();
+
+        try
+        {
+            // 프로젝트 루트 기준 절대 경로 생성
+            string projectRoot = Application.dataPath.Substring(0, Application.dataPath.Length - "Assets".Length);
+            string path = Path.Combine(projectRoot,
+                "Assets",
+                "11.GameDatas",
+                "Character",
+                characterFolder,
+                "info",
+                "serihu.json");
+
+            if (!File.Exists(path))
+            {
+                Debug.LogWarning($"[CharacterInfo] serihu.json not found: {path}");
+                return System.Array.Empty<string>();
+            }
+
+            string json = File.ReadAllText(path, System.Text.Encoding.UTF8);
+            if (string.IsNullOrWhiteSpace(json)) return System.Array.Empty<string>();
+
+            var arr = JsonConvert.DeserializeObject<string[]>(json);
+            if (arr == null) return System.Array.Empty<string>();
+            return arr;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[CharacterInfo] LoadSerihuSamples error: {ex.Message}");
+            return System.Array.Empty<string>();
+        }
     }
 
 }

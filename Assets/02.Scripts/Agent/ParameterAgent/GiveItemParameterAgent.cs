@@ -93,9 +93,7 @@ namespace Agent
             {
                 if (actor?.sensor != null)
                 {
-                    // var inter = actor.sensor.GetInteractableEntities();
-                    // var names = inter.actors.Keys.ToList();
-                    // return names.Distinct().ToList();
+
                     var lookable = actor.sensor.GetLookableEntities();
                     var actorKeys = new List<string>();
                     foreach (var kv in lookable)

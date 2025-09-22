@@ -95,14 +95,6 @@ namespace Agent
             {
                 if (actor?.sensor != null)
                 {
-                    // Actor의 sensor를 통해 현재 주변 객체들을 가져와서 목록 업데이트
-                    // var interactableEntities = actor.sensor.GetInteractableEntities();
-                    // var keys = interactableEntities.props.Keys.ToList();
-                    // keys.AddRange(interactableEntities.items.Keys);
-                    // keys.AddRange(interactableEntities.buildings.Keys);
-                    // keys.AddRange(interactableEntities.actors.Keys);
-                    // return keys.Distinct().ToList();
-
                     var lookable = actor.sensor.GetLookableEntities();
                     var interactable = new List<string>();
                     foreach (var kv in lookable)
