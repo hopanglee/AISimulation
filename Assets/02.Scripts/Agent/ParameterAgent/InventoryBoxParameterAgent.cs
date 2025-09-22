@@ -29,12 +29,15 @@ namespace Agent
         {
             this.inventoryBox = inventoryBox;
             var availableItems = GetCurrentAvailableItems();
+            availableItems.Add("");
             var boxItems = GetCurrentBoxItems();
+            boxItems.Add("");
+            SetAgentType(nameof(InventoryBoxParameterAgent));
             systemPrompt = PromptLoader.LoadPrompt("InventoryBoxParameterAgentPrompt.txt", "You are an InventoryBox parameter generator.");
             
             // 초기 enum 설정 - 각각 분리
-            var availableItemNames = availableItems.Count > 0 ? availableItems : new List<string> {};
-            var boxItemNames = boxItems.Count > 0 ? boxItems : new List<string> {};
+            var availableItemNames = availableItems.Count > 0 ? availableItems : new List<string> {""};
+            var boxItemNames = boxItems.Count > 0 ? boxItems : new List<string> {""};
             
             this.options = new ChatCompletionOptions
             {
@@ -151,6 +154,10 @@ namespace Agent
             var localizationService = Services.Get<ILocalizationService>();
             var currentAvailableItems = GetCurrentAvailableItems();
             var currentBoxItems = GetCurrentBoxItems();
+            
+            // 디버그 로그 추가
+            Debug.Log($"[InventoryBoxParameterAgent] 현재 사용 가능한 아이템: {string.Join(", ", currentAvailableItems)}");
+            Debug.Log($"[InventoryBoxParameterAgent] 현재 박스 아이템: {string.Join(", ", currentBoxItems)}");
             
             var replacements = new Dictionary<string, string>
             {

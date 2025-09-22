@@ -1,0 +1,15 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: UnknownAgent
+Real Time: 2025-09-22 10:57:59
+{"add_item_name":"물컵","remove_item_name":"물컵"}
+
+=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: UnknownAgent
+Real Time: 2025-09-22 11:01:17
+행동 근거: 다음으로 자연스러운 행동은 아이폰을 바로 조작해 ‘카미야’ 관련 알림·통화기록·메시지를 스크린샷으로 저장하는 것입니다. 이를 위해 아이폰을 손에 들어야 하므로 인벤토리(협탁)에서 아이폰을 꺼냅니다.
+의도: 아이폰을 집어 들어 스크린샷을 찍고 확인한 뒤, 이후 일기(히노의 일기)를 집어 들어 스크린샷을 사진으로 붙여 증거를 보존하기 위함입니다.
+
+{"add_item_name":"","remove_item_name":"아이폰"}
+

@@ -77,7 +77,7 @@ namespace Agent.ActionHandlers
                 // 메모리에 Think 시작 기록
                 if (actor is MainActor mainActor && mainActor.brain?.memoryManager != null)
                 {
-                    mainActor.brain.memoryManager.AddActionStart(ActionType.Think, parameters);
+                    //mainActor.brain.memoryManager.AddActionStart(ActionType.Think, parameters);
 
                     // 실제 사색 수행
                     var thinkResult = await PerformInteractiveThinkingAsync(thinkScope, topic, duration, token);

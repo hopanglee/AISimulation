@@ -19,9 +19,10 @@ public abstract class FoodItem : Item, IUsable
             actor.Hunger = 100;
 
         // 음식을 먹었으면 오브젝트 삭제
-        if (gameObject != null)
+        if (this.gameObject != null)
         {
-            Destroy(gameObject);
+            Destroy(this.gameObject);
+            actor.HandItem = null;
         }
 
         return $"{actor.Name}가 {this.Name}을(를) 먹어서 배고픔을 {HungerRecovery}만큼 회복했습니다.";

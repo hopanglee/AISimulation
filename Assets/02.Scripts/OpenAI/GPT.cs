@@ -379,6 +379,30 @@ public class GPT
             var pattern = @",\s*(\}|\])";
             return Regex.Replace(json, pattern, "$1");
         }
+
+    // Utility: extract the outermost JSON object substring
+        private static string ExtractOutermostJsonObject(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+            int firstBraceIndex = text.IndexOf('{');
+            if (firstBraceIndex < 0) return text;
+            int depth = 0;
+            for (int i = firstBraceIndex; i < text.Length; i++)
+            {
+                char ch = text[i];
+                if (ch == '{') depth++;
+                else if (ch == '}')
+                {
+                    depth--;
+                    if (depth == 0)
+                    {
+                        return text.Substring(firstBraceIndex, i - firstBraceIndex + 1);
+                    }
+                }
+            }
+            // If braces are unbalanced, return from the first '{' to the end
+            return text.Substring(firstBraceIndex);
+        }
     public async UniTask<T> SendGPTAsync<T>(
         List<ChatMessage> messages,
         ChatCompletionOptions options
@@ -472,24 +496,35 @@ public class GPT
                         }
                         catch (Exception ex)
                         {
-                            Debug.LogWarning($"[GPT][PARSE ERROR] First attempt failed: {ex.Message}. Trying sanitized JSON (remove trailing commas)...");
-                            // Fallback: remove trailing commas like ,} or ,]
-                            var sanitized = RemoveTrailingCommas(responseText);
+                            Debug.LogWarning($"[GPT][PARSE ERROR] First attempt failed: {ex.Message}. Trying outermost-object extraction...");
+                            var outer = ExtractOutermostJsonObject(responseText);
                             try
                             {
-                                var result = JsonConvert.DeserializeObject<T>(sanitized);
+                                var result = JsonConvert.DeserializeObject<T>(outer);
                                 await SaveConversationLogAsync(messages, responseText);
-                                Debug.Log("[GPT][PARSE] Parsed successfully after sanitization.");
+                                Debug.Log("[GPT][PARSE] Parsed successfully after outermost-object sanitization.");
                                 return result;
                             }
-                            catch (Exception ex2)
+                            catch (Exception exOuter)
                             {
-                                Debug.LogError($"[GPT][PARSE ERROR] Raw response: {responseText}");
-                                Debug.LogError($"Second parse failed: {ex2.Message}");
-                                await SaveConversationLogAsync(messages, $"ERROR: {ex.Message} | SANITIZE_ERROR: {ex2.Message}");
-                                throw new InvalidOperationException(
-                                    $"Failed to parse GPT response into {typeof(T)}"
-                                );
+                                Debug.LogWarning($"[GPT][PARSE ERROR] Outermost-object parse failed: {exOuter.Message}. Trying sanitized JSON (remove trailing commas)...");
+                                var sanitized = RemoveTrailingCommas(outer);
+                                try
+                                {
+                                    var result = JsonConvert.DeserializeObject<T>(sanitized);
+                                    await SaveConversationLogAsync(messages, responseText);
+                                    Debug.Log("[GPT][PARSE] Parsed successfully after trailing-comma sanitization.");
+                                    return result;
+                                }
+                                catch (Exception ex2)
+                                {
+                                    Debug.LogError($"[GPT][PARSE ERROR] Raw response: {responseText}");
+                                    Debug.LogError($"Second parse failed: {ex2.Message}");
+                                    await SaveConversationLogAsync(messages, $"ERROR: {ex.Message} | SANITIZE_ERROR: {ex2.Message}");
+                                    throw new InvalidOperationException(
+                                        $"Failed to parse GPT response into {typeof(T)}"
+                                    );
+                                }
                             }
                         }
                     }
@@ -629,14 +664,23 @@ public class GPT
                             }
                             catch (Exception ex)
                             {
-                                Debug.LogWarning($"[GPT][PARSE ERROR sync] First attempt failed: {ex.Message}. Trying sanitized JSON...");
-                                var sanitized = RemoveTrailingCommas(responseText);
-                                return JsonConvert.DeserializeObject<T>(sanitized);
+                                Debug.LogWarning($"[GPT][PARSE ERROR sync] First attempt failed: {ex.Message}. Trying outermost-object extraction...");
+                                var outer = ExtractOutermostJsonObject(responseText);
+                                try
+                                {
+                                    return JsonConvert.DeserializeObject<T>(outer);
+                                }
+                                catch (Exception exOuter)
+                                {
+                                    Debug.LogWarning($"[GPT][PARSE ERROR sync] Outermost-object parse failed: {exOuter.Message}. Trying trailing-comma sanitization...");
+                                    var sanitized = RemoveTrailingCommas(outer);
+                                    return JsonConvert.DeserializeObject<T>(sanitized);
+                                }
                             }
                         }
                         catch (Exception ex)
                         {
-                            Debug.LogError($"JSON Deserialization Error: {ex.Message}");
+                            Debug.LogError($"JSON Deserialization Error (sync): {ex.Message}");
                             throw new InvalidOperationException(
                                 $"Failed to parse GPT response into {typeof(T)}"
                             );

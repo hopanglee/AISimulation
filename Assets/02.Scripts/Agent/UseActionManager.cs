@@ -83,7 +83,7 @@ namespace Agent
             }
             else
             {
-                Debug.LogWarning($"[{actor.Name}] {itemType.Name}에 대한 Agent를 찾을 수 없습니다.");
+                Debug.Log($"[{actor.Name}] {itemType.Name}에 대한 Agent를 찾어 기본 Use 사용");
                 return new ActParameterResult
                 {
                     ActType = request.ActType,

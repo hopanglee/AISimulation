@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -1108,13 +1109,13 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         var currentTime = timeService.CurrentTime;
 
         // 기본 정보 준비
-        var handItem = $"- {HandItem?.Name} => {HandItem?.Get()}";
+        var handItem = String.IsNullOrEmpty(HandItem?.Get()) ? $"{HandItem?.Name}" : $"{HandItem?.Name} => {HandItem?.Get()}";
         var inventoryItems = new List<string>();
         for (int i = 0; i < InventoryItems.Length; i++)
         {
             if (InventoryItems[i] != null)
             {
-                inventoryItems.Add($"Slot {i + 1}: {InventoryItems[i].Name} => {InventoryItems[i].Get()}");
+                inventoryItems.Add(String.IsNullOrEmpty(InventoryItems[i].Get()) ? $"Slot {i + 1}: {InventoryItems[i].Name}" : $"Slot {i + 1}: {InventoryItems[i].Name} => {InventoryItems[i].Get()}");
             }
             else
             {
@@ -1170,10 +1171,28 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 movablePositions.Add($"{position.Key}");
             }
 
+            var sitText = "";
+            if (curLocation is SitableProp sitableProp && sitableProp.IsActorSeated(this))
+            {
+                if(sitableProp is Bed)
+                {
+                    sitText = "누워 있음";
+                }
+                else
+                {
+                    sitText = "앉아있음";
+                }
+            }
+            else
+            {
+                sitText = "서있음";
+            }
+
             // 통합 치환 정보
             var replacements = new Dictionary<string, string>
             {
                 { "location", curLocation != null ? curLocation.LocationToString() : "Unknown" },
+                { "is_sit", sitText},
                 { "handItem", handItem },
                 { "inventory", string.Join(", ", inventoryItems) },
                 { "sleepStatus", sleepStatus },
