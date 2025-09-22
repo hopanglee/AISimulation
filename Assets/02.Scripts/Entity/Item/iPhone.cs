@@ -455,12 +455,9 @@ public class iPhone : Item, IUsable
         var baseText = "";
         if (chatNotification && notifications != null && notifications.Count > 0)
         {
-            var sb = new StringBuilder();
-            if (!string.IsNullOrEmpty(baseText)) sb.Append(baseText).Append("\n 아이폰 알림이 있습니다.");
             var localizationService = Services.Get<ILocalizationService>();
             bool isKr = false;
-            try { isKr = localizationService != null && localizationService.CurrentLanguage == Language.KR; } catch { }
-            sb.Append(isKr ? "알림:\n" : "Notifications:\n");
+            try { isKr = (localizationService != null && localizationService.CurrentLanguage == Language.KR); } catch { }
             var senderCounts = new Dictionary<string, int>();
             foreach (var n in notifications)
             {
@@ -469,15 +466,47 @@ public class iPhone : Item, IUsable
                 if (!senderCounts.ContainsKey(sender)) senderCounts[sender] = 0;
                 senderCounts[sender]++;
             }
-            foreach (var kv in senderCounts)
+
+            if (isKr)
             {
-                int extra = kv.Value - 1;
-                if (extra > 0)
-                    sb.Append("- ").Append(kv.Key).Append(" ").Append("+").Append(extra).AppendLine();
+                // 한국어: 요약 문장 형태로 출력
+                if (senderCounts.Count == 1)
+                {
+                    var kv = senderCounts.First();
+                    int cnt = kv.Value;
+                    return $"알림: {kv.Key}로부터 메세지가 +{cnt}개 왔습니다.";
+                }
                 else
-                    sb.Append("- ").Append(kv.Key).AppendLine();
+                {
+                    var sbKr = new StringBuilder();
+                    foreach (var kv in senderCounts)
+                    {
+                        int cnt = kv.Value;
+                        sbKr.Append("알림: ")
+                            .Append(kv.Key)
+                            .Append("로부터 메세지가 +")
+                            .Append(cnt)
+                            .Append("개 왔습니다.")
+                            .AppendLine();
+                    }
+                    return sbKr.ToString().TrimEnd();
+                }
             }
-            return sb.ToString().TrimEnd();
+            else
+            {
+                // 영어: 기존 리스트 형식 유지
+                var sbEn = new StringBuilder();
+                sbEn.Append("Notifications:\n");
+                foreach (var kv in senderCounts)
+                {
+                    int cnt = kv.Value;
+                    if (cnt > 1)
+                        sbEn.Append("- ").Append(kv.Key).Append(" +").Append(cnt).AppendLine();
+                    else
+                        sbEn.Append("- ").Append(kv.Key).AppendLine();
+                }
+                return sbEn.ToString().TrimEnd();
+            }
         }
         return baseText;
     }

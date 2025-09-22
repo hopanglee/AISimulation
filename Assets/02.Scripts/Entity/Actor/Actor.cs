@@ -1135,7 +1135,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         // ThinkingActor인 경우 추가 정보 제공
         if (this is MainActor thinkingActor)
         {
-            var sleepStatus = thinkingActor.IsSleeping ? "Sleeping" : "Awake";
+            var sleepStatus = thinkingActor.IsSleeping ? "자는 중" : "깨어있음";
 
             // 주변 엔티티 정보 수집
             var lookable = thinkingActor.sensor.GetLookableEntities();
