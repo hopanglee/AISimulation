@@ -71,3 +71,23 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Sample Assets and Third-party Assets
+Assets/14.Sample Assets/
+Assets/Citizens PRO/
+Assets/Cozy cafe - confectionery and bakery/
+Assets/French Fries Free/
+Assets/Hivemind/
+Assets/Japanese food_pack_02_Free/
+Assets/JapaneseFood_Sushi Free/
+Assets/Modern UI Pack/
+Assets/Kashipan - FREE/
+Assets/Kamgam/
+Assets/Nimikko_JapaneseRestaurant_02/
+Assets/Nimikko_JapaneseCollection_01/
+Assets/Pizza/
+Assets/Tofu Free/
+Assets/03.Prefabs/Actors/MainCharacter/Aoi/*
+!Assets/03.Prefabs/Actors/MainCharacter/Aoi/Hino Maori.prefab
+Assets/03.Prefabs/Actors/MainCharacter/Taichi/*
+!Assets/03.Prefabs/Actors/MainCharacter/Taichi/Kamiya Tooru.prefab
