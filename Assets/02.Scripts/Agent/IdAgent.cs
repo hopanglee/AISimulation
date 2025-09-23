@@ -293,6 +293,18 @@ public class IdAgent : GPT
             // GPT 호출
             var response = await SendGPTAsync<IdResult>(messages, options);
 
+            Debug.Log($"[PerceptionAgent {actor.Name}] 본능 에이전트 완료");
+            if (
+                !string.IsNullOrEmpty(response?.situation_interpretation)
+                && SimulationController.Instance != null
+            )
+            {
+                SimulationController.Instance.SetActorActivityText(
+                    actor.Name,
+                    $"본능: {response.situation_interpretation}"
+                );
+            }
+
             return response;
         }
         catch (Exception ex)

@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
-using UnityEngine;
 using Agent;
 using Cysharp.Threading.Tasks;
-using System.IO;
 using Newtonsoft.Json;
+using UnityEngine;
 
 /// <summary>
 /// MainActor의 시각정보를 성격과 기억을 바탕으로 해석하는 Agent 그룹
@@ -62,14 +62,16 @@ public class PerceptionAgentGroup
     private void EnsurePerceptionDirs(GameTime date)
     {
         var dir = GetPerceptionDayDir(date);
-        if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+        if (!Directory.Exists(dir))
+            Directory.CreateDirectory(dir);
     }
 
     private void SaveResultIfPresent(GameTime date, string name, object result)
     {
         try
         {
-            if (result == null) return;
+            if (result == null)
+                return;
             EnsurePerceptionDirs(date);
             var path = GetPerceptionFilePath(date, name);
             var json = JsonConvert.SerializeObject(result, Formatting.Indented);
@@ -81,7 +83,8 @@ public class PerceptionAgentGroup
         }
     }
 
-    private T LoadResultIfExists<T>(GameTime date, string name) where T : class
+    private T LoadResultIfExists<T>(GameTime date, string name)
+        where T : class
     {
         try
         {
@@ -104,7 +107,9 @@ public class PerceptionAgentGroup
     /// </summary>
     /// <param name="visualInformation">Sensor로부터 받은 시각정보</param>
     /// <returns>해석된 결과</returns>
-    public async UniTask<PerceptionResult> InterpretVisualInformationAsync(List<string> visualInformation)
+    public async UniTask<PerceptionResult> InterpretVisualInformationAsync(
+        List<string> visualInformation
+    )
     {
         try
         {
@@ -131,35 +136,29 @@ public class PerceptionAgentGroup
                 }
             }
 
-            // 1. 이성 에이전트 실행
-            var superegoResult = await superegoAgent.InterpretAsync(visualInformation);
-            Debug.Log($"[PerceptionAgent {actor.Name}] 이성 에이전트 완료");
-            // 기존 버블 팝업 제거 → SimulationController의 텍스트로 대체
+            // 1-2. 이성/본능 에이전트를 병렬 실행 후, 둘 다 완료되면 결과 처리
+            var superegoTask = superegoAgent.InterpretAsync(visualInformation);
+            var idTask = idAgent.InterpretAsync(visualInformation);
 
-            if (!string.IsNullOrEmpty(superegoResult?.situation_interpretation) && SimulationController.Instance != null)
-            {
-                SimulationController.Instance.SetActorActivityText(actor.Name, $"상황 인식: {superegoResult.situation_interpretation}");
-            }
+            var (superegoResult, idResult) = await Cysharp.Threading.Tasks.UniTask.WhenAll(
+                superegoTask,
+                idTask
+            );
 
-
-            // 2. 본능 에이전트 실행
-            var idResult = await idAgent.InterpretAsync(visualInformation);
-            Debug.Log($"[PerceptionAgent {actor.Name}] 본능 에이전트 완료");
-            if (!string.IsNullOrEmpty(idResult?.situation_interpretation) && SimulationController.Instance != null)
-            {
-                SimulationController.Instance.SetActorActivityText(actor.Name, $"상황 인식: {idResult.situation_interpretation}");
-            }
-
-
-            // 3. 자아 에이전트로 타협
+            // 3. 자아 에이전트로 타협 (두 결과가 모두 준비된 후 실행)
             var egoResult = await egoAgent.MediateAsync(superegoResult, idResult);
             Debug.Log($"[PerceptionAgent {actor.Name}] 자아 에이전트 완료");
 
-            if (!string.IsNullOrEmpty(egoResult?.situation_interpretation) && SimulationController.Instance != null)
+            if (
+                !string.IsNullOrEmpty(egoResult?.situation_interpretation)
+                && SimulationController.Instance != null
+            )
             {
-                SimulationController.Instance.SetActorActivityText(actor.Name, $"상황 인식: {egoResult.situation_interpretation}");
+                SimulationController.Instance.SetActorActivityText(
+                    actor.Name,
+                    $"자아: {egoResult.situation_interpretation}"
+                );
             }
-
 
             // 결과 저장 (동일 부모 폴더: Assets/11.GameDatas/Perception)
             SaveResultIfPresent(currentDate, "superego", superegoResult);
@@ -171,7 +170,7 @@ public class PerceptionAgentGroup
             {
                 situation_interpretation = egoResult.situation_interpretation,
                 thought_chain = egoResult.thought_chain,
-                emotions = egoResult.emotions ?? new Dictionary<string, float>()
+                emotions = egoResult.emotions ?? new Dictionary<string, float>(),
             };
 
             Debug.Log($"[PerceptionAgent {actor.Name}] 3-에이전트 해석 완료");
@@ -180,7 +179,9 @@ public class PerceptionAgentGroup
         catch (Exception ex)
         {
             Debug.LogError($"[PerceptionAgent {actor.Name}] 시각정보 해석 실패: {ex.Message}");
-            throw new System.InvalidOperationException($"PerceptionAgent 시각정보 해석 실패: {ex.Message}");
+            throw new System.InvalidOperationException(
+                $"PerceptionAgent 시각정보 해석 실패: {ex.Message}"
+            );
         }
     }
 }
@@ -191,7 +192,7 @@ public class PerceptionAgentGroup
 [System.Serializable]
 public class PerceptionResult
 {
-    public string situation_interpretation;  // 최종 상황 인식 (타협된 결과)
-    public List<string> thought_chain;       // 타협된 사고체인
+    public string situation_interpretation; // 최종 상황 인식 (타협된 결과)
+    public List<string> thought_chain; // 타협된 사고체인
     public Dictionary<string, float> emotions; // 감정과 강도
 }

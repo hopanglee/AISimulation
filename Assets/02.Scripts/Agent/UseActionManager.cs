@@ -40,6 +40,43 @@ namespace Agent
         }
 
         /// <summary>
+        /// 아이템 타입에 따라 적절한 Use용 ParameterAgent를 생성하여 반환합니다.
+        /// (간단 팩토리) - 호출부 연결은 하지 않고 생성만 담당합니다.
+        /// </summary>
+        public ParameterAgentBase CreateUseItemAgent(Type itemType)
+        {
+            if (itemType == null)
+            {
+                return null;
+            }
+
+            // 타입 스위치 기반 생성
+            if (itemType == typeof(iPhone))
+            {
+                return new iPhoneUseAgent(actor);
+            }
+            else if (itemType == typeof(Note))
+            {
+                return new NoteUseAgent(actor);
+            }
+            else if (itemType == typeof(Book))
+            {
+                return new BookUseParameterAgent(actor);
+            }
+
+            // 매칭되는 타입이 없으면 null 반환
+            return null;
+        }
+
+        /// <summary>
+        /// 아이템 인스턴스를 받아 타입을 추론하여 적절한 Agent를 생성합니다.
+        /// </summary>
+        public ParameterAgentBase CreateUseItemAgent(Item item)
+        {
+            return item == null ? null : CreateUseItemAgent(item.GetType());
+        }
+
+        /// <summary>
         /// Use Action을 실행합니다. Hand에 있는 아이템의 타입에 따라 적절한 Agent를 호출합니다.
         /// </summary>
         public async UniTask<ActParameterResult> ExecuteUseActionAsync(ActParameterRequest request)
@@ -73,12 +110,6 @@ namespace Agent
             if (itemTypeAgents.TryGetValue(itemType, out targetAgent))
             {
                 Debug.Log($"[{actor.Name}] {itemType.Name} 전용 Agent 사용");
-                LogItemUsageInstructions(actor.HandItem);
-            }
-            // 상위 타입으로 매칭 시도 (예: iPhone -> Item)
-            else if (itemTypeAgents.TryGetValue(typeof(Item), out targetAgent))
-            {
-                Debug.Log($"[{actor.Name}] 일반 Item Agent 사용 ({itemType.Name})");
                 LogItemUsageInstructions(actor.HandItem);
             }
             else

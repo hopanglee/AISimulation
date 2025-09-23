@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: InventoryBoxParameterAgent
+Real Time: 2025-09-23 13:23:26
+{"add_item_name":"","remove_item_name":"히노의 일기"}
+
