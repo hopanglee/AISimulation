@@ -256,8 +256,7 @@ public class SuperegoAgent : GPT
                                 currentActivity.DurationMinutes.ToString()
                             },
                             { "all_actions_in_activity", string.Join("\n", allActionsText) },
-                            { "all_actions_start_time", dayPlanner.GetPlanStartTime().ToString() },
-                            { "plan_notify", "" },
+                            { "all_actions_start_time", dayPlanner.GetPlanStartTime().ToString() }
                         };
 
                         var current_plan_template = localizationService.GetLocalizedText(

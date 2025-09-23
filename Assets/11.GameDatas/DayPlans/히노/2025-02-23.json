@@ -1,0 +1,166 @@
+{
+  "high_level_tasks": [
+    {
+      "task_name": "아침 루틴·노트·폰·안전 점검",
+      "description": "노트 읽고 폰 스샷·도넛 먹으며 몸 상태 확인",
+      "duration_minutes": 300,
+      "detailed_activities": [
+        {
+          "activity_name": "노트 첫 장 읽기 & 한 줄 정리",
+          "description": "아침 루틴의 핵심! 침대에서 일어나자마자 노트 꺼내 읽기(오늘 기분·경계·호기심 한 문장). ★표나 짧은 메모로 즉시 마음 정리(힐링 문장 한 줄 포함). 히노 특유의 장난섞인 자기 격려도 적기.",
+          "duration_minutes": 30,
+          "location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:거실",
+          "specific_actions": [
+            {
+              "action_name": "협탁으로 가서 노트 꺼내기",
+              "description": "거실에 서 있는 지금 바로 협탁으로 걸어간다 → 협탁 위 '히노의 일기'(노트)를 집어 든다 → 편한 의자나 침대 가장자리에 앉아 노트를 무릎 위에 올린다 → 노트 첫 장을 조심스럽게 펼친다 (아침 루틴의 시작!)",
+              "duration_minutes": 5
+            },
+            {
+              "action_name": "첫 장 천천히 읽으며 기분 관찰",
+              "description": "눈으로 한 문단씩 천천히 훑어 읽기 → 읽는 동안 떠오르는 단어(경계·호기심·불안 등)를 노트 옆에 짧게 메모 → 졸림·허기 같은 신체 감각도 한 줄로 적어 둔다 → 중요한 문구에 별(★) 표시",
+              "duration_minutes": 5
+            },
+            {
+              "action_name": "힐링 문장과 한 줄 정리 쓰기",
+              "description": "오늘 기분·경계·호기심을 합쳐 1문장으로 다듬기(예: '조금 경계되지만, 목소리를 찾아볼래') → 바로 아래에 힐링 문장 한 줄 쓰기(히노 특유의 장난 섞인 격려 포함) → 문장 옆에 날짜(3/15 표시는 생일이라 히노가 좋아함)와 타임스탬프 적기",
+              "duration_minutes": 5
+            },
+            {
+              "action_name": "읽은 것 소리 내어 확인하고 안정화",
+              "description": "쓴 한 줄을 소리 내어 읽어보기(작게 허밍하거나 장난스럽게 톤을 바꿔도 OK) → 읽는 동안 심호흡 2회(4-4-4 리듬으로) → 목소리 톤과 감정이 어떤지 스스로 체크하여 노트에 아주 짧게 메모",
+              "duration_minutes": 5
+            },
+            {
+              "action_name": "요약문 검토·별표 및 빠른 표시",
+              "description": "작성한 한 줄을 다시 훑어 필요한 단어를 ★로 강조 → 필요한 경우 단어 하나를 바꿔 더 힘나게 만들기(히노다운 즉흥 멘트 추가) → 페이지 모서리에 작은 표시(스티커 자국 또는 별표)로 오늘 아침 페이지임을 표시",
+              "duration_minutes": 5
+            },
+            {
+              "action_name": "노트 정리하고 다음 행동 적기",
+              "description": "노트를 덮기 전에 한 번 더 깊게 숨 고르기 → 노트 첫 장을 제자리에 놓고 협탁 위 깔끔하게 정돈 → 노트에 '다음 행동 1~2개'(예: 폰 확인→도넛 먹기)를 한 줄로 적어 다음 루틴으로 자연스럽게 이어지게 설정",
+              "duration_minutes": 5
+            }
+          ]
+        },
+        {
+          "activity_name": "아이폰 알림 확인 및 스크린샷 저장",
+          "description": "협탁에서 폰 열어 알림(카미야 메시지 포함) 확인. 중요한 것들 스크린샷으로 저장하고 타임스탬프 확인. 증거 보관용 폴더 생성(암호 또는 숨김 폴더 고려).",
+          "duration_minutes": 30,
+          "location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:거실",
+          "specific_actions": []
+        },
+        {
+          "activity_name": "도넛 하나 먹으며 메시지 자세히 읽기",
+          "description": "식탁으로 이동해 도넛 하나를 천천히 먹으며 메시지와 사진을 꼼꼼히 읽기. 감정이 흔들리면 노트에 즉시 한 줄 적기(‘지금 느낌: ___’). 필요하면 해당 화면 스샷 추가.",
+          "duration_minutes": 30,
+          "location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집",
+          "specific_actions": []
+        },
+        {
+          "activity_name": "몸 상태 꼼꼼 점검 & 사진 촬영",
+          "description": "침대에 앉아 전신·관절 가동범위 확인(팔, 다리, 목). 통증·멍 부위 발견 시 사진으로 기록하고 노트에 위치·시간·통증 정도(1-10) 기록. 필요하면 아이폰으로 음성 메모도 남기기.",
+          "duration_minutes": 30,
+          "location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:거실",
+          "specific_actions": []
+        },
+        {
+          "activity_name": "응급 판단과 연락 계획 세우기",
+          "description": "사진·메시지·증거를 바탕으로 응급 연락 필요 여부 판단. 가족·친구·병원·경찰 중 누구에게 어떤 내용을 보낼지 초안 작성(짧은 문장). 실제 연락 전 메시지 복사본을 노트에 붙여넣기(또는 스샷 보관).",
+          "duration_minutes": 30,
+          "location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:거실",
+          "specific_actions": []
+        },
+        {
+          "activity_name": "도넛 두 번째와 물로 진정·심호흡",
+          "description": "식탁에서 도넛 두 번째를 먹으며 물을 충분히 마시고 5분씩 심호흡(4-4-4 리듬). 감정이 오락가락하면 노트에 '호흡 기록' 적기. 히노다운 즉흥적 멘트로 스스로 격려하며 진정 유지.",
+          "duration_minutes": 30,
+          "location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집",
+          "specific_actions": []
+        },
+        {
+          "activity_name": "외출/방문 준비 & 체크리스트 작성",
+          "description": "만약 병원/카페/신뢰할 친구 집으로 이동할 경우를 대비해 가방 점검(보험증, 폰 충전기, 노트, 물, 남은 도넛 등) 및 간단 체크리스트 작성. 이동 시 안전 루트·동승자 연락처 메모.",
+          "duration_minutes": 30,
+          "location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:거실",
+          "specific_actions": []
+        },
+        {
+          "activity_name": "메시지·사진 정리 및 백업",
+          "description": "수집한 스크린샷과 사진을 분류해 폴더화(예: '오늘_증거'), 클라우드 또는 안전한 친구에게 백업 전송. 중요한 항목엔 노트 참조 링크(페이지·시간) 적기.",
+          "duration_minutes": 30,
+          "location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집",
+          "specific_actions": []
+        },
+        {
+          "activity_name": "가벼운 스트레칭·목소리·즉흥 연습",
+          "description": "거실에서 가볍게 스트레칭(목·어깨·허리) 후 짧게 목소리 내보기(허밍·짧은 노래 구절). 즉흥적으로 기분 전환 겸 음성·기력 상태 체크(히노는 즉흥을 좋아하니까 즐겁게!).",
+          "duration_minutes": 30,
+          "location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:거실",
+          "specific_actions": []
+        },
+        {
+          "activity_name": "일기 한 줄과 오늘의 다음 행동 정리",
+          "description": "협탁에 앉아 히노의 일기에 오늘 아침 상태(증거 위치, 연락한 사람, 느낀 점) 한 문장으로 정리. 이후 1~2개의 다음 행동(병원 방문 여부, 카페로 숨 고르기 등)을 시간대별로 적어 놓기.",
+          "duration_minutes": 30,
+          "location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집",
+          "specific_actions": []
+        }
+      ]
+    },
+    {
+      "task_name": "아침 식사·정리·출발 준비",
+      "description": "남은 도넛·물 마시고 가방과 계획 정리",
+      "duration_minutes": 300,
+      "detailed_activities": []
+    },
+    {
+      "task_name": "카페 산책·기분 전환",
+      "description": "브루랩 같은 카페로 짧은 외출·숨 고르기",
+      "duration_minutes": 90,
+      "detailed_activities": []
+    },
+    {
+      "task_name": "창작 연습(노래·댄스)",
+      "description": "즉흥적 연습으로 에너지 소모·목소리 점검",
+      "duration_minutes": 120,
+      "detailed_activities": []
+    },
+    {
+      "task_name": "작은 사회 활동·장보기",
+      "description": "친구와 수다 혹은 네코마트로 간단 장보기",
+      "duration_minutes": 120,
+      "detailed_activities": []
+    },
+    {
+      "task_name": "독서·간식 타임",
+      "description": "책 '숨의 문장들' 읽기와 도넛·휴식",
+      "duration_minutes": 90,
+      "detailed_activities": []
+    },
+    {
+      "task_name": "공부·동아리 활동 집중 시간",
+      "description": "수업 복습이나 동아리 연습에 집중",
+      "duration_minutes": 180,
+      "detailed_activities": []
+    },
+    {
+      "task_name": "저녁 식사·가족 시간",
+      "description": "저녁 먹고 가족과 잠깐 대화·정리",
+      "duration_minutes": 120,
+      "detailed_activities": []
+    },
+    {
+      "task_name": "일기·내일 준비",
+      "description": "노트에 오늘 정리·사진·메시지 보관",
+      "duration_minutes": 60,
+      "detailed_activities": []
+    },
+    {
+      "task_name": "즉흥 자유시간·취침 준비",
+      "description": "틱톡 댄스·기분 전환 후 세안·취침 준비",
+      "duration_minutes": 149,
+      "detailed_activities": []
+    }
+  ]
+}

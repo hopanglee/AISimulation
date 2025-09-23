@@ -1,0 +1,59 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: HighLevelPlannerAgent
+Real Time: 2025-09-23 11:14:38
+{
+  "high_level_tasks": [
+    {
+      "task_name": "아침 루틴·노트·폰·안전 점검",
+      "description": "노트 읽고 폰 스샷·도넛 먹으며 몸 상태 확인",
+      "duration_minutes": 300
+    },
+    {
+      "task_name": "아침 식사·정리·출발 준비",
+      "description": "남은 도넛·물 마시고 가방과 계획 정리",
+      "duration_minutes": 300
+    },
+    {
+      "task_name": "카페 산책·기분 전환",
+      "description": "브루랩 같은 카페로 짧은 외출·숨 고르기",
+      "duration_minutes": 90
+    },
+    {
+      "task_name": "창작 연습(노래·댄스)",
+      "description": "즉흥적 연습으로 에너지 소모·목소리 점검",
+      "duration_minutes": 120
+    },
+    {
+      "task_name": "작은 사회 활동·장보기",
+      "description": "친구와 수다 혹은 네코마트로 간단 장보기",
+      "duration_minutes": 120
+    },
+    {
+      "task_name": "독서·간식 타임",
+      "description": "책 '숨의 문장들' 읽기와 도넛·휴식",
+      "duration_minutes": 90
+    },
+    {
+      "task_name": "공부·동아리 활동 집중 시간",
+      "description": "수업 복습이나 동아리 연습에 집중",
+      "duration_minutes": 180
+    },
+    {
+      "task_name": "저녁 식사·가족 시간",
+      "description": "저녁 먹고 가족과 잠깐 대화·정리",
+      "duration_minutes": 120
+    },
+    {
+      "task_name": "일기·내일 준비",
+      "description": "노트에 오늘 정리·사진·메시지 보관",
+      "duration_minutes": 60
+    },
+    {
+      "task_name": "즉흥 자유시간·취침 준비",
+      "description": "틱톡 댄스·기분 전환 후 세안·취침 준비",
+      "duration_minutes": 149
+    }
+  ]
+}
+
