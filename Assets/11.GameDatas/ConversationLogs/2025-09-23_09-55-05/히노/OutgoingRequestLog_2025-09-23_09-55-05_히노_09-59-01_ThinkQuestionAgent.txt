@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: ThinkQuestionAgent
+Real Time: 2025-09-23 09:59:01
+지금 연락을 한다면 누구에게, 어떤 말과 어떤 정보를 먼저 전할 거야?
+

@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: ThinkParameterAgent
+Real Time: 2025-09-23 09:57:17
+{"think_scope":"current_analysis","topic":"즉각적 자기 점검 및 안전 결론: 어제 신주쿠 사고 관련 머리·목·멍·통증·어지럼·구토·시야 이상 및 기억 흐림 확인, 이상 여부에 따른 응급조치(보호자/병원 연락) 결정과 루틴(노트→물→도넛) 복귀 가능성 판단","duration":30}
+

@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: ThinkQuestionAgent
+Real Time: 2025-09-23 09:58:12
+목을 천천히 움직이거나 고개를 숙일 때 통증이나 어지럼이 더 심해지니?
+

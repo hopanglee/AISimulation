@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: ThinkAnswerAgent
+Real Time: 2025-09-23 09:57:40
+지금 가장 이상한 건 머리의 멍하고 흐릿한 감각이고, 어제 부딪힘으로 인한 뇌진탕 가능성 같아.
+

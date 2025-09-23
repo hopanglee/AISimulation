@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: ThinkQuestionAgent
+Real Time: 2025-09-23 09:58:36
+증상이 더 악화되면 누구한테, 어떤 말로 바로 도움을 청할래?
+

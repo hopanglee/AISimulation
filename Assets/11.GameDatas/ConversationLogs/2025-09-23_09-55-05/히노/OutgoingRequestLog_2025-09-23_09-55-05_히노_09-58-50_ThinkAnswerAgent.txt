@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: ThinkAnswerAgent
+Real Time: 2025-09-23 09:58:50
+증상 악화하면 보호자나 119에 바로 연락해 "지금 많이 어지럽고 구토·시야 이상 있어, 병원 데려와줘"라고 말할 거야.
+
