@@ -253,16 +253,16 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
     private void AttachToHand(Item item)
     {
-        if (HandItem.curLocation is InventoryBox inventoryBox)
+        if (item.curLocation is InventoryBox inventoryBox)
         {
             inventoryBox.RemoveItem(HandItem);
         }
 
         HandItem = item;
-        HandItem.curLocation = Hand;
         if (Hand != null)
         {
             item.transform.SetParent(Hand.transform, false);
+            HandItem.curLocation = Hand;
         }
 
         item.transform.localPosition = new Vector3(0f, 0f, 0f);

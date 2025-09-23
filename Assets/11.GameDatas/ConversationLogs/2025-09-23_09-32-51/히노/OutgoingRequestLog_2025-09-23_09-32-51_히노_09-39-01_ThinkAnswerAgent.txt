@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: ThinkAnswerAgent
+Real Time: 2025-09-23 09:39:01
+다른 증상(시야 흐림·실신·구토·심한 두통·호흡곤란·가슴통증·사지 저림)은 없고, 어지럼과 두근거림만 있어.
+

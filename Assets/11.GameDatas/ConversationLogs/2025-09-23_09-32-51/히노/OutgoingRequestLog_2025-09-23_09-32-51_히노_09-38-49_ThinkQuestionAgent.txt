@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: ThinkQuestionAgent
+Real Time: 2025-09-23 09:38:49
+일어설 때 훅 어지르고 심장 빨라지는데, 시야 흐려짐·실신·구토·심한 두통·호흡곤란·가슴통증·사지 저림 같은 다른 증상은 있어?
+

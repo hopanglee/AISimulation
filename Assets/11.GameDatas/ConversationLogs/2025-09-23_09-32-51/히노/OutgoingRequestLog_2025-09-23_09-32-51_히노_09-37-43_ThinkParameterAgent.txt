@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: ThinkParameterAgent
+Real Time: 2025-09-23 09:37:43
+{"think_scope":"current_analysis","topic":"어제 신주쿠 사고 관련 신체 자가점검: 출혈·멍·심한 통증·어지러움·구토 여부 빠르게 확인하고, 이상 발견 시 즉시 병원행 결정(증상 기록 포함)","duration":35}
+

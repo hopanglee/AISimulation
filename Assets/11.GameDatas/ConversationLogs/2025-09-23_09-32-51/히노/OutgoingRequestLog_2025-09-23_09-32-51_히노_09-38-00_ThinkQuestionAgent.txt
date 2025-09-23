@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: ThinkQuestionAgent
+Real Time: 2025-09-23 09:38:00
+히노, 지금 네 몸에서 가장 먼저 느껴지는 이상 증상은 뭐고 언제 시작됐어?
+

@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: ThinkAnswerAgent
+Real Time: 2025-09-23 09:38:35
+특히 일어설 때 훅 어지럽고 급히 움직이면 심장이 더 빨라져.
+
