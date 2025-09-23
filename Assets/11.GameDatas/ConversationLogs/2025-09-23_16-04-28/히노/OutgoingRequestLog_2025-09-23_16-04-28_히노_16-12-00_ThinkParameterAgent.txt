@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: ThinkParameterAgent
+Real Time: 2025-09-23 16:12:00
+{"think_scope":"current_analysis","topic":"어제 신주쿠 충돌 기억과 현재 거실의 평온 불일치 해결: 짧고 집중된 자가 신체점검(머리·목·동공·어지러움 체크), 아이폰(발신자 '카미야') 알림 읽기(답장 금지), 협탁의 일기와 시간·기억 대조, 이상 시 즉시 보호자/119 연락 여부 판단","duration":5}
+

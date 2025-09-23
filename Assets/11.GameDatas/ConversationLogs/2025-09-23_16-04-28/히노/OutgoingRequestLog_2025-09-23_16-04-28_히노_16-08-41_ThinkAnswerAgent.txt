@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: ThinkAnswerAgent
+Real Time: 2025-09-23 16:08:41
+응, 천천히 숨 쉬면 목과 머리 뒤가 묵직하고 가슴 한켠이 찝찝하게 남아 있어.
+

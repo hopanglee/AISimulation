@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: iPhoneUseAgent
+Real Time: 2025-09-23 16:14:00
+{"command":"read","target_actor":"히노의 일기","message":null,"message_count":20}
+
