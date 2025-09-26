@@ -11,6 +11,8 @@ public enum AgentRole
     System,
     User,
     Assistant,
+    Tool,
+    Function,
 }
 
 public class AgentChatMessageRaw
@@ -32,6 +34,9 @@ public class AgentChatMessage
             AgentRole.System => ChatMessage.CreateSystemMessage(content),
             AgentRole.User => ChatMessage.CreateUserMessage(content),
             AgentRole.Assistant => ChatMessage.CreateAssistantMessage(content),
+            AgentRole.Tool => ChatMessage.CreateToolMessage(content),
+            // OpenAI SDK에서는 Function 전용 생성자가 없을 수 있으므로 Tool로 매핑
+            AgentRole.Function => ChatMessage.CreateToolMessage(content),
             _ => throw new NotImplementedException(),
         };
     }

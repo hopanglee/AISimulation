@@ -14,7 +14,6 @@ public class NPCActionAgent : GPT
 {
     private readonly INPCAction[] availableActions;
     private readonly Actor owner; // NPC 또는 MainActor 참조
-    private IToolExecutor toolExecutor; // 도구 실행자 추가
 
     /// <summary>
     /// 액션을 자연스러운 메시지로 변환하는 커스텀 함수
@@ -27,12 +26,11 @@ public class NPCActionAgent : GPT
     /// <param name="owner">NPC 또는 MainActor 참조</param>
     /// <param name="availableActions">사용 가능한 액션 목록</param>
     /// <param name="npcRole">NPC의 역할</param>
-    public NPCActionAgent(Actor owner, INPCAction[] availableActions, NPCRole npcRole) : base()
+    public NPCActionAgent(Actor owner, INPCAction[] availableActions, NPCRole npcRole) : base(owner)
     {
         this.owner = owner;
         this.availableActions = availableActions;
-        this.toolExecutor = new ActorToolExecutor(owner); // 도구 실행자 초기화
-        SetActorName(owner.Name);
+        this.toolExecutor = new GPTToolExecutor(owner); // 도구 실행자 초기화
         SetAgentType(nameof(NPCActionAgent));
         // NPCRole별 System prompt 로드 (replacements 포함)
         string systemPrompt = PromptLoader.LoadNPCRoleSystemPrompt(npcRole,
@@ -42,7 +40,8 @@ public class NPCActionAgent : GPT
                     {"npc_info", owner.LoadCharacterInfo() },
                     {"AVAILABLE_ACTIONS", PromptLoader.LoadAvailableActionsDescription(npcRole, availableActions) },
                 });
-        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+        ClearMessages();
+        AddSystemMessage(systemPrompt);
 
         // Options 초기화 - JSON 스키마 포맷 설정 (최초 1회)
         options = new ChatCompletionOptions
@@ -168,21 +167,17 @@ public class NPCActionAgent : GPT
             AddCurrentSituationInfo();
 
             // GPT API 호출 전 메시지 수 기록
-            int messageCountBeforeGPT = messages.Count;
+            int messageCountBeforeGPT = GetMessageCount();
 
             // GPT API 호출 (이미 messages에 필요한 메시지들이 추가되어 있어야 함)
-            var response = await SendGPTAsync<NPCActionDecision>(messages, options);
+            var response = await SendWithCacheLog<NPCActionDecision>();
 
             // GPT 응답 후 원시 AssistantMessage 제거 (JSON 형태 응답)
-            if (messages.Count > messageCountBeforeGPT)
+            if (GetMessageCount() > messageCountBeforeGPT)
             {
                 // 마지막에 추가된 메시지가 AssistantMessage인지 확인 후 제거
-                var lastMessage = messages[messages.Count - 1];
-                if (lastMessage is AssistantChatMessage)
-                {
-                    messages.RemoveAt(messages.Count - 1);
-                    Debug.Log($"[NPCActionAgent] GPT 원시 응답 제거됨: {ExtractMessageContent(((AssistantChatMessage)lastMessage).Content)}");
-                }
+                RemoveAt(GetMessageCount() - 1);
+                Debug.Log($"[NPCActionAgent] GPT 원시 응답 제거됨");
             }
 
             // 자연스러운 형태의 AssistantMessage 추가
@@ -435,66 +430,6 @@ public class NPCActionAgent : GPT
     }
 
     /// <summary>
-    /// 근무 상태 정보를 반환합니다.
-    /// </summary>
-
-    /// <summary>
-    /// 사용자 메시지를 대화 기록에 추가
-    /// </summary>
-    /// <param name="userMessage">추가할 사용자 메시지</param>
-    public void AddUserMessage(string userMessage)
-    {
-        if (messages != null && !string.IsNullOrEmpty(userMessage))
-        {
-            messages.Add(new UserChatMessage(userMessage));
-            Debug.Log($"[NPCActionAgent] 사용자 메시지 추가: {userMessage}");
-        }
-    }
-
-    /// <summary>
-    /// Tool 호출 처리 (현재는 사용하지 않음)
-    /// </summary>
-    protected override void ExecuteToolCall(ChatToolCall toolCall)
-    {
-        if (toolExecutor != null)
-        {
-            string result = toolExecutor.ExecuteTool(toolCall);
-            messages.Add(new ToolChatMessage(toolCall.Id, result));
-            Debug.Log($"[NPCActionAgent] Tool 실행 완료: {toolCall.FunctionName} - 결과: {result}");
-        }
-        else
-        {
-            Debug.LogWarning($"[NPCActionAgent] Tool executor가 없어서 도구를 실행할 수 없습니다: {toolCall.FunctionName}");
-        }
-    }
-
-    /// <summary>
-    /// 시스템 메시지를 대화 기록에 추가
-    /// </summary>
-    /// <param name="systemMessage">추가할 시스템 메시지</param>
-    public void AddSystemMessage(string systemMessage)
-    {
-        if (messages != null && !string.IsNullOrEmpty(systemMessage))
-        {
-            messages.Add(new SystemChatMessage(systemMessage));
-            Debug.Log($"[NPCActionAgent] 시스템 메시지 추가: {systemMessage}");
-        }
-    }
-
-    /// <summary>
-    /// 어시스턴트 메시지를 대화 기록에 추가
-    /// </summary>
-    /// <param name="assistantMessage">추가할 어시스턴트 메시지</param>
-    public void AddAssistantMessage(string assistantMessage)
-    {
-        if (messages != null && !string.IsNullOrEmpty(assistantMessage))
-        {
-            messages.Add(new AssistantChatMessage(assistantMessage));
-            Debug.Log($"[NPCActionAgent] 어시스턴트 메시지 추가: {assistantMessage}");
-        }
-    }
-
-    /// <summary>
     /// 액션 결정을 자연스러운 메시지로 변환
     /// CustomMessageConverter가 설정되어 있으면 그것을 사용하고, 없으면 기본 구현을 사용
     /// </summary>
@@ -581,26 +516,6 @@ public class NPCActionAgent : GPT
         }
 
         return textParts.Count > 0 ? string.Join("\n", textParts) : "[Empty content]";
-    }
-
-    /// <summary>
-    /// 대화 기록을 초기화 (디버깅용)
-    /// </summary>
-    public void ClearMessages()
-    {
-        if (messages != null)
-        {
-            // 시스템 프롬프트만 남기고 나머지 메시지 제거
-            var systemPrompt = messages.FirstOrDefault(m => m is SystemChatMessage);
-            messages.Clear();
-
-            if (systemPrompt != null)
-            {
-                messages.Add(systemPrompt);
-            }
-
-            Debug.Log($"[NPCActionAgent] 대화 기록 초기화됨 (시스템 프롬프트 유지)");
-        }
     }
 
     /// <summary>

@@ -12,12 +12,8 @@ namespace Agent
     /// </summary>
     public class ThinkInsightAgent : GPT
     {
-        private readonly Actor actor;
-
-        public ThinkInsightAgent(Actor actor) : base()
+        public ThinkInsightAgent(Actor actor) : base(actor)
         {
-            this.actor = actor;
-            SetActorName(actor.Name);
             SetAgentType(nameof(ThinkInsightAgent));
         }
 
@@ -33,13 +29,11 @@ namespace Agent
                 var systemPrompt = LoadSystemPrompt();
                 var userMessage = LoadUserMessage(recentThoughts);
 
-                var messages = new List<ChatMessage>
-                {
-                    new SystemChatMessage(systemPrompt),
-                    new UserChatMessage(userMessage)
-                };
+                ClearMessages(false);
+                AddSystemMessage(systemPrompt);
+                AddUserMessage(userMessage);
 
-                var response = await SendGPTAsync<string>(messages, options);
+                var response = await SendWithCacheLog<string>( );
                 if (string.IsNullOrEmpty(response))
                 {
                     Debug.LogError($"[ThinkInsightAgent] 통찰 생성 실패: 응답이 null임");
@@ -64,7 +58,7 @@ namespace Agent
             {
                 var replacements = new Dictionary<string, string>
                 {
-                    ["character_name"] = actor.Name
+                    ["character_name"] = actor.Name ?? "Unknown"
                 };
 
                 return PromptLoader.LoadPromptWithReplacements("think_insight_system_prompt.txt", replacements);
@@ -103,7 +97,7 @@ namespace Agent
         /// </summary>
         private string GetDefaultSystemPrompt()
         {
-            return $"당신은 {actor.Name}입니다. 최근 생각들에서 의미있는 통찰을 한 문장으로 추출해주세요.";
+            return $"당신은 {actor.Name ?? "Unknown"}입니다. 최근 생각들에서 의미있는 통찰을 한 문장으로 추출해주세요.";
         }
 
         /// <summary>

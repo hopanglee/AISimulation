@@ -15,14 +15,8 @@ using Newtonsoft.Json;
 /// </summary>
 public class EgoAgent : GPT
 {
-    private Actor actor;
-    private IToolExecutor toolExecutor;
-
-    public EgoAgent(Actor actor) : base()
+    public EgoAgent(Actor actor) : base(actor)
     {
-        this.actor = actor;
-        this.toolExecutor = new ActorToolExecutor(actor);
-        SetActorName(actor.Name);
         SetAgentType(nameof(EgoAgent));
 
         InitializeOptions();
@@ -54,7 +48,7 @@ public class EgoAgent : GPT
             // PromptLoader를 사용하여 프롬프트 로드 및 플레이스홀더 교체
             var promptText = PromptLoader.LoadPromptWithReplacements("EgoAgentPrompt.txt", replacements);
 
-            messages.Add(new SystemChatMessage(promptText));
+            AddSystemMessage(promptText);
 
 
         }
@@ -117,22 +111,6 @@ public class EgoAgent : GPT
     }
 
     /// <summary>
-    /// 도구 호출을 처리합니다.
-    /// </summary>
-    protected override void ExecuteToolCall(ChatToolCall toolCall)
-    {
-        if (toolExecutor != null)
-        {
-            string result = toolExecutor.ExecuteTool(toolCall);
-            messages.Add(new ToolChatMessage(toolCall.Id, result));
-        }
-        else
-        {
-            Debug.LogWarning($"[EgoAgent] No tool executor available for tool call: {toolCall.FunctionName}");
-        }
-    }
-
-    /// <summary>
     /// 이성과 본능 에이전트의 결과를 타협합니다.
     /// </summary>
     /// <param name="superegoResult">이성 에이전트 결과</param>
@@ -159,10 +137,10 @@ public class EgoAgent : GPT
                 { "id_thought_chain", string.Join(" -> ", idResult.thought_chain) }
             };
             var userMessage = localizationService.GetLocalizedText("ego_agent_results", replacements);
-            messages.Add(new UserChatMessage(userMessage));
+            AddUserMessage(userMessage);
 
             // GPT 호출
-            var response = await SendGPTAsync<EgoResult>(messages, options);
+            var response = await SendWithCacheLog<EgoResult>();
 
             return response;
         }

@@ -16,16 +16,11 @@ using UnityEngine;
 /// </summary>
 public class SuperegoAgent : GPT
 {
-    private Actor actor;
-    private IToolExecutor toolExecutor;
     private DayPlanner dayPlanner; // DayPlanner 참조 추가
 
     public SuperegoAgent(Actor actor)
-        : base()
+        : base(actor)
     {
-        this.actor = actor;
-        this.toolExecutor = new ActorToolExecutor(actor);
-        SetActorName(actor.Name);
         SetAgentType(nameof(SuperegoAgent));
 
         InitializeOptions();
@@ -72,12 +67,10 @@ public class SuperegoAgent : GPT
                 replacements
             );
 
-            messages.Add(new SystemChatMessage(promptText));
+            AddSystemMessage(promptText);
 
             if (recentPerceptionInterpretation != null)
-                messages.Add(
-                    new UserChatMessage($"가장 최근 상황 인식: {recentPerceptionInterpretation}")
-                );
+                AddUserMessage($"가장 최근 상황 인식: {recentPerceptionInterpretation}");
         }
         catch (Exception ex)
         {
@@ -136,24 +129,6 @@ public class SuperegoAgent : GPT
         ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
         options.Tools.Add(ToolManager.ToolDefinitions.LoadRelationshipByName);
         // TODO: GetCurrentPlan 도구 추가
-    }
-
-    /// <summary>
-    /// 도구 호출을 처리합니다.
-    /// </summary>
-    protected override void ExecuteToolCall(ChatToolCall toolCall)
-    {
-        if (toolExecutor != null)
-        {
-            string result = toolExecutor.ExecuteTool(toolCall);
-            messages.Add(new ToolChatMessage(toolCall.Id, result));
-        }
-        else
-        {
-            Debug.LogWarning(
-                $"[SuperegoAgent {actor.Name}] No tool executor available for tool call: {toolCall.FunctionName}"
-            );
-        }
     }
 
     /// <summary>
@@ -288,10 +263,10 @@ public class SuperegoAgent : GPT
                 "superego_agent_template",
                 replacements
             );
-            messages.Add(new UserChatMessage(userMessage));
+            AddUserMessage(userMessage);
 
             // GPT 호출
-            var response = await SendGPTAsync<SuperegoResult>(messages, options);
+            var response = await SendWithCacheLog<SuperegoResult>( );
 
             Debug.Log($"[PerceptionAgent {actor.Name}] 이성 에이전트 완료");
             if (

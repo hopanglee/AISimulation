@@ -79,12 +79,10 @@ namespace Agent
 
         public async UniTask<NoteUseParameter> GenerateParametersAsync(CommonContext context)
         {
-            var messages = new List<ChatMessage>
-            {
-                new SystemChatMessage(systemPrompt),
-                new UserChatMessage(BuildUserMessage(context))
-            };
-            var response = await SendGPTAsync<NoteUseParameter>(messages, options);
+            ClearMessages();
+            AddSystemMessage(systemPrompt);
+            AddUserMessage(BuildUserMessage(context));
+            var response = await SendWithCacheLog<NoteUseParameter>( );
             return response;
         }
 

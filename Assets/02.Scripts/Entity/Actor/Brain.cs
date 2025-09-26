@@ -69,10 +69,6 @@ public class Brain
     {
         this.actor = actor;
 
-        // GPT 인스턴스 초기화
-        //gpt = new GPT();
-        //gpt.SetActorName(actor.Name);
-
         // Enhanced Memory System 초기화
         memoryManager = new MemoryManager(actor);
 
@@ -80,7 +76,6 @@ public class Brain
         dayPlanner = new DayPlanner(actor);
         thinker = new Thinker(actor, this);
         actionPerformer = new ActionPerformer(actor);
-        //useActionManager = new UseActionManager(actor);
     }
 
     /// <summary>
@@ -450,7 +445,7 @@ public class Brain
                 // 재선택: 최신 Perception 유지하여 다시 SelectAct 수행
                 // var selectionRetry = new ActSelectorAgent(actor);
                 // selectionRetry.SetDayPlanner(dayPlanner);
-                actSelectorAgent.messages.Add(new UserChatMessage("잘못된 행동 선택, 다시 선택해주세요. 행동에 대한 대상과 충분히 가까운지, 존재하는지 확인해주세요."));
+                actSelectorAgent.AddUserMessage("잘못된 행동 선택, 다시 선택해주세요. 행동에 대한 대상과 충분히 가까운지, 존재하는지 확인해주세요.");
                 var selectionRetryResult = await actSelectorAgent.SelectActAsync(recentPerceptionResult);
                 return await GenerateActionParameters(selectionRetryResult, actSelectorAgent);
             }

@@ -66,15 +66,13 @@ public class PutDownParameterAgent : ParameterAgentBase
 
         var userMessage = localizationService.GetLocalizedText("put_down_parameter_message", replacements);
 
-        var messages = new List<ChatMessage>
-        {
-            new SystemChatMessage(systemPrompt),
-            new UserChatMessage(userMessage)
-        };
+        ClearMessages();
+        AddSystemMessage(systemPrompt);
+        AddUserMessage(userMessage);
 
         try
         {
-            var response = await SendGPTAsync<PutDownParameter>(messages, options);
+            var response = await SendWithCacheLog<PutDownParameter>( );
             return response ?? new PutDownParameter();
         }
         catch (System.Exception ex)

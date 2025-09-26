@@ -77,10 +77,10 @@ namespace Agent
 
                 // 사용자 메시지 생성
                 var userMessage = BuildUserMessage(request);
-                messages.Add(new UserChatMessage(userMessage));
+                AddUserMessage(userMessage);
 
                 // GPT API 호출
-                var response = await SendGPTAsync<WhiteBoardParameter>(messages, options);
+                var response = await SendWithCacheLog<WhiteBoardParameter>( );
 
                 if (response != null)
                 {

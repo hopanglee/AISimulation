@@ -16,18 +16,13 @@ using PlanStructures;
 /// </summary>
 public class HighLevelPlannerAgent : GPT
 {
-    private MainActor actor;
-    private IToolExecutor toolExecutor;
 
 
     public HighLevelPlannerAgent(Actor actor)
-        : base()
+        : base(actor)
     {
-        this.actor = actor as MainActor;
-        this.toolExecutor = new ActorToolExecutor(actor);
 
         // Actor 이름 설정 (로깅용)
-        SetActorName(actor.Name);
         SetAgentType(nameof(HighLevelPlannerAgent));
 
 
@@ -69,24 +64,6 @@ public class HighLevelPlannerAgent : GPT
         options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetWorldAreaInfo);
     }
 
-    // Tool 정의들
-
-
-    protected override void ExecuteToolCall(ChatToolCall toolCall)
-    {
-        if (toolExecutor != null)
-        {
-            string result = toolExecutor.ExecuteTool(toolCall);
-            messages.Add(new ToolChatMessage(toolCall.Id, result));
-        }
-        else
-        {
-            Debug.LogWarning($"[HighLevelPlannerAgent] No tool executor available for tool call: {toolCall.FunctionName}");
-        }
-    }
-
-
-
     /// <summary>
     /// 고수준 계획 생성
     /// </summary>
@@ -102,13 +79,14 @@ public class HighLevelPlannerAgent : GPT
                 { "memory", actor.LoadCharacterMemory() },
                 { "character_situation", actor.LoadActorSituation() }
             });
-        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+        ClearMessages();
+        AddSystemMessage(systemPrompt); 
         string prompt = GenerateHighLevelPlanPrompt();
-        messages.Add(new UserChatMessage(prompt));
+        AddUserMessage(prompt);
 
         Debug.Log($"[HighLevelPlannerAgent] {actor.Name}의 고수준 계획 생성 시작...");
 
-        var response = await SendGPTAsync<HierarchicalPlan>(messages, options);
+        var response = await SendWithCacheLog<HierarchicalPlan>();
 
         Debug.Log($"[HighLevelPlannerAgent] {actor.Name}의 고수준 계획 생성 완료");
         Debug.Log($"[HighLevelPlannerAgent] 고수준 작업: {response.HighLevelTasks.Count}개");
@@ -132,14 +110,15 @@ public class HighLevelPlannerAgent : GPT
                 { "memory", actor.LoadCharacterMemory() },
                 { "character_situation", actor.LoadActorSituation() }
             });
-        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+        ClearMessages();
+        AddSystemMessage(systemPrompt);
         string prompt = GenerateHighLevelPlanWithContextPrompt(modificationSummary, existingPlan);
-        messages.Add(new UserChatMessage(prompt));
+        AddUserMessage(prompt);
 
         Debug.Log($"[HighLevelPlannerAgent] {actor.Name}의 재계획용 고수준 계획 생성 시작...");
         Debug.Log($"[HighLevelPlannerAgent] 수정 요약: {modificationSummary}");
 
-        var response = await SendGPTAsync<HierarchicalPlan>(messages, options);
+        var response = await SendWithCacheLog<HierarchicalPlan>();
 
         Debug.Log($"[HighLevelPlannerAgent] {actor.Name}의 재계획용 고수준 계획 생성 완료");
         Debug.Log($"[HighLevelPlannerAgent] 고수준 작업: {response.HighLevelTasks.Count}개");
@@ -164,7 +143,7 @@ public class HighLevelPlannerAgent : GPT
         var replacements = new Dictionary<string, string>
         {
             { "current_time", $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}" },
-            { "interpretation", actor.brain.recentPerceptionResult.situation_interpretation },
+            { "interpretation", ((MainActor)actor).brain.recentPerceptionResult.situation_interpretation },
             {"character_name", actor.Name },
         };
 
@@ -189,7 +168,7 @@ public class HighLevelPlannerAgent : GPT
 
 
         // 기존 계획 정보를 문자열로 변환
-        var existingPlanInfo = actor.brain.dayPlanner.GetCurrentDayPlan().ToString();
+        var existingPlanInfo = ((MainActor)actor).brain.dayPlanner.GetCurrentDayPlan().ToString();
 
         // 감정을 읽기 쉬운 형태로 변환
         //var perceptionEmotions = FormatEmotions(actor.brain.recentPerceptionResult.emotions);
@@ -197,8 +176,8 @@ public class HighLevelPlannerAgent : GPT
         var replacements = new Dictionary<string, string>
         {
             { "current_time", $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}" },
-            { "perception_interpretation", actor.brain.recentPerceptionResult.situation_interpretation },
-            { "perception_thought_chain", string.Join(" -> ", actor.brain.recentPerceptionResult.thought_chain) },
+            { "perception_interpretation", ((MainActor)actor).brain.recentPerceptionResult.situation_interpretation },
+            { "perception_thought_chain", string.Join(" -> ", ((MainActor)actor).brain.recentPerceptionResult.thought_chain) },
             { "modification_summary", modificationSummary },
             { "character_name", actor.Name },
             { "existing_plan", existingPlanInfo }

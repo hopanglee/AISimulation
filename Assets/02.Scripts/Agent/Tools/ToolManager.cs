@@ -296,11 +296,11 @@ namespace Agent.Tools
     /// <summary>
     /// 기본 도구 실행자 (Actor 기반)
     /// </summary>
-    public class ActorToolExecutor : IToolExecutor
+    public class GPTToolExecutor : IToolExecutor
     {
         private readonly Actor actor;
 
-        public ActorToolExecutor(Actor actor)
+        public GPTToolExecutor(Actor actor)
         {
             this.actor = actor;
         }
@@ -413,13 +413,13 @@ namespace Agent.Tools
                     result += ". Hand was empty before";
                 }
 
-                Debug.Log($"[ActorToolExecutor] {result}");
+                Debug.Log($"[GPTToolExecutor] {result}");
                 return result;
             }
             catch (Exception ex)
             {
                 string error = $"Error swapping inventory to hand: {ex.Message}";
-                Debug.LogError($"[ActorToolExecutor] {error}");
+                Debug.LogError($"[GPTToolExecutor] {error}");
                 return error;
             }
         }
@@ -490,7 +490,7 @@ namespace Agent.Tools
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"[ActorToolExecutor] GetPaymentPriceList error: {ex.Message}");
+                Debug.LogError($"[GPTToolExecutor] GetPaymentPriceList error: {ex.Message}");
                 return $"Error getting price list: {ex.Message}";
             }
         }
@@ -591,7 +591,7 @@ namespace Agent.Tools
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[ActorToolExecutor] FindBuildingAreaPath error: {ex.Message}");
+                Debug.LogError($"[GPTToolExecutor] FindBuildingAreaPath error: {ex.Message}");
                 return $"Error: {ex.Message}";
             }
         }
@@ -624,7 +624,7 @@ namespace Agent.Tools
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[ActorToolExecutor] FindShortestAreaPathFromActor error: {ex.Message}");
+                Debug.LogError($"[GPTToolExecutor] FindShortestAreaPathFromActor error: {ex.Message}");
                 return $"Error: {ex.Message}";
             }
         }
@@ -750,7 +750,7 @@ namespace Agent.Tools
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[ActorToolExecutor] GetCurrentPlan error: {ex.Message}");
+                Debug.LogError($"[GPTToolExecutor] GetCurrentPlan error: {ex.Message}");
                 return $"Error: {ex.Message}";
             }
         }
@@ -799,7 +799,7 @@ namespace Agent.Tools
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[ActorToolExecutor] GetCurrentSpecificAction error: {ex.Message}");
+                Debug.LogError($"[GPTToolExecutor] GetCurrentSpecificAction error: {ex.Message}");
                 return $"Error: {ex.Message}";
             }
         }
@@ -821,7 +821,7 @@ namespace Agent.Tools
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[ActorToolExecutor] LoadRelationshipByName error: {ex.Message}");
+                Debug.LogError($"[GPTToolExecutor] LoadRelationshipByName error: {ex.Message}");
                 return $"Error: {ex.Message}";
             }
         }

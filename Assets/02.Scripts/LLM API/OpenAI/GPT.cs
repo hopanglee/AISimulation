@@ -6,17 +6,18 @@ using Newtonsoft.Json;
 using OpenAI.Chat;
 using UnityEngine;
 using System.Text.RegularExpressions;
+using System.Linq;
+using Agent.Tools;
 
-public class GPT
+public class GPT : LLMClient
 {
     private readonly ChatClient client;
     protected ChatCompletionOptions options = new();
     public List<ChatMessage> messages = new();
-    protected string actorName = "Unknown"; // Actor 이름을 저장할 변수
     protected bool enableLogging = true; // 로깅 활성화 여부
     protected static string sessionDirectoryName = null;
     // 명시적 에이전트 타입 지정(승인/로그 표시에 사용). 설정되지 않으면 스택 트레이스로 추정
-    private string agentTypeOverride = null;
+    private string agentTypeOverride = "UNKNOWN";
     // 도구 호출 라운드 최대 횟수 (기본 2)
     protected int maxToolCallRounds = 3;
 
@@ -38,10 +39,11 @@ public class GPT
         public string organization;
     }
 
-    public GPT()
+    public GPT(Actor actor, string model = null) : base(new LLMClientProps() { model = model, provider = LLMClientProvider.OpenAI })
     {
         var apiKey = "OPENAI_API_KEY";
 
+        modelName = model ?? "gpt-5-mini";
         var userPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         var authPath = $"{userPath}/.openai/auth.json";
         if (File.Exists(authPath))
@@ -52,51 +54,81 @@ public class GPT
         }
         else
             Debug.LogWarning($"No API key in file path : {authPath}");
-        client = new(model: "gpt-5-mini", apiKey: apiKey);
+
+        client = new(model: model, apiKey: apiKey);
+        this.toolExecutor = new GPTToolExecutor(actor);
+        this.SetActor(actor);
     }
 
-    public GPT(string version)
+    #region 메시지 관리 override
+    public override int GetMessageCount()
     {
-        var apiKey = "OPENAI_API_KEY";
-        modelName = version;
-        var userPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        var authPath = $"{userPath}/.openai/auth.json";
-        if (File.Exists(authPath))
+        return messages.Count;
+    }
+    public override void ClearMessages(bool keepSystemMessage = false)
+    {
+        if (keepSystemMessage)
         {
-            var json = File.ReadAllText(authPath);
-            var auth = JsonConvert.DeserializeObject<Auth>(json);
-            apiKey = auth.private_api_key;
+            // 시스템 프롬프트만 남기고 나머지 메시지 제거
+            var systemPrompt = messages.FirstOrDefault(m => m is SystemChatMessage);
+            messages.Clear();
+
+            if (systemPrompt != null)
+            {
+                messages.Add(systemPrompt);
+            }
         }
         else
-            Debug.LogWarning($"No API key in file path : {authPath}");
-        client = new(model: version, apiKey: apiKey);
+        {
+            messages = new();
+        }
     }
-
-    /// <summary>
-    /// Actor 이름 설정 (로깅용)
-    /// </summary>
-    public void SetActorName(string name)
+    public override void RemoveAt(int index)
     {
-        actorName = name;
-        Debug.Log($"[GPT] Actor name set to: {actorName}");
+        messages.RemoveAt(index);
     }
-
-    /// <summary>
-    /// 승인 팝업 및 로그 표시에 사용할 에이전트 타입을 명시적으로 설정
-    /// </summary>
-    public void SetAgentType(string agentType)
+    public override void RemoveMessage(AgentChatMessage message)
     {
-        agentTypeOverride = agentType;
+        if (message.role == AgentRole.System)
+        {
+            messages.RemoveAll(m => m is SystemChatMessage u && string.Equals(u.Content?.ToString(), message.content, StringComparison.Ordinal));
+        }
+        else if (message.role == AgentRole.User)
+        {
+            messages.RemoveAll(m => m is UserChatMessage u && string.Equals(u.Content?.ToString(), message.content, StringComparison.Ordinal));
+        }
+        else if (message.role == AgentRole.Assistant)
+        {
+            messages.RemoveAll(m => m is AssistantChatMessage u && string.Equals(u.Content?.ToString(), message.content, StringComparison.Ordinal));
+        }
+        else if (message.role == AgentRole.Tool)
+        {
+            messages.RemoveAll(m => m is ToolChatMessage u && string.Equals(u.Content?.ToString(), message.content, StringComparison.Ordinal));
+        }
     }
-
-    /// <summary>
-    /// 로깅 활성화/비활성화 설정
-    /// </summary>
-    public void SetLoggingEnabled(bool enabled)
+    public override void AddMessage(AgentChatMessage message)
     {
-        enableLogging = enabled;
+        messages.Add(message.AsOpenAIMessage());
     }
+    public override void AddSystemMessage(string message)
+    {
+        messages.Add(new SystemChatMessage(message));
+    }
+    public override void AddUserMessage(string message)
+    {
+        messages.Add(new UserChatMessage(message));
+    }
+    public override void AddAssistantMessage(string message)
+    {
+        messages.Add(new AssistantChatMessage(message));
+    }
+    public override void AddToolMessage(string id, string message)
+    {
+        messages.Add(new ToolChatMessage(id, message));
+    }
+    #endregion
 
+    #region 로깅
     /// <summary>
     /// 대화 로그를 파일로 저장
     /// </summary>
@@ -108,18 +140,18 @@ public class GPT
         try
         {
             // Determine effective agent type
-            string effectiveAgentType = agentTypeOverride ?? agentType ?? GetAgentTypeFromStackTrace();
+            string effectiveAgentType = agentTypeOverride ?? agentType;
             // 세션별/캐릭터별 디렉토리 생성
             string baseDirectoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "ConversationLogs");
             string sessionPath = sessionDirectoryName != null ? Path.Combine(baseDirectoryPath, sessionDirectoryName) : baseDirectoryPath;
             string characterDirectoryPath = Path.Combine(sessionPath, actorName);
-            
+
             // actorName이 Unknown인 경우 경고 로그
             if (actorName == "Unknown")
             {
                 Debug.LogWarning($"[GPT] Warning: actorName is still 'Unknown' when saving conversation log. AgentType: {effectiveAgentType}");
             }
-            
+
             // 디렉토리 생성
             if (!Directory.Exists(baseDirectoryPath))
                 Directory.CreateDirectory(baseDirectoryPath);
@@ -205,7 +237,7 @@ public class GPT
         {
             Debug.LogError($"[GPT] Error saving conversation log: {ex.Message}");
         }
-        
+
         return UniTask.CompletedTask;
     }
 
@@ -305,7 +337,6 @@ public class GPT
 
         return UniTask.CompletedTask;
     }
-
     private List<object> BuildSerializableMessages(List<ChatMessage> messages)
     {
         var list = new List<object>();
@@ -367,117 +398,96 @@ public class GPT
             }
         }
 
-        
-
         return textParts.Count > 0 ? string.Join("\n", textParts) : "[Empty content]";
     }
+    #endregion
+
+    #region 오류 방지 및 처리 헬퍼 메서드
     // Utility: sanitize JSON with trailing commas
-        private static string RemoveTrailingCommas(string json)
-        {
-            if (string.IsNullOrEmpty(json)) return json;
-            // Remove trailing commas before } or ]
-            var pattern = @",\s*(\}|\])";
-            return Regex.Replace(json, pattern, "$1");
-        }
+    private static string RemoveTrailingCommas(string json)
+    {
+        if (string.IsNullOrEmpty(json)) return json;
+        // Remove trailing commas before } or ]
+        var pattern = @",\s*(\}|\])";
+        return Regex.Replace(json, pattern, "$1");
+    }
 
     // Utility: extract the outermost JSON object substring
-        private static string ExtractOutermostJsonObject(string text)
+    private static string ExtractOutermostJsonObject(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return text;
+        int firstBraceIndex = text.IndexOf('{');
+        if (firstBraceIndex < 0) return text;
+        int depth = 0;
+        for (int i = firstBraceIndex; i < text.Length; i++)
         {
-            if (string.IsNullOrEmpty(text)) return text;
-            int firstBraceIndex = text.IndexOf('{');
-            if (firstBraceIndex < 0) return text;
-            int depth = 0;
-            for (int i = firstBraceIndex; i < text.Length; i++)
+            char ch = text[i];
+            if (ch == '{') depth++;
+            else if (ch == '}')
             {
-                char ch = text[i];
-                if (ch == '{') depth++;
-                else if (ch == '}')
+                depth--;
+                if (depth == 0)
                 {
-                    depth--;
-                    if (depth == 0)
-                    {
-                        return text.Substring(firstBraceIndex, i - firstBraceIndex + 1);
-                    }
+                    return text.Substring(firstBraceIndex, i - firstBraceIndex + 1);
                 }
             }
-            // If braces are unbalanced, return from the first '{' to the end
-            return text.Substring(firstBraceIndex);
         }
-    public async UniTask<T> SendGPTAsync<T>(
-        List<ChatMessage> messages,
-        ChatCompletionOptions options
+        // If braces are unbalanced, return from the first '{' to the end
+        return text.Substring(firstBraceIndex);
+    }
+    #endregion
+
+    #region 메인 메서드
+    public override UniTask<T> Send<T>(
+        List<AgentChatMessage> messages = null,
+        LLMClientSchema schema = null,
+        ChatDeserializer<T> deserializer = null
     )
     {
-        // GPT API 호출 전 승인 요청
-        var gameService = Services.Get<IGameService>();
-        var approvalService = Services.Get<IGPTApprovalService>();
-        
-        if (gameService != null && gameService.IsGPTApprovalEnabled() && approvalService != null)
-        {
-            string agentType = agentTypeOverride ?? GetAgentTypeFromStackTrace();
-            int messageCount = messages.Count;
-            
-            bool approved = await approvalService.RequestApprovalAsync(actorName, agentType, messageCount);
-            
-            if (!approved)
-            {
-                Debug.LogError($"[GPT][{actorName}] GPT API 호출이 거부되었습니다: {agentType}");
-                throw new OperationCanceledException($"GPT API 호출이 거부되었습니다: {actorName} - {agentType}");
-            }
-            
-            Debug.Log($"[GPT][{actorName}] GPT API 호출이 승인되었습니다: {agentType}");
-        }
-        else if (gameService != null && !gameService.IsGPTApprovalEnabled())
-        {
-            Debug.Log($"[GPT][{actorName}] GPT 승인 시스템이 비활성화되어 자동으로 진행합니다: {agentTypeOverride ?? GetAgentTypeFromStackTrace()}");
-        }
+        // LLMClient의 공용 메시지를 OpenAI ChatMessage로 변환하여 내부 메시지 히스토리에 채웁니다.
+        this.messages = messages?.AsOpenAIMessage() ?? this.messages;
+        return SendGPTAsync<T>();
+    }
+
+    public async UniTask<T> SendGPTAsync<T>(
+        ChatCompletionOptions options = null
+    )
+    {
+        options ??= this.options;
 
         bool requiresAction;
-        string finalResponse = "";
+        string finalResponse;
         int toolRounds = 0; // Limit tool-call rounds
         bool forcedFinalAfterToolLimit = false; // Ensure we force exactly one final pass without tools
 
-        // 승인 사용 중이면 시간 정지는 ApprovalService에서, 여기서는 느린 진행만 적용
-        var timeService = Services.Get<ITimeService>();
-        var gameServiceForTime = Services.Get<IGameService>();
-        bool approvalsEnabled = gameServiceForTime != null && gameServiceForTime.IsGPTApprovalEnabled();
-        if (timeService != null)
+        do
         {
-            // 모델 대기 동안 시뮬레이션 시간 완전 정지
-            timeService.StartAPICall();
-            Debug.Log($"[GPT][{actorName}] API 호출 시작 - 시뮬레이션 시간 정지됨");
-        }
-
-        try
-        {
-            do
+            requiresAction = false;
+            // 요청 로그 저장 (각 라운드 호출 직전)
+            string agentTypeForLog = agentTypeOverride;
+            await SaveRequestLogAsync(messages, options, agentTypeForLog);
+            Debug.Log($"GPT Request: SaveRequestLogAsync 완료");
+            ChatCompletion completion;
+            try
             {
-                requiresAction = false;
-                // 요청 로그 저장 (각 라운드 호출 직전)
-                string agentTypeForLog = agentTypeOverride ?? GetAgentTypeFromStackTrace();
-                await SaveRequestLogAsync(messages, options, agentTypeForLog);
-                Debug.Log($"GPT Request: SaveRequestLogAsync 완료");
-                ChatCompletion completion;
-                try
-                {
-                    completion = await client.CompleteChatAsync(messages, options);
-                    Debug.Log($"GPT Request: CompleteChatAsync 완료");
-                }
-                catch (Exception callEx)
-                {
-                    LogExceptionWithLocation(callEx, "CompleteChatAsync failed");
-                    try { await SaveConversationLogAsync(messages, $"ERROR(API): {callEx.Message}"); } catch {}
-                    throw;
-                }
-                switch (completion.FinishReason)
-                {
-                    case ChatFinishReason.Stop:
+                completion = await client.CompleteChatAsync(messages, options);
+                Debug.Log($"GPT Request: CompleteChatAsync 완료");
+            }
+            catch (Exception callEx)
+            {
+                LogExceptionWithLocation(callEx, "CompleteChatAsync failed");
+                try { await SaveConversationLogAsync(messages, $"ERROR(API): {callEx.Message}"); } catch { }
+                throw;
+            }
+            switch (completion.FinishReason)
+            {
+                case ChatFinishReason.Stop:
                     {
                         Debug.Log($"GPT Request: Stop");
                         messages.Add(new AssistantChatMessage(completion));
                         string responseText = completion.Content[0].Text;
                         // 파싱 전에 생 텍스트를 OutgoingRequestLog에 저장
-                        try { await SaveRawResponseLogAsync(responseText, agentTypeOverride ?? GetAgentTypeFromStackTrace()); } catch {}
+                        try { await SaveRawResponseLogAsync(responseText, agentTypeOverride); } catch { }
                         finalResponse = responseText;
                         Debug.Log($"GPT Response: {responseText}");
 
@@ -529,263 +539,89 @@ public class GPT
                         }
                     }
 
-                    case ChatFinishReason.ToolCalls:
-                        {
-                            Debug.Log($"GPT Request: ToolCalls");
-                            // First, add the assistant message with tool calls to the conversation history.
-                            messages.Add(new AssistantChatMessage(completion));
-
-                            // Then, add a new tool message for each tool call that is resolved.
-                            foreach (ChatToolCall toolCall in completion.ToolCalls)
-                            {
-                                Debug.Log($"ToolCalls : {toolCall.FunctionName}");
-                                ExecuteToolCall(toolCall);
-                            }
-                        }
-
-                        requiresAction = true;
-                        break;
-
-                    case ChatFinishReason.Length:
-                        Debug.Log($"GPT Request: Length");
-                        await SaveConversationLogAsync(messages, "ERROR: Response truncated due to length limit");
-                        throw new NotImplementedException(
-                            "Incomplete model output due to MaxTokens parameter or token limit exceeded."
-                        );
-
-                    case ChatFinishReason.ContentFilter:    
-                        Debug.Log($"GPT Request: ContentFilter");
-                        await SaveConversationLogAsync(messages, "ERROR: Content filtered");
-                        throw new NotImplementedException(
-                            "Omitted content due to a content filter flag."
-                        );
-
-                    case ChatFinishReason.FunctionCall:
-                        Debug.Log($"GPT Request: FunctionCall");
-                        await SaveConversationLogAsync(messages, "ERROR: Function call not supported");
-                        throw new NotImplementedException("Deprecated in favor of tool calls.");
-
-                    default:
-                        Debug.Log($"GPT Request: Default");
-                        await SaveConversationLogAsync(messages, $"ERROR: Unknown finish reason - {completion.FinishReason}");
-                        throw new NotImplementedException(completion.FinishReason.ToString());
-                }
-                if (requiresAction)
-                {
-                    toolRounds++;
-                    if (toolRounds >= maxToolCallRounds)
+                case ChatFinishReason.ToolCalls:
                     {
-                        if (!forcedFinalAfterToolLimit)
-                        {
-                            forcedFinalAfterToolLimit = true;
-                            Debug.LogWarning($"[GPT] Tool call round limit reached ({maxToolCallRounds}). Forcing one final non-tool response.");
-                            messages.Add(new UserChatMessage($"도구 호출 한도({maxToolCallRounds}회)에 도달했습니다. 더 이상 도구를 사용하지 말고 최종 결과만 JSON으로 응답하세요."));
-                            try { options.Tools.Clear(); } catch {}
-                            requiresAction = true; // run one more round without tools
-                        }
-                        else
-                        {
-                            Debug.LogWarning("[GPT] Tool call limit reached and final pass already forced. Ending tool loop.");
-                            requiresAction = false;
-                        }
-                    }
-                }
-            } while (requiresAction);
-
-            return default;
-        }
-        finally
-        {
-            if (timeService != null)
-            {
-                timeService.EndAPICall();
-                Debug.Log($"[GPT][{actorName}] API 호출 종료 - 시뮬레이션 시간 재개됨");
-            }
-        }
-    }
-
-    public T SendGPT<T>(List<ChatMessage> messages, ChatCompletionOptions options)
-    {
-        // GPT API 호출 전 승인 요청 (동기 버전)
-        var gameService = Services.Get<IGameService>();
-        var approvalService = Services.Get<IGPTApprovalService>();
-        
-        if (gameService != null && gameService.IsGPTApprovalEnabled() && approvalService != null)
-        {
-            string agentType = GetAgentTypeFromStackTrace();
-            int messageCount = messages.Count;
-            
-            // 동기적으로 승인 요청 (이 경우는 즉시 거부)
-            Debug.LogWarning($"[GPT][{actorName}] 동기 GPT API 호출은 승인 시스템을 지원하지 않습니다. 호출을 거부합니다: {agentType}");
-            throw new OperationCanceledException($"동기 GPT API 호출은 승인 시스템을 지원하지 않습니다: {actorName} - {agentType}");
-        }
-        else if (gameService != null && !gameService.IsGPTApprovalEnabled())
-        {
-            Debug.Log($"[GPT][{actorName}] GPT 승인 시스템이 비활성화되어 자동으로 진행합니다 (동기): {GetAgentTypeFromStackTrace()}");
-        }
-
-        bool requiresAction;
-        int toolRounds = 0; // Limit tool-call rounds (sync)
-        bool forcedFinalAfterToolLimit = false; // Ensure one final non-tool pass (sync)
-
-        // GPT API 호출 시작 - 시뮬레이션 시간 자동 정지
-        var timeService = Services.Get<ITimeService>();
-        if (timeService != null)
-        {
-            timeService.StartAPICall();
-            Debug.Log($"[GPT][{actorName}] API 호출 시작 (동기) - 시뮬레이션 시간 정지됨");
-        }
-
-        try
-        {
-            do
-            {
-                requiresAction = false;
-                ChatCompletion completion = client.CompleteChat(messages, options);
-
-                switch (completion.FinishReason)
-                {
-                    case ChatFinishReason.Stop:
-                    {
+                        Debug.Log($"GPT Request: ToolCalls");
+                        // First, add the assistant message with tool calls to the conversation history.
                         messages.Add(new AssistantChatMessage(completion));
-                        string responseText = completion.Content[0].Text;
-                        Debug.Log($"GPT Response: {responseText}");
 
-                        if (typeof(T) == typeof(string))
+                        // Then, add a new tool message for each tool call that is resolved.
+                        foreach (ChatToolCall toolCall in completion.ToolCalls)
                         {
-                            return (T)(object)responseText;
-                        }
-
-                        try
-                        {
-                            try
-                            {
-                                return JsonConvert.DeserializeObject<T>(responseText);
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.LogWarning($"[GPT][PARSE ERROR sync] First attempt failed: {ex.Message}. Trying outermost-object extraction...");
-                                var outer = ExtractOutermostJsonObject(responseText);
-                                try
-                                {
-                                    return JsonConvert.DeserializeObject<T>(outer);
-                                }
-                                catch (Exception exOuter)
-                                {
-                                    Debug.LogWarning($"[GPT][PARSE ERROR sync] Outermost-object parse failed: {exOuter.Message}. Trying trailing-comma sanitization...");
-                                    var sanitized = RemoveTrailingCommas(outer);
-                                    return JsonConvert.DeserializeObject<T>(sanitized);
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.LogError($"JSON Deserialization Error (sync): {ex.Message}");
-                            throw new InvalidOperationException(
-                                $"Failed to parse GPT response into {typeof(T)}"
-                            );
+                            Debug.Log($"ToolCalls : {toolCall.FunctionName}");
+                            ExecuteToolCall(toolCall);
                         }
                     }
 
-                    case ChatFinishReason.ToolCalls:
-                        {
-                            // First, add the assistant message with tool calls to the conversation history.
-                            messages.Add(new AssistantChatMessage(completion));
+                    requiresAction = true;
+                    break;
 
-                            // Then, add a new tool message for each tool call that is resolved.
-                            foreach (ChatToolCall toolCall in completion.ToolCalls)
-                            {
-                                ExecuteToolCall(toolCall);
-                            }
-                        }
+                case ChatFinishReason.Length:
+                    Debug.Log($"GPT Request: Length");
+                    await SaveConversationLogAsync(messages, "ERROR: Response truncated due to length limit");
+                    throw new NotImplementedException(
+                        "Incomplete model output due to MaxTokens parameter or token limit exceeded."
+                    );
 
-                        requiresAction = true;
-                        break;
+                case ChatFinishReason.ContentFilter:
+                    Debug.Log($"GPT Request: ContentFilter");
+                    await SaveConversationLogAsync(messages, "ERROR: Content filtered");
+                    throw new NotImplementedException(
+                        "Omitted content due to a content filter flag."
+                    );
 
-                    case ChatFinishReason.Length:
-                        throw new NotImplementedException(
-                            "Incomplete model output due to MaxTokens parameter or token limit exceeded."
-                        );
+                case ChatFinishReason.FunctionCall:
+                    Debug.Log($"GPT Request: FunctionCall");
+                    await SaveConversationLogAsync(messages, "ERROR: Function call not supported");
+                    throw new NotImplementedException("Deprecated in favor of tool calls.");
 
-                    case ChatFinishReason.ContentFilter:
-                        throw new NotImplementedException(
-                            "Omitted content due to a content filter flag."
-                        );
-
-                    case ChatFinishReason.FunctionCall:
-                        throw new NotImplementedException("Deprecated in favor of tool calls.");
-
-                    default:
-                        throw new NotImplementedException(completion.FinishReason.ToString());
-                }
-                if (requiresAction)
+                default:
+                    Debug.Log($"GPT Request: Default");
+                    await SaveConversationLogAsync(messages, $"ERROR: Unknown finish reason - {completion.FinishReason}");
+                    throw new NotImplementedException(completion.FinishReason.ToString());
+            }
+            if (requiresAction)
+            {
+                toolRounds++;
+                if (toolRounds >= maxToolCallRounds)
                 {
-                    toolRounds++;
-                    if (toolRounds >= maxToolCallRounds)
+                    if (!forcedFinalAfterToolLimit)
                     {
-                        if (!forcedFinalAfterToolLimit)
-                        {
-                            forcedFinalAfterToolLimit = true;
-                            UnityEngine.Debug.LogWarning($"[GPT] Tool call round limit reached ({maxToolCallRounds}) (sync). Forcing one final non-tool response.");
-                            messages.Add(new UserChatMessage($"도구 호출 한도({maxToolCallRounds}회)에 도달했습니다. 더 이상 도구를 사용하지 말고 최종 결과만 JSON으로 응답하세요."));
-                            try { options.Tools.Clear(); } catch {}
-                            requiresAction = true; // run one more round without tools
-                        }
-                        else
-                        {
-                            UnityEngine.Debug.LogWarning("[GPT] Tool call limit reached and final pass already forced (sync). Ending tool loop.");
-                            requiresAction = false;
-                        }
+                        forcedFinalAfterToolLimit = true;
+                        Debug.LogWarning($"[GPT] Tool call round limit reached ({maxToolCallRounds}). Forcing one final non-tool response.");
+                        AddUserMessage($"도구 호출 한도({maxToolCallRounds}회)에 도달했습니다. 더 이상 도구를 사용하지 말고 최종 결과만 JSON으로 응답하세요.");
+                        try { options.Tools.Clear(); } catch { }
+                        requiresAction = true; // run one more round without tools
+                    }
+                    else
+                    {
+                        Debug.LogWarning("[GPT] Tool call limit reached and final pass already forced. Ending tool loop.");
+                        requiresAction = false;
                     }
                 }
-            } while (requiresAction);
-
-            return default;
-        }
-        finally
-        {
-            // GPT API 호출 종료 - 시뮬레이션 시간 자동 재개
-            if (timeService != null)
-            {
-                timeService.EndAPICall();
-                Debug.Log($"[GPT][{actorName}] API 호출 종료 (동기) - 시뮬레이션 시간 재개됨");
             }
-        }
-    }
+        } while (requiresAction);
 
-    protected virtual void ExecuteToolCall(ChatToolCall toolCall)
+        return default;
+    }
+    #endregion
+
+    #region 도구 사용
+    protected void ExecuteToolCall(ChatToolCall toolCall)
     {
-        ;
-    }
-
-    /// <summary>
-    /// 스택 트레이스에서 Agent 타입을 추출합니다
-    /// </summary>
-    private string GetAgentTypeFromStackTrace()
-    {
-        try
+        if (toolExecutor != null)
         {
-            var stackTrace = new System.Diagnostics.StackTrace();
-            for (int i = 0; i < stackTrace.FrameCount; i++)
-            {
-                var frame = stackTrace.GetFrame(i);
-                var method = frame.GetMethod();
-                var className = method.DeclaringType?.Name;
-                
-                if (className != null && className.EndsWith("Agent"))
-                {
-                    return className;
-                }
-            }
+            string result = toolExecutor.ExecuteTool(toolCall);
+            AddToolMessage(toolCall.Id, result);
         }
-        catch (Exception ex)
+        else
         {
-            Debug.LogWarning($"[GPT] 스택 트레이스 분석 중 오류: {ex.Message}");
+            Debug.LogWarning($"[ActSelectorAgent] No tool executor available for tool call: {toolCall.FunctionName}");
         }
-        
-        return "UnknownAgent";
     }
+    #endregion
 
+    #region 예외 처리
     /// <summary>
     /// 예외에서 파일/라인/메서드 정보를 최대한 뽑아서 함께 로깅합니다.
     /// PDB가 없으면 파일/라인은 unknown으로 표시될 수 있습니다.
@@ -816,5 +652,6 @@ public class GPT
             Debug.LogError($"[GPT] Failed to log exception details: {logEx.Message}. Original error: {ex.Message}\nOriginal stack:\n{ex}");
         }
     }
+    #endregion
 
 }

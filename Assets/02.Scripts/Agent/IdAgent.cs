@@ -16,16 +16,11 @@ using UnityEngine;
 /// </summary>
 public class IdAgent : GPT
 {
-    private Actor actor;
-    private IToolExecutor toolExecutor;
     private DayPlanner dayPlanner; // DayPlanner 참조 추가
 
     public IdAgent(Actor actor)
-        : base()
+        : base(actor)
     {
-        this.actor = actor;
-        this.toolExecutor = new ActorToolExecutor(actor);
-        SetActorName(actor.Name);
         SetAgentType(nameof(IdAgent));
 
         InitializeOptions();
@@ -71,12 +66,10 @@ public class IdAgent : GPT
                 replacements
             );
 
-            messages.Add(new SystemChatMessage(promptText));
+            AddSystemMessage(promptText);
 
             if (recentPerceptionInterpretation != null)
-                messages.Add(
-                    new UserChatMessage($"가장 최근 상황 인식: {recentPerceptionInterpretation}")
-                );
+                AddUserMessage($"가장 최근 상황 인식: {recentPerceptionInterpretation}");
         }
         catch (Exception ex)
         {
@@ -136,24 +129,6 @@ public class IdAgent : GPT
         options.Tools.Add(ToolManager.ToolDefinitions.LoadRelationshipByName);
 
         // TODO: GetCurrentPlan 도구 추가
-    }
-
-    /// <summary>
-    /// 도구 호출을 처리합니다.
-    /// </summary>
-    protected override void ExecuteToolCall(ChatToolCall toolCall)
-    {
-        if (toolExecutor != null)
-        {
-            string result = toolExecutor.ExecuteTool(toolCall);
-            messages.Add(new ToolChatMessage(toolCall.Id, result));
-        }
-        else
-        {
-            Debug.LogWarning(
-                $"[IdAgent] No tool executor available for tool call: {toolCall.FunctionName}"
-            );
-        }
     }
 
     /// <summary>
@@ -288,10 +263,10 @@ public class IdAgent : GPT
                 "id_agent_template",
                 replacements
             );
-            messages.Add(new UserChatMessage(userMessage));
+            AddUserMessage(userMessage);
 
             // GPT 호출
-            var response = await SendGPTAsync<IdResult>(messages, options);
+            var response = await SendWithCacheLog<IdResult>();
 
             Debug.Log($"[PerceptionAgent {actor.Name}] 본능 에이전트 완료");
             if (

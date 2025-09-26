@@ -74,7 +74,7 @@ public abstract partial class NPC : Actor
     {
         if (Application.isPlaying && actionAgent != null)
         {
-            actionAgent.ClearMessages();
+            actionAgent.ClearMessages(true);
             Debug.Log($"[{Name}] AI Agent 메시지 기록 초기화됨");
         }
     }

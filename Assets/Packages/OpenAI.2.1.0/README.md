@@ -222,7 +222,7 @@ bool requiresAction;
 do
 {
     requiresAction = false;
-    ChatCompletion completion = client.CompleteChat(messages, options);
+    ChatCompletion completion = client.CompleteChat( options);
 
     switch (completion.FinishReason)
     {
@@ -340,7 +340,7 @@ ChatCompletionOptions options = new()
         jsonSchemaIsStrict: true)
 };
 
-ChatCompletion completion = client.CompleteChat(messages, options);
+ChatCompletion completion = client.CompleteChat( options);
 
 using JsonDocument structuredJson = JsonDocument.Parse(completion.Content[0].Text);
 

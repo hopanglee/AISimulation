@@ -12,13 +12,10 @@ namespace Agent
     /// </summary>
     public class ThinkQuestionAgent : GPT
     {
-        private readonly Actor actor;
         private string lastInitialUserMessage = null;
 
-        public ThinkQuestionAgent(Actor actor) : base()
+        public ThinkQuestionAgent(Actor actor) : base(actor)
         {
-            this.actor = actor;
-            SetActorName(actor.Name);
             SetAgentType(nameof(ThinkQuestionAgent));
 
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
@@ -48,15 +45,15 @@ namespace Agent
                 var systemPrompt = LoadSystemPrompt(thinkScope, topic);
 
                 // 새로운 대화 시작 또는 기존 대화 이어가기
-                if (messages.Count == 0)
+                if (GetMessageCount() == 0)
                 {
-                    messages.Add(new SystemChatMessage(systemPrompt));
+                    AddSystemMessage(systemPrompt);
                     // 첫 질문 생성을 위한 메시지 구성
                     var initialUserMessage = LoadFirstUserMessage(topic);
                     lastInitialUserMessage = initialUserMessage; // 저장
-                    messages.Add(new UserChatMessage(initialUserMessage));
+                    AddUserMessage(initialUserMessage);
 
-                    var initialResponse = await SendGPTAsync<string>(messages, options);
+                    var initialResponse = await SendWithCacheLog<string>( );
 
                     if (string.IsNullOrEmpty(initialResponse))
                     {
@@ -71,7 +68,7 @@ namespace Agent
                     // 이전에 저장된 초기 사용자 메시지가 있으면 제거
                     if (!string.IsNullOrEmpty(lastInitialUserMessage))
                     {
-                        messages.RemoveAll(m => m is UserChatMessage u && string.Equals(u.Content?.ToString(), lastInitialUserMessage, StringComparison.Ordinal));
+                        RemoveMessage(new AgentChatMessage() { role = AgentRole.User, content = lastInitialUserMessage });
                         lastInitialUserMessage = null; // 제거 후 초기화
                     }
                 }
@@ -79,10 +76,10 @@ namespace Agent
                 // 이전 답변을 user message로 추가
                 if (!string.IsNullOrEmpty(previousAnswer))
                 {
-                    messages.Add(new UserChatMessage(previousAnswer));
+                    AddUserMessage(previousAnswer);
                 }
 
-                var response = await SendGPTAsync<string>(messages, options);
+                var response = await SendWithCacheLog<string>( );
 
                 if (string.IsNullOrEmpty(response))
                 {
@@ -116,7 +113,7 @@ namespace Agent
                 var replacements = new Dictionary<string, string>
                 {
                     ["current_time"] = $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}",
-                    ["character_name"] = actor.Name,
+                    ["character_name"] = actor.Name ?? "Unknown",
                     ["topic"] = topic,
                     ["think_scope"] = thinkScope,
                     ["personality"] = actor.LoadPersonality(),
@@ -139,7 +136,7 @@ namespace Agent
         /// </summary>
         public void ResetConversation()
         {
-            messages.Clear();
+            ClearMessages();
             lastInitialUserMessage = null;
         }
 
@@ -153,7 +150,7 @@ namespace Agent
                 var localizationService = Services.Get<ILocalizationService>();
                 var replacements = new Dictionary<string, string>
                 {
-                    ["character_name"] = actor.Name,
+                    ["character_name"] = actor.Name ?? "Unknown",
                     ["topic"] = topic,
                 };
 

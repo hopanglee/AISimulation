@@ -8,16 +8,54 @@ using UnityEngine;
 public class GeminiClient : LLMClient
 {
     private readonly HttpWebFetcher client;
+    private string apiKey;
 
     public GeminiClient(LLMClientProps options)
         : base(options)
     {
         client = new HttpWebFetcher("https://generativelanguage.googleapis.com");
     }
+    public override int GetMessageCount()
+    {
+        throw new NotImplementedException();
+    }
 
-    public override async UniTask<T> Send<T>(//
-        List<AgentChatMessage> messages,
-        LLMClientSchema schema,
+    public override void RemoveAt(int index)
+    {
+        throw new NotImplementedException();
+    }
+    public override void RemoveMessage(AgentChatMessage message)
+    {
+        throw new NotImplementedException();
+    }
+    public override void ClearMessages(bool keepSystemMessage = false)
+    {
+        throw new NotImplementedException();      
+    }
+    public override void AddMessage(AgentChatMessage message)
+    {
+        throw new NotImplementedException();
+    }
+    public override void AddSystemMessage(string message)
+    {
+        throw new NotImplementedException();
+    }
+    public override void AddUserMessage(string message)
+    {
+        throw new NotImplementedException();
+    }
+     public override void AddAssistantMessage(string message)
+    {
+        throw new NotImplementedException();
+    }
+    public override void AddToolMessage(string id, string message)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override async UniTask<T> Send<T>(
+        List<AgentChatMessage> messages = null,
+        LLMClientSchema schema = null,
         ChatDeserializer<T> deserializer = null
     )
     {
@@ -58,14 +96,14 @@ public class GeminiClient : LLMClient
         };
 
         var response = await client.Post<string>(
-            $"/v1beta/models/{options.model}:generateContent?key={options.apiKey}",
+            $"/v1beta/models/{llmOptions.model}:generateContent?key={apiKey}",
             requestData
         );
 
         return JsonConvert.DeserializeObject<GeminiResponse>(response);
     }
 
-    public override async UniTask<LLMClientToolResponse<T>> UseTools<T>(
+    public async UniTask<LLMClientToolResponse<T>> UseTools<T>(
         List<AgentChatMessage> messages,
         List<LLMClientSchema> toolSchemas,
         ChatDeserializer<T> deserializer = null
@@ -94,7 +132,7 @@ public class GeminiClient : LLMClient
         };
 
         var response = await client.Post<GeminiResponse>(
-            $"/v1beta/models/{options.model}:generateContent?key={options.apiKey}",
+            $"/v1beta/models/{llmOptions.model}:generateContent?key={apiKey}",
             requestData
         );
 

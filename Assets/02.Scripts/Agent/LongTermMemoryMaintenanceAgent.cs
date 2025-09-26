@@ -98,12 +98,8 @@ public class MergeOperation
 /// </summary>
 public class LongTermMemoryMaintenanceAgent : GPT
 {
-    private Actor actor;
-
-    public LongTermMemoryMaintenanceAgent(Actor actor) : base()
+    public LongTermMemoryMaintenanceAgent(Actor actor) : base(actor)
     {
-        this.actor = actor;
-        SetActorName(actor.Name);
         SetAgentType(nameof(LongTermMemoryMaintenanceAgent));
 
 
@@ -205,7 +201,8 @@ public class LongTermMemoryMaintenanceAgent : GPT
         GameTime currentTime)
     {
         string systemPrompt = LoadMaintenancePrompt();
-        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+        ClearMessages();
+        AddSystemMessage(systemPrompt);
 
         try
         {
@@ -254,9 +251,9 @@ public class LongTermMemoryMaintenanceAgent : GPT
 
             string userMessage = localizationService.GetLocalizedText("longterm_memory_maintenance_prompt", replacements);
 
-            messages.Add(new UserChatMessage(userMessage));
+            AddUserMessage(userMessage);
 
-            var response = await SendGPTAsync<LongTermMemoryMaintenanceResult>(messages, options);
+            var response = await SendWithCacheLog<LongTermMemoryMaintenanceResult>();
 
             // 결과 검증 및 보정
             ValidateAndCorrectMaintenanceResult(response, longTermMemories);

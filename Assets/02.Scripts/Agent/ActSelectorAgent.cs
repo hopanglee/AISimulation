@@ -29,15 +29,10 @@ namespace Agent
     /// </summary>
     public class ActSelectorAgent : GPT
     {
-        private Actor actor;
-        private IToolExecutor toolExecutor;
         private DayPlanner dayPlanner; // DayPlanner 참조 추가
         private int cycle;
-        public ActSelectorAgent(Actor actor, int cycle) : base()
+        public ActSelectorAgent(Actor actor, int cycle) : base(actor)
         {
-            this.actor = actor;
-            this.toolExecutor = new ActorToolExecutor(actor);
-            SetActorName(actor.Name);
             SetAgentType(nameof(ActSelectorAgent));
             this.cycle = cycle;
 
@@ -47,13 +42,13 @@ namespace Agent
             // 모든 도구 추가 (액션 정보 + 아이템 관리)
             // 제한된 도구만 추가: 손/인벤토리 스왑 + 월드 정보 + 관계 메모리 조회
             // ItemManagement: SwapInventoryToHand (only if hand or inventory has any item)
-            bool hasHandItem = this.actor?.HandItem != null;
+            bool hasHandItem = actor?.HandItem != null;
             bool hasInventoryItem = false;
-            if (this.actor?.InventoryItems != null)
+            if (actor?.InventoryItems != null)
             {
-                for (int i = 0; i < this.actor.InventoryItems.Length; i++)
+                for (int i = 0; i < actor.InventoryItems.Length; i++)
                 {
-                    if (this.actor.InventoryItems[i] != null) { hasInventoryItem = true; break; }
+                    if (actor.InventoryItems[i] != null) { hasInventoryItem = true; break; }
                 }
             }
             if (hasHandItem || hasInventoryItem)
@@ -112,7 +107,8 @@ namespace Agent
                     { "relationship", actor.LoadRelationships() },
                     {"available_act", FormatAvailableActionsToString(GetCurrentAvailableActions())}
                 });
-            messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+            ClearMessages();
+            AddSystemMessage(systemPrompt);
 
             // GPT에 물어보기 전에 responseformat 동적 갱신
             UpdateResponseFormatSchema();
@@ -230,10 +226,10 @@ namespace Agent
             }
 
             var userMessage = localizationService.GetLocalizedText("current_action_context_prompt", replacements);
-            messages.Add(new UserChatMessage(userMessage));
+            AddUserMessage(userMessage);
             Debug.Log("[ActSelectorAgent][DBG-AS-10] Context message built and added");
 
-            var response = await SendGPTAsync<ActSelectionResult>(messages, options);
+            var response = await SendWithCacheLog<ActSelectionResult>();
 
             Debug.Log($"[ActSelectorAgent] Act: {response.ActType}, Reason: {response.Reasoning}, Intention: {response.Intention}");
 
@@ -297,10 +293,10 @@ namespace Agent
             {
                 // 제약 설명을 사용자 메시지로 추가하고 재요청
                 var constraintMsg = $"제약 사항: {reasonKo}\n현재 상태에서 실행 가능한 다른 행동을 선택해 주세요.";
-                messages.Add(new UserChatMessage(constraintMsg));
+                AddUserMessage(constraintMsg);
                 Debug.Log($"[ActSelectorAgent] Reasking due to infeasible act: {first.ActType} | {reasonKo}");
 
-                first = await SendGPTAsync<ActSelectionResult>(messages, options);
+                first = await SendWithCacheLog<ActSelectionResult>();
                 retryCount++;
             }
             return first;
@@ -539,24 +535,6 @@ namespace Agent
             {
                 Debug.LogError($"[ActSelectorAgent] Error formatting available actions: {ex.Message}");
                 throw new System.InvalidOperationException($"ActSelectorAgent 액션 포맷팅 실패: {ex.Message}");
-            }
-        }
-
-
-
-        /// <summary>
-        /// Tool 호출을 처리합니다.
-        /// </summary>
-        protected override void ExecuteToolCall(ChatToolCall toolCall)
-        {
-            if (toolExecutor != null)
-            {
-                string result = toolExecutor.ExecuteTool(toolCall);
-                messages.Add(new ToolChatMessage(toolCall.Id, result));
-            }
-            else
-            {
-                Debug.LogWarning($"[ActSelectorAgent] No tool executor available for tool call: {toolCall.FunctionName}");
             }
         }
 

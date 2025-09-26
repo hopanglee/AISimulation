@@ -17,17 +17,12 @@ using PlanStructures;
 /// </summary>
 public class SpecificPlannerAgent : GPT
 {
-    private MainActor actor;
-    private IToolExecutor toolExecutor;
 
     public SpecificPlannerAgent(Actor actor)
-        : base()
+        : base(actor)
     {
-        this.actor = actor as MainActor;
-        this.toolExecutor = new ActorToolExecutor(actor);
 
         // Actor 이름 설정 (로깅용)
-        SetActorName(actor.Name);
         SetAgentType(nameof(SpecificPlannerAgent));
 
 
@@ -105,21 +100,6 @@ public class SpecificPlannerAgent : GPT
     }
 
 
-    protected override void ExecuteToolCall(ChatToolCall toolCall)
-    {
-        if (toolExecutor != null)
-        {
-            string result = toolExecutor.ExecuteTool(toolCall);
-            messages.Add(new ToolChatMessage(toolCall.Id, result));
-        }
-        else
-        {
-            Debug.LogWarning($"[SpecificPlannerAgent] No tool executor available for tool call: {toolCall.FunctionName}");
-        }
-    }
-
-
-
     /// <summary>
     /// 구체적 행동 계획 응답 구조
     /// </summary>
@@ -144,13 +124,14 @@ public class SpecificPlannerAgent : GPT
                 { "memory", actor.LoadCharacterMemory() },
                 { "character_situation", actor.LoadActorSituation() }
             });
-        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+        ClearMessages();
+        AddSystemMessage(systemPrompt);
         string prompt = GenerateActionPlanPrompt(detailedPlan);
-        messages.Add(new UserChatMessage(prompt));
+        AddUserMessage(prompt);
 
         Debug.Log($"[SpecificPlannerAgent] {actor.Name}의 구체적 행동 계획 생성 시작...");
 
-        var response = await SendGPTAsync<ActionPlanResponse>(messages, options);
+        var response = await SendWithCacheLog<ActionPlanResponse>( );
 
         // 생성된 SpecificAction들에 부모 참조 설정
         foreach (var action in response.SpecificActions)
@@ -182,14 +163,14 @@ public class SpecificPlannerAgent : GPT
         {
             {"current_time", $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}" },
             { "character_name", actor.Name },
-            { "interpretation", actor.brain.recentPerceptionResult.situation_interpretation },
+            { "interpretation", ((MainActor)actor).brain.recentPerceptionResult.situation_interpretation },
             { "activityName", detailedPlan.ActivityName },
             { "activityDescription", detailedPlan.Description },
             { "activityDuration", detailedPlan.DurationMinutes.ToString() },
             {"taskName", detailedPlan.ParentHighLevelTask.TaskName },
             { "taskDescription", detailedPlan.ParentHighLevelTask.Description },
             { "taskDuration", detailedPlan.ParentHighLevelTask.DurationMinutes.ToString() },
-            {"today_plan", actor.brain.dayPlanner.GetCurrentDayPlan().ToString() }
+            {"today_plan", ((MainActor)actor).brain.dayPlanner.GetCurrentDayPlan().ToString() }
         };
 
         return localizationService.GetLocalizedText("action_plan_prompt", replacements);

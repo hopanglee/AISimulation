@@ -56,12 +56,10 @@ namespace Agent
 
         public async UniTask<GiveMoneyParameter> GenerateParametersAsync(CommonContext context)
         {
-            var messages = new List<ChatMessage>
-            {
-                new SystemChatMessage(systemPrompt),
-                new UserChatMessage(BuildUserMessage(context))
-            };
-            var response = await SendGPTAsync<GiveMoneyParameter>(messages, options);
+            ClearMessages();
+            AddSystemMessage(systemPrompt);
+            AddUserMessage(BuildUserMessage(context));
+            var response = await SendWithCacheLog<GiveMoneyParameter>( );
             return response;
         }
 

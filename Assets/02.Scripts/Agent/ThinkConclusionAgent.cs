@@ -12,12 +12,9 @@ namespace Agent
     /// </summary>
     public class ThinkConclusionAgent : GPT
     {
-        private readonly Actor actor;
 
-        public ThinkConclusionAgent(Actor actor) : base()
+        public ThinkConclusionAgent(Actor actor) : base(actor)
         {
-            this.actor = actor;
-            SetActorName(actor.Name);
             SetAgentType(nameof(ThinkConclusionAgent));
             // options = new ChatCompletionOptions
             // {
@@ -39,18 +36,16 @@ namespace Agent
                 var systemPrompt = LoadSystemPrompt(topic);
                 var userMessage = LoadUserMessage(topic, thoughtChain);
 
-                var messages = new List<ChatMessage>
-                {
-                    new SystemChatMessage(systemPrompt),
-                    new UserChatMessage(userMessage)
-                };
+                ClearMessages();
+                AddSystemMessage(systemPrompt);
+                AddUserMessage(userMessage);
 
                 // var options = new ChatCompletionOptions
                 // {
                 //     Temperature = 0.7f // 창의적이면서도 논리적인 결론
                 // };
 
-                var response = await SendGPTAsync<string>(messages, options);
+                var response = await SendWithCacheLog<string>( );
                 if (string.IsNullOrEmpty(response))
                 {
                     Debug.LogError($"[ThinkConclusionAgent] 결론 생성 실패: 응답이 null임");
@@ -82,7 +77,7 @@ namespace Agent
                 var minute = timeService.CurrentTime.minute;
                 var replacements = new Dictionary<string, string>
                 {
-                    ["character_name"] = actor.Name,
+                    ["character_name"] = actor.Name ?? "Unknown",
                     ["topic"] = topic,
                     ["personality"] = actor.LoadPersonality(),
                     ["info"] = actor.LoadCharacterInfo(),
@@ -126,7 +121,7 @@ namespace Agent
         /// </summary>
         private string GetDefaultSystemPrompt()
         {
-            return $"당신은 {actor.Name}입니다. 깊은 사색 과정을 통해 얻은 통찰들을 바탕으로 의미있는 최종 결론을 내려주세요.";
+            return $"당신은 {actor.Name ?? "Unknown"}입니다. 깊은 사색 과정을 통해 얻은 통찰들을 바탕으로 의미있는 최종 결론을 내려주세요.";
         }
 
         /// <summary>

@@ -15,7 +15,7 @@ public interface IGPTApprovalService : IService
     /// <param name="agentType">요청하는 Agent 타입</param>
     /// <param name="messageCount">메시지 수</param>
     /// <returns>승인 여부</returns>
-    UniTask<bool> RequestApprovalAsync(string actorName, string agentType, int messageCount);
+    UniTask<bool> RequestApprovalAsync(string actorName, string agentType);
     
     /// <summary>
     /// 승인 요청이 대기 중인지 확인
@@ -51,11 +51,10 @@ public class GPTApprovalRequest
     public DateTime RequestTime;
     public string RequestId;
     
-    public GPTApprovalRequest(string actorName, string agentType, int messageCount)
+    public GPTApprovalRequest(string actorName, string agentType)
     {
         ActorName = actorName;
         AgentType = agentType;
-        MessageCount = messageCount;
         RequestTime = DateTime.Now;
         RequestId = Guid.NewGuid().ToString();
     }
@@ -83,10 +82,10 @@ public class GPTApprovalService : IGPTApprovalService
         Debug.Log("[GPTApprovalService] GPTApprovalService가 초기화되었습니다.");
     }
     
-    public async UniTask<bool> RequestApprovalAsync(string actorName, string agentType, int messageCount)
+    public async UniTask<bool> RequestApprovalAsync(string actorName, string agentType)
     {
         // 승인 요청 생성
-        var request = new GPTApprovalRequest(actorName, agentType, messageCount);
+        var request = new GPTApprovalRequest(actorName, agentType);
         var completionSource = new UniTaskCompletionSource<bool>();
         // 목록에 추가
         pendingRequests.Add(request);

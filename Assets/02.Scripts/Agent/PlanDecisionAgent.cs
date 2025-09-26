@@ -14,15 +14,10 @@ using System.IO;
 /// </summary>
 public class PlanDecisionAgent : GPT
 {
-	private readonly Actor actor;
-	private readonly IToolExecutor toolExecutor;
 
-	public PlanDecisionAgent(Actor actor) : base()// "gpt-4o-mini"
+	public PlanDecisionAgent(Actor actor) : base(actor)// "gpt-4o-mini"
 	{
-		this.actor = actor;
-		this.toolExecutor = new ActorToolExecutor(actor);
 
-		SetActorName(actor.Name);
 		SetAgentType(nameof(PlanDecisionAgent));
 		InitializeOptions();
 	}
@@ -42,13 +37,6 @@ public class PlanDecisionAgent : GPT
 		ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Memory);
 		//ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Plan);
 	}
-
-	protected override void ExecuteToolCall(ChatToolCall toolCall)
-	{
-		var result = toolExecutor.ExecuteTool(toolCall);
-		Debug.Log($"[PlanDecisionAgent] Tool {toolCall.FunctionName}: {result}");
-	}
-
 	/// <summary>
 	/// 결정 입력값
 	/// </summary>
@@ -138,14 +126,12 @@ public class PlanDecisionAgent : GPT
 			string prompt = GenerateDecisionPrompt(input);
 
 			// 메시지 구성
-			var messages = new List<ChatMessage>
-			{
-				new SystemChatMessage(GetSystemPrompt()),
-				new UserChatMessage(prompt)
-			};
+			ClearMessages();
+			AddSystemMessage(GetSystemPrompt());
+			AddUserMessage(prompt);
 
 			// GPT 호출
-			var response = await SendGPTAsync<PlanDecisionResult>(messages, options);
+			var response = await SendWithCacheLog<PlanDecisionResult>( );
 
 			// 결과 검증
 			if (ValidateResult(response, out string error))

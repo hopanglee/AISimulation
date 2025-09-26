@@ -51,12 +51,10 @@ namespace Agent
 
         public async UniTask<PickUpItemParameter> GenerateParametersAsync(CommonContext context)
         {
-            var messages = new List<ChatMessage>
-            {
-                new SystemChatMessage(systemPrompt),
-                new UserChatMessage(BuildUserMessage(context))
-            };
-            var response = await SendGPTAsync<PickUpItemParameter>(messages, options);
+            ClearMessages();
+            AddSystemMessage(systemPrompt);
+            AddUserMessage(BuildUserMessage(context));
+            var response = await SendWithCacheLog<PickUpItemParameter>( );
             return response;
         }
 

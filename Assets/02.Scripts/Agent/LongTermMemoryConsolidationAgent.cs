@@ -61,12 +61,9 @@ public class MemoryConsolidationResult
 /// </summary>
 public class LongTermMemoryConsolidationAgent : GPT
 {
-    private Actor actor;
 
-    public LongTermMemoryConsolidationAgent(Actor actor) : base()
+    public LongTermMemoryConsolidationAgent(Actor actor) : base(actor)
     {
-        this.actor = actor;
-        SetActorName(actor.Name);
         SetAgentType(nameof(LongTermMemoryConsolidationAgent));
 
         options = new()
@@ -168,7 +165,8 @@ public class LongTermMemoryConsolidationAgent : GPT
     public async UniTask<MemoryConsolidationResult> ConsolidateMemoriesAsync(List<ShortTermMemoryEntry> shortTermEntries)
     {
         string systemPrompt = LoadConsolidationPrompt();
-        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+        ClearMessages();
+        AddSystemMessage(systemPrompt);
 
         try
         {
@@ -227,9 +225,9 @@ public class LongTermMemoryConsolidationAgent : GPT
 
             string userMessage = localizationService.GetLocalizedText("longterm_memory_consolidation_prompt", replacements);
 
-            messages.Add(new UserChatMessage(userMessage));
+            AddUserMessage(userMessage);
 
-            var response = await SendGPTAsync<MemoryConsolidationResult>(messages, options);
+            var response = await SendWithCacheLog<MemoryConsolidationResult>();
 
             // 통계 검증 및 보정
             response.TotalOriginalEntries = sortedEntries.Count;

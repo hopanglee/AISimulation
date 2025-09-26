@@ -67,12 +67,8 @@ public class RelationshipUpdateEntry
 /// </summary>
 public class RelationshipAgent : GPT
 {
-    private Actor actor;
-
-    public RelationshipAgent(Actor actor) : base()
+    public RelationshipAgent(Actor actor) : base(actor)
     {
-        this.actor = actor;
-        SetActorName(actor.Name);
         SetAgentType(nameof(RelationshipAgent));
 
 
@@ -159,14 +155,15 @@ public class RelationshipAgent : GPT
             };
 
             string systemPrompt = LoadRelationshipAgentPrompt();
-            messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+            ClearMessages();
+            AddSystemMessage(systemPrompt);
 
             string userMessage = localizationService.GetLocalizedText("relationship_decision_prompt", replacements);
 
             // 사용자 메시지 추가
-            messages.Add(new UserChatMessage(userMessage));
+            AddUserMessage(userMessage);
 
-            var response = await SendGPTAsync<RelationshipDecision>(messages, options);
+            var response = await SendWithCacheLog<RelationshipDecision>( );
 
             if (response != null)
             {

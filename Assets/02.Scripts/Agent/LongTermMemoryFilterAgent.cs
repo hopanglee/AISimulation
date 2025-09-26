@@ -60,13 +60,10 @@ public class MemoryFilterResult
 /// </summary>
 public class LongTermMemoryFilterAgent : GPT
 {
-    private Actor actor;
     private const float TARGET_RETENTION_RATE = 0.7f; // 70% 보존 목표
 
-    public LongTermMemoryFilterAgent(Actor actor) : base()
+    public LongTermMemoryFilterAgent(Actor actor) : base(actor)
     {
-        this.actor = actor;
-        SetActorName(actor.Name);
         SetAgentType(nameof(LongTermMemoryFilterAgent));
 
 
@@ -146,7 +143,8 @@ public class LongTermMemoryFilterAgent : GPT
     public async UniTask<MemoryFilterResult> FilterMemoriesAsync(List<ConsolidatedMemoryChunk> consolidatedChunks)
     {
         string systemPrompt = LoadFilterPrompt();
-        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+        ClearMessages();
+        AddSystemMessage(systemPrompt);
 
         try
         {
@@ -196,9 +194,9 @@ public class LongTermMemoryFilterAgent : GPT
 
             string userMessage = localizationService.GetLocalizedText("longterm_memory_filter_prompt", replacements);
 
-            messages.Add(new UserChatMessage(userMessage));
+            AddUserMessage(userMessage);
 
-            var response = await SendGPTAsync<MemoryFilterResult>(messages, options);
+            var response = await SendWithCacheLog<MemoryFilterResult>();
 
             // 결과 검증 및 보정
             ValidateAndCorrectFilterResult(response, consolidatedChunks, targetKeepCount);

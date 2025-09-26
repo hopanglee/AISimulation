@@ -24,18 +24,14 @@ public class BedInteractDecision
 
 public class BedInteractAgent : GPT
 {
-    private Actor actor;
-
-    public BedInteractAgent(Actor actor) : base()
+    public BedInteractAgent(Actor actor) : base(actor)
     {
         SetAgentType(nameof(BedInteractAgent));
-        this.actor = actor;
         
-        SetActorName(actor.Name);
-        //toolExecutor = new ActorToolExecutor(actor);
 
         string systemPrompt = LoadBedInteractAgentPrompt();
-        messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+        ClearMessages();
+        AddSystemMessage(systemPrompt);
 
         options = new()
         {
@@ -95,9 +91,9 @@ public class BedInteractAgent : GPT
             string userMessage = localizationService.GetLocalizedText("bed_interact_prompt", replacements);
 
             // 사용자 메시지 추가
-            messages.Add(new UserChatMessage(userMessage));
+            AddUserMessage(userMessage);
 
-            var response = await SendGPTAsync<BedInteractDecision>(messages, options);
+            var response = await SendWithCacheLog<BedInteractDecision>( );
             
             if (response != null)
             {

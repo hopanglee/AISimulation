@@ -81,12 +81,10 @@ namespace Agent
 
         public async UniTask<iPhoneUseParameter> GenerateParametersAsync(CommonContext context)
         {
-            var messages = new List<ChatMessage>
-            {
-                new SystemChatMessage(systemPrompt),
-                new UserChatMessage(BuildUserMessage(context))
-            };
-            var response = await SendGPTAsync<iPhoneUseParameter>(messages, options);
+            ClearMessages();
+            AddSystemMessage(systemPrompt);
+            AddUserMessage(BuildUserMessage(context));
+            var response = await SendWithCacheLog<iPhoneUseParameter>( );
             return response;
         }
 

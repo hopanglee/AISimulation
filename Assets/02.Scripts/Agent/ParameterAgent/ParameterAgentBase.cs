@@ -15,26 +15,18 @@ namespace Agent
     /// </summary>
     public abstract class ParameterAgentBase : GPT
     {
-        protected Actor actor;
-        protected IToolExecutor toolExecutor;
-        
+
         /// <summary>
         /// ParameterAgentBase 생성자 - 자식 클래스에서 :base()로 호출
         /// </summary>
-        protected ParameterAgentBase(Actor actor) : base()
+        protected ParameterAgentBase(Actor actor) : base(actor)
         {
-            SetActorName(actor.Name);
-            this.actor = actor;
-            this.toolExecutor = new ActorToolExecutor(actor);
         }
 
-        protected ParameterAgentBase(Actor actor, string version) : base(version)
+        protected ParameterAgentBase(Actor actor, string version) : base(actor, version)
         {
-            SetActorName(actor.Name);
-            this.actor = actor;
-            this.toolExecutor = new ActorToolExecutor(actor);
         }
-        
+
         public class CommonContext
         {
             public string Reasoning { get; set; }
@@ -46,23 +38,6 @@ namespace Agent
         /// Act, Reasoning, Intention을 받아 파라미터를 생성하는 추상 메서드
         /// </summary>
         public abstract UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request);
-
-        /// <summary>
-        /// 도구 호출을 처리하는 가상 메서드 (하위 클래스에서 오버라이드 가능)
-        /// </summary>
-        protected override void ExecuteToolCall(ChatToolCall toolCall)
-        {
-            if (toolExecutor != null)
-            {
-                string result = toolExecutor.ExecuteTool(toolCall);
-                messages.Add(new ToolChatMessage(toolCall.Id, result));
-            }
-            else
-            {
-                Debug.LogWarning($"[ParameterAgentBase] No tool executor available for tool call: {toolCall.FunctionName}");
-            }
-        }
-
         /// <summary>
         /// 도구 세트를 options에 추가하는 헬퍼 메서드
         /// </summary>
@@ -106,9 +81,8 @@ namespace Agent
         /// </summary>
         public static ParameterAgentBase CreateParameterAgent(ActionType actionType, Actor actor)
         {
-            var gpt = new GPT();
             ParameterAgentBase agent = null;
-            
+
             switch (actionType)
             {
                 case ActionType.MoveToArea:
@@ -145,10 +119,10 @@ namespace Agent
                     Debug.LogWarning($"[ParameterAgentFactory] 지원되지 않는 ActionType: {actionType}");
                     return null;
             }
-            
+
             return agent;
         }
-        
+
         /// <summary>
         /// 액터 주변의 캐릭터 목록을 가져옵니다.
         /// </summary>
@@ -157,7 +131,7 @@ namespace Agent
             try
             {
                 var characterList = new List<string>();
-                
+
                 // Sensor의 InteractableActors에서 캐릭터들을 가져옵니다
                 if (actor.sensor?.GetInteractableEntities().actors != null)
                 {
@@ -166,10 +140,10 @@ namespace Agent
                         if (interactableActor.Value != actor) // 자기 자신은 제외
                         {
                             characterList.Add(interactableActor.Key);
-                        }   
+                        }
                     }
                 }
-                
+
                 return characterList;
             }
             catch (Exception ex)
@@ -179,4 +153,4 @@ namespace Agent
             }
         }
     }
-} 
+}

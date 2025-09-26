@@ -12,12 +12,8 @@ namespace Agent
     /// </summary>
     public class ThinkAnswerAgent : GPT
     {
-        private readonly Actor actor;
-
-        public ThinkAnswerAgent(Actor actor) : base()
+        public ThinkAnswerAgent(Actor actor) : base(actor)
         {
-            this.actor = actor;
-            SetActorName(actor.Name);
             SetAgentType(nameof(ThinkAnswerAgent));
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
             options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemoriesFiltered);
@@ -46,18 +42,18 @@ namespace Agent
                 var systemPrompt = LoadSystemPrompt(thinkScope, topic);
                 
                 // 새로운 대화 시작 또는 기존 대화 이어가기
-                if (messages.Count == 0)
+                if (GetMessageCount() == 0)
                 {
-                    messages.Add(new SystemChatMessage(systemPrompt));
+                    AddSystemMessage(systemPrompt);
                 }
 
                 // 질문을 user message로 추가
-                messages.Add(new UserChatMessage(question));
+                AddUserMessage(question);
 
                 // 메모리 툴 추가
                 Tools.ToolManager.AddToolSetToOptions(options, Agent.Tools.ToolManager.ToolSets.Memory);
 
-                var response = await SendGPTAsync<string>(messages, options);
+                var response = await SendWithCacheLog<string>( );
                 
                 if (string.IsNullOrEmpty(response))
                 {
@@ -75,26 +71,11 @@ namespace Agent
         }
 
         /// <summary>
-        /// 최신 assistant message를 반환합니다 (다음 질문 생성용)
-        /// </summary>
-        public string GetLatestAnswer()
-        {
-            for (int i = messages.Count - 1; i >= 0; i--)
-            {
-                if (messages[i] is AssistantChatMessage assistantMsg)
-                {
-                    return assistantMsg.Content[0].Text;
-                }
-            }
-            return "";
-        }
-
-        /// <summary>
         /// 대화 기록 초기화
         /// </summary>
         public void ResetConversation()
         {
-            messages.Clear();
+            ClearMessages();
         }
 
         /// <summary>

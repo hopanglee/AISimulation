@@ -493,8 +493,8 @@ public class SimulationController : MonoBehaviour
         if (approvalAgentTypeText != null)
             approvalAgentTypeText.text = $"Agent: {request.AgentType}";
         
-        if (approvalMessageCountText != null)
-            approvalMessageCountText.text = $"Messages: {request.MessageCount}";
+        //if (approvalMessageCountText != null)
+            //approvalMessageCountText.text = $"Messages: {request.MessageCount}";
 
         // 버튼 이벤트 설정
         if (approvalApproveButton != null)

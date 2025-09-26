@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "AI_Agent_Simulation.sln"
+    "dotnet.defaultSolution": "AISimulation.sln"
 }

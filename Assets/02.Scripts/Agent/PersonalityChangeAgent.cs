@@ -21,14 +21,10 @@ namespace Agent
             public List<string> traits_to_add = new List<string>();
             public string reasoning;
         }
-
-        private readonly Actor actor;
         private readonly ChatResponseFormat responseFormat;
 
-        public PersonalityChangeAgent(Actor actor) : base()
+        public PersonalityChangeAgent(Actor actor) : base(actor)
         {
-            this.actor = actor;
-            SetActorName(actor.Name);
             SetAgentType(nameof(PersonalityChangeAgent));
             this.responseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                 jsonSchemaFormatName: "personality_change_result",
@@ -74,7 +70,7 @@ namespace Agent
             {
                 var replacements = new Dictionary<string, string>
             {
-                {"character_name", actor?.Name ?? "Unknown"},
+                {"character_name", actor.Name ?? "Unknown"},
                 {"info", LoadCharacterInfo()},
                 {"memory", actor.LoadShortTermMemory()},
                 {"personality", actor.LoadPersonality()}
@@ -96,7 +92,7 @@ namespace Agent
         {
             try
             {
-                if (actor == null || string.IsNullOrEmpty(actor.Name))
+                if (string.IsNullOrEmpty(actor.Name))
                 {
                     return "캐릭터 정보를 찾을 수 없습니다.";
                 }
@@ -149,7 +145,7 @@ namespace Agent
                     var chunkReplacements = new Dictionary<string, string>
                     {
                         ["chunk_number"] = (index).ToString(),
-                       // ["chunk_id"] = chunk.ChunkId,
+                        // ["chunk_id"] = chunk.ChunkId,
                         ["time_range"] = chunk.TimeRange,
                         ["summary"] = chunk.Summary,
                         ["main_events"] = string.Join(", ", chunk.MainEvents),
@@ -169,7 +165,7 @@ namespace Agent
                 var dayOfWeek = timeService.CurrentTime.GetDayOfWeek();
                 var replacements = new Dictionary<string, string>
             {
-                { "current_time", $"{year}년 {month}월 {day}일 {dayOfWeek}" }, 
+                { "current_time", $"{year}년 {month}월 {day}일 {dayOfWeek}" },
                 { "experience_data", JsonConvert.SerializeObject(chunksText, Formatting.Indented) },
                 { "consolidation_reasoning", filteredResult.ConsolidationReasoning }
             };
@@ -178,11 +174,9 @@ namespace Agent
 
                 // 새로운 대화 시작
                 var systemPrompt = LoadSystemPrompt();
-                var tempMessages = new List<ChatMessage>
-            {
-                new SystemChatMessage(systemPrompt),
-                new UserChatMessage(requestContent)
-            };
+                ClearMessages();
+                AddSystemMessage(systemPrompt);
+                AddUserMessage(requestContent);
 
                 var options = new ChatCompletionOptions
                 {
@@ -190,7 +184,7 @@ namespace Agent
                     ResponseFormat = responseFormat
                 };
 
-                var result = await SendGPTAsync<PersonalityChangeResult>(tempMessages, options);
+                var result = await SendWithCacheLog<PersonalityChangeResult>();
 
                 if (result == null)
                 {

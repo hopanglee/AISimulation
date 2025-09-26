@@ -16,20 +16,17 @@ namespace Agent
     /// </summary>
     public class ReactionDecisionAgent : GPT
     {
-        private readonly Actor actor;
-        private IToolExecutor toolExecutor;
         private DayPlanner dayPlanner;
 
-        public ReactionDecisionAgent(Actor actor) : base()
+        public ReactionDecisionAgent(Actor actor) : base(actor)
         {
-            this.actor = actor;
-            this.toolExecutor = new ActorToolExecutor(actor);
-            SetActorName(actor.Name);
             SetAgentType(nameof(ReactionDecisionAgent));
             
             // ReactionDecisionAgent 프롬프트 로드 및 초기화
             string systemPrompt = PromptLoader.LoadPrompt("ReactionDecisionAgentPrompt.txt", "You are an AI agent responsible for deciding whether to react to external events.");
-            messages = new List<ChatMessage>() { new SystemChatMessage(systemPrompt) };
+            
+            ClearMessages();
+            AddSystemMessage(systemPrompt);
             
             // Options 초기화
             options = new ChatCompletionOptions
@@ -153,8 +150,8 @@ namespace Agent
                 
                 string userMessage = localizationService.GetLocalizedText("reaction_decision_prompt", replacements);
 
-                messages.Add(new UserChatMessage(userMessage));
-                var response = await SendGPTAsync<ReactionDecisionResult>(messages, options);
+                AddUserMessage(userMessage);
+                var response = await SendWithCacheLog<ReactionDecisionResult>( );
             
                 Debug.Log($"[ReactionDecisionAgent] Should React: {response.ShouldReact}, Priority: {response.PriorityLevel}, Reason: {response.Reasoning}");
                 return response;
@@ -169,22 +166,6 @@ namespace Agent
                     Reasoning = "Error occurred during decision making, defaulting to continue current activity",
                     PriorityLevel = "low"
                 };
-            }
-        }
-
-        /// <summary>
-        /// Tool 호출을 처리합니다.
-        /// </summary>
-        protected override void ExecuteToolCall(ChatToolCall toolCall)
-        {
-            if (toolExecutor != null)
-            {
-                string result = toolExecutor.ExecuteTool(toolCall);
-                messages.Add(new ToolChatMessage(toolCall.Id, result));
-            }
-            else
-            {
-                Debug.LogWarning($"[ReactionDecisionAgent] No tool executor available for tool call: {toolCall.FunctionName}");
             }
         }
     }
