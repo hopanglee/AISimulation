@@ -55,7 +55,7 @@ public class GPT : LLMClient
         else
             Debug.LogWarning($"No API key in file path : {authPath}");
 
-        client = new(model: model, apiKey: apiKey);
+        client = new(model: modelName, apiKey: apiKey);
         this.toolExecutor = new GPTToolExecutor(actor);
         this.SetActor(actor);
     }
