@@ -30,12 +30,7 @@ public class PutDownParameterAgent : ParameterAgentBase
         systemPrompt = PromptLoader.LoadPrompt("PutDownParameterAgentPrompt.txt", "");
 
         // ResponseFormat 설정
-        this.options = new ChatCompletionOptions
-        {
-            ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                jsonSchemaFormatName: "put_down_parameter",
-                jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                    $@"{{
+        var schemaJson = $@"{{
                         ""type"": ""object"",
                         ""additionalProperties"": false,
                         ""properties"": {{
@@ -46,11 +41,9 @@ public class PutDownParameterAgent : ParameterAgentBase
                             }}
                         }},
                         ""required"": [""target_key""]
-                    }}"
-                )),
-                jsonSchemaIsStrict: true
-            )
-        };
+                    }}";
+        var schema = new LLMClientSchema { name = "put_down_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+        SetResponseFormat(schema);
     }
 
     public async UniTask<PutDownParameter> GenerateParametersAsync(CommonContext context)

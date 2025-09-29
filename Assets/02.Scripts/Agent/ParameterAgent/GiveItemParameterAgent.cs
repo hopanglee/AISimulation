@@ -30,12 +30,7 @@ namespace Agent
             systemPrompt = PromptLoader.LoadPrompt("GiveItemParameterAgentPrompt.txt", "You are a GiveItem parameter generator.");
 
             // 옵션 생성
-            this.options = new ChatCompletionOptions
-            {
-                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "give_item_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
+            var schemaJson = $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
@@ -46,14 +41,9 @@ namespace Agent
                                 }}
                             }},
                             ""required"": [""target_character""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                )
-            };
-
-            // 아이템 관리 도구 추가
-            AddTools(ToolManager.NeutralToolSets.ItemManagement);
+                        }}";
+            var schema = new LLMClientSchema { name = "give_item_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+            SetResponseFormat(schema);
             
         }
 

@@ -21,44 +21,23 @@ namespace Agent
             public List<string> traits_to_add = new List<string>();
             public string reasoning;
         }
-        private readonly ChatResponseFormat responseFormat;
 
         public PersonalityChangeAgent(Actor actor) : base(actor)
         {
             SetAgentType(nameof(PersonalityChangeAgent));
-            this.responseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                jsonSchemaFormatName: "personality_change_result",
-                jsonSchema: System.BinaryData.FromBytes(
-                    System.Text.Encoding.UTF8.GetBytes(
-                        @"{
+            var schemaJson = $@"{{
                         ""type"": ""object"",
                         ""additionalProperties"": false,
-                        ""properties"": {
-                            ""has_personality_change"": {
-                                ""type"": ""boolean"",
-                                ""description"": ""성격 변화 발생 여부""
-                            },
-                            ""traits_to_remove"": {
-                                ""type"": ""array"",
-                                ""items"": { ""type"": ""string"" },
-                                ""description"": ""제거할 성격 특성 목록""
-                            },
-                            ""traits_to_add"": {
-                                ""type"": ""array"",
-                                ""items"": { ""type"": ""string"" },
-                                ""description"": ""추가할 성격 특성 목록""
-                            },
-                            ""reasoning"": {
-                                ""type"": ""string"",
-                                ""description"": ""구체적인 변화 이유와 경험 분석""
-                            },
-                        },
+                        ""properties"": {{
+                            ""has_personality_change"": {{ ""type"": ""boolean"", ""description"": ""성격 변화 발생 여부"" }},
+                            ""traits_to_remove"": {{ ""type"": ""array"", ""items"": {{ ""type"": ""string"" }}, ""description"": ""제거할 성격 특성 목록"" }},
+                            ""traits_to_add"": {{ ""type"": ""array"", ""items"": {{ ""type"": ""string"" }}, ""description"": ""추가할 성격 특성 목록"" }},
+                            ""reasoning"": {{ ""type"": ""string"", ""description"": ""구체적인 변화 이유와 경험 분석"" }}
+                        }},
                         ""required"": [""has_personality_change"", ""traits_to_remove"", ""traits_to_add"", ""reasoning""]
-                    }"
-                    )
-                ),
-                jsonSchemaIsStrict: true
-            );
+                    }}";
+            var schema = new LLMClientSchema { name = "personality_change_result", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+            SetResponseFormat(schema);
         }
 
         /// <summary>
@@ -177,11 +156,6 @@ namespace Agent
                 ClearMessages();
                 AddSystemMessage(systemPrompt);
                 AddUserMessage(requestContent);
-
-                var options = new ChatCompletionOptions
-                {
-                    ResponseFormat = responseFormat
-                };
 
                 var result = await SendWithCacheLog<PersonalityChangeResult>();
 

@@ -36,9 +36,6 @@ namespace Agent
             SetAgentType(nameof(ActSelectorAgent));
             this.cycle = cycle;
 
-
-            UpdateResponseFormatSchema();
-
             // 모든 도구 추가 (액션 정보 + 아이템 관리)
             // 제한된 도구만 추가: 손/인벤토리 스왑 + 월드 정보 + 관계 메모리 조회
             // ItemManagement: SwapInventoryToHand (only if hand or inventory has any item)
@@ -243,34 +240,34 @@ namespace Agent
         {
             try
             {
-                options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "act_selection_result",
-                    jsonSchema: BinaryData.FromBytes(
-                        System.Text.Encoding.UTF8.GetBytes(
-                            $@"{{
-                                ""type"": ""object"",
-                                ""additionalProperties"": false,
-                                ""properties"": {{
-                                    ""act_type"": {{
-                                        ""type"": ""string"",
-                                        ""enum"": [ {string.Join(", ", GetCurrentAvailableActions().Select(a => $"\"{a}\""))} ],
-                                        ""description"": ""수행할 행동의 유형""
-                                    }},
-                                    ""reasoning"": {{
-                                        ""type"": ""string"",
-                                        ""description"": ""이 행동을 선택한 이유""
-                                    }},
-                                    ""intention"": {{
-                                        ""type"": ""string"",
-                                        ""description"": ""이 행동으로 달성하려는 의도""
-                                    }}
-                                }},
-                                ""required"": [""act_type"", ""reasoning"", ""intention""]
-                            }}"
-                        )
-                    ),
-                    jsonSchemaIsStrict: true
-                );
+                var schemaJson = $@"{{
+                    ""type"": ""object"",
+                    ""additionalProperties"": false,
+                    ""properties"": {{
+                        ""act_type"": {{
+                            ""type"": ""string"",
+                            ""enum"": [ {string.Join(", ", GetCurrentAvailableActions().Select(a => $"\"{a}\""))} ],
+                            ""description"": ""수행할 행동의 유형""
+                        }},
+                        ""reasoning"": {{
+                            ""type"": ""string"",
+                            ""description"": ""이 행동을 선택한 이유""
+                        }},
+                        ""intention"": {{
+                            ""type"": ""string"",
+                            ""description"": ""이 행동으로 달성하려는 의도""
+                        }}
+                    }},
+                    ""required"": [""act_type"", ""reasoning"", ""intention""]
+                }}";
+
+                var schema = new LLMClientSchema
+                {
+                    name = "act_selection_result",
+                    format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson)
+                };
+
+                SetResponseFormat(schema);
             }
             catch (Exception ex)
             {

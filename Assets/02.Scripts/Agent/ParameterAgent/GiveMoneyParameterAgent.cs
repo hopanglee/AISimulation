@@ -26,12 +26,7 @@ namespace Agent
 
             // 프롬프트 로드
             systemPrompt = PromptLoader.LoadPrompt("GiveMoneyParameterAgentPrompt.txt", "You are a GiveMoney parameter generator.");
-            this.options = new ChatCompletionOptions
-            {
-                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "give_money_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
+            var schemaJson = $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
@@ -47,11 +42,9 @@ namespace Agent
                                 }}
                             }},
                             ""required"": [""target_character"", ""amount""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                )
-            };
+                        }}";
+            var schema = new LLMClientSchema { name = "give_money_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+            SetResponseFormat(schema);
         }
 
         public async UniTask<GiveMoneyParameter> GenerateParametersAsync(CommonContext context)

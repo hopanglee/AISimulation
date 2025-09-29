@@ -42,41 +42,20 @@ namespace Agent
                     { "memory", actor.LoadCharacterMemory() },
                     { "character_situation", actor.LoadActorSituation() }
                 });
-            this.options = new ChatCompletionOptions
-            {
-                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "iphone_use_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
+            var schemaJson = $@"{{
                             ""type"": ""object"",
                             ""description"": ""iPhone 사용을 위한 파라미터 스키마"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""command"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": [""chat"", ""read"", ""continue""],
-                                    ""description"": ""수행할 iPhone 명령어: chat(메시지 보내기), read(메시지 읽기), continue(이어 읽기)""
-                                }},
-                                ""target_actor"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": {JsonConvert.SerializeObject(GetCurrentAvailableActors())},
-                                    ""description"": ""대화 대상 인물 이름""
-                                }},
-                                ""message"": {{
-                                    ""type"": [""string"", ""null""],
-                                    ""description"": ""보낼 메시지 내용 (command=chat일 때 사용, 그 외 null)""
-                                }},
-                                ""message_count"": {{
-                                    ""type"": [""integer"", ""null""],
-                                    ""description"": ""읽을/이어 읽을 메시지 개수 (command=read/continue일 때 사용, 그 외 null)""
-                                }}
+                                ""command"": {{ ""type"": ""string"", ""enum"": [""chat"", ""read"", ""continue""], ""description"": ""수행할 iPhone 명령어: chat(메시지 보내기), read(메시지 읽기), continue(이어 읽기)"" }},
+                                ""target_actor"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(GetCurrentAvailableActors())}, ""description"": ""대화 대상 인물 이름"" }},
+                                ""message"": {{ ""type"": [""string"", ""null""], ""description"": ""보낼 메시지 내용 (command=chat일 때 사용, 그 외 null)"" }},
+                                ""message_count"": {{ ""type"": [""integer"", ""null""], ""description"": ""읽을/이어 읽을 메시지 개수 (command=read/continue일 때 사용, 그 외 null)"" }}
                             }},
                             ""required"": [""command"", ""target_actor"", ""message"", ""message_count""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                )
-            };
+                        }}";
+            var schema = new LLMClientSchema { name = "iphone_use_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+            SetResponseFormat(schema);
         }
 
         public async UniTask<iPhoneUseParameter> GenerateParametersAsync(CommonContext context)

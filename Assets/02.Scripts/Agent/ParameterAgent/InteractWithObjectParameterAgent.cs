@@ -25,12 +25,7 @@ namespace Agent
             systemPrompt = PromptLoader.LoadPrompt("InteractWithObjectParameterAgentPrompt.txt", "You are an InteractWithObject parameter generator.");
             SetAgentType(nameof(InteractWithObjectParameterAgent));
             objectList.Add("null");
-            this.options = new ChatCompletionOptions
-            {
-                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "interact_with_object_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
+            var schemaJson = $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
@@ -41,11 +36,9 @@ namespace Agent
                                 }}
                             }},
                             ""required"": [""object_name""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                )
-            };
+                        }}";
+            var schema = new LLMClientSchema { name = "interact_with_object_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+            SetResponseFormat(schema);
         }
 
         public async UniTask<InteractWithObjectParameter> GenerateParametersAsync(CommonContext context)

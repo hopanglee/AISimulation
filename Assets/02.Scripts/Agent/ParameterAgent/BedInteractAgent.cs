@@ -32,37 +32,18 @@ public class BedInteractAgent : GPT
         string systemPrompt = LoadBedInteractAgentPrompt();
         ClearMessages();
         AddSystemMessage(systemPrompt);
-
-        options = new()
-        {
-            ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                jsonSchemaFormatName: "bed_interact_decision",
-                jsonSchema: BinaryData.FromBytes(
-                    System.Text.Encoding.UTF8.GetBytes(
-                        @"{
+        var schemaJson = $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
-                            ""properties"": {
-                                ""should_sleep"": {
-                                    ""type"": ""boolean"",
-                                    ""description"": ""캐릭터가 잠을 자야 하는지 여부""
-                                },
-                                ""sleep_duration_minutes"": {
-                                    ""type"": ""integer"",
-                                    ""description"": ""수면 시간(분) (잠을 자지 않을 경우 0)""
-                                },
-                                ""reasoning"": {
-                                    ""type"": ""string"",
-                                    ""description"": ""수면 결정에 대한 추론""
-                                }
-                            },
+                            ""properties"": {{
+                                ""should_sleep"": {{ ""type"": ""boolean"", ""description"": ""캐릭터가 잠을 자야 하는지 여부"" }},
+                                ""sleep_duration_minutes"": {{ ""type"": ""integer"", ""description"": ""수면 시간(분) (잠을 자지 않을 경우 0)"" }},
+                                ""reasoning"": {{ ""type"": ""string"", ""description"": ""수면 결정에 대한 추론"" }}
+                            }},
                             ""required"": [""should_sleep"", ""sleep_duration_minutes"", ""reasoning""]
-                        }"
-                    )
-                ),
-                jsonSchemaIsStrict: true
-            ),
-        };
+                        }}";
+        var schema = new LLMClientSchema { name = "bed_interact_decision", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+        SetResponseFormat(schema);
     }
 
     /// <summary>

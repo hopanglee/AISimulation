@@ -16,16 +16,14 @@ namespace Agent
         {
             systemPrompt = PromptLoader.LoadPrompt("WaitParameterAgentPrompt.txt", "You are a Wait parameter generator.");
             SetAgentType(nameof(WaitParameterAgent));
-            this.options = new ChatCompletionOptions
-            {
-                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "wait_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        "{ \"type\": \"object\", \"properties\": { }, \"required\": [ ], \"additionalProperties\": true }"
-                    )),
-                    jsonSchemaIsStrict: true
-                )
-            };
+            var schemaJson = $@"{{
+                ""type"": ""object"",
+                ""properties"": {{ }},
+                ""required"": [],
+                ""additionalProperties"": true
+            }}";
+            var schema = new LLMClientSchema { name = "wait_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+            SetResponseFormat(schema);
         }
 
         public async UniTask<WaitParameter> GenerateParametersAsync(CommonContext context)

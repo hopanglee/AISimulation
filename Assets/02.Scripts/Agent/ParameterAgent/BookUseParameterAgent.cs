@@ -28,13 +28,7 @@ namespace Agent
                     { "character_name", actor.Name },
                     { "memory", actor.LoadCharacterMemory() },
                 });
-
-            this.options = new ChatCompletionOptions
-            {
-                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "book_use_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
+            var schemaJson = $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
@@ -46,11 +40,9 @@ namespace Agent
                                 }}
                             }},
                             ""required"": [""page_number""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                )
-            };
+                        }}";
+            var schema = new LLMClientSchema { name = "book_use_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+            SetResponseFormat(schema);
         }
 
         public async UniTask<BookUseParameter> GenerateParametersAsync(CommonContext context)

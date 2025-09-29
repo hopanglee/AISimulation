@@ -43,19 +43,12 @@ public class NPCActionAgent : GPT
         ClearMessages();
         AddSystemMessage(systemPrompt);
 
-        // Options 초기화 - JSON 스키마 포맷 설정 (최초 1회)
-        options = new ChatCompletionOptions
+        var initSchema = new LLMClientSchema
         {
-            ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                jsonSchemaFormatName: "npc_action_decision",
-                jsonSchema: BinaryData.FromBytes(
-                    System.Text.Encoding.UTF8.GetBytes(
-                        CreateJsonSchema()
-                    )
-                ),
-                jsonSchemaIsStrict: true
-            )
+            name = "npc_action_decision",
+            format = Newtonsoft.Json.Linq.JObject.Parse(CreateJsonSchema())
         };
+        SetResponseFormat(initSchema);
 
         // 도구 추가 - ItemManagement 도구 세트 추가
         AddTools(ToolManager.NeutralToolSets.ItemManagement);
@@ -357,15 +350,12 @@ public class NPCActionAgent : GPT
     {
         try
         {
-            options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                jsonSchemaFormatName: "npc_action_decision",
-                jsonSchema: BinaryData.FromBytes(
-                    System.Text.Encoding.UTF8.GetBytes(
-                        CreateJsonSchema()
-                    )
-                ),
-                jsonSchemaIsStrict: true
-            );
+            var dynSchema = new LLMClientSchema
+            {
+                name = "npc_action_decision",
+                format = Newtonsoft.Json.Linq.JObject.Parse(CreateJsonSchema())
+            };
+            SetResponseFormat(dynSchema);
         }
         catch (Exception ex)
         {

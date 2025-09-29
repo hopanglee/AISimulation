@@ -8,6 +8,7 @@ using OpenAI.Chat;
 using UnityEngine;
 using Agent;
 using Memory;
+using Agent.Tools;
 
 
 
@@ -41,43 +42,21 @@ public class ThinkParameterAgent : ParameterAgentBase
         
         systemPrompt = LoadThinkPrompt();
         SetAgentType(nameof(ThinkParameterAgent));
-
-        options = new()
-        {
-            ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                jsonSchemaFormatName: "think_parameters",
-                jsonSchema: BinaryData.FromBytes(
-                    Encoding.UTF8.GetBytes(
-                        @"{
+        var schemaJson = $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
-                            ""properties"": {
-                                ""think_scope"": {
-                                    ""type"": ""string"",
-                                    ""enum"": [""past_reflection"", ""future_planning"", ""current_analysis""],
-                                    ""description"": ""어떤 종류의 사색을 할지 선택합니다. 과거 회상, 미래 계획, 현재 분석""
-                                },
-                                ""topic"": {
-                                    ""type"": ""string"",
-                                    ""description"": ""구체적으로 무엇에 대해 생각할지""
-                                },
-                                ""duration"": {
-                                    ""type"": ""integer"",
-                                    ""minimum"": 5,
-                                    ""maximum"": 60,
-                                    ""description"": ""얼마나 오래 생각할지""
-                                }
-                            },
+                            ""properties"": {{
+                                ""think_scope"": {{ ""type"": ""string"", ""enum"": [""past_reflection"", ""future_planning"", ""current_analysis""], ""description"": ""어떤 종류의 사색을 할지 선택합니다. 과거 회상, 미래 계획, 현재 분석"" }},
+                                ""topic"": {{ ""type"": ""string"", ""description"": ""구체적으로 무엇에 대해 생각할지"" }},
+                                ""duration"": {{ ""type"": ""integer"", ""minimum"": 5, ""maximum"": 60, ""description"": ""얼마나 오래 생각할지"" }}
+                            }},
                             ""required"": [""think_scope"", ""topic"", ""duration""]
-                        }"
-                    )
-                ),
-                jsonSchemaIsStrict: true
-            ),
-        };
-
+                        }}";
+        var schema = new LLMClientSchema { name = "think_parameters", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+        SetResponseFormat(schema);
+ 
         // Think 액션에서 메모리 툴들을 사용할 수 있도록 추가
-        Agent.Tools.ToolManager.AddToolSetToOptions(options, Agent.Tools.ToolManager.ToolSets.Memory);
+        AddTools(ToolManager.NeutralToolSets.Memory);
     }
 
     public async UniTask<ThinkParameters> GenerateParametersAsync(CommonContext context)

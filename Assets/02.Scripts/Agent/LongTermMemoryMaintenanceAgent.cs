@@ -101,79 +101,34 @@ public class LongTermMemoryMaintenanceAgent : GPT
     public LongTermMemoryMaintenanceAgent(Actor actor) : base(actor)
     {
         SetAgentType(nameof(LongTermMemoryMaintenanceAgent));
-
-
-        options = new()
-        {
-            ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                jsonSchemaFormatName: "memory_maintenance",
-                jsonSchema: BinaryData.FromBytes(
-                    Encoding.UTF8.GetBytes(
-                        @"{
+        var schemaJson = $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
-                            ""properties"": {
-                                ""evaluations"": {
+                            ""properties"": {{
+                                ""evaluations"": {{
                                     ""type"": ""array"",
-                                    ""items"": {
+                                    ""items"": {{
                                         ""type"": ""object"",
                                         ""additionalProperties"": false,
-                                        ""properties"": {
-                                            ""memory_index"": {
-                                                ""type"": ""integer"",
-                                                ""description"": ""평가 중인 메모리의 인덱스""
-                                            },
-                                            ""surprise_score"": {
-                                                ""type"": ""number"",
-                                                ""minimum"": 0.0,
-                                                ""maximum"": 1.0,
-                                                ""description"": ""이 메모리가 얼마나 놀랍거나 예상치 못한지""
-                                            },
-                                            ""importance_score"": {
-                                                ""type"": ""number"",
-                                                ""minimum"": 0.0,
-                                                ""maximum"": 1.0,
-                                                ""description"": ""이 메모리가 얼마나 중요한지""
-                                            },
-                                            ""relevance_score"": {
-                                                ""type"": ""number"",
-                                                ""minimum"": 0.0,
-                                                ""maximum"": 1.0,
-                                                ""description"": ""이 메모리가 현재 삶에 얼마나 관련이 있는지""
-                                            },
-                                            ""action"": {
-                                                ""type"": ""string"",
-                                                ""enum"": [""keep"", ""remove"", ""merge_with"", ""modify""],
-                                                ""description"": ""이 메모리에 취할 행동""
-                                            },
-                                            ""merge_target_index"": {
-                                                ""type"": [""integer"", ""null""],
-                                                ""description"": ""병합할 대상 인덱스 (merge_with 행동에만 해당)""
-                                            },
-                                            ""modified_content"": {
-                                                ""type"": [""object"", ""null""],
-                                                ""description"": ""수정된 내용 (modify 행동에만 해당)""
-                                            },
-                                            ""reasoning"": {
-                                                ""type"": ""string"",
-                                                ""description"": ""행동에 대한 추론""
-                                            }
-                                        },
+                                        ""properties"": {{
+                                            ""memory_index"": {{ ""type"": ""integer"", ""description"": ""평가 중인 메모리의 인덱스"" }},
+                                            ""surprise_score"": {{ ""type"": ""number"", ""minimum"": 0.0, ""maximum"": 1.0, ""description"": ""이 메모리가 얼마나 놀랍거나 예상치 못한지"" }},
+                                            ""importance_score"": {{ ""type"": ""number"", ""minimum"": 0.0, ""maximum"": 1.0, ""description"": ""이 메모리가 얼마나 중요한지"" }},
+                                            ""relevance_score"": {{ ""type"": ""number"", ""minimum"": 0.0, ""maximum"": 1.0, ""description"": ""이 메모리가 현재 삶에 얼마나 관련이 있는지"" }},
+                                            ""action"": {{ ""type"": ""string"", ""enum"": [""keep"", ""remove"", ""merge_with"", ""modify""], ""description"": ""이 메모리에 취할 행동"" }},
+                                            ""merge_target_index"": {{ ""type"": [""integer"", ""null""], ""description"": ""병합할 대상 인덱스 (merge_with 행동에만 해당)"" }},
+                                            ""modified_content"": {{ ""type"": [""object"", ""null""], ""description"": ""수정된 내용 (modify 행동에만 해당)"" }},
+                                            ""reasoning"": {{ ""type"": ""string"", ""description"": ""행동에 대한 추론"" }}
+                                        }},
                                         ""required"": [""memory_index"", ""surprise_score"", ""importance_score"", ""relevance_score"", ""action"", ""reasoning"", ""merge_target_index"", ""modified_content""]
-                                    }
-                                },
-                                ""maintenance_reasoning"": {
-                                    ""type"": ""string"",
-                                    ""description"": ""정리 결정에 대한 전체적인 추론""
-                                }
-                            },
+                                    }}
+                                }},
+                                ""maintenance_reasoning"": {{ ""type"": ""string"", ""description"": ""정리 결정에 대한 전체적인 추론"" }}
+                            }},
                             ""required"": [""evaluations"", ""maintenance_reasoning""]
-                        }"
-                    )
-                ),
-                jsonSchemaIsStrict: true
-            ),
-        };
+                        }}";
+        var schema = new LLMClientSchema { name = "memory_maintenance", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+        SetResponseFormat(schema);
     }
 
     private string FormatEmotions(Dictionary<string, float> emotions)

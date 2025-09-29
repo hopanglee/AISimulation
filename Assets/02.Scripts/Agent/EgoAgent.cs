@@ -64,13 +64,7 @@ public class EgoAgent : GPT
     /// </summary>
     private void InitializeOptions()
     {
-        options = new ChatCompletionOptions
-        {
-            ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                jsonSchemaFormatName: "ego_result",
-                jsonSchema: System.BinaryData.FromBytes(
-                    System.Text.Encoding.UTF8.GetBytes(
-                        @"{
+        var schemaJson = @"{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {
@@ -98,16 +92,13 @@ public class EgoAgent : GPT
                             },
                             ""required"": [""thought_chain"", ""situation_interpretation""],
                             ""additionalProperties"": false
-                        }"
-                    )
-                ),
-                jsonSchemaIsStrict: true
-            )
-        };
-        
+                        }";
+        var schema = new LLMClientSchema { name = "ego_result", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+        SetResponseFormat(schema);
+
         // 월드 정보 도구 추가
-        AddTools(ToolManager.NeutralToolSets.WorldInfo);       
-         
+        AddTools(ToolManager.NeutralToolSets.WorldInfo);
+
     }
 
     /// <summary>

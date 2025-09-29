@@ -84,45 +84,29 @@ public class SuperegoAgent : GPT
     /// </summary>
     private void InitializeOptions()
     {
-        options = new ChatCompletionOptions
-        {
-            ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                jsonSchemaFormatName: "superego_result",
-                jsonSchema: System.BinaryData.FromBytes(
-                    System.Text.Encoding.UTF8.GetBytes(
-                        @"{
+        var schemaJson = @"{
                             ""type"": ""object"",
                             ""properties"": {
                                 ""thought_chain"": {
                                     ""type"": ""array"",
-                                    ""items"": {
-                                        ""type"": ""string""
-                                    },
+                                    ""items"": { ""type"": ""string"" },
                                     ""description"": ""단계별로 생각하세요.""
                                 },
                                 ""situation_interpretation"": {
                                     ""type"": ""string"",
                                     ""description"": ""이성적 관점의 상황 인식, 50자 이상 100자 이내로 서술하세요.""
                                 },
-                                
                                 ""emotions"": {
                                     ""type"": ""object"",
-                                    ""additionalProperties"": {
-                                        ""type"": ""number"",
-                                        ""minimum"": 0.0,
-                                        ""maximum"": 1.0
-                                    },
+                                    ""additionalProperties"": { ""type"": ""number"", ""minimum"": 0.0, ""maximum"": 1.0 },
                                     ""description"": ""감정과 강도 (0.0~1.0), 최소 3~5개 이상의 감정을 작성하세요.""
                                 }
                             },
                             ""required"": [""thought_chain"", ""situation_interpretation""],
                             ""additionalProperties"": false
-                        }"
-                    )
-                ),
-                jsonSchemaIsStrict: true
-            ),
-        };
+                        }";
+        var schema = new LLMClientSchema { name = "superego_result", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+        SetResponseFormat(schema);
 
         // 월드 정보와 계획 조회, 메모리/관계 도구 추가
         AddTools(ToolManager.NeutralToolSets.WorldInfo);

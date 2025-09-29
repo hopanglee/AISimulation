@@ -16,16 +16,14 @@ namespace Agent
         {
             systemPrompt = PromptLoader.LoadPrompt("UseObjectParameterAgentPrompt.txt", "You are a UseObject parameter generator.");
             SetAgentType(nameof(UseObjectParameterAgent));
-            this.options = new ChatCompletionOptions
-            {
-                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "use_object_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        "{ \"type\": \"object\", \"properties\": { }, \"required\": [ ], \"additionalProperties\": true }"
-                    )),
-                    jsonSchemaIsStrict: true
-                )
-            };
+            var schemaJson = $@"{{
+                ""type"": ""object"",
+                ""properties"": {{ }},
+                ""required"": [],
+                ""additionalProperties"": true
+            }}";
+            var schema = new LLMClientSchema { name = "use_object_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+            SetResponseFormat(schema);
         }
 
         public async UniTask<UseObjectParameter> GenerateParametersAsync(CommonContext context)

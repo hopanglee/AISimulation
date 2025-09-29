@@ -29,13 +29,7 @@ namespace Agent
             AddSystemMessage(systemPrompt);
             
             // Options 초기화
-            options = new ChatCompletionOptions
-            {
-                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "reaction_decision_result",
-                    jsonSchema: BinaryData.FromBytes(
-                        System.Text.Encoding.UTF8.GetBytes(
-                            @"{
+            var schemaJson = @"{
                                 ""type"": ""object"",
                                 ""additionalProperties"": false,
                                 ""properties"": {
@@ -54,12 +48,9 @@ namespace Agent
                                     }
                                 },
                                 ""required"": [""should_react"", ""reasoning"", ""priority_level""]
-                            }"
-                        )
-                    ),
-                    jsonSchemaIsStrict: true
-                )
-            };
+                            }";
+            var schema = new LLMClientSchema{ name = "reaction_decision_result", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+            SetResponseFormat(schema);
         }
 
         /// <summary>

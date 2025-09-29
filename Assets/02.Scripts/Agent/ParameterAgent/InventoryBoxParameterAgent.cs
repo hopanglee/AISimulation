@@ -32,39 +32,24 @@ namespace Agent
             availableItems.Add("");
             var boxItems = GetCurrentBoxItems();
             boxItems.Add("");
-            SetAgentType(nameof(InventoryBoxParameterAgent));
-            systemPrompt = PromptLoader.LoadPrompt("InventoryBoxParameterAgentPrompt.txt", "You are an InventoryBox parameter generator.");
-            
             // 초기 enum 설정 - 각각 분리
             var availableItemNames = availableItems.Count > 0 ? availableItems : new List<string> {""};
             var boxItemNames = boxItems.Count > 0 ? boxItems : new List<string> {""};
             
-            this.options = new ChatCompletionOptions
-            {
-                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "inventory_box_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
+            SetAgentType(nameof(InventoryBoxParameterAgent));
+            systemPrompt = PromptLoader.LoadPrompt("InventoryBoxParameterAgentPrompt.txt", "You are an InventoryBox parameter generator.");
+            
+            var schemaJson = $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""add_item_name"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": {JsonConvert.SerializeObject(availableItemNames)},
-                                    ""description"": ""박스에 추가할 아이템 이름""
-                                }},
-                                ""remove_item_name"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": {JsonConvert.SerializeObject(boxItemNames)},
-                                    ""description"": ""박스에서 제거할 아이템 이름""
-                                }}
+                                ""add_item_name"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(availableItemNames)}, ""description"": ""박스에 추가할 아이템 이름"" }},
+                                ""remove_item_name"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(boxItemNames)}, ""description"": ""박스에서 제거할 아이템 이름"" }}
                             }},
                             ""required"": [""add_item_name"", ""remove_item_name""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                )
-            };
+                        }}";
+            var schema = new LLMClientSchema { name = "inventory_box_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+            SetResponseFormat(schema);
         }
 
         public async UniTask<InventoryBoxParameter> GenerateParametersAsync(CommonContext context)

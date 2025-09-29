@@ -33,32 +33,18 @@ namespace Agent
             systemPrompt = PromptLoader.LoadPrompt("WhiteBoardParameterAgentPrompt.txt", "You are a WhiteBoard parameter generator.");
             SetAgentType(nameof(WhiteBoardParameterAgent));
             
-            this.options = new ChatCompletionOptions
-            {
-                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "whiteboard_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        @"{
+            var schemaJson = @"{
                             ""type"": ""object"",
                             ""description"": ""화이트보드 상호작용을 위한 파라미터 스키마"",
                             ""additionalProperties"": false,
                             ""properties"": {
-                                ""action_type"": {
-                                    ""type"": ""string"",
-                                    ""enum"": [""write"", ""update"", ""erase""],
-                                    ""description"": ""수행할 동작: write(쓰기), update(수정), erase(지우기)""
-                                },
-                                ""content"": {
-                                    ""type"": [""string"", ""null""],
-                                    ""description"": ""작성/수정할 내용 (write/update일 때 사용, erase일 때 null)""
-                                }
+                                ""action_type"": { ""type"": ""string"", ""enum"": [""write"", ""update"", ""erase""], ""description"": ""수행할 동작: write(쓰기), update(수정), erase(지우기)"" },
+                                ""content"": { ""type"": [""string"", ""null""], ""description"": ""작성/수정할 내용 (write/update일 때 사용, erase일 때 null)"" }
                             },
                             ""required"": [""action_type"", ""content""]
-                        }"
-                    )),
-                    jsonSchemaIsStrict: true
-                )
-            };
+                        }";
+            var schema = new LLMClientSchema { name = "whiteboard_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+            SetResponseFormat(schema);
         }
 
         /// <summary>

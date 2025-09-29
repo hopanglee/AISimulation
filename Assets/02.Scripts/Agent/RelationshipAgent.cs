@@ -72,13 +72,8 @@ public class RelationshipAgent : GPT
         SetAgentType(nameof(RelationshipAgent));
 
 
-        options = new()
-        {
-            ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                jsonSchemaFormatName: "relationship_decision",
-                jsonSchema: BinaryData.FromBytes(
-                    Encoding.UTF8.GetBytes(
-                        @"{
+
+        var schemaJson = @"{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {
@@ -120,12 +115,9 @@ public class RelationshipAgent : GPT
                                 }
                             },
                             ""required"": [""should_update"", ""reasoning"", ""updates""]
-                        }"
-                    )
-                ),
-                jsonSchemaIsStrict: true
-            ),
-        };
+                        }";
+        var schema = new LLMClientSchema{ name = "relationship_decision", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson)};
+        SetResponseFormat(schema);
     }
 
     /// <summary>

@@ -24,27 +24,16 @@ namespace Agent
             // 프롬프트 로드
             systemPrompt = PromptLoader.LoadPrompt("MoveToAreaParameterAgentPrompt.txt", "You are a MoveToArea parameter generator.");
             SetAgentType(nameof(MoveToAreaParameterAgent));
-            this.options = new ChatCompletionOptions
-            {
-                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "move_to_area_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
+            var schemaJson = $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""area_name"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": {JsonConvert.SerializeObject(movableAreas)},
-                                    ""description"": ""이동할_위치_이름""
-                                }}
+                                ""area_name"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(movableAreas)}, ""description"": ""이동할_위치_이름"" }}
                             }},
                             ""required"": [""area_name""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                )
-            };
+                        }}";
+            var schema = new LLMClientSchema { name = "move_to_area_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+            SetResponseFormat(schema);
         }
 
         public async UniTask<MoveToAreaParameter> GenerateParametersAsync(CommonContext context)

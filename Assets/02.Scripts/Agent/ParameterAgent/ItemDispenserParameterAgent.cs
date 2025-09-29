@@ -34,27 +34,16 @@ namespace Agent
             // 초기 enum 설정
             var itemNames = availableItemKeys.Count > 0 ? availableItemKeys : new List<string> {};
             
-            this.options = new ChatCompletionOptions
-            {
-                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "item_dispenser_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
+            var schemaJson = $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""selected_item_key"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": {JsonConvert.SerializeObject(itemNames)},
-                                    ""description"": ""선택된 아이템의 키""
-                                }}
+                                ""selected_item_key"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(itemNames)}, ""description"": ""선택된 아이템의 키"" }}
                             }},
                             ""required"": [""selected_item_key""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                )
-            };
+                        }}";
+            var schema = new LLMClientSchema { name = "item_dispenser_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+            SetResponseFormat(schema);
         }
 
         /// <summary>

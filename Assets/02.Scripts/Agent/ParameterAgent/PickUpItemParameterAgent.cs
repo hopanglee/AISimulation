@@ -26,27 +26,16 @@ namespace Agent
             itemList.Add("null");
             systemPrompt = PromptLoader.LoadPrompt("PickUpItemParameterAgentPrompt.txt", "You are a PickUpItem parameter generator.");
             SetAgentType(nameof(PickUpItemParameterAgent));
-            this.options = new ChatCompletionOptions
-            {
-                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "pick_up_item_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
+            var schemaJson = $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""item_name"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": {JsonConvert.SerializeObject(itemList)},
-                                    ""description"": ""주울 아이템 이름""
-                                }}
+                                ""item_name"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(itemList)}, ""description"": ""주울 아이템 이름"" }}
                             }},
                             ""required"": [""item_name""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                )
-            };
+                        }}";
+            var schema = new LLMClientSchema { name = "pick_up_item_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+            SetResponseFormat(schema);
         }
 
         public async UniTask<PickUpItemParameter> GenerateParametersAsync(CommonContext context)

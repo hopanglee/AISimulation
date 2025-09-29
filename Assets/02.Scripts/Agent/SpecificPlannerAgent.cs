@@ -31,13 +31,8 @@ public class SpecificPlannerAgent : GPT
         // 현재 씬의 Area 이름들을 수집하여 location enum으로 사용
         var areaEnumJson = BuildLocationEnumJson();
 
-        options = new()
-        {
-            ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                jsonSchemaFormatName: "action_plan",
-                jsonSchema: BinaryData.FromBytes(
-                    Encoding.UTF8.GetBytes(
-                        $@"{{
+
+        var schemaJson = $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
@@ -58,12 +53,9 @@ public class SpecificPlannerAgent : GPT
                                 }}
                             }},
                             ""required"": [""specific_actions""]
-                        }}"
-                    )
-                ),
-                jsonSchemaIsStrict: true
-            ),
-        };
+                        }}";
+        var schema = new LLMClientSchema { name = "action_plan", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+        SetResponseFormat(schema);
 
         // 월드 정보 도구 추가
         if (Services.Get<IGameService>().IsDayPlannerEnabled())

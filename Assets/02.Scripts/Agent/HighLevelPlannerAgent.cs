@@ -25,14 +25,7 @@ public class HighLevelPlannerAgent : GPT
         // Actor 이름 설정 (로깅용)
         SetAgentType(nameof(HighLevelPlannerAgent));
 
-
-        options = new()
-        {
-            ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                jsonSchemaFormatName: "hierarchical_plan",
-                jsonSchema: BinaryData.FromBytes(
-                    Encoding.UTF8.GetBytes(
-                        $@"{{
+        var schemaJson = $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
@@ -52,12 +45,9 @@ public class HighLevelPlannerAgent : GPT
                                 }}
                             }},
                             ""required"": [""high_level_tasks""]
-                        }}"
-                    )
-                ),
-                jsonSchemaIsStrict: true
-            ),
-        };
+                        }}";
+        var schema = new LLMClientSchema { name = "hierarchical_plan", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+        SetResponseFormat(schema);
 
         AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemories);       
         AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);       

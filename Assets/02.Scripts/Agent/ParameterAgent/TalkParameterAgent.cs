@@ -35,31 +35,17 @@ namespace Agent
                     { "character_situation", actor.LoadActorSituation() }
                 });
             SetAgentType(nameof(TalkParameterAgent));
-            this.options = new ChatCompletionOptions
-            {
-                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "speak_to_character_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
+            var schemaJson = $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""character_name"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": {JsonConvert.SerializeObject(characterList)},
-                                    ""description"": ""대화할_캐릭터_이름""
-                                }},
-                                ""message"": {{
-                                    ""type"": ""string"",
-                                    ""description"": ""대화할 캐릭터에게 말할 메시지""
-                                }}
+                                ""character_name"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(characterList)}, ""description"": ""대화할_캐릭터_이름"" }},
+                                ""message"": {{ ""type"": ""string"", ""description"": ""대화할 캐릭터에게 말할 메시지"" }}
                             }},
                             ""required"": [""character_name"", ""message""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                )
-            };
+                        }}";
+            var schema = new LLMClientSchema { name = "speak_to_character_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+            SetResponseFormat(schema);
         }
 
         public async UniTask<TalkParameter> GenerateParametersAsync(CommonContext context)

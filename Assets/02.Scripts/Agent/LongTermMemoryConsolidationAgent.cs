@@ -65,82 +65,35 @@ public class LongTermMemoryConsolidationAgent : GPT
     public LongTermMemoryConsolidationAgent(Actor actor) : base(actor)
     {
         SetAgentType(nameof(LongTermMemoryConsolidationAgent));
-
-        options = new()
-        {
-            ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                jsonSchemaFormatName: "memory_consolidation",
-                jsonSchema: BinaryData.FromBytes(
-                    Encoding.UTF8.GetBytes(
-                        @"{
+        var schemaJson = $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
-                            ""properties"": {
-                                ""consolidated_chunks"": {
+                            ""properties"": {{
+                                ""consolidated_chunks"": {{
                                     ""type"": ""array"",
-                                    ""items"": {
+                                    ""items"": {{
                                         ""type"": ""object"",
                                         ""additionalProperties"": false,
-                                        ""properties"": {
-                                            ""chunk_id"": {
-                                                ""type"": ""string"",
-                                                ""description"": ""이 메모리 청크의 고유 식별자""
-                                            },
-                                            ""summary"": {
-                                                ""type"": ""string"",
-                                                ""description"": ""이 메모리 청크의 포괄적인 요약, 20자 이상 100자 이내로 서술하세요.""
-                                            },
-                                            ""time_range"": {
-                                                ""type"": ""string"",
-                                                ""description"": ""이 청크가 다루는 시간 범위""
-                                            },
-                                            ""main_events"": {
-                                                ""type"": ""array"",
-                                                ""items"": { ""type"": ""string"" },
-                                                ""description"": ""이 청크의 주요 사건들, 최소 3개 이상의 사건을 작성하세요.""
-                                            },
-                                            ""people_involved"": {
-                                                ""type"": ""array"",
-                                                ""items"": { ""type"": ""string"" },
-                                                ""description"": ""이 청크에 관련된 사람들 (없으면 빈 배열)""
-                                            },
-                                            ""emotions"": {
-                                                ""type"": ""object"",
-                                                ""additionalProperties"": {
-                                                    ""type"": ""number"",
-                                                    ""minimum"": 0.0,
-                                                    ""maximum"": 1.0
-                                                },
-                                                ""description"": ""이 청크에서 경험한 감정들과 강도 값, 최소 3개 이상의 감정을 작성하세요.""
-                                            },
-                                            ""original_entries_count"": {
-                                                ""type"": ""integer"",
-                                                ""description"": ""이 청크로 통합된 원본 항목의 수""
-                                            }
-                                        },
+                                        ""properties"": {{
+                                            ""chunk_id"": {{ ""type"": ""string"", ""description"": ""이 메모리 청크의 고유 식별자"" }},
+                                            ""summary"": {{ ""type"": ""string"", ""description"": ""이 메모리 청크의 포괄적인 요약, 20자 이상 100자 이내로 서술하세요."" }},
+                                            ""time_range"": {{ ""type"": ""string"", ""description"": ""이 청크가 다루는 시간 범위"" }},
+                                            ""main_events"": {{ ""type"": ""array"", ""items"": {{ ""type"": ""string"" }}, ""description"": ""이 청크의 주요 사건들, 최소 3개 이상의 사건을 작성하세요."" }},
+                                            ""people_involved"": {{ ""type"": ""array"", ""items"": {{ ""type"": ""string"" }}, ""description"": ""이 청크에 관련된 사람들 (없으면 빈 배열)"" }},
+                                            ""emotions"": {{ ""type"": ""object"", ""additionalProperties"": {{ ""type"": ""number"", ""minimum"": 0.0, ""maximum"": 1.0 }}, ""description"": ""이 청크에서 경험한 감정들과 강도 값, 최소 3개 이상의 감정을 작성하세요."" }},
+                                            ""original_entries_count"": {{ ""type"": ""integer"", ""description"": ""이 청크로 통합된 원본 항목의 수"" }}
+                                        }},
                                         ""required"": [""chunk_id"", ""summary"", ""time_range"", ""main_events"", ""people_involved"", ""original_entries_count""]
-                                    }
-                                },
-                                ""consolidation_reasoning"": {
-                                    ""type"": ""string"",
-                                    ""description"": ""통합 결정에 대한 추론""
-                                },
-                                ""total_original_entries"": {
-                                    ""type"": ""integer"",
-                                    ""description"": ""처리된 원본 항목의 총 수""
-                                },
-                                ""total_consolidated_chunks"": {
-                                    ""type"": ""integer"",
-                                    ""description"": ""생성된 통합 청크의 총 수""
-                                }
-                            },
+                                    }}
+                                }},
+                                ""consolidation_reasoning"": {{ ""type"": ""string"", ""description"": ""통합 결정에 대한 추론"" }},
+                                ""total_original_entries"": {{ ""type"": ""integer"", ""description"": ""처리된 원본 항목의 총 수"" }},
+                                ""total_consolidated_chunks"": {{ ""type"": ""integer"", ""description"": ""생성된 통합 청크의 총 수"" }}
+                            }},
                             ""required"": [""consolidated_chunks"", ""consolidation_reasoning"", ""total_original_entries"", ""total_consolidated_chunks""]
-                        }"
-                    )
-                ),
-                jsonSchemaIsStrict: true
-            ),
-        };
+                        }}";
+        var schema = new LLMClientSchema { name = "memory_consolidation", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+        SetResponseFormat(schema);
     }
 
     private string FormatEmotions(Dictionary<string, float> emotions)

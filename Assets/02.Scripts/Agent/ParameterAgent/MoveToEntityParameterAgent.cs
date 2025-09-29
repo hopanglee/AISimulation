@@ -24,27 +24,16 @@ namespace Agent
             var entityList = GetCurrentEntityNames();
             systemPrompt = PromptLoader.LoadPrompt("MoveToEntityParameterAgentPrompt.txt", "You are a MoveToEntity parameter generator.");
             SetAgentType(nameof(MoveToEntityParameterAgent));
-            this.options = new ChatCompletionOptions
-            {
-                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "move_to_entity_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
+            var schemaJson = $@"{{
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""entity_name"": {{
-                                    ""type"": ""string"",
-                                    ""enum"": {JsonConvert.SerializeObject(entityList)},
-                                    ""description"": ""이동할_개체_이름""
-                                }}
+                                ""entity_name"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(entityList)}, ""description"": ""이동할_개체_이름"" }}
                             }},
                             ""required"": [""entity_name""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                )
-            };
+                        }}";
+            var schema = new LLMClientSchema { name = "move_to_entity_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+            SetResponseFormat(schema);
         }
 
         public async UniTask<MoveToEntityParameter> GenerateParametersAsync(CommonContext context)

@@ -29,39 +29,31 @@ public class DetailedPlannerAgent : GPT
         // 현재 씬의 Area 이름들을 수집하여 location enum으로 사용
         string areaEnumJson = BuildLocationEnumJson();
 
-        options = new()
-        {
-            ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                jsonSchemaFormatName: "detailed_activities",
-                jsonSchema: BinaryData.FromBytes(
-                    Encoding.UTF8.GetBytes(
-                        $@"{{
-                            ""type"": ""object"",
-                            ""additionalProperties"": false,
-                            ""properties"": {{
-                                ""detailed_activities"": {{
-                                    ""type"": ""array"",
-                                    ""items"": {{
-                                        ""type"": ""object"",
-                                        ""additionalProperties"": false,
-                                        ""properties"": {{
-                                            ""activity_name"": {{ ""type"": ""string"", ""description"": ""세부 활동의 이름 (예: '양치질하기', '옷 입기')"" }},
-                                            ""description"": {{ ""type"": ""string"", ""description"": ""세부 활동의 목적 및 수행 방식 설명"" }},
-                                            ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 15, ""maximum"": 60, ""description"": ""활동에 소요되는 시간 (분 단위, 15~60분)"" }},
-                                            ""location"": {{ ""type"": ""string"", ""enum"": {areaEnumJson}, ""description"": ""활동 장소 (현재 씬에서 사용 가능한 지역만 선택)"" }}
-                                        }},
-                                        ""required"": [""activity_name"", ""description"", ""duration_minutes"", ""location""]
-                                    }},
-                                    ""description"": ""주어진 고수준 태스크를 위한 세부 활동 리스트""
-                                }}
-                            }},
-                            ""required"": [""detailed_activities""]
-                        }}"
-                    )
-                ),
-                jsonSchemaIsStrict: true
-            ),
-        };
+
+        var schemaJson = $@"{{
+            ""type"": ""object"",
+            ""additionalProperties"": false,
+            ""properties"": {{
+                ""detailed_activities"": {{
+                    ""type"": ""array"",
+                    ""items"": {{
+                        ""type"": ""object"",
+                        ""additionalProperties"": false,
+                        ""properties"": {{
+                            ""activity_name"": {{ ""type"": ""string"", ""description"": ""세부 활동의 이름 (예: '양치질하기', '옷 입기')"" }},
+                            ""description"": {{ ""type"": ""string"", ""description"": ""세부 활동의 목적 및 수행 방식 설명"" }},
+                            ""duration_minutes"": {{ ""type"": ""integer"", ""minimum"": 15, ""maximum"": 60, ""description"": ""활동에 소요되는 시간 (분 단위, 15~60분)"" }},
+                            ""location"": {{ ""type"": ""string"", ""enum"": {areaEnumJson}, ""description"": ""활동 장소 (현재 씬에서 사용 가능한 지역만 선택)"" }}
+                        }},
+                        ""required"": [""activity_name"", ""description"", ""duration_minutes"", ""location""]
+                    }},
+                    ""description"": ""주어진 고수준 태스크를 위한 세부 활동 리스트""
+                }}
+            }},
+            ""required"": [""detailed_activities""]
+        }}";
+        var schema = new LLMClientSchema { name = "detailed_activities", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+        SetResponseFormat(schema);
 
         if (Services.Get<IGameService>().IsDayPlannerEnabled())
         {

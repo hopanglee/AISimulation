@@ -25,12 +25,13 @@ public class PlanDecisionAgent : GPT
 	protected virtual void InitializeOptions()
 	{
 
-		// JSON 스키마 기반 응답 형식 설정
-		options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-			jsonSchemaFormatName: "plan_decision",
-			jsonSchema: BinaryData.FromBytes(Encoding.UTF8.GetBytes(PlanDecisionResultJsonSchema)),
-			jsonSchemaIsStrict: true
-		);
+        // JSON 스키마 기반 응답 형식 설정 (공급자-중립 경로)
+        var schema = new LLMClientSchema
+        {
+            name = "plan_decision",
+            format = Newtonsoft.Json.Linq.JObject.Parse(PlanDecisionResultJsonSchema)
+        };
+        SetResponseFormat(schema);
 
 		// 도구 추가
 		AddTools(ToolManager.NeutralToolSets.WorldInfo);

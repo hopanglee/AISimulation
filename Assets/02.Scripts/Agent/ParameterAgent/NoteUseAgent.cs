@@ -41,12 +41,7 @@ namespace Agent
                     { "info", actor.LoadCharacterInfo() },
                     { "memory", actor.LoadCharacterMemory() },
                 });
-            this.options = new ChatCompletionOptions
-            {
-                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    jsonSchemaFormatName: "note_use_parameter",
-                    jsonSchema: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(
-                        $@"{{
+            var schemaJson = $@"{{
                             ""type"": ""object"",
                             ""description"": ""노트 사용을 위한 파라미터 스키마"",
                             ""additionalProperties"": false,
@@ -70,11 +65,9 @@ namespace Agent
                                 }}
                             }},
                             ""required"": [""action"", ""page_number"", ""line_number"", ""text""]
-                        }}"
-                    )),
-                    jsonSchemaIsStrict: true
-                )
-            };
+                        }}";
+            var schema = new LLMClientSchema { name = "note_use_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
+            SetResponseFormat(schema);
         }
 
         public async UniTask<NoteUseParameter> GenerateParametersAsync(CommonContext context)

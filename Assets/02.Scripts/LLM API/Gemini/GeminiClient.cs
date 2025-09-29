@@ -10,6 +10,7 @@ public class GeminiClient : LLMClient
     private readonly HttpWebFetcher client;
     private string apiKey;
     private readonly List<LLMToolSchema> registeredTools = new List<LLMToolSchema>();
+    private LLMClientSchema responseFormatSchema;
 
     public GeminiClient(LLMClientProps options)
         : base(options)
@@ -60,6 +61,12 @@ public class GeminiClient : LLMClient
         registeredTools.AddRange(tools);
     }
 
+    public override void SetResponseFormat(LLMClientSchema schema)
+    {
+        // Gemini는 요청 시 generationConfig.response_schema로 전달하므로 보관만 합니다.
+        responseFormatSchema = schema;
+    }
+
     protected override async UniTask<T> Send<T>(
         List<AgentChatMessage> messages = null,
         LLMClientSchema schema = null,
@@ -93,13 +100,14 @@ public class GeminiClient : LLMClient
 
     public async UniTask<GeminiResponse> SendMessage(
         List<AgentChatMessage> messages,
-        LLMClientSchema schema
+        LLMClientSchema schema = null
     )
     {
+        var effectiveSchema = schema ?? responseFormatSchema;
         var requestData = new
         {
             contents = messages.AsGeminiMessage(),
-            generationConfig = new { response_schema = schema.format },
+            generationConfig = new { response_mime_type = "application/json", response_schema = effectiveSchema?.format },
         };
 
         var response = await client.Post<string>(

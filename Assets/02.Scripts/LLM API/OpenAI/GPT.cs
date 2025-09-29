@@ -12,21 +12,16 @@ using Agent.Tools;
 public class GPT : LLMClient
 {
     private readonly ChatClient client;
-    protected ChatCompletionOptions options = new();
-    public List<ChatMessage> messages = new();
-    protected bool enableLogging = true; // 로깅 활성화 여부
-    protected static string sessionDirectoryName = null;
+    private ChatCompletionOptions options = new();
+    private List<ChatMessage> messages = new();
+    private bool enableLogging = true; // 로깅 활성화 여부
+    private static string sessionDirectoryName = null;
     // 명시적 에이전트 타입 지정(승인/로그 표시에 사용). 설정되지 않으면 스택 트레이스로 추정
     private string agentTypeOverride = "UNKNOWN";
     // 도구 호출 라운드 최대 횟수 (기본 2)
-    protected int maxToolCallRounds = 3;
+    private int maxToolCallRounds = 3;
 
     private string modelName = "gpt-5-mini";
-    public void SetMaxToolCallRounds(int maxRounds)
-    {
-        maxToolCallRounds = maxRounds < 0 ? 0 : maxRounds;
-    }
-    public int GetMaxToolCallRounds() => maxToolCallRounds;
 
     public static void SetSessionDirectoryName(string sessionName)
     {
@@ -436,6 +431,23 @@ public class GPT : LLMClient
         return text.Substring(firstBraceIndex);
     }
     #endregion
+
+    public override void SetResponseFormat(LLMClientSchema schema)
+    {
+        if (schema == null || schema.format == null) return;
+        try
+        {
+            options.ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
+                jsonSchemaFormatName: string.IsNullOrEmpty(schema.name) ? "schema" : schema.name,
+                jsonSchema: BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(schema.format.ToString())),
+                jsonSchemaIsStrict: true
+            );
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[GPT] SetResponseFormat failed: {ex.Message}");
+        }
+    }
 
     #region 메인 메서드
     protected override UniTask<T> Send<T>(
