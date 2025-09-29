@@ -53,18 +53,16 @@ namespace Agent
             }
             if (hasHandItem || hasInventoryItem)
             {
-                ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.ItemManagement);
+                AddTools(ToolManager.NeutralToolSets.ItemManagement);
             }
-
-            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
-            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemoriesFiltered);
-            
-            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.LoadRelationshipByName);
             if (Services.Get<IGameService>().IsDayPlannerEnabled())
             {
-                options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
+                AddTools(ToolManager.NeutralToolSets.Plan);
             }
-            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetWorldAreaInfo);
+            AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemories);
+            AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
+            AddTools(ToolManager.NeutralToolDefinitions.LoadRelationshipByName);
+            AddTools(ToolManager.NeutralToolDefinitions.GetWorldAreaInfo);
         }
 
         /// <summary>
@@ -204,7 +202,7 @@ namespace Agent
                             {"activity_duration_minutes", currentActivity.DurationMinutes.ToString()},
                             {"all_actions_in_activity", string.Join("\n", allActionsText)},
                             {"all_actions_start_time", dayPlanner.GetPlanStartTime().ToString()},
-                            
+
                         };
 
                         var current_plan_template = localizationService.GetLocalizedText("current_plan_template", plan_replacements);
@@ -368,7 +366,7 @@ namespace Agent
                 availableActions.Add(ActionType.Wait);
                 availableActions.Add(ActionType.Think);
 
-                if(cycle > 0)
+                if (cycle > 0)
                 {
                     availableActions.Add(ActionType.ObserveEnvironment);
                 }

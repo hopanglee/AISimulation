@@ -60,9 +60,6 @@ namespace Agent
                     jsonSchemaIsStrict: true
                 )
             };
-            
-            // 모든 도구 추가
-            //ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.All);
         }
 
         /// <summary>

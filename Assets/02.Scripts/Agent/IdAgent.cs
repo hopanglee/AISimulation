@@ -122,13 +122,10 @@ public class IdAgent : GPT
                 jsonSchemaIsStrict: true
             ),
         };
-        //options.Temperature = 0.7f;
 
         // 월드 정보와 계획 조회, 메모리/관계 도구 추가
-        ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
-        options.Tools.Add(ToolManager.ToolDefinitions.LoadRelationshipByName);
-
-        // TODO: GetCurrentPlan 도구 추가
+        AddTools(ToolManager.NeutralToolSets.WorldInfo);
+        AddTools(ToolManager.NeutralToolDefinitions.LoadRelationshipByName);
     }
 
     /// <summary>

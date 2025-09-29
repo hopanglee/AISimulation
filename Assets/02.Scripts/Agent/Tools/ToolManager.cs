@@ -6,6 +6,7 @@ using UnityEngine;
 using Agent;
 using PlanStructures;
 using Memory;
+using Newtonsoft.Json.Linq;
 
 namespace Agent.Tools
 {
@@ -15,12 +16,19 @@ namespace Agent.Tools
     /// </summary>
     public static class ToolManager
     {
-        // 도구 정의
+        // Helper: build JObject from UTF8 bytes (for readable verbatim JSON usage)
+        private static JObject JsonFromUtf8Bytes(byte[] utf8)
+        {
+            if (utf8 == null || utf8.Length == 0) return null;
+            var json = System.Text.Encoding.UTF8.GetString(utf8);
+            return string.IsNullOrWhiteSpace(json) ? null : JObject.Parse(json);
+        }
+        # region GPT Tool 정의
         public static class ToolDefinitions
         {
             public static readonly ChatTool SwapInventoryToHand = ChatTool.CreateFunctionTool(
                 functionName: nameof(SwapInventoryToHand),
-                functionDescription: "Swap an item from inventory to hand by specifying the item name. If hand is empty, just move the item. If hand has an item, swap them.",
+                functionDescription: "인벤토리의 아이템 이름을 지정해 손으로 옮기거나 교체합니다. 손이 비어 있으면 이동만 하고, 손에 아이템이 있으면 서로 교체합니다.",
                 functionParameters: System.BinaryData.FromBytes(
                     System.Text.Encoding.UTF8.GetBytes(
                         @"{
@@ -28,7 +36,7 @@ namespace Agent.Tools
                             ""properties"": {
                                 ""itemName"": {
                                     ""type"": ""string"",
-                                    ""description"": ""Name of the item in inventory to swap with hand""
+                                    ""description"": ""손과 교체할 인벤토리 아이템의 이름""
                                 }
                             },
                             ""required"": [""itemName""]
@@ -39,23 +47,23 @@ namespace Agent.Tools
 
             public static readonly ChatTool GetPaymentPriceList = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetPaymentPriceList),
-                functionDescription: "Return this NPC's price list for payment-capable jobs as name-price pairs. If not supported, return a friendly message."
+                functionDescription: "이 NPC가 결제 가능한 작업에 대해 제공하는 가격표를 이름-가격 쌍으로 반환합니다. 미지원 시 안내 메시지를 반환합니다."
             );
 
 
             public static readonly ChatTool GetWorldAreaInfo = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetWorldAreaInfo),
-                functionDescription: "Get information about all areas in the world and their connections"
+                functionDescription: "월드의 모든 에리어와 이들 간 연결 정보를 반환합니다"
             );
 
             public static readonly ChatTool GetUserMemory = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetUserMemory),
-                functionDescription: "Query the agent's memory (recent events, observations, conversations, etc.)"
+                functionDescription: "에이전트의 메모리(최근 사건, 관찰, 대화 등)를 조회합니다"
             );
 
             public static readonly ChatTool GetShortTermMemory = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetShortTermMemory),
-                functionDescription: "Get recent short-term memories with filtering options",
+                functionDescription: "필터 옵션과 함께 최근 단기 기억을 조회합니다",
                 functionParameters: System.BinaryData.FromBytes(
                     System.Text.Encoding.UTF8.GetBytes(
                         @"{
@@ -63,18 +71,18 @@ namespace Agent.Tools
                             ""properties"": {
                                 ""memoryType"": {
                                     ""type"": ""string"",
-                                    ""description"": ""Filter by memory type (perception, action_start, action_complete, plan_created, etc.). Leave empty for all types."",
+                                    ""description"": ""메모리 유형(perception, action_start, action_complete, plan_created 등)으로 필터링합니다. 비우면 모든 유형입니다."",
                                     ""enum"": ["""", ""perception"", ""action_start"", ""action_complete"", ""plan_created"", ""conversation""]
                                 },
                                 ""limit"": {
                                     ""type"": ""integer"",
-                                    ""description"": ""Maximum number of memories to return (default: 20, max: 50)"",
+                                    ""description"": ""최대 반환 개수(기본 20, 최대 50)"",
                                     ""minimum"": 1,
                                     ""maximum"": 50
                                 },
                                 ""keyword"": {
                                     ""type"": ""string"",
-                                    ""description"": ""Filter memories containing this keyword""
+                                    ""description"": ""해당 키워드를 포함하는 메모리만 반환""
                                 }
                             },
                             ""required"": []
@@ -85,7 +93,7 @@ namespace Agent.Tools
 
             public static readonly ChatTool GetLongTermMemory = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetLongTermMemory),
-                functionDescription: "Search and retrieve long-term memories",
+                functionDescription: "장기 기억을 검색하여 반환합니다",
                 functionParameters: System.BinaryData.FromBytes(
                     System.Text.Encoding.UTF8.GetBytes(
                         @"{
@@ -93,16 +101,16 @@ namespace Agent.Tools
                             ""properties"": {
                                 ""searchQuery"": {
                                     ""type"": ""string"",
-                                    ""description"": ""Search for memories containing this query""
+                                    ""description"": ""해당 질의를 포함하는 기억을 검색""
                                 },
                                 ""dateRange"": {
                                     ""type"": ""string"",
-                                    ""description"": ""Date range filter (e.g. 'today', 'yesterday', 'this_week', 'last_week')"",
+                                    ""description"": ""날짜 범위 필터(예: today, yesterday, this_week, last_week)"",
                                     ""enum"": [""today"", ""yesterday"", ""this_week"", ""last_week"", ""this_month"", ""all""]
                                 },
                                 ""limit"": {
                                     ""type"": ""integer"",
-                                    ""description"": ""Maximum number of memories to return (default: 10, max: 30)"",
+                                    ""description"": ""최대 반환 개수(기본 10, 최대 30)"",
                                     ""minimum"": 1,
                                     ""maximum"": 30
                                 }
@@ -115,28 +123,28 @@ namespace Agent.Tools
 
             public static readonly ChatTool GetMemoryStats = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetMemoryStats),
-                functionDescription: "Get statistics about current memory state (counts, recent activity, etc.)"
+                functionDescription: "현재 메모리 상태 통계(개수, 최근 활동 등)를 조회합니다"
             );
 
             public static readonly ChatTool GetCurrentTime = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetCurrentTime),
-                functionDescription: "Get the current simulation time (year, month, day, hour, minute)"
+                functionDescription: "현재 시뮬레이션 시간(연, 월, 일, 시, 분)을 조회합니다"
             );
 
             public static readonly ChatTool GetCurrentPlan = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetCurrentPlan),
-                functionDescription: "Get current plan information (completed, in-progress, and planned tasks)"
+                functionDescription: "현재 계획 정보(완료/진행/예정 작업)를 조회합니다"
             );
 
             public static readonly ChatTool GetCurrentSpecificAction = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetCurrentSpecificAction),
-                functionDescription: "Get the current specific action that should be performed at this time"
+                functionDescription: "현재 시점에 수행해야 할 구체적인 행동을 조회합니다"
             );
 
             // 건물 이름으로 해당 건물이 속한 에리어 경로(상위-하위)를 ":"로 연결해 반환합니다. 예: "도쿄:신주쿠:카부키쵸:1-chome-5"
             public static readonly ChatTool FindBuildingAreaPath = ChatTool.CreateFunctionTool(
                 functionName: nameof(FindBuildingAreaPath),
-                functionDescription: "Given a building name, return its area path joined by ':' from top to leaf (e.g., '도쿄:신주쿠:카부키쵸:1-chome-5').",
+                functionDescription: "건물 이름을 받아 상위에서 말단까지 ':'로 연결된 에리어 경로를 반환합니다(예: '도쿄:신주쿠:카부키쵸:1-chome-5').",
                 functionParameters: System.BinaryData.FromBytes(
                     System.Text.Encoding.UTF8.GetBytes(
                         @"{
@@ -144,7 +152,7 @@ namespace Agent.Tools
                             ""properties"": {
                                 ""buildingName"": {
                                     ""type"": ""string"",
-                                    ""description"": ""Localized building name to search (e.g., '이자카야 카게츠')""
+                                    ""description"": ""검색할 지역화된 건물 이름(예: '이자카야 카게츠')""
                                 }
                             },
                             ""required"": [""buildingName""]
@@ -156,15 +164,15 @@ namespace Agent.Tools
             // 현재 액터의 위치 Area에서 목표 Area 키(이름 또는 전체경로)까지의 최단 Area 경로를 찾아 "A -> B -> C" 형식으로 반환
             public static readonly ChatTool FindShortestAreaPathFromActor = ChatTool.CreateFunctionTool(
                 functionName: nameof(FindShortestAreaPathFromActor),
-                functionDescription: "From the actor's current area, find the shortest connected-area path to the target area key (locationName or full path). Returns 'A -> B -> C'"
-                , functionParameters: System.BinaryData.FromBytes(
+                functionDescription: "액터의 현재 에리어에서 목표 에리어 키(이름 또는 전체 경로)까지의 최단 연결 경로를 'A -> B -> C' 형식으로 반환합니다",
+                functionParameters: System.BinaryData.FromBytes(
                     System.Text.Encoding.UTF8.GetBytes(
                         @"{
                             ""type"": ""object"",
                             ""properties"": {
                                 ""targetAreaKey"": {
                                     ""type"": ""string"",
-                                    ""description"": ""Target area key: either locationName (e.g., '1-chome-5') or full path (e.g., '도쿄:신주쿠:카부키쵸:1-chome-5')""
+                                    ""description"": ""목표 에리어 키: locationName(예: '1-chome-5') 또는 전체 경로(예: '도쿄:신주쿠:카부키쵸:1-chome-5')""
                                 }
                             },
                             ""required"": [""targetAreaKey""]
@@ -176,19 +184,19 @@ namespace Agent.Tools
             // 전체 월드 지역 위치 텍스트를 반환 (현재는 도쿄 기준 구조 텍스트 파일 반환)
             public static readonly ChatTool GetWorldAreaStructureText = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetWorldAreaStructureText),
-                functionDescription: "Return the world area structure text built from 11.GameDatas (e.g., tokyo_area_structure.txt)."
+                functionDescription: "11.GameDatas 기반의 월드 에리어 구조 텍스트를 반환합니다(예: tokyo_area_structure.txt)."
             );
 
             // 현재 액터의 location_memories.json 전체 반환
             public static readonly ChatTool GetActorLocationMemories = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetActorLocationMemories),
-                functionDescription: "Return this actor's location memories that include all the information where every entities are located."
+                functionDescription: "이 액터의 위치 기억(location_memories.json) 전체를 반환합니다"
             );
 
             // 현재 액터의 location_memories.json에서 주어진 범위/키로 필터링해 반환
             public static readonly ChatTool GetActorLocationMemoriesFiltered = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetActorLocationMemoriesFiltered),
-                functionDescription: "Return this actor's location memories filtered by area scope or exact area key.",
+                functionDescription: "이 액터의 위치 기억을 범위/키로 필터링해 반환합니다",
                 functionParameters: System.BinaryData.FromBytes(
                     System.Text.Encoding.UTF8.GetBytes(
                         @"{
@@ -196,7 +204,7 @@ namespace Agent.Tools
                             ""properties"": {
                                 ""areaKey"": {
                                     ""type"": ""string"",
-                                    ""description"": ""Scope or exact key. Examples: '도쿄', '도쿄:신주쿠', '신주쿠', '1-chome-1', '도쿄:신주쿠:카부키쵸:1-chome-1'""
+                                    ""description"": ""범위 또는 정확한 키. 예: '도쿄', '도쿄:신주쿠', '신주쿠', '1-chome-1', '도쿄:신주쿠:카부키쵸:1-chome-1'""
                                 }
                             },
                             ""required"": [""areaKey""]
@@ -208,7 +216,7 @@ namespace Agent.Tools
             // 특정 인물의 관계기억 요약을 불러옵니다 (actor.LoadRelationships(targetName) 사용)
             public static readonly ChatTool LoadRelationshipByName = ChatTool.CreateFunctionTool(
                 functionName: nameof(LoadRelationshipByName),
-                functionDescription: "Load relationship memory summary for a specific person by name (uses actor.LoadRelationships(targetName)).",
+                functionDescription: "특정 인물 이름에 대한 관계 기억 요약을 불러옵니다(actor.LoadRelationships(targetName) 사용)",
                 functionParameters: System.BinaryData.FromBytes(
                     System.Text.Encoding.UTF8.GetBytes(
                         @"{
@@ -216,7 +224,7 @@ namespace Agent.Tools
                             ""properties"": {
                                 ""targetName"": {
                                     ""type"": ""string"",
-                                    ""description"": ""Exact name of the person to load relationship memory for""
+                                    ""description"": ""관계 기억을 불러올 대상의 정확한 이름""
                                 }
                             },
                             ""required"": [""targetName""]
@@ -224,6 +232,211 @@ namespace Agent.Tools
                     )
                 )
             );
+        }
+        #endregion
+
+        #region  공급자-중립 도구 정의 (LLMToolSchema)
+        public static class NeutralToolDefinitions
+        {
+            public static readonly LLMToolSchema SwapInventoryToHand = new LLMToolSchema
+            {
+                name = nameof(SwapInventoryToHand),
+                description = "인벤토리의 아이템 이름을 지정해 손으로 옮기거나 교체합니다. 손이 비어 있으면 이동만 하고, 손에 아이템이 있으면 서로 교체합니다.",
+                format = JsonFromUtf8Bytes(System.Text.Encoding.UTF8.GetBytes(@"{
+                    ""type"": ""object"",
+                    ""properties"": {
+                        ""itemName"": { ""type"": ""string"", ""description"": ""Name of the item in inventory to swap with hand"" }
+                    },
+                    ""required"": [""itemName""]
+                }"))
+            };
+
+            public static readonly LLMToolSchema GetPaymentPriceList = new LLMToolSchema
+            {
+                name = nameof(GetPaymentPriceList),
+                description = "이 NPC가 결제 가능한 작업에 대해 제공하는 가격표를 이름-가격 쌍으로 반환합니다. 미지원 시 안내 메시지를 반환합니다.",
+                format = null
+            };
+
+            public static readonly LLMToolSchema GetWorldAreaInfo = new LLMToolSchema
+            {
+                name = nameof(GetWorldAreaInfo),
+                description = "월드의 모든 에리어와 이들 간 연결 정보를 반환합니다",
+                format = null
+            };
+
+            public static readonly LLMToolSchema GetUserMemory = new LLMToolSchema
+            {
+                name = nameof(GetUserMemory),
+                description = "에이전트의 메모리(최근 사건, 관찰, 대화 등)를 조회합니다",
+                format = null
+            };
+
+            public static readonly LLMToolSchema GetShortTermMemory = new LLMToolSchema
+            {
+                name = nameof(GetShortTermMemory),
+                description = "필터 옵션과 함께 최근 단기 기억을 조회합니다",
+                format = JsonFromUtf8Bytes(System.Text.Encoding.UTF8.GetBytes(@"{
+                    ""type"": ""object"",
+                    ""properties"": {
+                        ""memoryType"": { ""type"": ""string"", ""description"": ""Filter by memory type (perception, action_start, action_complete, plan_created, etc.). Leave empty for all types."", ""enum"": ["""", ""perception"", ""action_start"", ""action_complete"", ""plan_created"", ""conversation""] },
+                        ""limit"": { ""type"": ""integer"", ""description"": ""Maximum number of memories to return (default: 20, max: 50)"", ""minimum"": 1, ""maximum"": 50 },
+                        ""keyword"": { ""type"": ""string"", ""description"": ""Filter memories containing this keyword"" }
+                    },
+                    ""required"": []
+                }"))
+            };
+
+            public static readonly LLMToolSchema GetLongTermMemory = new LLMToolSchema
+            {
+                name = nameof(GetLongTermMemory),
+                description = "장기 기억을 검색하여 반환합니다",
+                format = JsonFromUtf8Bytes(System.Text.Encoding.UTF8.GetBytes(@"{
+                    ""type"": ""object"",
+                    ""properties"": {
+                        ""searchQuery"": { ""type"": ""string"", ""description"": ""Search for memories containing this query"" },
+                        ""dateRange"": { ""type"": ""string"", ""description"": ""Date range filter (e.g. 'today', 'yesterday', 'this_week', 'last_week')"", ""enum"": [""today"", ""yesterday"", ""this_week"", ""last_week"", ""this_month"", ""all""] },
+                        ""limit"": { ""type"": ""integer"", ""description"": ""Maximum number of memories to return (default: 10, max: 30)"", ""minimum"": 1, ""maximum"": 30 }
+                    },
+                    ""required"": []
+                }"))
+            };
+
+            public static readonly LLMToolSchema GetMemoryStats = new LLMToolSchema
+            {
+                name = nameof(GetMemoryStats),
+                description = "현재 메모리 상태 통계(개수, 최근 활동 등)를 조회합니다",
+                format = null
+            };
+
+            public static readonly LLMToolSchema GetCurrentTime = new LLMToolSchema
+            {
+                name = nameof(GetCurrentTime),
+                description = "현재 시뮬레이션 시간(연, 월, 일, 시, 분)을 조회합니다",
+                format = null
+            };
+
+            public static readonly LLMToolSchema GetCurrentPlan = new LLMToolSchema
+            {
+                name = nameof(GetCurrentPlan),
+                description = "현재 계획 정보(완료/진행/예정 작업)를 조회합니다",
+                format = null
+            };
+
+            public static readonly LLMToolSchema GetCurrentSpecificAction = new LLMToolSchema
+            {
+                name = nameof(GetCurrentSpecificAction),
+                description = "현재 시점에 수행해야 할 구체적인 행동을 조회합니다",
+                format = null
+            };
+
+            public static readonly LLMToolSchema FindBuildingAreaPath = new LLMToolSchema
+            {
+                name = nameof(FindBuildingAreaPath),
+                description = "건물 이름을 받아 상위에서 말단까지 ':'로 연결된 에리어 경로를 반환합니다(예: '도쿄:신주쿠:카부키쵸:1-chome-5').",
+                format = JsonFromUtf8Bytes(System.Text.Encoding.UTF8.GetBytes(@"{
+                    ""type"": ""object"",
+                    ""properties"": {
+                        ""buildingName"": { ""type"": ""string"", ""description"": ""Localized building name to search (e.g., '이자카야 카게츠')"" }
+                    },
+                    ""required"": [""buildingName""]
+                }"))
+            };
+
+            public static readonly LLMToolSchema FindShortestAreaPathFromActor = new LLMToolSchema
+            {
+                name = nameof(FindShortestAreaPathFromActor),
+                description = "액터의 현재 에리어에서 목표 에리어 키(이름 또는 전체 경로)까지의 최단 연결 경로를 'A -> B -> C' 형식으로 반환합니다",
+                format = JsonFromUtf8Bytes(System.Text.Encoding.UTF8.GetBytes(@"{
+                    ""type"": ""object"",
+                    ""properties"": {
+                        ""targetAreaKey"": { ""type"": ""string"", ""description"": ""Target area key: either locationName (e.g., '1-chome-5') or full path (e.g., '도쿄:신주쿠:카부키쵸:1-chome-5')"" }
+                    },
+                    ""required"": [""targetAreaKey""]
+                }"))
+            };
+
+            public static readonly LLMToolSchema GetWorldAreaStructureText = new LLMToolSchema
+            {
+                name = nameof(GetWorldAreaStructureText),
+                description = "11.GameDatas 기반의 월드 에리어 구조 텍스트를 반환합니다(예: tokyo_area_structure.txt).",
+                format = null
+            };
+
+            public static readonly LLMToolSchema GetActorLocationMemories = new LLMToolSchema
+            {
+                name = nameof(GetActorLocationMemories),
+                description = "이 액터의 위치 기억(location_memories.json) 전체를 반환합니다",
+                format = null
+            };
+
+            public static readonly LLMToolSchema GetActorLocationMemoriesFiltered = new LLMToolSchema
+            {
+                name = nameof(GetActorLocationMemoriesFiltered),
+                description = "이 액터의 위치 기억을 범위/키로 필터링해 반환합니다",
+                format = JsonFromUtf8Bytes(System.Text.Encoding.UTF8.GetBytes(@"{
+                    ""type"": ""object"",
+                    ""properties"": {
+                        ""areaKey"": { ""type"": ""string"", ""description"": ""Scope or exact key. Examples: '도쿄', '도쿄:신주쿠', '신주쿠', '1-chome-1', '도쿄:신주쿠:카부키쵸:1-chome-1'"" }
+                    },
+                    ""required"": [""areaKey""]
+                }"))
+            };
+
+            public static readonly LLMToolSchema LoadRelationshipByName = new LLMToolSchema
+            {
+                name = nameof(LoadRelationshipByName),
+                description = "특정 인물 이름에 대한 관계 기억 요약을 불러옵니다(actor.LoadRelationships(targetName) 사용)",
+                format = JsonFromUtf8Bytes(System.Text.Encoding.UTF8.GetBytes(@"{
+                    ""type"": ""object"",
+                    ""properties"": {
+                        ""targetName"": { ""type"": ""string"", ""description"": ""Exact name of the person to load relationship memory for"" }
+                    },
+                    ""required"": [""targetName""]
+                }"))
+            };
+        }
+        #endregion
+
+        #region 공급자-중립 도구 세트
+        public static class NeutralToolSets
+        {
+            public static readonly LLMToolSchema[] ItemManagement = { NeutralToolDefinitions.SwapInventoryToHand };
+            public static readonly LLMToolSchema[] Payment = { NeutralToolDefinitions.GetPaymentPriceList };
+            public static readonly LLMToolSchema[] ActionInfo = { };
+            public static readonly LLMToolSchema[] WorldInfo = { NeutralToolDefinitions.GetWorldAreaInfo, NeutralToolDefinitions.GetCurrentTime, NeutralToolDefinitions.FindBuildingAreaPath, NeutralToolDefinitions.FindShortestAreaPathFromActor, NeutralToolDefinitions.GetWorldAreaStructureText };
+            public static readonly LLMToolSchema[] Memory = { NeutralToolDefinitions.GetUserMemory, NeutralToolDefinitions.GetShortTermMemory, NeutralToolDefinitions.GetLongTermMemory, NeutralToolDefinitions.GetMemoryStats, NeutralToolDefinitions.GetActorLocationMemories, NeutralToolDefinitions.GetActorLocationMemoriesFiltered, NeutralToolDefinitions.LoadRelationshipByName };
+            public static readonly LLMToolSchema[] Plan = { NeutralToolDefinitions.GetCurrentPlan, NeutralToolDefinitions.GetCurrentSpecificAction };
+            public static readonly LLMToolSchema[] All = { NeutralToolDefinitions.SwapInventoryToHand, NeutralToolDefinitions.GetWorldAreaInfo, NeutralToolDefinitions.GetUserMemory, NeutralToolDefinitions.GetShortTermMemory, NeutralToolDefinitions.GetLongTermMemory, NeutralToolDefinitions.GetMemoryStats, NeutralToolDefinitions.GetCurrentTime, NeutralToolDefinitions.GetCurrentPlan, NeutralToolDefinitions.GetCurrentSpecificAction, NeutralToolDefinitions.FindBuildingAreaPath, NeutralToolDefinitions.FindShortestAreaPathFromActor, NeutralToolDefinitions.LoadRelationshipByName };
+        }
+        #endregion
+
+        // 변환/어댑터: LLMToolSchema -> OpenAI ChatTool
+        public static ChatTool ToOpenAITool(LLMToolSchema schema)
+        {
+            if (schema == null) return null;
+            if (schema.format == null)
+            {
+                return ChatTool.CreateFunctionTool(
+                    functionName: schema.name,
+                    functionDescription: schema.description
+                );
+            }
+            return ChatTool.CreateFunctionTool(
+                functionName: schema.name,
+                functionDescription: schema.description,
+                functionParameters: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(schema.format.ToString()))
+            );
+        }
+
+        public static void AddToolsToOptionsFromSchemas(ChatCompletionOptions options, params LLMToolSchema[] schemas)
+        {
+            if (options == null || schemas == null) return;
+            foreach (var s in schemas)
+            {
+                var tool = ToOpenAITool(s);
+                if (tool != null) options.Tools.Add(tool);
+            }
         }
 
         // 도구 세트 정의
@@ -282,6 +495,14 @@ namespace Agent.Tools
         public static void AddToolSetToOptions(ChatCompletionOptions options, ChatTool[] toolSet)
         {
             AddToolsToOptions(options, toolSet);
+        }
+
+        /// <summary>
+        /// 공급자-중립 세트를 OpenAI 옵션에 추가 (점진적 마이그레이션용)
+        /// </summary>
+        public static void AddNeutralToolSetToOptions(ChatCompletionOptions options, LLMToolSchema[] toolSet)
+        {
+            AddToolsToOptionsFromSchemas(options, toolSet);
         }
     }
 

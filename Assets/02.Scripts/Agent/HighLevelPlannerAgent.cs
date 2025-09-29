@@ -59,9 +59,9 @@ public class HighLevelPlannerAgent : GPT
             ),
         };
 
-        options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
-        options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemoriesFiltered);
-        options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetWorldAreaInfo);
+        AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemories);       
+        AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);       
+        AddTools(ToolManager.NeutralToolDefinitions.GetWorldAreaInfo);     
     }
 
     /// <summary>

@@ -33,9 +33,8 @@ public class PlanDecisionAgent : GPT
 		);
 
 		// 도구 추가
-		ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
-		ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Memory);
-		//ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.Plan);
+		AddTools(ToolManager.NeutralToolSets.WorldInfo);
+		AddTools(ToolManager.NeutralToolSets.Memory);
 	}
 	/// <summary>
 	/// 결정 입력값

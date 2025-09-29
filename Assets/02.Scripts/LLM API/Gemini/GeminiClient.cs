@@ -9,6 +9,7 @@ public class GeminiClient : LLMClient
 {
     private readonly HttpWebFetcher client;
     private string apiKey;
+    private readonly List<LLMToolSchema> registeredTools = new List<LLMToolSchema>();
 
     public GeminiClient(LLMClientProps options)
         : base(options)
@@ -51,6 +52,12 @@ public class GeminiClient : LLMClient
     public override void AddToolMessage(string id, string message)
     {
         throw new NotImplementedException();
+    }
+
+    public override void AddTools(params LLMToolSchema[] tools)
+    {
+        if (tools == null || tools.Length == 0) return;
+        registeredTools.AddRange(tools);
     }
 
     protected override async UniTask<T> Send<T>(
@@ -111,20 +118,17 @@ public class GeminiClient : LLMClient
     {
         deserializer ??= JsonConvert.DeserializeObject<T>;
 
+        var functionDeclarations = (toolSchemas != null && toolSchemas.Count > 0)
+            ? toolSchemas.Select(s => new { name = s.name, description = s.description, parameters = (object)s.format }).ToList()
+            : registeredTools.Select(s => new { name = s.name, description = s.description, parameters = (object)s.format }).ToList();
+
         var requestData = new
         {
             tools = new object[]
             {
                 new
                 {
-                    function_declarations = toolSchemas
-                        .Select(s => new
-                        {
-                            name = s.name,
-                            description = s.description,
-                            parameters = s.format,
-                        })
-                        .ToList(),
+                    function_declarations = functionDeclarations,
                 },
             },
             tool_config = new { function_calling_config = new { mode = "ANY" } },

@@ -607,6 +607,19 @@ public class GPT : LLMClient
     #endregion
 
     #region 도구 사용
+    public override void AddTools(params LLMToolSchema[] tools)
+    {
+        if (tools == null || tools.Length == 0) return;
+        foreach (var schema in tools)
+        {
+            var tool = ToolManager.ToOpenAITool(schema);
+            if (tool != null)
+            {
+                try { options.Tools.Add(tool); } catch { }
+            }
+        }
+    }
+
     protected void ExecuteToolCall(ChatToolCall toolCall)
     {
         if (toolExecutor != null)

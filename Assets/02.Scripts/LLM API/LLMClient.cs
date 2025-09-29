@@ -120,8 +120,11 @@ public abstract class LLMClient
 
     #endregion
 
-    #region 도구 사용
-    //protected abstract void AddTool();
+    #region 도구 사용 (공급자-중립 스키마)
+    /// <summary>
+    /// 공급자-중립 툴 스키마를 등록합니다. 구현체(GPT, Gemini 등)에서 각 공급자 형식으로 변환/저장합니다.
+    /// </summary>
+    public abstract void AddTools(params LLMToolSchema[] tools);
     #endregion
 
 }
@@ -145,6 +148,16 @@ public class LLMClientSchema
     public string name = "";
     public string description = "";
     public JObject format;
+}
+
+/// <summary>
+/// 공급자-중립 LLM 툴 스키마 (function/tool 선언용)
+/// </summary>
+public class LLMToolSchema
+{
+    public string name = "";
+    public string description = "";
+    public JObject format; // null 이면 파라미터 없음
 }
 
 public class LLMClientToolResponse<T>

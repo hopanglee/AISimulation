@@ -53,7 +53,8 @@ namespace Agent
             };
 
             // 아이템 관리 도구 추가
-            AddToolSetToOptions(ToolManager.ToolSets.ItemManagement);
+            AddTools(ToolManager.NeutralToolSets.ItemManagement);
+            
         }
 
         public async UniTask<GiveItemParameter> GenerateParametersAsync(CommonContext context)

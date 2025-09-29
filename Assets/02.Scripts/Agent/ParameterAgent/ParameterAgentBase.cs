@@ -38,21 +38,6 @@ namespace Agent
         /// Act, Reasoning, Intention을 받아 파라미터를 생성하는 추상 메서드
         /// </summary>
         public abstract UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request);
-        /// <summary>
-        /// 도구 세트를 options에 추가하는 헬퍼 메서드
-        /// </summary>
-        protected void AddToolsToOptions(params ChatTool[] tools)
-        {
-            ToolManager.AddToolsToOptions(options, tools);
-        }
-
-        /// <summary>
-        /// 도구 세트를 options에 추가하는 헬퍼 메서드
-        /// </summary>
-        protected void AddToolSetToOptions(ChatTool[] toolSet)
-        {
-            ToolManager.AddToolSetToOptions(options, toolSet);
-        }
     }
 
     // DTOs for parameter agent requests and results

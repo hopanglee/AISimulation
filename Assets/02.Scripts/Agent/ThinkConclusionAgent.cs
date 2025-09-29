@@ -16,10 +16,6 @@ namespace Agent
         public ThinkConclusionAgent(Actor actor) : base(actor)
         {
             SetAgentType(nameof(ThinkConclusionAgent));
-            // options = new ChatCompletionOptions
-            // {
-            //     Temperature = 0.7f // 창의적이면서도 논리적인 결론
-            // };
         }
 
         /// <summary>
@@ -39,11 +35,6 @@ namespace Agent
                 ClearMessages();
                 AddSystemMessage(systemPrompt);
                 AddUserMessage(userMessage);
-
-                // var options = new ChatCompletionOptions
-                // {
-                //     Temperature = 0.7f // 창의적이면서도 논리적인 결론
-                // };
 
                 var response = await SendWithCacheLog<string>( );
                 if (string.IsNullOrEmpty(response))

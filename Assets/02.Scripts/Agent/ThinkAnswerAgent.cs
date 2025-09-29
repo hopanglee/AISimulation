@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Agent.Tools;
 using Cysharp.Threading.Tasks;
 using OpenAI.Chat;
 using UnityEngine;
@@ -15,16 +16,19 @@ namespace Agent
         public ThinkAnswerAgent(Actor actor) : base(actor)
         {
             SetAgentType(nameof(ThinkAnswerAgent));
-            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
-            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemoriesFiltered);
-            
-            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.LoadRelationshipByName);
+
+            // 메모리 툴 추가
             if (Services.Get<IGameService>().IsDayPlannerEnabled())
             {
-                options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
+                AddTools(ToolManager.NeutralToolDefinitions.GetCurrentPlan);
             }
-            //options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
-            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetWorldAreaInfo);
+            AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemories);
+            AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
+
+            AddTools(ToolManager.NeutralToolDefinitions.LoadRelationshipByName);
+
+            AddTools(ToolManager.NeutralToolDefinitions.GetWorldAreaInfo);
+            AddTools(ToolManager.NeutralToolSets.Memory);
         }
 
         /// <summary>
@@ -40,7 +44,7 @@ namespace Agent
             try
             {
                 var systemPrompt = LoadSystemPrompt(thinkScope, topic);
-                
+
                 // 새로운 대화 시작 또는 기존 대화 이어가기
                 if (GetMessageCount() == 0)
                 {
@@ -50,11 +54,8 @@ namespace Agent
                 // 질문을 user message로 추가
                 AddUserMessage(question);
 
-                // 메모리 툴 추가
-                Tools.ToolManager.AddToolSetToOptions(options, Agent.Tools.ToolManager.ToolSets.Memory);
+                var response = await SendWithCacheLog<string>();
 
-                var response = await SendWithCacheLog<string>( );
-                
                 if (string.IsNullOrEmpty(response))
                 {
                     Debug.LogError($"[ThinkAnswerAgent] 답변 생성 실패: 응답이 null임");
@@ -136,21 +137,21 @@ namespace Agent
                     $"그때는 지금과 다른 생각을 가지고 있었던 것 같다.",
                     $"시간이 지나고 보니 그 경험도 나름의 의미가 있었다."
                 },
-                
+
                 "future_planning" => new[]
                 {
                     $"{topic}에 대해 앞으로 더 신중하게 접근해야겠다.",
                     $"계획을 세우는 것도 중요하지만 유연성도 필요하다.",
                     $"한 걸음씩 차근차근 나아가면 될 것 같다."
                 },
-                
+
                 "current_analysis" => new[]
                 {
                     $"지금 {topic}에 대해 느끼는 감정을 좀 더 들여다봐야겠다.",
                     $"현재 상황을 다른 관점에서 바라볼 필요가 있을 것 같다.",
                     $"이런 생각을 하는 나 자신이 흥미롭다."
                 },
-                
+
                 _ => new[]
                 {
                     $"{topic}에 대해 더 깊이 생각해볼 필요가 있겠다.",
@@ -161,7 +162,7 @@ namespace Agent
 
             var random = new System.Random();
             var answer = answers[random.Next(answers.Length)];
-            
+
             return answer;
         }
     }

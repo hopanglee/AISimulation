@@ -68,11 +68,11 @@ public class SpecificPlannerAgent : GPT
         // 월드 정보 도구 추가
         if (Services.Get<IGameService>().IsDayPlannerEnabled())
         {
-            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
+            AddTools(ToolManager.NeutralToolDefinitions.GetCurrentPlan);
         }
-        options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
-        options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemoriesFiltered);
-        options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetWorldAreaInfo);
+        AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemories);
+        AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
+        AddTools(ToolManager.NeutralToolDefinitions.GetWorldAreaInfo);
     }
 
     private static string BuildLocationEnumJson()

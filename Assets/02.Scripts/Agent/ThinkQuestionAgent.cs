@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Agent.Tools;
 using Cysharp.Threading.Tasks;
 using OpenAI.Chat;
 using UnityEngine;
@@ -17,17 +18,16 @@ namespace Agent
         public ThinkQuestionAgent(Actor actor) : base(actor)
         {
             SetAgentType(nameof(ThinkQuestionAgent));
-
-            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemories);
-            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetActorLocationMemoriesFiltered);
-            
-            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.LoadRelationshipByName);
             if (Services.Get<IGameService>().IsDayPlannerEnabled())
             {
-                options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
+                AddTools(ToolManager.NeutralToolDefinitions.GetCurrentPlan);
             }
-            //options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetCurrentPlan);
-            options.Tools.Add(Agent.Tools.ToolManager.ToolDefinitions.GetWorldAreaInfo);
+            AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemories);
+            AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
+
+            AddTools(ToolManager.NeutralToolDefinitions.LoadRelationshipByName);
+
+            AddTools(ToolManager.NeutralToolDefinitions.GetWorldAreaInfo);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Agent
                     lastInitialUserMessage = initialUserMessage; // 저장
                     AddUserMessage(initialUserMessage);
 
-                    var initialResponse = await SendWithCacheLog<string>( );
+                    var initialResponse = await SendWithCacheLog<string>();
 
                     if (string.IsNullOrEmpty(initialResponse))
                     {
@@ -79,7 +79,7 @@ namespace Agent
                     AddUserMessage(previousAnswer);
                 }
 
-                var response = await SendWithCacheLog<string>( );
+                var response = await SendWithCacheLog<string>();
 
                 if (string.IsNullOrEmpty(response))
                 {

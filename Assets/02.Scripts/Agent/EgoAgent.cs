@@ -104,10 +104,10 @@ public class EgoAgent : GPT
                 jsonSchemaIsStrict: true
             )
         };
-        //options.Temperature = 0.7f;
-
+        
         // 월드 정보 도구 추가
-        ToolManager.AddToolSetToOptions(options, ToolManager.ToolSets.WorldInfo);
+        AddTools(ToolManager.NeutralToolSets.WorldInfo);       
+         
     }
 
     /// <summary>
