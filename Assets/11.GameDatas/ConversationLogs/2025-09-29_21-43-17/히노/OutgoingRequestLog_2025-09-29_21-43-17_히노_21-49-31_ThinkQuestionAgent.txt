@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: ThinkQuestionAgent
+Real Time: 2025-09-29 21:49:31
+지금 눈으로 살펴봤을 때 가장 먼저 불안하게 느껴지는 부분은 어디야?
+

@@ -17,7 +17,7 @@ public class GPT : LLMClient
     private bool enableLogging = true; // 로깅 활성화 여부
     private static string sessionDirectoryName = null;
     // 명시적 에이전트 타입 지정(승인/로그 표시에 사용). 설정되지 않으면 스택 트레이스로 추정
-    private string agentTypeOverride = "UNKNOWN";
+    //private string agentTypeOverride = "UNKNOWN";
     // 도구 호출 라운드 최대 횟수 (기본 2)
     private int maxToolCallRounds = 3;
 
@@ -226,11 +226,11 @@ public class GPT : LLMClient
             {
                 writer.WriteLine(logContent.ToString());
             }
-            Debug.Log($"[GPT] Conversation log saved (appended): {filePath}");
+            Debug.Log($"[{agentTypeOverride??"Unknown"}] Conversation log saved (appended): {filePath}");
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[GPT] Error saving conversation log: {ex.Message}");
+            Debug.LogError($"[{agentTypeOverride??"Unknown"}] Error saving conversation log: {ex.Message}");
         }
 
         return UniTask.CompletedTask;

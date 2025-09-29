@@ -31,6 +31,14 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     [InfoBox("GPT를 비활성화하면 AI Agent를 사용하지 않습니다. 모든 Actor(NPC, MainActor 등)에 적용됩니다.", InfoMessageType.Info)]
     [SerializeField] protected bool useGPT = true;
 
+    [Header("Cache")]
+    [SerializeField] private int cacheCount = 0;
+    public int CacheCount
+    {
+        get => cacheCount;
+        set => cacheCount = Mathf.Max(0, value);
+    }
+
     /// <summary>
     /// GPT 사용 여부를 반환하는 프로퍼티
     /// </summary>

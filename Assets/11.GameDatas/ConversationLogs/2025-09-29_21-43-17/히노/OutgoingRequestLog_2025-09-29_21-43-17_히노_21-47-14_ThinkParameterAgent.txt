@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: ThinkParameterAgent
+Real Time: 2025-09-29 21:47:14
+{"think_scope":"current_analysis","topic":"빠른 자가 점검과 즉시 행동 계획 — 눈으로 멍/붓기 확인 → 손으로 툭툭하며 통증 유무 확인 → 이상 있으면 사진 촬영 → 도넛 1개로 진정 → 아이폰의 '카미야' 메시지 확인 → 필요 시 보호자/병원 연락 준비","duration":30}
+

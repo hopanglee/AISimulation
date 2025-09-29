@@ -9,7 +9,7 @@ using System.IO;
 public abstract class LLMClient
 {
     public LLMClientProps llmOptions;
-    private string agentTypeOverride = "UNKNOWN";
+    protected string agentTypeOverride = "UNKNOWN";
     protected string actorName = "Unknown"; // Actor 이름을 저장할 변수
     protected IToolExecutor toolExecutor;
     protected Actor actor;
@@ -60,46 +60,29 @@ public abstract class LLMClient
         {
             var cacheTimeService = Services.Get<ITimeService>();
             // 분 단위 시간 키 + 에이전트 타입 파일명 우선 조회
-            var baseDir = System.IO.Path.Combine(Application.dataPath, "11.GameDatas", "CachedLogs", actorName ?? "Unknown");
-            if (cacheTimeService != null && System.IO.Directory.Exists(baseDir))
+            var baseDir = Path.Combine(Application.dataPath, "11.GameDatas", "CachedLogs", actorName ?? "Unknown");
+            if (cacheTimeService != null && Directory.Exists(baseDir))
             {
-                var gt = cacheTimeService.CurrentTime; // 분 단위 해상도 사용
-                var timeKey = $"{gt.year:D4}-{gt.month:D2}-{gt.day:D2}_{gt.hour:D2}-{gt.minute:D2}";
-                var agentPart = string.IsNullOrEmpty(agentTypeOverride) ? "" : "_"+agentTypeOverride;
-
-                var exactPath = System.IO.Path.Combine(baseDir, $"{timeKey}{agentPart}.json");
-                var altPath = System.IO.Path.Combine(baseDir, $"{timeKey}.json");
+                // 카운트 기반 파일명: {count}_{agenttype}_{timeKey}.json
+                int count = Math.Max(0, actor?.CacheCount ?? 0);
+                // 파일명은 count만 기준으로 조회 (timeKey/agentType 불문)
                 string matchPath = null;
-
-                if (System.IO.File.Exists(exactPath)) matchPath = exactPath;
-                else if (System.IO.File.Exists(altPath)) matchPath = altPath;
-                else
+                var candidates = Directory.GetFiles(baseDir, $"{count}_*.json");
+                if (candidates != null && candidates.Length > 0)
                 {
-                    // 같은 분 내 같은 시간 키로 저장된 다른 에이전트 파일 중 첫 번째 사용
-                    var candidates = System.IO.Directory.GetFiles(baseDir, $"{timeKey}_*.json");
-                    if (candidates != null && candidates.Length > 0)
-                    {
-                        matchPath = candidates[0];
-                    }
+                    matchPath = candidates[0];
                 }
 
                 if (!string.IsNullOrEmpty(matchPath))
                 {
-                    var cachedJson = System.IO.File.ReadAllText(matchPath);
+                    var cachedJson = File.ReadAllText(matchPath);
                     T cached;
-                    // if (deserializer != null)
-                    // {
-                    //     cached = deserializer(cachedJson);
-                    // }
-                    // else
-                    // {
-                    //     cached = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(cachedJson);
-                    // }
                     cached = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(cachedJson);
                     
                     if (cached != null)
                     {
-                        Debug.Log($"[{agentPart}][{actorName}] 캐시 로그 히트: {matchPath}");
+                        Debug.Log($"[{agentTypeOverride??"Unknown"}][{actorName}] 캐시 로그 히트: {matchPath}");
+                        if (actor != null) actor.CacheCount = count + 1; // 히트 시 증가
                         return cached;
                     }
                 }
@@ -107,7 +90,7 @@ public abstract class LLMClient
         }
         catch (Exception ex)
         {
-            Debug.LogWarning($"[{agentTypeOverride??""}][{actorName}] 캐시 로그 확인 중 오류: {ex.Message}");
+            Debug.LogWarning($"[{agentTypeOverride??"Unknown"}][{actorName}] 캐시 로그 확인 중 오류: {ex.Message}");
         }
         #endregion
 
@@ -124,15 +107,15 @@ public abstract class LLMClient
 
             if (!approved)
             {
-                Debug.LogError($"[{agentTypeOverride??""}][{actorName}] GPT API 호출이 거부되었습니다: {agentType}");
+                Debug.LogError($"[{agentTypeOverride??"Unknown"}][{actorName}] GPT API 호출이 거부되었습니다: {agentType}");
                 throw new OperationCanceledException($"GPT API 호출이 거부되었습니다: {actorName} - {agentType}");
             }
 
-            Debug.Log($"[{agentTypeOverride??""}][{actorName}] GPT API 호출이 승인되었습니다: {agentType}");
+            Debug.Log($"[{agentTypeOverride??"Unknown"}][{actorName}] GPT API 호출이 승인되었습니다: {agentType}");
         }
         else if (gameService != null && !gameService.IsGPTApprovalEnabled())
         {
-            Debug.Log($"[{agentTypeOverride??""}][{actorName}] GPT 승인 시스템이 비활성화되어 자동으로 진행합니다: {agentTypeOverride}");
+            Debug.Log($"[{agentTypeOverride??"Unknown"}][{actorName}] GPT 승인 시스템이 비활성화되어 자동으로 진행합니다: {agentTypeOverride}");
         }
         #endregion
 
@@ -143,7 +126,7 @@ public abstract class LLMClient
         {
             // 모델 대기 동안 시뮬레이션 시간 완전 정지
             timeService.StartAPICall();
-            Debug.Log($"[{agentTypeOverride??""}][{actorName}] API 호출 시작 - 시뮬레이션 시간 정지됨");
+            Debug.Log($"[{agentTypeOverride??"Unknown"}][{actorName}] API 호출 시작 - 시뮬레이션 시간 정지됨");
         }
         #endregion
 
@@ -160,7 +143,7 @@ public abstract class LLMClient
             if (timeService != null)
             {
                 timeService.EndAPICall();
-                Debug.Log($"[{agentTypeOverride??""}][{actorName}] API 호출 종료 - 시뮬레이션 시간 재개됨");
+                Debug.Log($"[{agentTypeOverride??"Unknown"}][{actorName}] API 호출 종료 - 시뮬레이션 시간 재개됨");
             }
             #endregion
         }
@@ -182,19 +165,21 @@ public abstract class LLMClient
 
             var gt = timeService.CurrentTime; // 분 단위 키 구성
             var timeKey = $"{gt.year:D4}-{gt.month:D2}-{gt.day:D2}_{gt.hour:D2}-{gt.minute:D2}";
-            var agentPart = string.IsNullOrEmpty(agentTypeOverride) ? "" : "_"+agentTypeOverride;
+            var agentPart = string.IsNullOrEmpty(agentTypeOverride) ? "UNKNOWN" : agentTypeOverride;
 
             var baseDir = Path.Combine(Application.dataPath, "11.GameDatas", "CachedLogs", actorName ?? "Unknown");
             if (!Directory.Exists(baseDir)) Directory.CreateDirectory(baseDir);
 
-            var filePath = Path.Combine(baseDir, $"{timeKey}{agentPart}.json");
+            int count = Math.Max(0, actor?.CacheCount ?? 0);
+            var filePath = Path.Combine(baseDir, $"{count}_{timeKey}_{agentPart}.json");
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented);
             File.WriteAllText(filePath, json, System.Text.Encoding.UTF8);
-            Debug.Log($"[{agentTypeOverride??""}][{actorName}] 캐시 저장: {filePath}");
+            Debug.Log($"[{agentTypeOverride??"Unknown"}][{actorName}] 캐시 저장: {filePath}");
+            if (actor != null) actor.CacheCount = count + 1; // 저장 후 증가
         }
         catch (Exception ex)
         {
-            Debug.LogWarning($"[{agentTypeOverride??""}][{actorName}] 캐시 저장 실패: {ex.Message}");
+            Debug.LogWarning($"[{agentTypeOverride??"Unknown"}][{actorName}] 캐시 저장 실패: {ex.Message}");
         }
     }
     protected abstract UniTask<T> Send<T>(
