@@ -513,6 +513,7 @@ public class GPT : LLMClient
                         {
                             Debug.Log($"[GPT][PARSE] Raw response before parse: {responseText}");
                             var result = JsonConvert.DeserializeObject<T>(responseText);
+                            try { SaveCachedResponse(result); } catch { }
                             await SaveConversationLogAsync(messages, responseText);
                             return result;
                         }
@@ -523,6 +524,7 @@ public class GPT : LLMClient
                             try
                             {
                                 var result = JsonConvert.DeserializeObject<T>(outer);
+                                try { SaveCachedResponse(result); } catch { }
                                 await SaveConversationLogAsync(messages, responseText);
                                 Debug.Log("[GPT][PARSE] Parsed successfully after outermost-object sanitization.");
                                 return result;
@@ -534,6 +536,7 @@ public class GPT : LLMClient
                                 try
                                 {
                                     var result = JsonConvert.DeserializeObject<T>(sanitized);
+                                    try { SaveCachedResponse(result); } catch { }
                                     await SaveConversationLogAsync(messages, responseText);
                                     Debug.Log("[GPT][PARSE] Parsed successfully after trailing-comma sanitization.");
                                     return result;

@@ -89,7 +89,9 @@ public class GeminiClient : LLMClient
 
         try
         {
-            return deserializer(responseText);
+            var result = deserializer(responseText);
+            try { SaveCachedResponse(result); } catch { }
+            return result;
         }
         catch (Exception ex)
         {

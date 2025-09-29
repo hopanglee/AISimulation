@@ -4,6 +4,7 @@ using Agent.Tools;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using System.IO;
 
 public abstract class LLMClient
 {
@@ -44,7 +45,7 @@ public abstract class LLMClient
     public abstract void AddToolMessage(string id, string message);
     #endregion
 
-    #region API 호출
+    #region Send Message
     public delegate T ChatDeserializer<T>(string response);
 
     public async UniTask<T> SendWithCacheLog<T>(
@@ -55,7 +56,59 @@ public abstract class LLMClient
         //messages ??= this.llm_messages;
 
         #region 캐시 가능한 로그 기록 있는지 체크
+        try
+        {
+            var cacheTimeService = Services.Get<ITimeService>();
+            // 분 단위 시간 키 + 에이전트 타입 파일명 우선 조회
+            var baseDir = System.IO.Path.Combine(Application.dataPath, "11.GameDatas", "CachedLogs", actorName ?? "Unknown");
+            if (cacheTimeService != null && System.IO.Directory.Exists(baseDir))
+            {
+                var gt = cacheTimeService.CurrentTime; // 분 단위 해상도 사용
+                var timeKey = $"{gt.year:D4}-{gt.month:D2}-{gt.day:D2}_{gt.hour:D2}-{gt.minute:D2}";
+                var agentPart = string.IsNullOrEmpty(agentTypeOverride) ? "" : "_"+agentTypeOverride;
 
+                var exactPath = System.IO.Path.Combine(baseDir, $"{timeKey}{agentPart}.json");
+                var altPath = System.IO.Path.Combine(baseDir, $"{timeKey}.json");
+                string matchPath = null;
+
+                if (System.IO.File.Exists(exactPath)) matchPath = exactPath;
+                else if (System.IO.File.Exists(altPath)) matchPath = altPath;
+                else
+                {
+                    // 같은 분 내 같은 시간 키로 저장된 다른 에이전트 파일 중 첫 번째 사용
+                    var candidates = System.IO.Directory.GetFiles(baseDir, $"{timeKey}_*.json");
+                    if (candidates != null && candidates.Length > 0)
+                    {
+                        matchPath = candidates[0];
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(matchPath))
+                {
+                    var cachedJson = System.IO.File.ReadAllText(matchPath);
+                    T cached;
+                    // if (deserializer != null)
+                    // {
+                    //     cached = deserializer(cachedJson);
+                    // }
+                    // else
+                    // {
+                    //     cached = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(cachedJson);
+                    // }
+                    cached = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(cachedJson);
+                    
+                    if (cached != null)
+                    {
+                        Debug.Log($"[{agentPart}][{actorName}] 캐시 로그 히트: {matchPath}");
+                        return cached;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[{agentTypeOverride??""}][{actorName}] 캐시 로그 확인 중 오류: {ex.Message}");
+        }
         #endregion
 
         #region GPT API 호출 전 승인 요청
@@ -71,15 +124,15 @@ public abstract class LLMClient
 
             if (!approved)
             {
-                Debug.LogError($"[GPT][{actorName}] GPT API 호출이 거부되었습니다: {agentType}");
+                Debug.LogError($"[{agentTypeOverride??""}][{actorName}] GPT API 호출이 거부되었습니다: {agentType}");
                 throw new OperationCanceledException($"GPT API 호출이 거부되었습니다: {actorName} - {agentType}");
             }
 
-            Debug.Log($"[GPT][{actorName}] GPT API 호출이 승인되었습니다: {agentType}");
+            Debug.Log($"[{agentTypeOverride??""}][{actorName}] GPT API 호출이 승인되었습니다: {agentType}");
         }
         else if (gameService != null && !gameService.IsGPTApprovalEnabled())
         {
-            Debug.Log($"[GPT][{actorName}] GPT 승인 시스템이 비활성화되어 자동으로 진행합니다: {agentTypeOverride}");
+            Debug.Log($"[{agentTypeOverride??""}][{actorName}] GPT 승인 시스템이 비활성화되어 자동으로 진행합니다: {agentTypeOverride}");
         }
         #endregion
 
@@ -90,7 +143,7 @@ public abstract class LLMClient
         {
             // 모델 대기 동안 시뮬레이션 시간 완전 정지
             timeService.StartAPICall();
-            Debug.Log($"[GPT][{actorName}] API 호출 시작 - 시뮬레이션 시간 정지됨");
+            Debug.Log($"[{agentTypeOverride??""}][{actorName}] API 호출 시작 - 시뮬레이션 시간 정지됨");
         }
         #endregion
 
@@ -107,9 +160,41 @@ public abstract class LLMClient
             if (timeService != null)
             {
                 timeService.EndAPICall();
-                Debug.Log($"[GPT][{actorName}] API 호출 종료 - 시뮬레이션 시간 재개됨");
+                Debug.Log($"[{agentTypeOverride??""}][{actorName}] API 호출 종료 - 시뮬레이션 시간 재개됨");
             }
             #endregion
+        }
+    }
+
+    /// <summary>
+    /// 현재 분 단위 시간과 에이전트 타입을 기준으로 캐시 파일에 응답을 저장합니다.
+    /// 문자열 T는 스킵합니다(역직렬화 충돌 방지).
+    /// </summary>
+    protected void SaveCachedResponse<T>(T data)
+    {
+        if (data == null) return;
+        if (typeof(T) == typeof(string)) return;
+
+        try
+        {
+            var timeService = Services.Get<ITimeService>();
+            if (timeService == null) return;
+
+            var gt = timeService.CurrentTime; // 분 단위 키 구성
+            var timeKey = $"{gt.year:D4}-{gt.month:D2}-{gt.day:D2}_{gt.hour:D2}-{gt.minute:D2}";
+            var agentPart = string.IsNullOrEmpty(agentTypeOverride) ? "" : "_"+agentTypeOverride;
+
+            var baseDir = Path.Combine(Application.dataPath, "11.GameDatas", "CachedLogs", actorName ?? "Unknown");
+            if (!Directory.Exists(baseDir)) Directory.CreateDirectory(baseDir);
+
+            var filePath = Path.Combine(baseDir, $"{timeKey}{agentPart}.json");
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented);
+            File.WriteAllText(filePath, json, System.Text.Encoding.UTF8);
+            Debug.Log($"[{agentTypeOverride??""}][{actorName}] 캐시 저장: {filePath}");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[{agentTypeOverride??""}][{actorName}] 캐시 저장 실패: {ex.Message}");
         }
     }
     protected abstract UniTask<T> Send<T>(
