@@ -69,15 +69,6 @@ public abstract partial class NPC : Actor
     }
     
     [FoldoutGroup("Manual Action Testing")]
-    [Button("Clear Agent Messages")]
-    private void ClearAgentMessages()
-    {
-        if (Application.isPlaying && actionAgent != null)
-        {
-            actionAgent.ClearMessages(true);
-            Debug.Log($"[{Name}] AI Agent 메시지 기록 초기화됨");
-        }
-    }
     
     [FoldoutGroup("Debug Inventory"), Button("Swap Hand <-> Inven Slot 1")]
     private void DebugSwapHandWithInvenSlot1()

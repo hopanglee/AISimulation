@@ -106,23 +106,23 @@ public class GPT : LLMClient
             messages.RemoveAll(m => m is ToolChatMessage u && string.Equals(u.Content?.ToString(), message.content, StringComparison.Ordinal));
         }
     }
-    protected override void AddMessage(AgentChatMessage message)
+    public override void AddMessage(AgentChatMessage message)
     {
         messages.Add(message.AsOpenAIMessage());
     }
-    protected override void AddSystemMessage(string message)
+    public override void AddSystemMessage(string message)
     {
         messages.Add(new SystemChatMessage(message));
     }
-    protected override void AddUserMessage(string message)
+    public override void AddUserMessage(string message)
     {
         messages.Add(new UserChatMessage(message));
     }
-    protected override void AddAssistantMessage(string message)
+    public override void AddAssistantMessage(string message)
     {
         messages.Add(new AssistantChatMessage(message));
     }
-    protected override void AddToolMessage(string id, string message)
+    public override void AddToolMessage(string id, string message)
     {
         messages.Add(new ToolChatMessage(id, message));
     }

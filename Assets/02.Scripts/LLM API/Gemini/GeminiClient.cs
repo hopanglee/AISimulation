@@ -30,25 +30,25 @@ public class GeminiClient : LLMClient
     }
     protected override void ClearMessages(bool keepSystemMessage = false)
     {
-        throw new NotImplementedException();      
+        throw new NotImplementedException();
     }
-    protected override void AddMessage(AgentChatMessage message)
+    public override void AddMessage(AgentChatMessage message)
     {
         throw new NotImplementedException();
     }
-    protected override void AddSystemMessage(string message)
+    public override void AddSystemMessage(string message)
     {
         throw new NotImplementedException();
     }
-    protected override void AddUserMessage(string message)
+    public override void AddUserMessage(string message)
     {
         throw new NotImplementedException();
     }
-     protected override void AddAssistantMessage(string message)
+    public override void AddAssistantMessage(string message)
     {
         throw new NotImplementedException();
     }
-    protected override void AddToolMessage(string id, string message)
+    public override void AddToolMessage(string id, string message)
     {
         throw new NotImplementedException();
     }

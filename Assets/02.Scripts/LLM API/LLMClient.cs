@@ -37,11 +37,11 @@ public abstract class LLMClient
     protected abstract void RemoveAt(int index);
     protected abstract void RemoveMessage(AgentChatMessage message);
     protected abstract void ClearMessages(bool keepSystemMessage = false);
-    protected abstract void AddMessage(AgentChatMessage message);
-    protected abstract void AddSystemMessage(string message);
-    protected abstract void AddUserMessage(string message);
-    protected abstract void AddAssistantMessage(string message);
-    protected abstract void AddToolMessage(string id, string message);
+    public abstract void AddMessage(AgentChatMessage message);
+    public abstract void AddSystemMessage(string message);
+    public abstract void AddUserMessage(string message);
+    public abstract void AddAssistantMessage(string message);
+    public abstract void AddToolMessage(string id, string message);
     #endregion
 
     #region API 호출
