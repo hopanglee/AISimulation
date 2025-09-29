@@ -15,45 +15,45 @@ public class GeminiClient : LLMClient
     {
         client = new HttpWebFetcher("https://generativelanguage.googleapis.com");
     }
-    public override int GetMessageCount()
+    protected override int GetMessageCount()
     {
         throw new NotImplementedException();
     }
 
-    public override void RemoveAt(int index)
+    protected override void RemoveAt(int index)
     {
         throw new NotImplementedException();
     }
-    public override void RemoveMessage(AgentChatMessage message)
+    protected override void RemoveMessage(AgentChatMessage message)
     {
         throw new NotImplementedException();
     }
-    public override void ClearMessages(bool keepSystemMessage = false)
+    protected override void ClearMessages(bool keepSystemMessage = false)
     {
         throw new NotImplementedException();      
     }
-    public override void AddMessage(AgentChatMessage message)
+    protected override void AddMessage(AgentChatMessage message)
     {
         throw new NotImplementedException();
     }
-    public override void AddSystemMessage(string message)
+    protected override void AddSystemMessage(string message)
     {
         throw new NotImplementedException();
     }
-    public override void AddUserMessage(string message)
+    protected override void AddUserMessage(string message)
     {
         throw new NotImplementedException();
     }
-     public override void AddAssistantMessage(string message)
+     protected override void AddAssistantMessage(string message)
     {
         throw new NotImplementedException();
     }
-    public override void AddToolMessage(string id, string message)
+    protected override void AddToolMessage(string id, string message)
     {
         throw new NotImplementedException();
     }
 
-    public override async UniTask<T> Send<T>(
+    protected override async UniTask<T> Send<T>(
         List<AgentChatMessage> messages = null,
         LLMClientSchema schema = null,
         ChatDeserializer<T> deserializer = null

@@ -18,7 +18,7 @@ public abstract class LLMClient
         this.llmOptions = options;
     }
 
-    public void SetAgentType(string agentType)
+    protected void SetAgentType(string agentType)
     {
         agentTypeOverride = agentType;
     }
@@ -33,15 +33,15 @@ public abstract class LLMClient
         Debug.Log($"[GPT] Actor name set to: {actorName}");
     }
     #region 메시지 관리
-    public abstract int GetMessageCount();
-    public abstract void RemoveAt(int index);
-    public abstract void RemoveMessage(AgentChatMessage message);
-    public abstract void ClearMessages(bool keepSystemMessage = false);
-    public abstract void AddMessage(AgentChatMessage message);
-    public abstract void AddSystemMessage(string message);
-    public abstract void AddUserMessage(string message);
-    public abstract void AddAssistantMessage(string message);
-    public abstract void AddToolMessage(string id, string message);
+    protected abstract int GetMessageCount();
+    protected abstract void RemoveAt(int index);
+    protected abstract void RemoveMessage(AgentChatMessage message);
+    protected abstract void ClearMessages(bool keepSystemMessage = false);
+    protected abstract void AddMessage(AgentChatMessage message);
+    protected abstract void AddSystemMessage(string message);
+    protected abstract void AddUserMessage(string message);
+    protected abstract void AddAssistantMessage(string message);
+    protected abstract void AddToolMessage(string id, string message);
     #endregion
 
     #region API 호출
@@ -112,7 +112,7 @@ public abstract class LLMClient
             #endregion
         }
     }
-    public abstract UniTask<T> Send<T>(
+    protected abstract UniTask<T> Send<T>(
         List<AgentChatMessage> messages = null,
         LLMClientSchema schema = null,
         ChatDeserializer<T> deserializer = null
@@ -121,9 +121,7 @@ public abstract class LLMClient
     #endregion
 
     #region 도구 사용
-    //public abstract UniTask<T> UseTools<T>();
-
-    //public abstract void ExecuteToolCall(ChatToolCall toolCall);
+    //protected abstract void AddTool();
     #endregion
 
 }

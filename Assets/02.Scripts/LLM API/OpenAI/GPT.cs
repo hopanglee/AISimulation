@@ -61,11 +61,11 @@ public class GPT : LLMClient
     }
 
     #region 메시지 관리 override
-    public override int GetMessageCount()
+    protected override int GetMessageCount()
     {
         return messages.Count;
     }
-    public override void ClearMessages(bool keepSystemMessage = false)
+    protected override void ClearMessages(bool keepSystemMessage = false)
     {
         if (keepSystemMessage)
         {
@@ -83,11 +83,11 @@ public class GPT : LLMClient
             messages = new();
         }
     }
-    public override void RemoveAt(int index)
+    protected override void RemoveAt(int index)
     {
         messages.RemoveAt(index);
     }
-    public override void RemoveMessage(AgentChatMessage message)
+    protected override void RemoveMessage(AgentChatMessage message)
     {
         if (message.role == AgentRole.System)
         {
@@ -106,23 +106,23 @@ public class GPT : LLMClient
             messages.RemoveAll(m => m is ToolChatMessage u && string.Equals(u.Content?.ToString(), message.content, StringComparison.Ordinal));
         }
     }
-    public override void AddMessage(AgentChatMessage message)
+    protected override void AddMessage(AgentChatMessage message)
     {
         messages.Add(message.AsOpenAIMessage());
     }
-    public override void AddSystemMessage(string message)
+    protected override void AddSystemMessage(string message)
     {
         messages.Add(new SystemChatMessage(message));
     }
-    public override void AddUserMessage(string message)
+    protected override void AddUserMessage(string message)
     {
         messages.Add(new UserChatMessage(message));
     }
-    public override void AddAssistantMessage(string message)
+    protected override void AddAssistantMessage(string message)
     {
         messages.Add(new AssistantChatMessage(message));
     }
-    public override void AddToolMessage(string id, string message)
+    protected override void AddToolMessage(string id, string message)
     {
         messages.Add(new ToolChatMessage(id, message));
     }
@@ -438,7 +438,7 @@ public class GPT : LLMClient
     #endregion
 
     #region 메인 메서드
-    public override UniTask<T> Send<T>(
+    protected override UniTask<T> Send<T>(
         List<AgentChatMessage> messages = null,
         LLMClientSchema schema = null,
         ChatDeserializer<T> deserializer = null
