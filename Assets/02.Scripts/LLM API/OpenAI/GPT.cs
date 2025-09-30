@@ -28,12 +28,6 @@ public class GPT : LLMClient
         sessionDirectoryName = sessionName;
     }
 
-    public class Auth
-    {
-        public string private_api_key;
-        public string organization;
-    }
-
     public GPT(Actor actor, string model = null) : base(new LLMClientProps() { model = model, provider = LLMClientProvider.OpenAI })
     {
         var apiKey = "OPENAI_API_KEY";
@@ -45,7 +39,7 @@ public class GPT : LLMClient
         {
             var json = File.ReadAllText(authPath);
             var auth = JsonConvert.DeserializeObject<Auth>(json);
-            apiKey = auth.private_api_key;
+            apiKey = auth.gpt_api_key;
         }
         else
             Debug.LogWarning($"No API key in file path : {authPath}");

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
@@ -15,6 +16,19 @@ public class GeminiClient : LLMClient
     public GeminiClient(LLMClientProps options)
         : base(options)
     {
+        apiKey = "GEMINI_API_KEY";
+
+        var userPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        var authPath = $"{userPath}/.openai/auth.json";
+        if (File.Exists(authPath))
+        {
+            var json = File.ReadAllText(authPath);
+            var auth = JsonConvert.DeserializeObject<Auth>(json);
+            apiKey = auth.gemini_api_key;
+        }
+        else
+            Debug.LogWarning($"No API key in file path : {authPath}");
+
         client = new HttpWebFetcher("https://generativelanguage.googleapis.com");
     }
     protected override int GetMessageCount()
