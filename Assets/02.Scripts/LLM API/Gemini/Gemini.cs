@@ -7,6 +7,7 @@ using Cysharp.Threading.Tasks;
 using Mscc.GenerativeAI;
 using Mscc.GenerativeAI.Google;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 public class Gemini : LLMClient
@@ -51,13 +52,12 @@ public class Gemini : LLMClient
         this.toolExecutor = new ToolExecutor(actor);
 
         this.request.Model = modelName;
-
-        this.request.Tools = new Tools();
+        this.request.GenerationConfig = generationConfig;
+        //this.request.Tools = new Tools();
         this.SetActor(actor);
         // this.request.SafetySettings = null;
         // this.request.SystemInstruction = null;
         // this.request.ToolConfig = null;
-        // this.request.Tools = null;
     }
 
     #region 메시지 관리 override
@@ -285,8 +285,15 @@ public class Gemini : LLMClient
         // Debug.Log($"[Gemini] SetResponseFormat");/
         try
         {
+            // 0) Gemini 호환 전처리: OBJECT에 빈 properties 금지, additionalProperties 전용 객체는 배열로 유도 등
+            
+            var fmt = (JObject)schema.format.DeepClone();
+            // 라이브러리 제약에 맞게 전처리: additionalProperties 제거, min/max 정수화 등
+            SanitizeSchemaForMscc(fmt);
+
             // 1. JObject를 JSON 문자열로 변환합니다.
-            string schemaJson = schema.format.ToString();
+            string schemaJson = fmt.ToString();
+            Debug.Log($"[Gemini] SetResponseFormat: {schemaJson}");
 
             // 2. 라이브러리가 제공하는 공식 메서드 FromString()을 사용해 
             //    JSON 문자열로부터 Schema 객체를 생성합니다.
@@ -294,6 +301,7 @@ public class Gemini : LLMClient
 
             // 3. 생성된 Schema 객체를 generationConfig에 설정합니다.
             generationConfig.ResponseMimeType = "application/json";
+
             generationConfig.ResponseSchema = responseSchema;
         }
         catch (System.Exception ex)
@@ -301,6 +309,57 @@ public class Gemini : LLMClient
             Debug.LogWarning($"[Gemini] SetResponseFormat failed: {ex.Message}");
         }
         // Debug.Log($"[Gemini] SetResponseFormat done");
+    }
+
+    /// <summary>
+    /// Mscc.GenerativeAI Schema 파서 제약에 맞추기 위한 전처리
+    /// - additionalProperties 제거 (미지원)
+    /// - minimum/maximum이 실수(0.0 등)면 정수(0/1 등)로 변환
+    /// 재귀적으로 전체 트리를 변환
+    /// </summary>
+    private void SanitizeSchemaForMscc(JToken node)
+    {
+        if (node == null) return;
+
+        if (node is JObject obj)
+        {
+            // 1) additionalProperties 제거
+            if (obj.Property("additionalProperties") != null)
+            {
+                obj.Property("additionalProperties").Remove();
+            }
+
+            // 2) minimum/maximum 정수화
+            NormalizeNumberProperty(obj, "minimum");
+            NormalizeNumberProperty(obj, "maximum");
+
+            // 3) 하위 재귀 처리
+            foreach (var prop in obj.Properties())
+            {
+                SanitizeSchemaForMscc(prop.Value);
+            }
+        }
+        else if (node is JArray arr)
+        {
+            foreach (var item in arr)
+            {
+                SanitizeSchemaForMscc(item);
+            }
+        }
+    }
+
+    private void NormalizeNumberProperty(JObject obj, string name)
+    {
+        var token = obj[name];
+        if (token == null) return;
+
+        if (token.Type == JTokenType.Float || token.Type == JTokenType.Integer)
+        {
+            // 라이브러리 Minimum/Maximum는 long?로 정의됨 → 정수로 변환
+            var v = token.Value<double>();
+            long iv = (long)Math.Round(v, MidpointRounding.AwayFromZero);
+            obj[name] = iv;
+        }
     }
 
     public override void SetTemperature(float temperature)
@@ -342,7 +401,7 @@ public class Gemini : LLMClient
 
             // 2. API 호출
             request.Contents = chatHistory;
-            request.GenerationConfig = generationConfig;
+            //request.GenerationConfig = generationConfig;
             if (request.Contents == null || request.Contents.Count == 0) Debug.LogError("request.Contents is null");
             var response = await generativeModel.GenerateContent(request);
 
@@ -454,16 +513,15 @@ public class Gemini : LLMClient
         //var functionDeclarations = new List<FunctionDeclaration>();
         foreach (var schema in tools)
         {
-            request.Tools.AddFunction(schema.name, schema.description);
-            // var tool = ToolManager.ToGeminiTool(schema);
-            // if (tool != null)
-            // {
-
-            //try { functionDeclarations.Add(tool); } catch { }
-            // }
+            //request.Tools.AddFunction(schema.name, schema.description);
         }
         Debug.Log($"[Gemini] AddTools done");
+        // var tool = ToolManager.ToGeminiTool(schema);
+        // if (tool != null)
+        // {
 
+        //try { functionDeclarations.Add(tool); } catch { }
+        // }
         // var functionDeclarations = tools.Select(t => new FunctionDeclaration
         // {
         //     Name = t.name,
