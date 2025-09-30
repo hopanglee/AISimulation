@@ -67,6 +67,11 @@ public class GeminiClient : LLMClient
         responseFormatSchema = schema;
     }
 
+    public override void SetTemperature(float temperature)
+    {
+        
+    }
+
     protected override async UniTask<T> Send<T>(
         List<AgentChatMessage> messages = null,
         LLMClientSchema schema = null,

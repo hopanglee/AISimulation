@@ -432,6 +432,7 @@ public class GPT : LLMClient
     }
     #endregion
 
+    #region 설정
     public override void SetResponseFormat(LLMClientSchema schema)
     {
         if (schema == null || schema.format == null) return;
@@ -448,6 +449,16 @@ public class GPT : LLMClient
             Debug.LogWarning($"[GPT] SetResponseFormat failed: {ex.Message}");
         }
     }
+
+    public override void SetTemperature(float temperature)
+    {
+        if(modelName == "gpt-5-mini" || modelName == "gpt-5")
+        {
+            // TODO: gpt-5-mini, gpt-5 에서는 temperature 설정 불가
+        }
+        else options.Temperature = temperature;
+    }
+    #endregion
 
     #region 메인 메서드
     protected override UniTask<T> Send<T>(
