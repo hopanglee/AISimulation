@@ -45,15 +45,12 @@ public class GPT : LLMClient
             Debug.LogWarning($"No API key in file path : {authPath}");
 
         client = new(model: modelName, apiKey: apiKey);
-        this.toolExecutor = new GPTToolExecutor(actor);
+        this.toolExecutor = new ToolExecutor(actor);
         this.SetActor(actor);
     }
 
     #region 메시지 관리 override
-    protected override int GetMessageCount()
-    {
-        return messages.Count;
-    }
+    protected override int GetMessageCount() => messages.Count;
     protected override void ClearMessages(bool keepSystemMessage = false)
     {
         if (keepSystemMessage)
@@ -74,7 +71,10 @@ public class GPT : LLMClient
     }
     protected override void RemoveAt(int index)
     {
-        messages.RemoveAt(index);
+        if (index >= 0 && index < messages.Count)
+        {
+            messages.RemoveAt(index);
+        }
     }
     protected override void RemoveMessage(AgentChatMessage message)
     {
@@ -111,7 +111,7 @@ public class GPT : LLMClient
     {
         messages.Add(new AssistantChatMessage(message));
     }
-    public override void AddToolMessage(string id, string message)
+    public override void AddToolMessage(string name, string id, string message)
     {
         messages.Add(new ToolChatMessage(id, message));
     }
@@ -391,41 +391,6 @@ public class GPT : LLMClient
     }
     #endregion
 
-    #region 오류 방지 및 처리 헬퍼 메서드
-    // Utility: sanitize JSON with trailing commas
-    private static string RemoveTrailingCommas(string json)
-    {
-        if (string.IsNullOrEmpty(json)) return json;
-        // Remove trailing commas before } or ]
-        var pattern = @",\s*(\}|\])";
-        return Regex.Replace(json, pattern, "$1");
-    }
-
-    // Utility: extract the outermost JSON object substring
-    private static string ExtractOutermostJsonObject(string text)
-    {
-        if (string.IsNullOrEmpty(text)) return text;
-        int firstBraceIndex = text.IndexOf('{');
-        if (firstBraceIndex < 0) return text;
-        int depth = 0;
-        for (int i = firstBraceIndex; i < text.Length; i++)
-        {
-            char ch = text[i];
-            if (ch == '{') depth++;
-            else if (ch == '}')
-            {
-                depth--;
-                if (depth == 0)
-                {
-                    return text.Substring(firstBraceIndex, i - firstBraceIndex + 1);
-                }
-            }
-        }
-        // If braces are unbalanced, return from the first '{' to the end
-        return text.Substring(firstBraceIndex);
-    }
-    #endregion
-
     #region 설정
     public override void SetResponseFormat(LLMClientSchema schema)
     {
@@ -466,7 +431,7 @@ public class GPT : LLMClient
         return SendGPTAsync<T>();
     }
 
-    public async UniTask<T> SendGPTAsync<T>(
+    private async UniTask<T> SendGPTAsync<T>(
         ChatCompletionOptions options = null
     )
     {
@@ -645,11 +610,11 @@ public class GPT : LLMClient
         if (toolExecutor != null)
         {
             string result = toolExecutor.ExecuteTool(toolCall);
-            AddToolMessage(toolCall.Id, result);
+            AddToolMessage(toolCall.FunctionName, toolCall.Id, result);
         }
         else
         {
-            Debug.LogWarning($"[ActSelectorAgent] No tool executor available for tool call: {toolCall.FunctionName}");
+            Debug.LogWarning($"[GPT] No tool executor available for tool call: {toolCall.FunctionName}");
         }
     }
     #endregion

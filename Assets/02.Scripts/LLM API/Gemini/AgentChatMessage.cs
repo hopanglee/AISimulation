@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using Newtonsoft.Json.Converters;
 using OpenAI.Chat;
+using Agent.Tools;
+using GeminiApiContent = Mscc.GenerativeAI.Content;
 
 [JsonConverter(typeof(StringEnumConverter))]
 public enum AgentRole
@@ -54,18 +56,11 @@ public class AgentChatMessage
             content = content,
         };
 
-    public GeminiContent AsGeminiMessage() =>
-        new()
-        {
-            role = role switch
-            {
-                AgentRole.System => "user",
-                AgentRole.User => "user",
-                AgentRole.Assistant => "model",
-                _ => "user",
-            },
-            parts = new() { new() { text = content } },
-        };
+    public GeminiApiContent AsGeminiMessage()
+    {
+        return new GeminiApiContent(text: content, role: role.ToGeminiRole());
+    }
+
 }
 
 public static class AgentChatMessageExtensions
@@ -82,7 +77,7 @@ public static class AgentChatMessageExtensions
         return messages.Select(m => m.AsAnthropicMessage()).ToArray();
     }
 
-    public static List<GeminiContent> AsGeminiMessage(this IEnumerable<AgentChatMessage> messages)
+    public static List<GeminiApiContent> AsGeminiMessage(this IEnumerable<AgentChatMessage> messages)
     {
         return messages.Select(m => m.AsGeminiMessage()).ToList();
     }

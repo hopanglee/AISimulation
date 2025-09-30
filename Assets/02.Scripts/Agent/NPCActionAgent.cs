@@ -13,7 +13,6 @@ using Agent.Tools; // 도구 관련 클래스들을 사용하기 위해 추가
 public class NPCActionAgent : GPT
 {
     private readonly INPCAction[] availableActions;
-    private readonly Actor owner; // NPC 또는 MainActor 참조
 
     /// <summary>
     /// 액션을 자연스러운 메시지로 변환하는 커스텀 함수
@@ -23,21 +22,19 @@ public class NPCActionAgent : GPT
     /// <summary>
     /// NPCActionAgent 생성자
     /// </summary>
-    /// <param name="owner">NPC 또는 MainActor 참조</param>
+    /// <param name="actor">NPC 또는 MainActor 참조</param>
     /// <param name="availableActions">사용 가능한 액션 목록</param>
     /// <param name="npcRole">NPC의 역할</param>
-    public NPCActionAgent(Actor owner, INPCAction[] availableActions, NPCRole npcRole) : base(owner)
+    public NPCActionAgent(Actor actor, INPCAction[] availableActions, NPCRole npcRole) : base(actor)
     {
-        this.owner = owner;
         this.availableActions = availableActions;
-        this.toolExecutor = new GPTToolExecutor(owner); // 도구 실행자 초기화
         SetAgentType(nameof(NPCActionAgent));
         // NPCRole별 System prompt 로드 (replacements 포함)
         string systemPrompt = PromptLoader.LoadNPCRoleSystemPrompt(npcRole,
         new Dictionary<string, string>
                 {
-                    {"npc_name", owner.Name },
-                    {"npc_info", owner.LoadCharacterInfo() },
+                    {"npc_name", actor.Name },
+                    {"npc_info", actor.LoadCharacterInfo() },
                     {"AVAILABLE_ACTIONS", PromptLoader.LoadAvailableActionsDescription(npcRole, availableActions) },
                 });
         ClearMessages();
@@ -55,13 +52,13 @@ public class NPCActionAgent : GPT
 
         // 결제 액션 또는 가격표 제공 메서드가 있는 경우 결제 관련 도구 추가
         bool hasPaymentAction = availableActions != null && availableActions.Any(a => string.Equals(a.ActionName, "Payment", StringComparison.OrdinalIgnoreCase));
-        bool hasPriceListProvider = owner?.GetType().GetMethod("GetPriceList", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance) != null;
+        bool hasPriceListProvider = actor?.GetType().GetMethod("GetPriceList", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance) != null;
         if (hasPaymentAction || hasPriceListProvider)
         {
             AddTools(ToolManager.NeutralToolSets.Payment);
         }
 
-        Debug.Log($"[NPCActionAgent] 생성됨 - 소유자: {owner?.Name}, 액션 수: {availableActions?.Length ?? 0}");
+        Debug.Log($"[NPCActionAgent] 생성됨 - 소유자: {actor?.Name}, 액션 수: {availableActions?.Length ?? 0}");
     }
 
     /// <summary>
@@ -112,9 +109,9 @@ public class NPCActionAgent : GPT
         try
         {
             // 모든 Actor가 Sensor를 보유하므로 Sensor 기반으로만 수집
-            if (owner?.sensor != null)
+            if (actor?.sensor != null)
             {
-                var interactableEntities = owner.sensor.GetInteractableEntities();
+                var interactableEntities = actor.sensor.GetInteractableEntities();
                 keys.AddRange(interactableEntities.actors.Keys);
             }
         }
@@ -137,9 +134,9 @@ public class NPCActionAgent : GPT
         try
         {
             // UseGPT가 비활성화된 경우 즉시 기본 액션 반환 (API 호출 방지)
-            if (owner is Actor a && !a.UseGPT)
+            if (actor is Actor a && !a.UseGPT)
             {
-                Debug.Log($"[NPCActionAgent] GPT 비활성화됨 - 기본 Wait 반환 (owner: {a.Name})");
+                Debug.Log($"[NPCActionAgent] GPT 비활성화됨 - 기본 Wait 반환 (actor: {a.Name})");
                 return new NPCActionDecision
                 {
                     actionType = availableActions?.FirstOrDefault()?.ActionName ?? "Wait",
@@ -148,15 +145,15 @@ public class NPCActionAgent : GPT
             }
 
             // 최신 인지 스냅샷 반영 (NPC에서 선행 호출하지만 안전망으로 한 번 더 처리)
-            if (owner?.sensor != null)
+            if (actor?.sensor != null)
             {
-                owner.sensor.UpdateLookableEntities();
+                actor.sensor.UpdateLookableEntities();
             }
 
             // 최신 스냅샷으로 ResponseFormat의 target_key enum 갱신
             UpdateResponseFormatSchema();
 
-            // 현재 상황 정보를 system 메시지로 자동 추가
+            // 현재 상황 정보를 user 메시지로 자동 추가
             AddCurrentSituationInfo();
 
             // GPT API 호출 전 메시지 수 기록
@@ -191,11 +188,11 @@ public class NPCActionAgent : GPT
     }
 
     /// <summary>
-    /// 현재 상황 정보를 system 메시지로 추가합니다.
+    /// 현재 상황 정보를 user 메시지로 추가합니다.
     /// </summary>
     private void AddCurrentSituationInfo()
     {
-        if (owner == null) return;
+        if (actor == null) return;
 
         try
         {
@@ -233,7 +230,7 @@ public class NPCActionAgent : GPT
             if (situationInfo.Count > 0)
             {
                 string fullSituationInfo = string.Join("\n", situationInfo);
-                AddSystemMessage($"현재 상황 정보:\n{fullSituationInfo}");
+                AddUserMessage($"현재 상황 정보:\n{fullSituationInfo}");
                 Debug.Log($"[NPCActionAgent] 상황 정보 추가됨:\n{fullSituationInfo}");
             }
         }
@@ -288,28 +285,25 @@ public class NPCActionAgent : GPT
     /// </summary>
     private string GetNPCStatusInfo()
     {
-        if (owner is Actor actor)
+
+        var statusList = new List<string>();
+
+        // 기본 상태 정보
+        if (actor.Hunger > 0) statusList.Add($"배고픔: {actor.Hunger}/100");
+        if (actor.Thirst > 0) statusList.Add($"갈증: {actor.Thirst}/100");
+        if (actor.Stamina > 0) statusList.Add($"체력: {actor.Stamina}/100");
+        if (actor.Sleepiness > 0) statusList.Add($"졸림: {actor.Sleepiness}/100");
+        if (actor.Stress > 0) statusList.Add($"스트레스: {actor.Stress}/100");
+        if (actor.MentalPleasure > 0) statusList.Add($"만족감: {actor.MentalPleasure}");
+
+        // MainActor의 경우 추가 정보
+        if (actor is MainActor mainActor)
         {
-            var statusList = new List<string>();
-
-            // 기본 상태 정보
-            if (actor.Hunger > 0) statusList.Add($"배고픔: {actor.Hunger}/100");
-            if (actor.Thirst > 0) statusList.Add($"갈증: {actor.Thirst}/100");
-            if (actor.Stamina > 0) statusList.Add($"체력: {actor.Stamina}/100");
-            if (actor.Sleepiness > 0) statusList.Add($"졸림: {actor.Sleepiness}/100");
-            if (actor.Stress > 0) statusList.Add($"스트레스: {actor.Stress}/100");
-            if (actor.MentalPleasure > 0) statusList.Add($"만족감: {actor.MentalPleasure}");
-
-            // MainActor의 경우 추가 정보
-            if (actor is MainActor mainActor)
-            {
-                if (mainActor.IsSleeping) statusList.Add("상태: 수면 중");
-                if (mainActor.IsPerformingActivity) statusList.Add($"활동: {mainActor.CurrentActivity}");
-            }
-
-            return statusList.Count > 0 ? string.Join(", ", statusList) : "정상";
+            if (mainActor.IsSleeping) statusList.Add("상태: 수면 중");
+            if (mainActor.IsPerformingActivity) statusList.Add($"활동: {mainActor.CurrentActivity}");
         }
-        return null;
+
+        return statusList.Count > 0 ? string.Join(", ", statusList) : "정상";
     }
 
     /// <summary>
@@ -321,11 +315,11 @@ public class NPCActionAgent : GPT
 
         try
         {
-            if (owner != null)
+            if (actor != null)
             {
-                if (owner.sensor != null)
+                if (actor.sensor != null)
                 {
-                    var interactableEntities = owner.sensor.GetInteractableEntities();
+                    var interactableEntities = actor.sensor.GetInteractableEntities();
                     foreach (var kvp in interactableEntities.actors)
                     {
                         var nearbyActor = kvp.Value;
@@ -397,24 +391,21 @@ public class NPCActionAgent : GPT
     /// </summary>
     private string GetCurrentLocationInfo()
     {
-        if (owner is Actor actor)
+        try
         {
-            try
+            var locationService = Services.Get<ILocationService>();
+            if (locationService != null)
             {
-                var locationService = Services.Get<ILocationService>();
-                if (locationService != null)
+                var currentArea = locationService.GetArea(actor.curLocation);
+                if (currentArea != null)
                 {
-                    var currentArea = locationService.GetArea(actor.curLocation);
-                    if (currentArea != null)
-                    {
-                        return currentArea.locationName;
-                    }
+                    return currentArea.locationName;
                 }
             }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[NPCActionAgent] 위치 정보 가져오기 실패: {ex.Message}");
-            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[NPCActionAgent] 위치 정보 가져오기 실패: {ex.Message}");
         }
         return null;
     }

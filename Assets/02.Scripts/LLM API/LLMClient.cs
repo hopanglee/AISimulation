@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using System.IO;
+using System.Text.RegularExpressions;
 
 public abstract class LLMClient
 {
@@ -42,7 +43,7 @@ public abstract class LLMClient
     public abstract void AddSystemMessage(string message);
     public abstract void AddUserMessage(string message);
     public abstract void AddAssistantMessage(string message);
-    public abstract void AddToolMessage(string id, string message);
+    public abstract void AddToolMessage(string name, string id, string message);
     #endregion
 
     #region Send Message
@@ -256,6 +257,41 @@ public abstract class LLMClient
     public abstract void SetResponseFormat(LLMClientSchema schema);
 
     public abstract void SetTemperature(float temperature);
+    #endregion
+
+    #region 오류 방지 및 처리 헬퍼 메서드
+    // Utility: sanitize JSON with trailing commas
+    protected static string RemoveTrailingCommas(string json)
+    {
+        if (string.IsNullOrEmpty(json)) return json;
+        // Remove trailing commas before } or ]
+        var pattern = @",\s*(\}|\])";
+        return Regex.Replace(json, pattern, "$1");
+    }
+
+    // Utility: extract the outermost JSON object substring
+    protected static string ExtractOutermostJsonObject(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return text;
+        int firstBraceIndex = text.IndexOf('{');
+        if (firstBraceIndex < 0) return text;
+        int depth = 0;
+        for (int i = firstBraceIndex; i < text.Length; i++)
+        {
+            char ch = text[i];
+            if (ch == '{') depth++;
+            else if (ch == '}')
+            {
+                depth--;
+                if (depth == 0)
+                {
+                    return text.Substring(firstBraceIndex, i - firstBraceIndex + 1);
+                }
+            }
+        }
+        // If braces are unbalanced, return from the first '{' to the end
+        return text.Substring(firstBraceIndex);
+    }
     #endregion
 
 }

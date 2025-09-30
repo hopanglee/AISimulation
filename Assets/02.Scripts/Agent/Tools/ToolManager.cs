@@ -7,6 +7,9 @@ using Agent;
 using PlanStructures;
 using Memory;
 using Newtonsoft.Json.Linq;
+using GeminiFunction = Mscc.GenerativeAI.FunctionDeclaration;
+using GeminiFuncionCall = Mscc.GenerativeAI.FunctionCall;
+using System.Text.Json;
 
 namespace Agent.Tools
 {
@@ -429,6 +432,24 @@ namespace Agent.Tools
             );
         }
 
+        public static GeminiFunction ToGeminiTool(LLMToolSchema schema)
+        {
+            if (schema == null) return null;
+            // if (schema.format == null)
+            // {
+            //     return ChatTool.CreateFunctionTool(
+            //         functionName: schema.name,
+            //         functionDescription: schema.description
+            //     );
+            // }
+            // return ChatTool.CreateFunctionTool(
+            //     functionName: schema.name,
+            //     functionDescription: schema.description,
+            //     functionParameters: System.BinaryData.FromBytes(System.Text.Encoding.UTF8.GetBytes(schema.format.ToString()))
+            // );
+            return default;
+        }
+
         public static void AddToolsToOptionsFromSchemas(ChatCompletionOptions options, params LLMToolSchema[] schemas)
         {
             if (options == null || schemas == null) return;
@@ -512,46 +533,70 @@ namespace Agent.Tools
     public interface IToolExecutor
     {
         string ExecuteTool(ChatToolCall toolCall);
+        public string ExecuteTool(GeminiFuncionCall functionCall);
     }
 
     /// <summary>
     /// 기본 도구 실행자 (Actor 기반)
     /// </summary>
-    public class GPTToolExecutor : IToolExecutor
+    public class ToolExecutor : IToolExecutor
     {
         private readonly Actor actor;
 
-        public GPTToolExecutor(Actor actor)
+        public ToolExecutor(Actor actor)
         {
             this.actor = actor;
         }
 
         public string ExecuteTool(ChatToolCall toolCall)
         {
-            switch (toolCall.FunctionName)
+            return ExecuteTool(toolCall.FunctionName, toolCall.FunctionArguments);
+        }
+
+        public string ExecuteTool(GeminiFuncionCall functionCall)
+        {
+            string result = null;
+            // 1. Args가 JsonElement 타입인지 확인하고 안전하게 변환합니다.
+            if (functionCall.Args is JsonElement argsElement)
+            {
+                // 2. JsonElement를 JSON 문자열로 변환합니다.
+                string jsonString = argsElement.GetRawText();
+
+                // 3. JSON 문자열로부터 BinaryData 객체를 생성합니다.
+                BinaryData argsAsBinaryData = BinaryData.FromString(jsonString);
+
+                // 4. 올바르게 생성된 BinaryData를 함수에 전달합니다.
+                result = ExecuteTool(functionCall.Name, argsAsBinaryData);
+            }
+            return result;
+        }
+
+        public string ExecuteTool(string toolName, System.BinaryData arguments)
+        {
+            switch (toolName)
             {
                 case nameof(SwapInventoryToHand):
-                    return SwapInventoryToHand(toolCall.FunctionArguments);
+                    return SwapInventoryToHand(arguments);
                 case nameof(GetPaymentPriceList):
                     return GetPaymentPriceList();
                 case nameof(GetWorldAreaInfo):
                     return GetWorldAreaInfo();
                 case nameof(FindBuildingAreaPath):
-                    return FindBuildingAreaPath(toolCall.FunctionArguments);
+                    return FindBuildingAreaPath(arguments);
                 case nameof(FindShortestAreaPathFromActor):
-                    return FindShortestAreaPathFromActor(toolCall.FunctionArguments);
+                    return FindShortestAreaPathFromActor(arguments);
                 case nameof(GetWorldAreaStructureText):
                     return GetWorldAreaStructureText();
                 case nameof(GetActorLocationMemories):
                     return GetActorLocationMemories();
                 case nameof(GetActorLocationMemoriesFiltered):
-                    return GetActorLocationMemoriesFiltered(toolCall.FunctionArguments);
+                    return GetActorLocationMemoriesFiltered(arguments);
                 case nameof(GetUserMemory):
                     return GetUserMemory();
                 case nameof(GetShortTermMemory):
-                    return GetShortTermMemory(toolCall.FunctionArguments);
+                    return GetShortTermMemory(arguments);
                 case nameof(GetLongTermMemory):
-                    return GetLongTermMemory(toolCall.FunctionArguments);
+                    return GetLongTermMemory(arguments);
                 case nameof(GetMemoryStats):
                     return GetMemoryStats();
                 case nameof(GetCurrentTime):
@@ -561,9 +606,9 @@ namespace Agent.Tools
                 case nameof(GetCurrentSpecificAction):
                     return GetCurrentSpecificAction();
                 case nameof(LoadRelationshipByName):
-                    return LoadRelationshipByName(toolCall.FunctionArguments);
+                    return LoadRelationshipByName(arguments);
                 default:
-                    return $"Error: Unknown tool '{toolCall.FunctionName}'";
+                    return $"Error: Unknown tool '{toolName}'";
             }
         }
 
