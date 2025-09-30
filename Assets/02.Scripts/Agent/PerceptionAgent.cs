@@ -140,7 +140,7 @@ public class PerceptionAgentGroup
             var superegoTask = superegoAgent.InterpretAsync(visualInformation);
             var idTask = idAgent.InterpretAsync(visualInformation);
 
-            var (superegoResult, idResult) = await Cysharp.Threading.Tasks.UniTask.WhenAll(
+            var (superegoResult, idResult) = await UniTask.WhenAll(
                 superegoTask,
                 idTask
             );

@@ -59,31 +59,46 @@ public abstract class LLMClient
         try
         {
             var cacheTimeService = Services.Get<ITimeService>();
-            // 분 단위 시간 키 + 에이전트 타입 파일명 우선 조회
             var baseDir = Path.Combine(Application.dataPath, "11.GameDatas", "CachedLogs", actorName ?? "Unknown");
             if (cacheTimeService != null && Directory.Exists(baseDir))
             {
-                // 카운트 기반 파일명: {count}_{agenttype}_{timeKey}.json
                 int count = Math.Max(0, actor?.CacheCount ?? 0);
-                // 파일명은 count만 기준으로 조회 (timeKey/agentType 불문)
+                var agentPart = string.IsNullOrEmpty(agentTypeOverride) ? "UNKNOWN" : agentTypeOverride;
+                
+                // 정확한 파일명으로 먼저 시도: {count}_{timeKey}_{agentPart}.json
+                var exactMatch = Directory.GetFiles(baseDir, $"{count}_*_{agentPart}.json");
                 string matchPath = null;
-                var candidates = Directory.GetFiles(baseDir, $"{count}_*.json");
-                if (candidates != null && candidates.Length > 0)
+                
+                if (exactMatch != null && exactMatch.Length > 0)
                 {
-                    matchPath = candidates[0];
+                    matchPath = exactMatch[0];
+                }
+                else
+                {
+                    // 정확한 매치가 없으면 불일치 여부 확인 없이 해당 count부터 이후 캐시 모두 삭제
+                    Debug.LogWarning($"[{agentTypeOverride??"Unknown"}][{actorName}] 캐시 정확 매치 없음. count {count}부터 이후 캐시 삭제 실행");
+                    DeleteCacheFilesFromCount(baseDir, count);
                 }
 
                 if (!string.IsNullOrEmpty(matchPath))
                 {
                     var cachedJson = File.ReadAllText(matchPath);
                     T cached;
-                    cached = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(cachedJson);
-                    
-                    if (cached != null)
+                    try
                     {
-                        Debug.Log($"[{agentTypeOverride??"Unknown"}][{actorName}] 캐시 로그 히트: {matchPath}");
-                        if (actor != null) actor.CacheCount = count + 1; // 히트 시 증가
-                        return cached;
+                        cached = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(cachedJson);
+                        
+                        if (cached != null)
+                        {
+                            Debug.Log($"[{agentTypeOverride??"Unknown"}][{actorName}] 캐시 로그 히트: {matchPath}");
+                            if (actor != null) actor.CacheCount = count + 1; // 히트 시 증가
+                            return cached;
+                        }
+                    }
+                    catch (Newtonsoft.Json.JsonException ex)
+                    {
+                        Debug.LogError($"[{agentTypeOverride??"Unknown"}][{actorName}] 캐시 타입 불일치 - JSON 역직렬화 실패: {ex.Message}");
+                        // T 불일치인 경우 삭제하지 않고 에러 로그만 출력
                     }
                 }
             }
@@ -146,6 +161,43 @@ public abstract class LLMClient
                 Debug.Log($"[{agentTypeOverride??"Unknown"}][{actorName}] API 호출 종료 - 시뮬레이션 시간 재개됨");
             }
             #endregion
+        }
+    }
+
+    /// <summary>
+    /// 지정된 count부터 이후의 모든 캐시 파일을 삭제합니다.
+    /// </summary>
+    private void DeleteCacheFilesFromCount(string baseDir, int startCount)
+    {
+        try
+        {
+            int deletedCount = 0;
+            var pattern = $"{startCount}_*.json";
+            
+            // startCount부터 연속적으로 존재하는 모든 count의 파일을 와일드카드로 삭제
+            int current = startCount;
+            while (true)
+            {
+                var files = Directory.GetFiles(baseDir, $"{current}_*.json");
+                if (files == null || files.Length == 0)
+                {
+                    // 다음 count가 없으면 종료
+                    break;
+                }
+                foreach (var file in files)
+                {
+                    File.Delete(file);
+                    deletedCount++;
+                    Debug.Log($"[{agentTypeOverride??"Unknown"}][{actorName}] 캐시 파일 삭제: {file}");
+                }
+                current++;
+            }
+            
+            Debug.Log($"[{agentTypeOverride??"Unknown"}][{actorName}] 총 {deletedCount}개의 캐시 파일이 삭제되었습니다 (count {startCount}부터)");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[{agentTypeOverride??"Unknown"}][{actorName}] 캐시 파일 삭제 중 오류: {ex.Message}");
         }
     }
 
