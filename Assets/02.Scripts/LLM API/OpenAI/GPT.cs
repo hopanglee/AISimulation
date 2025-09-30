@@ -475,6 +475,7 @@ public class GPT : LLMClient
 
                         if (typeof(T) == typeof(string))
                         {
+                            try { SaveCachedResponse(responseText); } catch { }
                             await SaveConversationLogAsync(messages, responseText);
                             return (T)(object)responseText;
                         }

@@ -189,7 +189,7 @@ namespace Agent
                 };
             }
         }
-        private string FormatEmotions(Dictionary<string, float> emotions)
+        private string FormatEmotions(List<Emotions> emotions)
         {
             if (emotions == null || emotions.Count == 0)
                 return "감정 없음";
@@ -197,7 +197,7 @@ namespace Agent
             var emotionList = new List<string>();
             foreach (var emotion in emotions)
             {
-                emotionList.Add($"{emotion.Key}: {emotion.Value:F1}");
+                emotionList.Add($"{emotion.name}: {emotion.intensity:F1}");
             }
 
             return string.Join(", ", emotionList);

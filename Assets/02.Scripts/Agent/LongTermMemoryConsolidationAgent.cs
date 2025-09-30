@@ -30,7 +30,7 @@ public class ConsolidatedMemoryChunk
     public List<string> PeopleInvolved { get; set; } = new List<string>();
 
     [JsonProperty("emotions")]
-    public Dictionary<string, float> Emotions { get; set; } = new Dictionary<string, float>();
+    public List<Emotions> Emotions { get; set; } = new List<Emotions>();
 
     [JsonProperty("original_entries_count")]
     public int OriginalEntriesCount { get; set; }
@@ -80,10 +80,23 @@ public class LongTermMemoryConsolidationAgent : GPT
                                             ""time_range"": {{ ""type"": ""string"", ""description"": ""이 청크가 다루는 시간 범위"" }},
                                             ""main_events"": {{ ""type"": ""array"", ""items"": {{ ""type"": ""string"" }}, ""description"": ""이 청크의 주요 사건들, 최소 3개 이상의 사건을 작성하세요."" }},
                                             ""people_involved"": {{ ""type"": ""array"", ""items"": {{ ""type"": ""string"" }}, ""description"": ""이 청크에 관련된 사람들 (없으면 빈 배열)"" }},
-                                            ""emotions"": {{ ""type"": ""object"", ""additionalProperties"": {{ ""type"": ""number"", ""minimum"": 0.0, ""maximum"": 1.0 }}, ""description"": ""이 청크에서 경험한 감정들과 강도 값, 최소 3개 이상의 감정을 작성하세요."" }},
+                                            ""emotions"": {{
+                                    ""type"": ""array"",
+                                    ""minItems"": 3,
+                                    ""items"": {{
+                                        ""type"": ""object"",
+                                        ""properties"": {{
+                                            ""name"": {{ ""type"": ""string"" }},
+                                            ""intensity"": {{ ""type"": ""number"", ""minimum"": 0.0, ""maximum"": 1.0 }},
+                                        }},
+                                        ""required"": [""name"", ""intensity""],
+                                        ""additionalProperties"": false
+                                    }},
+                                    ""description"": ""감정과 강도 (0.0~1.0), 최소 3~5개 이상의 감정을 작성하세요.""
+                                }},
                                             ""original_entries_count"": {{ ""type"": ""integer"", ""description"": ""이 청크로 통합된 원본 항목의 수"" }}
                                         }},
-                                        ""required"": [""chunk_id"", ""summary"", ""time_range"", ""main_events"", ""people_involved"", ""original_entries_count""]
+                                        ""required"": [""chunk_id"", ""summary"", ""time_range"", ""main_events"", ""people_involved"", ""original_entries_count"", ""emotions""]
                                     }}
                                 }},
                                 ""consolidation_reasoning"": {{ ""type"": ""string"", ""description"": ""통합 결정에 대한 추론"" }},
@@ -96,7 +109,7 @@ public class LongTermMemoryConsolidationAgent : GPT
         SetResponseFormat(schema);
     }
 
-    private string FormatEmotions(Dictionary<string, float> emotions)
+    private string FormatEmotions(List<Emotions> emotions)
     {
         if (emotions == null || emotions.Count == 0)
             return "감정 없음";
@@ -104,7 +117,7 @@ public class LongTermMemoryConsolidationAgent : GPT
         var emotionList = new List<string>();
         foreach (var emotion in emotions)
         {
-            emotionList.Add($"{emotion.Key}: {emotion.Value:F1}");
+            emotionList.Add($"{emotion.name}: {emotion.intensity:F1}");
         }
 
         return string.Join(", ", emotionList);
@@ -225,7 +238,7 @@ public class LongTermMemoryConsolidationAgent : GPT
                 type = "consolidated",
                 category = "daily_summary",
                 content = chunk.Summary,
-                emotions = chunk.Emotions ?? new Dictionary<string, float>(),
+                emotions = chunk.Emotions ?? new List<Emotions>(),
                 relatedActors = chunk.PeopleInvolved ?? new List<string>(),
                 location = "Multiple" // 여러 위치가 포함될 수 있음
             };

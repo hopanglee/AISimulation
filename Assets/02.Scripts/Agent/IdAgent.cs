@@ -97,12 +97,21 @@ public class IdAgent : GPT
                                     ""description"": ""본능적 관점에서 본 상황 인식, 50자 이상 100자 이내로 서술하세요.""
                                 }},
                                 ""emotions"": {{
-                                    ""type"": ""object"",
-                                    ""additionalProperties"": {{ ""type"": ""number"", ""minimum"": 0.0, ""maximum"": 1.0 }},
+                                    ""type"": ""array"",
+                                    ""minItems"": 3,
+                                    ""items"": {{
+                                        ""type"": ""object"",
+                                        ""properties"": {{
+                                            ""name"": {{ ""type"": ""string"" }},
+                                            ""intensity"": {{ ""type"": ""number"", ""minimum"": 0.0, ""maximum"": 1.0 }},
+                                        }},
+                                        ""required"": [""name"", ""intensity""],
+                                        ""additionalProperties"": false
+                                    }},
                                     ""description"": ""감정과 강도 (0.0~1.0), 최소 3~5개 이상의 감정을 작성하세요.""
                                 }}
                             }},
-                            ""required"": [""thought_chain"",""situation_interpretation""],
+                            ""required"": [""thought_chain"",""situation_interpretation"",""emotions""],
                             ""additionalProperties"": false
                         }}";
         var schema = new LLMClientSchema { name = "id_result", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
@@ -280,5 +289,8 @@ public class IdResult
 {
     public string situation_interpretation; // 본능적 관점의 상황 인식
     public List<string> thought_chain; // 본능적 사고체인
-    public Dictionary<string, float> emotions; // 감정과 강도
+    [Newtonsoft.Json.JsonConverter(typeof(EmotionsListConverter))]
+    public List<Emotions> emotions; // 감정과 강도
 }
+
+

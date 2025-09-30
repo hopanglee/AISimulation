@@ -1483,7 +1483,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                         timestamp = "날짜&시간 모름";
                     }
                     var emotions = memory.emotions != null && memory.emotions.Count > 0
-                        ? $", 당시 감정: {string.Join(", ", memory.emotions.OrderByDescending(e => e.Value).Take(2).Select(e => $"{e.Key}"))}"
+                        ? $", 당시 감정: {string.Join(", ", memory.emotions.OrderByDescending(e => e.intensity).Take(2).Select(e => $"{e.name}"))}"
                         : "";
                     var details = !string.IsNullOrEmpty(memory.details) ? $" ({memory.details})" : "";
 
@@ -1527,7 +1527,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                         timestamp = "날짜&시간 모름";
                     }
                     var emotions = memory.emotions != null && memory.emotions.Count > 0
-                        ? $", 당시 감정: {string.Join(", ", memory.emotions.OrderByDescending(e => e.Value).Take(2).Select(e => $"{e.Key}:{e.Value * 100:F0}%"))}"
+                        ? $", 당시 감정: {string.Join(", ", memory.emotions.OrderByDescending(e => e.intensity).Take(2).Select(e => $"{e.name}:{e.intensity * 100:F0}%"))}"
                         : "";
                     var relatedActors = memory.relatedActors != null && memory.relatedActors.Count > 0
                         ? $" [관련인물: {string.Join(", ", memory.relatedActors)}]"

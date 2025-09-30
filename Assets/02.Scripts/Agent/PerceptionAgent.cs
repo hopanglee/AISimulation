@@ -131,19 +131,20 @@ public class PerceptionAgentGroup
                     {
                         situation_interpretation = cachedEgo.situation_interpretation,
                         thought_chain = cachedEgo.thought_chain,
-                        emotions = cachedEgo.emotions ?? new Dictionary<string, float>()
+                        emotions = cachedEgo.emotions ?? new List<Emotions>()
                     };
                 }
             }
 
             // 1-2. 이성/본능 에이전트를 병렬 실행 후, 둘 다 완료되면 결과 처리
-            var superegoTask = superegoAgent.InterpretAsync(visualInformation);
-            var idTask = idAgent.InterpretAsync(visualInformation);
-
-            var (superegoResult, idResult) = await UniTask.WhenAll(
-                superegoTask,
-                idTask
-            );
+            // var superegoTask = superegoAgent.InterpretAsync(visualInformation);
+            // var idTask = idAgent.InterpretAsync(visualInformation);
+            var superegoResult = await superegoAgent.InterpretAsync(visualInformation);
+            var idResult = await idAgent.InterpretAsync(visualInformation);
+            // var (superegoResult, idResult) = await UniTask.WhenAll(
+            //     superegoTask,
+            //     idTask
+            // );
 
             // 3. 자아 에이전트로 타협 (두 결과가 모두 준비된 후 실행)
             var egoResult = await egoAgent.MediateAsync(superegoResult, idResult);
@@ -170,7 +171,7 @@ public class PerceptionAgentGroup
             {
                 situation_interpretation = egoResult.situation_interpretation,
                 thought_chain = egoResult.thought_chain,
-                emotions = egoResult.emotions ?? new Dictionary<string, float>(),
+                emotions = egoResult.emotions ?? new List<Emotions>(),
             };
 
             Debug.Log($"[PerceptionAgent {actor.Name}] 3-에이전트 해석 완료");
@@ -194,5 +195,6 @@ public class PerceptionResult
 {
     public string situation_interpretation; // 최종 상황 인식 (타협된 결과)
     public List<string> thought_chain; // 타협된 사고체인
-    public Dictionary<string, float> emotions; // 감정과 강도
+    [Newtonsoft.Json.JsonConverter(typeof(EmotionsListConverter))]
+    public List<Emotions> emotions; // 감정과 강도
 }

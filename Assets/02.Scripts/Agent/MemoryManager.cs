@@ -13,37 +13,38 @@ using Memory;
 /// Short Term Memory 엔트리 구조
 /// </summary>
 [System.Serializable]
-public class ShortTermMemoryEntry
+    public class ShortTermMemoryEntry
 {
     [JsonConverter(typeof(GameTimeConverter))]
     public GameTime timestamp;
     public string type; // "perception", "thinking", "action_start", "action_complete", "plan", "sensor_update", "action_interrupt"
     public string content;
     public string details; // 추가 세부 정보 (JSON 형태)
-    public Dictionary<string, float> emotions; // 감정과 강도
+        [JsonConverter(typeof(EmotionsListConverter))]
+        public List<Emotions> emotions; // 감정과 강도
 
     // Json 역직렬화를 위한 기본 생성자
     public ShortTermMemoryEntry()
     {
     }
 
-    public ShortTermMemoryEntry(string type, string content, string details = null, Dictionary<string, float> emotions = null)
+    public ShortTermMemoryEntry(string type, string content, string details = null, List<Emotions> emotions = null)
     {
         var timeService = Services.Get<ITimeService>();
         this.timestamp = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 0, 0);
         this.type = type;
         this.content = content;
         this.details = details;
-        this.emotions = emotions ?? new Dictionary<string, float>();
+        this.emotions = emotions ?? new List<Emotions>();
     }
 
-    public ShortTermMemoryEntry(GameTime timestamp, string type, string content, string details = null, Dictionary<string, float> emotions = null)
+    public ShortTermMemoryEntry(GameTime timestamp, string type, string content, string details = null, List<Emotions> emotions = null)
     {
         this.timestamp = timestamp;
         this.type = type;
         this.content = content;
         this.details = details;
-        this.emotions = emotions ?? new Dictionary<string, float>();
+        this.emotions = emotions ?? new List<Emotions>();
     }
 }
 
@@ -192,7 +193,7 @@ public class MemoryManager
     /// <summary>
     /// Short Term Memory에 엔트리를 추가합니다.
     /// </summary>
-    public void AddShortTermMemory(string type, string content, string details = null, Dictionary<string, float> emotions = null)
+    public void AddShortTermMemory(string type, string content, string details = null, List<Emotions> emotions = null)
     {
         // 경로 보장
         if (string.IsNullOrEmpty(shortTermMemoryPath))
@@ -216,7 +217,7 @@ public class MemoryManager
         SaveShortTermMemory();
     }
 
-    public void AddShortTermMemory(GameTime timestamp, string type, string content, string details = null, Dictionary<string, float> emotions = null)
+    public void AddShortTermMemory(GameTime timestamp, string type, string content, string details = null, List<Emotions> emotions = null)
     {
         // 경로 보장
         if (string.IsNullOrEmpty(shortTermMemoryPath))

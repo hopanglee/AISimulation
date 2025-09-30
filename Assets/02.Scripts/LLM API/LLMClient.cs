@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using Agent.Tools;
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using System.IO;
@@ -20,6 +22,15 @@ public abstract class LLMClient
         this.llmOptions = options;
     }
 
+    // JSON 설정: Enum을 문자열로 저장/읽기 (기존 숫자 값도 허용)
+    private static readonly JsonSerializerSettings EnumAsStringJsonSettings = new JsonSerializerSettings
+    {
+        Converters = new List<JsonConverter>
+        {
+            new StringEnumConverter { AllowIntegerValues = true }
+        }
+    };
+
     protected void SetAgentType(string agentType)
     {
         agentTypeOverride = agentType;
@@ -32,7 +43,7 @@ public abstract class LLMClient
     {
         this.actor = actor;
         actorName = actor.Name;
-        Debug.Log($"[GPT] Actor name set to: {actorName}");
+        Debug.Log($"[LLMClient] Actor name set to: {actorName}");
     }
     #region 메시지 관리
     protected abstract int GetMessageCount();
@@ -87,7 +98,7 @@ public abstract class LLMClient
                     T cached;
                     try
                     {
-                        cached = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(cachedJson);
+                        cached = JsonConvert.DeserializeObject<T>(cachedJson, EnumAsStringJsonSettings);
 
                         if (cached != null)
                         {
@@ -204,12 +215,11 @@ public abstract class LLMClient
 
     /// <summary>
     /// 현재 분 단위 시간과 에이전트 타입을 기준으로 캐시 파일에 응답을 저장합니다.
-    /// 문자열 T는 스킵합니다(역직렬화 충돌 방지).
+    /// 문자열 포함 모든 타입을 저장합니다.
     /// </summary>
     protected void SaveCachedResponse<T>(T data)
     {
         if (data == null) return;
-        if (typeof(T) == typeof(string)) return;
 
         try
         {
@@ -225,7 +235,7 @@ public abstract class LLMClient
 
             int count = Math.Max(0, actor?.CacheCount ?? 0);
             var filePath = Path.Combine(baseDir, $"{count}_{timeKey}_{agentPart}.json");
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented);
+            var json = JsonConvert.SerializeObject(data, Formatting.Indented, EnumAsStringJsonSettings);
             File.WriteAllText(filePath, json, System.Text.Encoding.UTF8);
             Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 저장: {filePath}");
             if (actor != null) actor.CacheCount = count + 1; // 저장 후 증가
@@ -299,7 +309,6 @@ public abstract class LLMClient
 public class Auth
 {
     public string gpt_api_key;
-
     public string gemini_api_key;
     public string organization;
 }

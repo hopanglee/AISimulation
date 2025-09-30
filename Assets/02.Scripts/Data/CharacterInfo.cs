@@ -42,7 +42,8 @@ public class CharacterInfo
     public string AdditionalInfo { get; set; }
 
     [JsonProperty("emotions")]
-    public Dictionary<string, float> Emotions { get; set; } = new Dictionary<string, float>();
+    [JsonConverter(typeof(EmotionsListConverter))]
+    public List<Emotions> Emotions { get; set; } = new List<Emotions>();
 
     [JsonProperty("last_updated")]
     public DateTime LastUpdated { get; set; } = DateTime.Now;
@@ -84,7 +85,7 @@ public class CharacterInfo
         return allTraits;
     }
 
-    public void SetEmotions(Dictionary<string, float> emotions)
+    public void SetEmotions(List<Emotions> emotions)
     {
         Emotions = emotions;
         LastUpdated = DateTime.Now;
@@ -98,7 +99,7 @@ public class CharacterInfo
         var emotionList = new List<string>();
         foreach (var emotion in Emotions)
         {
-            emotionList.Add($"{emotion.Key}: {emotion.Value:F1}");
+            emotionList.Add($"{emotion.name}: {emotion.intensity:F1}");
         }
 
         return string.Join(", ", emotionList);

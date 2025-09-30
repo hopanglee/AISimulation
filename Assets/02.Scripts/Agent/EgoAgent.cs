@@ -81,16 +81,21 @@ public class EgoAgent : GPT
                                 },
                                 
                                 ""emotions"": {
-                                    ""type"": ""object"",
-                                    ""additionalProperties"": {
-                                        ""type"": ""number"",
-                                        ""minimum"": 0.0,
-                                        ""maximum"": 1.0
+                                    ""type"": ""array"",
+                                    ""minItems"": 3,
+                                    ""items"": {
+                                        ""type"": ""object"",
+                                        ""properties"": {
+                                            ""name"": { ""type"": ""string"" },
+                                            ""intensity"": { ""type"": ""number"", ""minimum"": 0.0, ""maximum"": 1.0 }
+                                        },
+                                        ""required"": [""name"", ""intensity""],
+                                        ""additionalProperties"": false
                                     },
                                     ""description"": ""감정과 강도 (0.0~1.0), 최소 3~5개 이상의 감정을 작성하세요.""
                                 }
                             },
-                            ""required"": [""thought_chain"", ""situation_interpretation""],
+                            ""required"": [""thought_chain"", ""situation_interpretation"", ""emotions""],
                             ""additionalProperties"": false
                         }";
         var schema = new LLMClientSchema { name = "ego_result", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
@@ -145,7 +150,7 @@ public class EgoAgent : GPT
     /// <summary>
     /// 감정 딕셔너리를 읽기 쉬운 문자열로 변환합니다.
     /// </summary>
-    private string FormatEmotions(Dictionary<string, float> emotions)
+    private string FormatEmotions(List<Emotions> emotions)
     {
         if (emotions == null || emotions.Count == 0)
             return "감정 없음";
@@ -153,7 +158,7 @@ public class EgoAgent : GPT
         var emotionList = new List<string>();
         foreach (var emotion in emotions)
         {
-            emotionList.Add($"{emotion.Key}: {emotion.Value:F1}");
+            emotionList.Add($"{emotion.name}: {emotion.intensity:F1}");
         }
 
         return string.Join(", ", emotionList);
@@ -168,5 +173,71 @@ public class EgoResult
 {
     public string situation_interpretation;  // 최종 상황 인식 (타협된 결과)
     public List<string> thought_chain;       // 타협된 사고체인
-    public Dictionary<string, float> emotions; // 감정과 강도
+    [Newtonsoft.Json.JsonConverter(typeof(EmotionsListConverter))]
+    public List<Emotions> emotions; // 감정과 강도
+}
+
+[System.Serializable]
+public class Emotions
+{
+    public string name;
+    public float intensity;
+}
+
+// Emotions 리스트를 유연하게 역직렬화: 배열([ { name,intensity } ]) 또는
+// 객체({ "행복":0.7, ... }) 모두 허용
+public class EmotionsListConverter : Newtonsoft.Json.JsonConverter<List<Emotions>>
+{
+    public override List<Emotions> ReadJson(Newtonsoft.Json.JsonReader reader, System.Type objectType, List<Emotions> existingValue, bool hasExistingValue, Newtonsoft.Json.JsonSerializer serializer)
+    {
+        var token = Newtonsoft.Json.Linq.JToken.Load(reader);
+        var result = new List<Emotions>();
+
+        if (token == null || token.Type == Newtonsoft.Json.Linq.JTokenType.Null)
+            return result;
+
+        if (token.Type == Newtonsoft.Json.Linq.JTokenType.Array)
+        {
+            // 표준 형태: [ { name: "행복", intensity: 0.7 }, ... ]
+            foreach (var item in (Newtonsoft.Json.Linq.JArray)token)
+            {
+                var e = item.ToObject<Emotions>(serializer);
+                if (e != null) result.Add(e);
+            }
+            return result;
+        }
+
+        if (token.Type == Newtonsoft.Json.Linq.JTokenType.Object)
+        {
+            // 맵 형태: { "행복": 0.7, "슬픔": 0.2 }
+            foreach (var prop in ((Newtonsoft.Json.Linq.JObject)token).Properties())
+            {
+                // 값이 숫자면 intensity, 객체면 name/intensity 시도
+                if (prop.Value.Type == Newtonsoft.Json.Linq.JTokenType.Float || prop.Value.Type == Newtonsoft.Json.Linq.JTokenType.Integer)
+                {
+                    result.Add(new Emotions { name = prop.Name, intensity = prop.Value.ToObject<float>(serializer) });
+                }
+                else if (prop.Value.Type == Newtonsoft.Json.Linq.JTokenType.Object)
+                {
+                    var nameToken = prop.Value["name"];
+                    var name = nameToken != null ? nameToken.ToObject<string>(serializer) : prop.Name;
+                    var intensityToken = prop.Value["intensity"];
+                    float intensity = 0f;
+                    if (intensityToken != null)
+                        intensity = intensityToken.ToObject<float>(serializer);
+                    result.Add(new Emotions { name = name, intensity = intensity });
+                }
+            }
+            return result;
+        }
+
+        // 다른 타입은 빈 리스트 반환
+        return result;
+    }
+
+    public override void WriteJson(Newtonsoft.Json.JsonWriter writer, List<Emotions> value, Newtonsoft.Json.JsonSerializer serializer)
+    {
+        // 일관성 있게 배열 형태로 저장
+        serializer.Serialize(writer, value);
+    }
 }

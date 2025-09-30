@@ -13,13 +13,14 @@ namespace Memory
         public string type { get; set; }  // "event", "relationship", "knowledge", "experience"
         public string category { get; set; }  // "social", "work", "personal", "location" 등
         public string content { get; set; }
-        public Dictionary<string, float> emotions { get; set; }  // "joy", "sadness" 등
+        [JsonConverter(typeof(EmotionsListConverter))]
+        public List<Emotions> emotions { get; set; }  // "joy", "sadness" 등
         public List<string> relatedActors { get; set; }
         public string location { get; set; }
 
         public LongTermMemory()
         {
-            emotions = new Dictionary<string, float>();
+            emotions = new List<Emotions>();
             relatedActors = new List<string>();
         }
     }

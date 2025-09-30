@@ -33,7 +33,7 @@ public class ThinkResult
     public string Conclusions { get; set; }
 
     [JsonProperty("emotions")]
-    public Dictionary<string, float> Emotions { get; set; } = new Dictionary<string, float>();
+    public List<Emotions> Emotions { get; set; } = new List<Emotions>();
 }
 
 namespace Agent.ActionHandlers
@@ -187,7 +187,7 @@ namespace Agent.ActionHandlers
                     TimeScope = thinkScope,
                     //Insights = insights,
                     Conclusions = conclusionResult,
-                    Emotions = new Dictionary<string, float>() // 빈 감정 딕셔너리
+                    Emotions = new List<Emotions>() // 빈 감정 딕셔너리
                 };
             }
             catch (Exception ex)
