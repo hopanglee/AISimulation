@@ -302,6 +302,33 @@ public abstract class LLMClient
         // If braces are unbalanced, return from the first '{' to the end
         return text.Substring(firstBraceIndex);
     }
+
+    protected void LogExceptionWithLocation(Exception ex, string context)
+    {
+        try
+        {
+            var st = new System.Diagnostics.StackTrace(ex, true);
+            System.Diagnostics.StackFrame target = null;
+            for (int i = 0; i < st.FrameCount; i++)
+            {
+                var f = st.GetFrame(i);
+                var file = f.GetFileName();
+                if (!string.IsNullOrEmpty(file)) { target = f; break; }
+            }
+            target ??= st.FrameCount > 0 ? st.GetFrame(0) : null;
+
+            var method = target?.GetMethod();
+            var fileName = target?.GetFileName() ?? "[unknown file]";
+            var line = target?.GetFileLineNumber() ?? 0;
+            var methodName = method != null ? $"{method.DeclaringType?.FullName}.{method.Name}" : "[unknown method]";
+
+            Debug.LogError($"[GPT][{context}] {ex.GetType().Name}: {ex.Message}\n at {fileName}:{line}\n in {methodName}\nStackTrace:\n{ex}");
+        }
+        catch (Exception logEx)
+        {
+            Debug.LogError($"[GPT] Failed to log exception details: {logEx.Message}. Original error: {ex.Message}\nOriginal stack:\n{ex}");
+        }
+    }
     #endregion
 
 }
@@ -310,6 +337,7 @@ public class Auth
 {
     public string gpt_api_key;
     public string gemini_api_key;
+    public string claude_api_key;
     public string organization;
 }
 public enum LLMClientProvider

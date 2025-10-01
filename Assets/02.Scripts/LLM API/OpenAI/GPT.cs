@@ -66,7 +66,7 @@ public class GPT : LLMClient
         }
         else
         {
-            messages = new();
+            messages.Clear();
         }
     }
     protected override void RemoveAt(int index)
@@ -625,32 +625,7 @@ public class GPT : LLMClient
     /// 예외에서 파일/라인/메서드 정보를 최대한 뽑아서 함께 로깅합니다.
     /// PDB가 없으면 파일/라인은 unknown으로 표시될 수 있습니다.
     /// </summary>
-    private static void LogExceptionWithLocation(Exception ex, string context)
-    {
-        try
-        {
-            var st = new System.Diagnostics.StackTrace(ex, true);
-            System.Diagnostics.StackFrame target = null;
-            for (int i = 0; i < st.FrameCount; i++)
-            {
-                var f = st.GetFrame(i);
-                var file = f.GetFileName();
-                if (!string.IsNullOrEmpty(file)) { target = f; break; }
-            }
-            target ??= st.FrameCount > 0 ? st.GetFrame(0) : null;
-
-            var method = target?.GetMethod();
-            var fileName = target?.GetFileName() ?? "[unknown file]";
-            var line = target?.GetFileLineNumber() ?? 0;
-            var methodName = method != null ? $"{method.DeclaringType?.FullName}.{method.Name}" : "[unknown method]";
-
-            Debug.LogError($"[GPT][{context}] {ex.GetType().Name}: {ex.Message}\n at {fileName}:{line}\n in {methodName}\nStackTrace:\n{ex}");
-        }
-        catch (Exception logEx)
-        {
-            Debug.LogError($"[GPT] Failed to log exception details: {logEx.Message}. Original error: {ex.Message}\nOriginal stack:\n{ex}");
-        }
-    }
+    
     #endregion
 
 }

@@ -9,7 +9,11 @@ using Memory;
 using Newtonsoft.Json.Linq;
 using GeminiFunction = Mscc.GenerativeAI.FunctionDeclaration;
 using GeminiFuncionCall = Mscc.GenerativeAI.FunctionCall;
+using ClaudeTool = Anthropic.SDK.Common.Tool;
 using System.Text.Json;
+using Anthropic.SDK.Common;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace Agent.Tools
 {
@@ -450,6 +454,17 @@ namespace Agent.Tools
             return default;
         }
 
+        public static ClaudeTool ToClaudeTool(LLMToolSchema schema)
+        {
+            if (schema == null) return null;
+            // Anthropic Function parameters must not be null. Provide a minimal schema when absent.
+            string jsonString = schema.format != null
+                ? schema.format.ToString()
+                : "{\"type\":\"object\",\"properties\":{}}";
+            var parametersNode = JsonNode.Parse(jsonString);
+            return new Function(name: schema.name, description: schema.description, parameters: parametersNode);
+        }
+
         public static void AddToolsToOptionsFromSchemas(ChatCompletionOptions options, params LLMToolSchema[] schemas)
         {
             if (options == null || schemas == null) return;
@@ -534,6 +549,7 @@ namespace Agent.Tools
     {
         string ExecuteTool(ChatToolCall toolCall);
         public string ExecuteTool(GeminiFuncionCall functionCall);
+        public string ExecuteTool(string toolName, JsonNode arguments);
     }
 
     /// <summary>
@@ -569,6 +585,12 @@ namespace Agent.Tools
                 result = ExecuteTool(functionCall.Name, argsAsBinaryData);
             }
             return result;
+        }
+
+        // Claude용
+        public string ExecuteTool(string toolName, JsonNode arguments)
+        {
+            return ExecuteTool(toolName, BinaryData.FromString(arguments.ToString()));
         }
 
         public string ExecuteTool(string toolName, System.BinaryData arguments)

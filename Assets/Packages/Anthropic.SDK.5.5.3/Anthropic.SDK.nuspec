@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Anthropic.SDK</id>
+    <version>5.5.3</version>
+    <title>Claude API</title>
+    <authors>Grant Hamm</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/tghamm/Anthropic.SDK</projectUrl>
+    <description>A C# / .NET library to use with Anthropic's Claude API.  Supports Streaming, Tools, Batching, and Semantic Kernel Integration</description>
+    <releaseNotes>Sonnet 4.5, Caching Enhancements, Minor Improvements</releaseNotes>
+    <copyright>This library is licensed MIT, in the public domain</copyright>
+    <tags>Claude, AI, ML, API, Anthropic</tags>
+    <repository type="git" url="https://github.com/tghamm/Anthropic.SDK" branch="refs/heads/main" commit="14f967c45e7318f33c01e8ff7764bc539a05ce0b" />
+    <dependencies>
+      <group targetFramework="net6.0">
+        <dependency id="Microsoft.Bcl.AsyncInterfaces" version="8.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.AI.Abstractions" version="9.9.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net8.0">
+        <dependency id="Microsoft.Bcl.AsyncInterfaces" version="8.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.AI.Abstractions" version="9.9.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Microsoft.Bcl.AsyncInterfaces" version="8.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.CSharp" version="4.7.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.AI.Abstractions" version="9.9.0" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Json" version="8.0.6" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

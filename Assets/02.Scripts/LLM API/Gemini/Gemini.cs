@@ -23,6 +23,8 @@ public class Gemini : LLMClient
     private bool enableLogging = true; // GPT와 동일한 플래그
     private static string sessionDirectoryName = null;
     private string modelName = "gemini-2.5-flash";
+    private int maxToolCallRounds = 3;
+    private string jsonSystemMessage = null;
     public static void SetSessionDirectoryName(string sessionName)
     {
         sessionDirectoryName = sessionName;
@@ -76,7 +78,7 @@ public class Gemini : LLMClient
         }
         else
         {
-            chatHistory = new();
+            chatHistory.Clear();
         }
     }
 
@@ -106,7 +108,16 @@ public class Gemini : LLMClient
     }
     public override void AddSystemMessage(string message)
     {
-        chatHistory.Add(new Content(message, AgentRole.System.ToGeminiRole()));
+        if (string.IsNullOrEmpty(jsonSystemMessage))
+        {
+            chatHistory.Add(new Content(message, AgentRole.System.ToGeminiRole()));
+        }
+        else
+        {
+            var systemMessage = message + jsonSystemMessage;
+            chatHistory.Add(new Content(systemMessage, AgentRole.System.ToGeminiRole()));
+            jsonSystemMessage = null;
+        }
         //_systemInstruction = new Content(message);
     }
     public override void AddUserMessage(string message)
@@ -286,7 +297,7 @@ public class Gemini : LLMClient
         try
         {
             // 0) Gemini 호환 전처리: OBJECT에 빈 properties 금지, additionalProperties 전용 객체는 배열로 유도 등
-            
+
             var fmt = (JObject)schema.format.DeepClone();
             // 라이브러리 제약에 맞게 전처리: additionalProperties 제거, min/max 정수화 등
             SanitizeSchemaForMscc(fmt);
@@ -295,6 +306,7 @@ public class Gemini : LLMClient
             string schemaJson = fmt.ToString();
             Debug.Log($"[Gemini] SetResponseFormat: {schemaJson}");
 
+            /*
             // 2. 라이브러리가 제공하는 공식 메서드 FromString()을 사용해 
             //    JSON 문자열로부터 Schema 객체를 생성합니다.
             var responseSchema = Schema.FromString(schemaJson);
@@ -303,12 +315,49 @@ public class Gemini : LLMClient
             generationConfig.ResponseMimeType = "application/json";
 
             generationConfig.ResponseSchema = responseSchema;
+            */
+
+            // Claude와 동일하게 시스템 프롬프트에도 스키마 안내를 덧붙이되,
+            // 아직 시스템 메시지가 없다면 버퍼에 저장해 다음 AddSystemMessage 때 합칩니다.
+            var appended = $"\n\n 당신은 항상 다음 Json형식으로 응답해야 합니다: {schemaJson}";
+            var baseSystem = GetSystemMessage();
+            if (string.IsNullOrEmpty(baseSystem))
+            {
+                jsonSystemMessage = appended;
+            }
+            else
+            {
+                ChangeSystemMessage(baseSystem + appended);
+            }
         }
         catch (System.Exception ex)
         {
             Debug.LogWarning($"[Gemini] SetResponseFormat failed: {ex.Message}");
         }
         // Debug.Log($"[Gemini] SetResponseFormat done");
+    }
+
+    // Claude와 유사한 보조 메서드: 현재 시스템 메시지 조회 및 교체
+    private string GetSystemMessage()
+    {
+        var systemContent = chatHistory.FirstOrDefault(m => m.Role == AgentRole.System.ToGeminiRole());
+        if (systemContent == null) return null;
+        var textPart = systemContent.Parts?.FirstOrDefault(p => p is TextData) as TextData;
+        return textPart?.Text;
+    }
+
+    private void ChangeSystemMessage(string message)
+    {
+        var systemRole = AgentRole.System.ToGeminiRole();
+        int idx = chatHistory.FindIndex(m => m.Role == systemRole);
+        if (idx >= 0)
+        {
+            chatHistory[idx] = new Content(message, systemRole);
+        }
+        else
+        {
+            chatHistory.Insert(0, new Content(message, systemRole));
+        }
     }
 
     /// <summary>
@@ -389,25 +438,25 @@ public class Gemini : LLMClient
     {
 
         // 로컬 복사본을 만들어 루프 내에서 수정합니다.
-        var requestHistory = new List<Content>(this.chatHistory);
+        bool requiresAction;
+        string finalResponse;
+        int toolRounds = 0; // Limit tool-call rounds
+        bool forcedFinalAfterToolLimit = false; // Ensure we force exactly one final pass without tools
 
-        int toolRounds = 0;
-        int formatRetry = 2; // 비 JSON 응답일 때 재요청 회수
-
-        while (toolRounds < maxToolRounds)
+        do
         {
+            requiresAction = false;
+
             // 2. API 호출 전 로깅 (요청)
             try { await SaveRequestLogAsync(string.Join("\n\n", chatHistory.Select(c => (c.Parts?.FirstOrDefault(p => p is TextData) as TextData)?.Text ?? string.Empty))); } catch { }
 
             // 2. API 호출
             request.Contents = chatHistory;
-            //request.GenerationConfig = generationConfig;
             if (request.Contents == null || request.Contents.Count == 0) Debug.LogError("request.Contents is null");
             var response = await generativeModel.GenerateContent(request);
 
             if (response.FunctionCalls != null && response.FunctionCalls.Count > 0)
             {
-                toolRounds++;
                 Debug.Log($"Gemini Request: ToolCalls (Round {toolRounds})");
                 // 모델이 함수 호출을 반환하는 라운드에서는 response.Text가 비어 있을 수 있으므로
                 // 빈 텍스트 콘텐츠를 추가하지 않습니다.
@@ -420,11 +469,14 @@ public class Gemini : LLMClient
                     Debug.Log($"ToolCalls : {functionCall.Name} -> {functionCall.Args}");
                     ExecuteToolCall(functionCall);
                 }
+
+                requiresAction = true;
             }
             else
             {
 
                 var responseText = response.Text;
+                finalResponse = responseText;
                 // 응답 로깅
                 try { await SaveRawResponseLogAsync(responseText); } catch { }
                 Debug.Log($"Gemini Response: {responseText}");
@@ -476,17 +528,6 @@ public class Gemini : LLMClient
                             Debug.LogError($"Second parse failed: {ex2.Message}");
                             try { await SaveConversationLogAsync(responseText); } catch { }
 
-                            // 최종 파싱 실패 시, 한 번에 한해 JSON 형식으로만 재포맷하도록 추가 프롬프트를 넣고 재시도
-                            if (formatRetry < 1)
-                            {
-                                var conversionInstruction =
-                                    "다음 텍스트를 지정된 JSON 스키마에 맞춰 정확한 JSON 한 덩어리로만 응답하세요. 설명/서문/주석 금지. 공백/따옴표 포함 유효한 JSON만 출력.\n" +
-                                    "텍스트:\n" + responseText + "\n";
-                                chatHistory.Add(new Content(conversionInstruction, AgentRole.User.ToGeminiRole()));
-                                formatRetry++;
-                                continue; // while 루프 재시도
-                            }
-
                             throw new InvalidOperationException(
                                 $"Failed to parse Gemini response into {typeof(T)}"
                             );
@@ -495,12 +536,28 @@ public class Gemini : LLMClient
                 }
             }
 
+        } while (requiresAction);
+        if (requiresAction)
+        {
+            toolRounds++;
+            if (toolRounds >= maxToolCallRounds)
+            {
+                if (!forcedFinalAfterToolLimit)
+                {
+                    forcedFinalAfterToolLimit = true;
+                    Debug.LogWarning($"[Gemini] Tool call round limit reached ({maxToolCallRounds}). Forcing one final non-tool response.");
+                    AddUserMessage($"도구 호출 한도({maxToolCallRounds}회)에 도달했습니다. 더 이상 도구를 사용하지 말고 최종 결과만 JSON으로 응답하세요.");
+                    try { request.Tools.Clear(); } catch { }
+                    requiresAction = true; // run one more round without tools
+                }
+                else
+                {
+                    Debug.LogWarning("[Gemini] Tool call limit reached and final pass already forced. Ending tool loop.");
+                    requiresAction = false;
+                }
+            }
         }
-
-        // 최종 응답을 받기 전에 루프가 종료되면 원본 chatHistory를 업데이트
-        this.chatHistory.Clear();
-        this.chatHistory.AddRange(requestHistory);
-        throw new Exception($"Tool call round limit reached ({maxToolRounds}).");
+        return default;
     }
     #endregion
 
@@ -510,31 +567,11 @@ public class Gemini : LLMClient
         Debug.Log($"[Gemini] AddTools");
         if (tools == null || tools.Length == 0) return;
 
-        //var functionDeclarations = new List<FunctionDeclaration>();
         foreach (var schema in tools)
         {
-            //request.Tools.AddFunction(schema.name, schema.description);
+            request.Tools.AddFunction(schema.name, schema.description);
         }
         Debug.Log($"[Gemini] AddTools done");
-        // var tool = ToolManager.ToGeminiTool(schema);
-        // if (tool != null)
-        // {
-
-        //try { functionDeclarations.Add(tool); } catch { }
-        // }
-        // var functionDeclarations = tools.Select(t => new FunctionDeclaration
-        // {
-        //     Name = t.name,
-        //     Description = t.description,
-        //     Parameters = t.format != null ? new Schema
-        //     {
-        //         Type = t.format.type,
-        //         Properties = t.format.properties,
-        //         Required = t.format.required?.ToList()
-        //     } : null
-        // }).ToList();
-        //registeredTools.Add(new Tool { FunctionDeclarations = functionDeclarations });
-
     }
 
     // TODO: 이 함수를 직접 구현해야 합니다.

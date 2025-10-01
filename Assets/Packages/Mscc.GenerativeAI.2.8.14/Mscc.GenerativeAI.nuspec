@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Mscc.GenerativeAI</id>
+    <version>2.8.14</version>
+    <title>MSCC GenerativeAI</title>
+    <authors>Jochen Kirstätter</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>MsccGenerativeAi-icon-nuget.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://mscraftsman.github.io/generative-ai</projectUrl>
+    <description>Gemini AI Client for .NET</description>
+    <releaseNotes># Release Notes
+
+## 2.8.14
+
+### Added
+
+- add `Document` endpoints to `RagStores` (d97d6c4)
+- add property `PartMetadata` (2972e5f)
+- add property `Unreachable` (ac8e6ca)
+- add image related reasons (f9a3383)
+- add querystring parameter `returnPartialSuccess` (3eb78d7)
+
+### Changed
+
+- provide details of last API response
+- revision 20250928 (0ce6dd4)
+- upgrade NuGet packages
+
+### Fixed
+
+- update tests and docs #116 (2b2b020)
+- fix NuGet authentication for feed source (3c9e037)
+- fix NuGet feed sources in Azure DevOps (19facc3)
+
+## Changelog
+
+Changes across all versions have been documented in the [Changelog](CHANGELOG.md).</releaseNotes>
+    <copyright>Copyright (c) Jochen Kirstätter</copyright>
+    <tags>Gemini GeminiAI GeminiPro GeminiProVision GoogleAI VertexAI GenAI GenerativeAI Summarization TextGeneration AIAssistant CodeAssistant TunedModel Model</tags>
+    <repository type="git" url="https://github.com/mscraftsman/generative-ai" branch="refs/heads/master" commit="a4119c3c5c6cefeb0be6c9f2ad6cf7f2a647eec9" />
+    <dependencies>
+      <group targetFramework="net8.0">
+        <dependency id="JsonSchema.Net.Generation" version="5.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Http" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Logging" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Json" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Configuration.Abstractions" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Options" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Encodings.Web" version="9.0.9" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net9.0">
+        <dependency id="JsonSchema.Net.Generation" version="5.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Http" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Logging" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Json" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Configuration.Abstractions" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Options" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="9.0.9" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="JsonSchema.Net.Generation" version="5.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Bcl.AsyncInterfaces" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Http" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Logging" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="Nullable" version="1.3.1" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Json" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Configuration.Abstractions" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Options" version="9.0.9" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Encodings.Web" version="9.0.9" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

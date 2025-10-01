@@ -37,6 +37,24 @@ namespace Agent.Tools
                     return "user";
             }
         }
+
+        public static Anthropic.SDK.Messaging.RoleType ToAnthropicRole(this AgentRole role)
+        {
+            switch (role)
+            {
+                case AgentRole.System:
+                case AgentRole.User:
+                case AgentRole.Tool:
+                case AgentRole.Function:
+                    return Anthropic.SDK.Messaging.RoleType.User;
+
+                case AgentRole.Assistant:
+                    return Anthropic.SDK.Messaging.RoleType.Assistant;
+
+                default:
+                    return Anthropic.SDK.Messaging.RoleType.User;
+            }
+        }
     }
 }
 

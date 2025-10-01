@@ -146,6 +146,8 @@ public class GameService : MonoBehaviour, IGameService
         // === 세션 폴더명 생성 및 GPT에 전달 ===
         string sessionFolderName = System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
         GPT.SetSessionDirectoryName(sessionFolderName);
+        Claude.SetSessionDirectoryName(sessionFolderName);
+        Gemini.SetSessionDirectoryName(sessionFolderName);
         Debug.Log($"[GameService] Session log folder: {sessionFolderName}");
         // ================================
 
