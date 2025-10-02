@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using OpenAI.Chat;
 using System;
 using System.Threading;
+using static Agent.IParameterAgentBase;
 
 namespace Agent
 {
-    public class WaitParameterAgent : ParameterAgentBase
+    public class WaitParameterAgent : GPT, IParameterAgentBase
     {
         public class WaitParameter { }
 
@@ -35,7 +36,7 @@ namespace Agent
             return response;
         }
 
-        public override UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
+        public UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
             // Wait는 파라미터가 필요없는 액션이므로 빈 결과 반환
             return UniTask.FromResult(new ActParameterResult

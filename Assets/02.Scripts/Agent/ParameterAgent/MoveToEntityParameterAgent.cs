@@ -6,10 +6,11 @@ using System;
 using System.Linq;
 using UnityEngine;
 using System.Threading;
+using static Agent.IParameterAgentBase;
 
 namespace Agent
 {
-    public class MoveToEntityParameterAgent : ParameterAgentBase
+    public class MoveToEntityParameterAgent : GPT, IParameterAgentBase
     {
         // actorName 필드 사용 가능 (ParameterAgentBase에서 상속)
         public class MoveToEntityParameter
@@ -45,7 +46,7 @@ namespace Agent
             return response;
         }
 
-        public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
+        public async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
             
             var param = await GenerateParametersAsync(new CommonContext

@@ -8,13 +8,14 @@ using UnityEngine;
 using Agent.Tools;
 using System.Threading;
 using System.Linq;
+using static Agent.IParameterAgentBase;
 
 namespace Agent
 {
     /// <summary>
     /// ItemDispenser와 상호작용할 때 어떤 아이템을 생성할지 결정하는 ParameterAgent
     /// </summary>
-    public class ItemDispenserParameterAgent : ParameterAgentBase
+    public class ItemDispenserParameterAgent : GPT, IParameterAgentBase
     {
         public class ItemDispenserParameter
         {
@@ -49,7 +50,7 @@ namespace Agent
         /// <summary>
         /// ActParameterRequest를 받아서 ItemDispenser 파라미터를 생성합니다.
         /// </summary>
-        public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
+        public async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
             try
             {

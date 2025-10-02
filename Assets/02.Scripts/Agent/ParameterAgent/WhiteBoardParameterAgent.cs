@@ -7,13 +7,14 @@ using System;
 using UnityEngine;
 using Agent.Tools;
 using System.Threading;
+using static Agent.IParameterAgentBase;
 
 namespace Agent
 {
     /// <summary>
     /// WhiteBoard와 상호작용할 때 무엇을 적을지 결정하는 ParameterAgent
     /// </summary>
-    public class WhiteBoardParameterAgent : ParameterAgentBase
+    public class WhiteBoardParameterAgent : Gemini, IParameterAgentBase
     {
         public class WhiteBoardParameter
         {
@@ -50,7 +51,7 @@ namespace Agent
         /// <summary>
         /// ActParameterRequest를 받아서 WhiteBoard 파라미터를 생성합니다.
         /// </summary>
-        public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
+        public async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
             try
             {

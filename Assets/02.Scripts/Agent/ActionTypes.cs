@@ -11,33 +11,34 @@ using System.Linq; // Added for .Select()
 // 행동 타입과 데이터 구조만 남김
 public enum ActionType
 {
-    Unknown = 0,
-    MoveToArea,
-    MoveToEntity,
-    Talk,
-    UseObject,
-    PickUpItem,
-    InteractWithObject,
-    PutDown,     
+	Unknown = 0,
+	MoveToArea,
+	MoveToEntity,
+	Talk,
+	UseObject,
+	PickUpItem,
+	InteractWithObject,
+	PutDown,
 	GiveMoney,
-    GiveItem,
-    RemoveClothing,
-    PerformActivity,
-    Wait,
-    Think,
-    ObserveEnvironment // 주변을 둘러보고 상황 파악
+	GiveItem,
+	RemoveClothing,
+	PerformActivity,
+	Wait,
+	Think,
+	Sleep,
+	ObserveEnvironment // 주변을 둘러보고 상황 파악
 }
 
 public class ActionReasoning
 {
-    public List<string> Thoughts { get; set; } = new List<string>();
-    public AgentAction Action { get; set; } = new AgentAction();
+	public List<string> Thoughts { get; set; } = new List<string>();
+	public AgentAction Action { get; set; } = new AgentAction();
 }
 
 public class AgentAction
 {
-    public ActionType ActionType { get; set; }
-    public Dictionary<string, object> Parameters { get; set; }
+	public ActionType ActionType { get; set; }
+	public Dictionary<string, object> Parameters { get; set; }
 }
 
 public static class ActionTypeExtensions
@@ -60,6 +61,7 @@ public static class ActionTypeExtensions
 			case ActionType.PerformActivity: return "행동 수행";
 			case ActionType.Wait: return "대기";
 			case ActionType.Think: return "생각";
+			case ActionType.Sleep: return "수면";
 			case ActionType.ObserveEnvironment: return "주변 살피기";
 			default: return actionType.ToString();
 		}

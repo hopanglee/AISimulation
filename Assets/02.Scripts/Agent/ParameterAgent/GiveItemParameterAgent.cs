@@ -8,11 +8,12 @@ using UnityEngine;
 using System.Text.Json;
 using Agent.Tools;
 using System.Threading;
+using static Agent.IParameterAgentBase;
 
 
 namespace Agent
 {
-    public class GiveItemParameterAgent : ParameterAgentBase
+    public class GiveItemParameterAgent : GPT, IParameterAgentBase
     {
         public class GiveItemParameter
         {
@@ -57,7 +58,7 @@ namespace Agent
             return response;
         }
 
-        public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
+        public async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
             var param = await GenerateParametersAsync(new CommonContext
             {

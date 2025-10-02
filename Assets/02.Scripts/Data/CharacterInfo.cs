@@ -7,11 +7,30 @@ using System.IO;
 [System.Serializable]
 public class CharacterInfo
 {
+    [JsonProperty("goal")]
+    public string Goal { get; set; }
+
     [JsonProperty("name")]
     public string Name { get; set; }
 
     [JsonProperty("age")]
     public int Age { get; set; }
+
+    [JsonProperty("height")]
+    public float Height { get; set; }
+
+    [JsonProperty("weight")]
+    public float Weight { get; set; }
+    [JsonProperty("hair_color")]
+    public string HairColor { get; set; }
+    [JsonProperty("eye_color")]
+    public string EyeColor { get; set; }
+    [JsonProperty("skin_color")]
+    public string SkinColor { get; set; }
+    [JsonProperty("hair_style")]
+    public string HairStyle { get; set; }
+    [JsonProperty("body_type")]
+    public string BodyType { get; set; }
 
     [JsonProperty("birthday")]
     [JsonConverter(typeof(GameTimeConverter))]

@@ -4,13 +4,14 @@ using OpenAI.Chat;
 using System;
 using UnityEngine;
 using Newtonsoft.Json;
+using static Agent.IParameterAgentBase;
 
 namespace Agent
 {
     /// <summary>
     /// Book 전용 Use Parameter Agent
     /// </summary>
-    public class BookUseParameterAgent : ParameterAgentBase
+    public class BookUseParameterAgent : GPT, IParameterAgentBase
     {
         public class BookUseParameter
         {
@@ -54,7 +55,7 @@ namespace Agent
             return response;
         }
 
-        public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
+        public async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
             var param = await GenerateParametersAsync(new CommonContext
             {

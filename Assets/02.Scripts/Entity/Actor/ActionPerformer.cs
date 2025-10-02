@@ -31,6 +31,7 @@ public class ActionPerformer
     private readonly ItemActionHandler itemHandler;
     private readonly ClothingActionHandler clothingHandler;
     private readonly ThinkActionHandler thinkHandler;
+    private readonly BedActionHandler bedHandler;
     private CancellationToken currentToken;
 
     public ActionPerformer(Actor actor)
@@ -45,6 +46,7 @@ public class ActionPerformer
         this.itemHandler = new ItemActionHandler(actor);
         this.clothingHandler = new ClothingActionHandler(actor);
         this.thinkHandler = new ThinkActionHandler(actor);
+        this.bedHandler = new BedActionHandler(actor);
         
         RegisterActionHandlers();
     }
@@ -179,6 +181,12 @@ public class ActionPerformer
         actionExecutor.RegisterHandler(
             ActionType.RemoveClothing,
             async (parameters) => await clothingHandler.HandleRemoveClothing(parameters, currentToken)
+        );
+
+        // Bed handlers
+        actionExecutor.RegisterHandler(
+            ActionType.Sleep,
+            async (parameters) => await bedHandler.HandleSleep(parameters, currentToken)
         );
 
         // Think handlers

@@ -444,6 +444,21 @@ namespace Agent
                         availableActions.Remove(ActionType.GiveItem);
                         availableActions.Remove(ActionType.PutDown);
                     }
+
+                    // Sleep 액션 추가 조건: Actor가 Bed 위에 있고, 잠자는 중이 아니어야 함
+                    try
+                    {
+                        bool onBed = thinkingActor.curLocation is Bed;
+                        if (onBed && !thinkingActor.IsSleeping)
+                        {
+                            availableActions.Add(ActionType.Sleep);
+                        }
+                        else
+                        {
+                            //availableActions.Remove(ActionType.Sleep);
+                        }
+                    }
+                    catch { }
                 }
 
                 return availableActions;

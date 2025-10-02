@@ -6,11 +6,12 @@ using System;
 using UnityEngine;
 using System.Linq;
 using System.Threading;
+using static Agent.IParameterAgentBase;
 
 
 namespace Agent
 {
-    public class InteractWithObjectParameterAgent : ParameterAgentBase
+    public class InteractWithObjectParameterAgent : GPT, IParameterAgentBase
     {
         public class InteractWithObjectParameter
         {
@@ -50,7 +51,7 @@ namespace Agent
             return response;
         }
 
-        public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
+        public async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
 
             var param = await GenerateParametersAsync(new CommonContext

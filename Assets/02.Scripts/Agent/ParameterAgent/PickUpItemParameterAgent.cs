@@ -6,11 +6,12 @@ using System;
 using System.Linq;
 using UnityEngine;
 using System.Threading;
+using static Agent.IParameterAgentBase;
 
 
 namespace Agent
 {
-    public class PickUpItemParameterAgent : ParameterAgentBase
+    public class PickUpItemParameterAgent : GPT, IParameterAgentBase
     {
         public class PickUpItemParameter
         {
@@ -47,7 +48,7 @@ namespace Agent
             return response;
         }
 
-        public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
+        public async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
             
             var param = await GenerateParametersAsync(new CommonContext

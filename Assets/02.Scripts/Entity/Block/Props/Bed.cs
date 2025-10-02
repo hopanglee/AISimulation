@@ -8,7 +8,7 @@ public class Bed : SitableProp
 {
     [Header("Bed Settings")]
     public bool isOccupied = false;
-    public Actor sleepingActor = null;
+    public Actor seatedActor = null;
 
     [Header("Sleep Position (Editor Assigned)")]
     public Transform sleepPosition;
@@ -37,35 +37,49 @@ public class Bed : SitableProp
                 bubble.SetFollowTarget(actor.transform);
             }
 
-            await SimDelay.DelaySimMinutes(1, cancellationToken);
+            //await SimDelay.DelaySimMinutes(1, cancellationToken);
             if (actor == null)
             {
                 return "상호작용할 대상이 없습니다.";
             }
 
-            // 이미 누군가 자고 있는 경우
-            if (isOccupied && sleepingActor != null)
+            // 이미 누군가 차지하고 있는 경우
+            if (isOccupied && seatedActor != null)
             {
-                if (sleepingActor == actor)
+                if (seatedActor == actor)
                 {
-                    // 자고 있는 Actor가 일어남
-                    if (bubble != null) bubble.Show("침대에서 일어나는 중", 0);
-                    await SimDelay.DelaySimMinutes(2, cancellationToken);
+                    string result = "";
+                    if (seatedActor is MainActor mainActor2 && mainActor2.IsSleeping)
+                    {
+                        result = $"{seatedActor.Name}이(가) 잠에서 깨어났습니다.";
+                        if (bubble != null) bubble.Show("잠에서 깨어나는 중", 0);
+                        await SimDelay.DelaySimMinutes(2, cancellationToken);
+                    }
+                    else
+                    {
+                        result = $"{seatedActor.Name}이(가) 침대에서 일어났습니다.";
+                        if (bubble != null) bubble.Show("침대에서 일어나는 중", 0);
+                        await SimDelay.DelaySimMinutes(2, cancellationToken);
+                    }
+
                     StandUp(actor);
-                    return $"{actor.Name}이(가) 잠에서 깨어났습니다.";
+
+                    return result;
                 }
-                else
+                // 나 말고 다른 Actor가 자고 있으면 깨우기
+                else if(seatedActor is MainActor mainActor2 && mainActor2.IsSleeping)
                 {
                     // 다른 Actor가 자고 있으면 깨우기
-                    if (bubble != null) bubble.Show($"{sleepingActor.Name} 깨우는 중", 0);
-                    await SimDelay.DelaySimMinutes(1, cancellationToken);
-                    StandUp(sleepingActor);
-                    return $"{sleepingActor.Name}을(를) 깨웠습니다.";
+                    if (bubble != null) bubble.Show($"{seatedActor.Name}을(를) 깨우는 중", 0);
+                    await SimDelay.DelaySimMinutes(2, cancellationToken);
+                    StandUp(seatedActor);
+                    return $"{seatedActor.Name}을(를) 깨웠습니다.";
                 }
             }
 
-            // MainActor인 경우 BedInteractAgent를 사용하여 수면 계획 결정
-            if (actor is MainActor mainActor)
+            /*
+            // MainActor가 이미 앉아있는 경우 BedInteractAgent를 사용하여 수면 계획 결정
+            if (actor is MainActor mainActor && IsActorSeated(actor))
             {
                 try
                 {
@@ -77,7 +91,7 @@ public class Bed : SitableProp
                         // 수면 결정된 경우
                         if (bubble != null) bubble.Show("침대에 눕는 중", 0);
                         await SimDelay.DelaySimMinutes(1, cancellationToken);
-                        if (TrySitWithDuration(actor, decision.SleepDurationMinutes))
+                        if (TrySleepWithDuration(actor, decision.SleepDurationMinutes))
                         {
                             return $"{actor.Name}이(가) 잠을 자기 시작했습니다. ({decision.Reasoning})";
                         }
@@ -103,16 +117,34 @@ public class Bed : SitableProp
                     return $"{actor.Name}은(는) 잠을 잘 수 없습니다.";
                 }
             }
+            */
+
+
+            // 침대가 비어있고, Actor가 서있는 경우, 앉도록 함
+            if (!isOccupied && !IsActorSeated(actor))
+            {// MainActor가 아닌 경우 기본 로직 사용
+                if (bubble != null) bubble.Show("침대에 눕는 중", 0);
+                await SimDelay.DelaySimMinutes(1, cancellationToken);
+                if (TrySit(actor))
+                {
+                    return $"{actor.Name}이(가) 침대에 누웠습니다.";
+                }
+                else
+                {
+                    return $"{actor.Name}은(는) 침대에 누울 수 없습니다.";
+                }
+            }
+
 
             // MainActor가 아닌 경우 기본 로직 사용
             if (bubble != null) bubble.Show("침대에 눕는 중", 0);
             await SimDelay.DelaySimMinutes(1, cancellationToken);
             if (TrySit(actor))
             {
-                return $"{actor.Name}이(가) 깊은 잠에 빠졌습니다.";
+                return $"{actor.Name}이(가) 침대에 누웠습니다.";
             }
 
-            return $"{actor.Name}은(는) 잠을 잘 수 없습니다.";
+            return $"{actor.Name}은(는) 침대에 누울 수 없습니다.";
         }
         finally
         {
@@ -125,47 +157,7 @@ public class Bed : SitableProp
     /// <summary>
     /// 지정된 시간 동안 잠자기
     /// </summary>
-    private bool TrySitWithDuration(Actor actor, int sleepDurationMinutes)
-    {
-        if (!CanSit(actor))
-        {
-            return false;
-        }
-
-        // 이미 누군가 앉아있거나 자고 있으면 앉을 수 없음
-        if (IsOccupied())
-        {
-            return false;
-        }
-
-        // MainActor가 아니면 잠잘 수 없음
-        if (!(actor is MainActor))
-        {
-            return false;
-        }
-
-        // 잠자기 성공 - 잠자는 위치로 이동
-        if (sleepPosition != null)
-        {
-            MoveActorToSitPosition(actor, sleepPosition.position);
-        }
-        else
-        {
-            // sleepPosition이 설정되지 않은 경우 기본 위치 사용
-            Vector3 defaultSleepPosition = transform.position + Vector3.up * 0.5f;
-            MoveActorToSitPosition(actor, defaultSleepPosition);
-        }
-
-        // 상태 설정
-        isOccupied = true;
-        sleepingActor = actor;
-
-        // MainActor의 Sleep 함수 호출 (지정된 시간으로)
-        MainActor mainActor = actor as MainActor;
-        _ = mainActor.Sleep(sleepDurationMinutes);
-
-        return true;
-    }
+    // 수면 실행 로직은 BedActionHandler.HandleSleep로 이동되었습니다.
 
     // SitableProp 추상 메서드 구현
     public override bool TrySit(Actor actor)
@@ -181,13 +173,11 @@ public class Bed : SitableProp
             return false;
         }
 
-        // MainActor가 아니면 잠잘 수 없음
-        if (!(actor is MainActor))
-        {
-            return false;
-        }
+        // 상태 설정
+        isOccupied = true;
+        seatedActor = actor;
 
-        // 잠자기 성공 - 잠자는 위치로 이동
+        // 앉는 위치로 이동
         if (sleepPosition != null)
         {
             MoveActorToSitPosition(actor, sleepPosition.position);
@@ -199,24 +189,16 @@ public class Bed : SitableProp
             MoveActorToSitPosition(actor, defaultSleepPosition);
         }
 
-        // 상태 설정
-        isOccupied = true;
-        sleepingActor = actor;
-
-        // MainActor의 Sleep 함수 호출
-        MainActor mainActor = actor as MainActor;
-        _ = mainActor.Sleep();
-
         return true;
     }
 
     public override void StandUp(Actor actor)
     {
         // 잠자는 상태에서 깨우기
-        if (sleepingActor == actor)
+        if (seatedActor == actor)
         {
             isOccupied = false;
-            sleepingActor = null;
+            seatedActor = null;
 
             base.StandUp(actor);
 
@@ -230,7 +212,7 @@ public class Bed : SitableProp
 
     public override bool IsActorSeated(Actor actor)
     {
-        return isOccupied && sleepingActor == actor;
+        return isOccupied && seatedActor == actor;
     }
 
     public override bool IsOccupied()
@@ -241,9 +223,16 @@ public class Bed : SitableProp
     public override string Get()
     {
         string status = "";
-        if (isOccupied && sleepingActor != null)
+        if (isOccupied)
         {
-            status = $"{sleepingActor.Name}이(가) 잠자고 있는 침대입니다.";
+            if (seatedActor != null)
+            {
+                status = $"{seatedActor.Name}이(가) 잠자고 있는 침대입니다.";
+            }
+            else if (seatedActor != null)
+            {
+                status = $"{seatedActor.Name}이(가) 앉아있는 침대입니다.";
+            }
         }
         else status = "사용 가능한 침대입니다.";
 

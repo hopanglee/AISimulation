@@ -6,11 +6,12 @@ using System;
 using UnityEngine;
 using System.Linq;
 using System.Threading;
+using static Agent.IParameterAgentBase;
 
 
 namespace Agent
 {
-    public class InventoryBoxParameterAgent : ParameterAgentBase
+    public class InventoryBoxParameterAgent : GPT, IParameterAgentBase
     {
         public class InventoryBoxParameter
         {
@@ -61,7 +62,7 @@ namespace Agent
             return response;
         }
 
-        public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
+        public async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {           
             var param = await GenerateParametersAsync(new CommonContext
             {

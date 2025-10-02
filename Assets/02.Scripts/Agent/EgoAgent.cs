@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 /// 자아 에이전트 - 이성과 본능의 타협을 담당
 /// 두 에이전트의 결과를 적절히 조합하여 최종 결정을 내립니다.
 /// </summary>
-public class EgoAgent : GPT
+public class EgoAgent : Claude
 {
     public EgoAgent(Actor actor) : base(actor)
     {
@@ -128,9 +128,9 @@ public class EgoAgent : GPT
                 { "superego_result",superegoResult.situation_interpretation },
                 { "id_result", idResult.situation_interpretation },
                 { "superego_emotion", superegoEmotions },
-                { "id_emotion", idEmotions },
-                { "superego_thought_chain", string.Join(" -> ", superegoResult.thought_chain) },
-                { "id_thought_chain", string.Join(" -> ", idResult.thought_chain) }
+                { "id_emotion", idEmotions }
+                //{ "superego_thought_chain", string.Join(" -> ", superegoResult.thought_chain) },
+                //{ "id_thought_chain", string.Join(" -> ", idResult.thought_chain) }
             };
             var userMessage = localizationService.GetLocalizedText("ego_agent_results", replacements);
             AddUserMessage(userMessage);

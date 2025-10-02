@@ -5,13 +5,14 @@ using System;
 using UnityEngine;
 using Newtonsoft.Json;
 using System.Threading;
+using static Agent.IParameterAgentBase;
 
 namespace Agent
 {
     /// <summary>
     /// Note 전용 Use Agent
     /// </summary>
-    public class NoteUseAgent : ParameterAgentBase
+    public class NoteUseAgent : GPT, IParameterAgentBase
     {
         public class NoteUseParameter
         {
@@ -79,7 +80,7 @@ namespace Agent
             return response;
         }
 
-        public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
+        public async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
             
             var param = await GenerateParametersAsync(new CommonContext

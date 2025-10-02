@@ -23,9 +23,6 @@ public class ThinkResult
     [JsonProperty("focus_topic")]
     public string FocusTopic { get; set; }
 
-    [JsonProperty("time_scope")]
-    public string TimeScope { get; set; } // "past", "future", "present"
-
     // [JsonProperty("insights")]
     // public List<string> Insights { get; set; } = new List<string>();
 
@@ -68,11 +65,11 @@ namespace Agent.ActionHandlers
             try
             {
                 // 파라미터 추출
-                var thinkScope = parameters.GetValueOrDefault("think_scope", "current_analysis").ToString();
+                //var thinkScope = parameters.GetValueOrDefault("think_scope", "current_analysis").ToString();
                 var topic = parameters.GetValueOrDefault("topic", "현재 상황").ToString();
                 var duration = Convert.ToInt32(parameters.GetValueOrDefault("duration", 10));
 
-                Debug.Log($"[{actor.Name}] Think 액션 시작: {topic} ({thinkScope}, {duration}분)");
+                Debug.Log($"[{actor.Name}] Think 액션 시작: {topic} ({duration}분)");
 
                 // 메모리에 Think 시작 기록
                 if (actor is MainActor mainActor && mainActor.brain?.memoryManager != null)
@@ -80,7 +77,7 @@ namespace Agent.ActionHandlers
                     //mainActor.brain.memoryManager.AddActionStart(ActionType.Think, parameters);
 
                     // 실제 사색 수행
-                    var thinkResult = await PerformInteractiveThinkingAsync(thinkScope, topic, duration, token);
+                    var thinkResult = await PerformInteractiveThinkingAsync(topic, duration, token);
 
                     var thinkingSummary = $"주제 '{topic}'에 대해 {duration}분간 사색함. " +
                                         $"결론: {thinkResult.Conclusions}";
@@ -101,7 +98,7 @@ namespace Agent.ActionHandlers
         /// <summary>
         /// 상호작용식 사색을 수행합니다 (질문과 답변을 반복)
         /// </summary>
-        private async UniTask<ThinkResult> PerformInteractiveThinkingAsync(string thinkScope, string topic, int duration, CancellationToken token)
+        private async UniTask<ThinkResult> PerformInteractiveThinkingAsync(string topic, int duration, CancellationToken token)
         {
             var thoughtChain = new List<string>();
             // var insights = new List<string>();
@@ -138,10 +135,8 @@ namespace Agent.ActionHandlers
                 {
                     // 질문 생성 (이전 답변을 기반으로)
                     var questionResult = await questionAgent.GenerateThinkingQuestionAsync(
-                        thinkScope,
                         topic,
-                        previousAnswer,
-                        null//memoryContext
+                        previousAnswer
                     );
 
                     var displayQuestion = questionResult ?? string.Empty;
@@ -150,7 +145,7 @@ namespace Agent.ActionHandlers
                     thoughtChain.Add(questionResult);
                     await SimDelay.DelaySimMinutes(thinkingTimeMinutes/2, token);
                     // 답변 생성 (질문을 기반으로)
-                    var answerResult = await answerAgent.GenerateAnswerAsync(questionResult, thinkScope, topic, null);
+                    var answerResult = await answerAgent.GenerateAnswerAsync(questionResult);
                     var displayAnswer = answerResult ?? string.Empty;
                     // if (displayAnswer.Length > 20) displayAnswer = displayAnswer.Substring(0, 20);
                     bubble.Show($"생각 중: {displayAnswer}", 0);
@@ -178,13 +173,12 @@ namespace Agent.ActionHandlers
                 }
 
                 // 최종 결론 생성
-                var conclusionResult = await conclusionAgent.GenerateFinalConclusionsAsync(topic, thoughtChain);
+                var conclusionResult = await conclusionAgent.GenerateFinalConclusionsAsync(thoughtChain);
                 if (bubble != null) bubble.Hide();
                 return new ThinkResult
                 {
                     ThoughtChain = thoughtChain,
                     FocusTopic = topic,
-                    TimeScope = thinkScope,
                     //Insights = insights,
                     Conclusions = conclusionResult,
                     Emotions = new List<Emotions>() // 빈 감정 딕셔너리
@@ -198,7 +192,6 @@ namespace Agent.ActionHandlers
                 {
                     ThoughtChain = thoughtChain.Count > 0 ? thoughtChain : new List<string> { "생각이 잘 정리되지 않는다." },
                     FocusTopic = topic,
-                    TimeScope = thinkScope,
                     //Insights = insights.Count > 0 ? insights : new List<string> { "때로는 생각이 복잡할 때가 있다." },
                     Conclusions = "잠시 마음을 정리하는 시간이었다."
                 };

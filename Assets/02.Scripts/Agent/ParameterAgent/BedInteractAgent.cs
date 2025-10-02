@@ -22,7 +22,7 @@ public class BedInteractDecision
     public string Reasoning { get; set; }
 }
 
-public class BedInteractAgent : GPT
+public class BedInteractAgent : Claude
 {
     public BedInteractAgent(Actor actor) : base(actor)
     {

@@ -6,11 +6,12 @@ using OpenAI.Chat;
 using UnityEngine;
 using System;
 using System.Threading;
+using static Agent.IParameterAgentBase;
 
 /// <summary>
 /// PutDown 액션을 위한 파라미터 추출 에이전트
 /// </summary>
-public class PutDownParameterAgent : ParameterAgentBase
+public class PutDownParameterAgent : GPT, IParameterAgentBase
 {
     private readonly string systemPrompt;
 
@@ -75,7 +76,7 @@ public class PutDownParameterAgent : ParameterAgentBase
         }
     }
 
-    public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
+    public async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
     {
 
         var param = await GenerateParametersAsync(new CommonContext

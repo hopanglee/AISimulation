@@ -13,19 +13,8 @@ namespace Agent
     /// <summary>
     /// 모든 Act별 ParameterAgent가 상속할 수 있는 공통 추상/기반 클래스 (Reasoning/Intention만 전달)
     /// </summary>
-    public abstract class ParameterAgentBase : GPT
+    public interface IParameterAgentBase
     {
-
-        /// <summary>
-        /// ParameterAgentBase 생성자 - 자식 클래스에서 :base()로 호출
-        /// </summary>
-        protected ParameterAgentBase(Actor actor) : base(actor)
-        {
-        }
-
-        protected ParameterAgentBase(Actor actor, string version) : base(actor, version)
-        {
-        }
 
         public class CommonContext
         {
@@ -64,9 +53,9 @@ namespace Agent
         /// 특정 ActionType에 대한 ParameterAgent를 생성합니다.
         /// 현재 주변 캐릭터 정보를 반영하여 생성됩니다.
         /// </summary>
-        public static ParameterAgentBase CreateParameterAgent(ActionType actionType, Actor actor)
+        public static IParameterAgentBase CreateParameterAgent(ActionType actionType, Actor actor)
         {
-            ParameterAgentBase agent = null;
+            IParameterAgentBase agent = null;
 
             switch (actionType)
             {

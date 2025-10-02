@@ -251,7 +251,7 @@ public abstract class InventoryBox : InteractableProp
                 Debug.LogWarning($"[{GetType().Name}] ActorManager에서 {actor.Name}의 ActSelectResult를 찾을 수 없습니다. 기본값 사용");
             }
             
-            var context = new Agent.ParameterAgentBase.CommonContext
+            var context = new Agent.IParameterAgentBase.CommonContext
             {
                 Reasoning = reasoning,
                 Intention = intention,

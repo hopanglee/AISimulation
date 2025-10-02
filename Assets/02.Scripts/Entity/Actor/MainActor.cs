@@ -212,6 +212,12 @@ public abstract class MainActor : Actor
 			return;
 		}
 
+		if (activityBubbleUI != null)
+		{
+			activityBubbleUI.Show("자려고 하는 중", 0);
+			activityBubbleUI.SetFollowTarget(this.transform);
+		}
+
 		var timeService = Services.Get<ITimeService>();
 		sleepStartTime = timeService.CurrentTime;
 
@@ -291,6 +297,11 @@ public abstract class MainActor : Actor
 		{
 			Debug.LogWarning($"[{Name}] Not sleeping!");
 			return;
+		}
+
+		if (activityBubbleUI != null)
+		{
+			activityBubbleUI.Hide();
 		}
 
 		var timeService = Services.Get<ITimeService>();
@@ -432,8 +443,8 @@ public abstract class MainActor : Actor
 		// 청결도 감소 처리 (시뮬레이션 시간 기준)
 		UpdateCleanlinessDecay(currentTime);
 
-		if(!useGPT) return;
-		
+		if (!useGPT) return;
+
 		// 기상 시간 처리 - wakeUpTime과 비교
 		if (isSleeping && wakeUpTime != null && currentTime.Equals(wakeUpTime))
 		{

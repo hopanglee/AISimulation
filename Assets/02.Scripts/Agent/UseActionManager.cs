@@ -16,12 +16,12 @@ namespace Agent
     public class UseActionManager
     {
         private readonly Actor actor;
-        private readonly Dictionary<Type, ParameterAgentBase> itemTypeAgents;
+        private readonly Dictionary<Type, IParameterAgentBase> itemTypeAgents;
 
         public UseActionManager(Actor actor)
         {
             this.actor = actor;
-            this.itemTypeAgents = new Dictionary<Type, ParameterAgentBase>();
+            this.itemTypeAgents = new Dictionary<Type, IParameterAgentBase>();
             InitializeItemTypeAgents();
         }
 
@@ -43,7 +43,7 @@ namespace Agent
         /// 아이템 타입에 따라 적절한 Use용 ParameterAgent를 생성하여 반환합니다.
         /// (간단 팩토리) - 호출부 연결은 하지 않고 생성만 담당합니다.
         /// </summary>
-        public ParameterAgentBase CreateUseItemAgent(Type itemType)
+        public IParameterAgentBase CreateUseItemAgent(Type itemType)
         {
             if (itemType == null)
             {
@@ -71,7 +71,7 @@ namespace Agent
         /// <summary>
         /// 아이템 인스턴스를 받아 타입을 추론하여 적절한 Agent를 생성합니다.
         /// </summary>
-        public ParameterAgentBase CreateUseItemAgent(Item item)
+        public IParameterAgentBase CreateUseItemAgent(Item item)
         {
             return item == null ? null : CreateUseItemAgent(item.GetType());
         }
@@ -93,7 +93,7 @@ namespace Agent
 
             // Hand에 있는 아이템의 타입에 따라 적절한 Agent 찾기
             var itemType = actor.HandItem.GetType();
-            ParameterAgentBase targetAgent = null;
+            IParameterAgentBase targetAgent = null;
 
             // Clothing은 파라미터 없이 직접 처리
             if (actor.HandItem is Clothing)

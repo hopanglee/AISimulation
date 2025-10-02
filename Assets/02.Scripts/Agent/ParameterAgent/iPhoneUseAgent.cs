@@ -6,10 +6,11 @@ using UnityEngine;
 using Newtonsoft.Json;
 using System.Linq;
 using System.Threading;
+using static Agent.IParameterAgentBase;
 
 namespace Agent
 {
-    public class iPhoneUseAgent : ParameterAgentBase
+    public class iPhoneUseAgent : Claude, IParameterAgentBase
     {
         public class iPhoneUseParameter
         {
@@ -67,7 +68,7 @@ namespace Agent
             return response;
         }
 
-        public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
+        public async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {            
             var param = await GenerateParametersAsync(new CommonContext
             {

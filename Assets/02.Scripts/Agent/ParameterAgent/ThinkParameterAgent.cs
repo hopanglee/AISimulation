@@ -9,6 +9,7 @@ using UnityEngine;
 using Agent;
 using Memory;
 using Agent.Tools;
+using static Agent.IParameterAgentBase;
 
 
 
@@ -18,8 +19,8 @@ using Agent.Tools;
 [System.Serializable]
 public class ThinkParameters
 {
-    [JsonProperty("think_scope")]
-    public string ThinkScope { get; set; } // "past_reflection", "future_planning", "current_analysis"
+    //[JsonProperty("think_scope")]
+    //public string ThinkScope { get; set; } // "past_reflection", "future_planning", "current_analysis"
     
     [JsonProperty("topic")]
     public string Topic { get; set; }
@@ -32,7 +33,7 @@ public class ThinkParameters
 /// Think 행동을 위한 Parameter Agent
 /// 과거 회상, 미래 계획, 현재 상황 분석 등의 사색 활동을 처리하고 실제로 실행합니다
 /// </summary>
-public class ThinkParameterAgent : ParameterAgentBase
+public class ThinkParameterAgent : Claude, IParameterAgentBase
 {
     private readonly string systemPrompt;
 
@@ -46,11 +47,10 @@ public class ThinkParameterAgent : ParameterAgentBase
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""think_scope"": {{ ""type"": ""string"", ""enum"": [""past_reflection"", ""future_planning"", ""current_analysis""], ""description"": ""어떤 종류의 사색을 할지 선택합니다. 과거 회상, 미래 계획, 현재 분석"" }},
                                 ""topic"": {{ ""type"": ""string"", ""description"": ""구체적으로 무엇에 대해 생각할지"" }},
                                 ""duration"": {{ ""type"": ""integer"", ""minimum"": 5, ""maximum"": 60, ""description"": ""얼마나 오래 생각할지"" }}
                             }},
-                            ""required"": [""think_scope"", ""topic"", ""duration""]
+                            ""required"": [""topic"", ""duration""]
                         }}";
         var schema = new LLMClientSchema { name = "think_parameters", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
         SetResponseFormat(schema);
@@ -71,7 +71,7 @@ public class ThinkParameterAgent : ParameterAgentBase
     /// <summary>
     /// Think 행동의 파라미터를 결정합니다.
     /// </summary>
-    public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
+    public async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
     {
         try
         {
@@ -82,14 +82,14 @@ public class ThinkParameterAgent : ParameterAgentBase
                 PreviousFeedback = request.PreviousFeedback
             });
             
-            Debug.Log($"[{actor.Name}] Think Parameters: {param.ThinkScope} about '{param.Topic}' for {param.Duration} minutes");
+            Debug.Log($"[{actor.Name}] Think Parameters: about '{param.Topic}' for {param.Duration} minutes");
 
             return new ActParameterResult
             {
                 ActType = ActionType.Think,
                 Parameters = new Dictionary<string, object>
                 {
-                    ["think_scope"] = param.ThinkScope,
+                    //["think_scope"] = param.ThinkScope,
                     ["topic"] = param.Topic,
                     ["duration"] = param.Duration
                 }
@@ -105,57 +105,12 @@ public class ThinkParameterAgent : ParameterAgentBase
                 ActType = ActionType.Think,
                 Parameters = new Dictionary<string, object>
                 {
-                    ["think_scope"] = "current_analysis",
+                    //["think_scope"] = "current_analysis",
                     ["topic"] = "현재 상황과 기분",
                     ["duration"] = 10
                 }
             };
         }
-    }
-
-
-    /// <summary>
-    /// 사색 범위에 따라 관련 메모리를 수집합니다.
-    /// </summary>
-    private UniTask<string> GatherMemoryContextAsync(string thinkScope)
-    {
-        // MainActor인지 확인하고 메모리 정보 수집
-        List<ShortTermMemoryEntry> shortTermMemories = new List<ShortTermMemoryEntry>();
-        List<LongTermMemory> longTermMemories = new List<LongTermMemory>();
-        
-        if (actor is MainActor mainActor && mainActor.brain?.memoryManager != null)
-        {
-            shortTermMemories = mainActor.brain.memoryManager.GetShortTermMemory() ?? new List<ShortTermMemoryEntry>();
-            longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories() ?? new List<LongTermMemory>();
-        }
-
-        string result = thinkScope switch
-        {
-            "past_reflection" => 
-                // 과거 회상: Long Term Memory 중심
-                string.Join("\n", longTermMemories.TakeLast(10).Select(m => 
-                    $"[{m.timestamp}] {m.content}")),
-
-            "future_planning" => 
-                // 미래 계획: 최근 계획 관련 STM + 일부 LTM
-                string.Join("\n\n", new[] {
-                    "최근 계획들:\n" + string.Join("\n", shortTermMemories.Where(m => m.type == "plan" || m.content.Contains("계획")).Select(m => $"[{m.type}] {m.content}")),
-                    "과거 목표들:\n" + string.Join("\n", longTermMemories.Where(m => 
-                        m.content.Contains("목표") || 
-                        m.content.Contains("계획")).TakeLast(5).Select(m => 
-                        $"[{m.timestamp}] {m.content}"))
-                }),
-
-            _ => // "current_analysis" and default
-                // 현재 분석: 최근 STM + 관련 LTM
-                string.Join("\n\n", new[] {
-                    "최근 경험들:\n" + string.Join("\n", shortTermMemories.OrderByDescending(m => m.timestamp.ToDateTime()).Take(15).Select(m => $"[{m.type}] {m.content}")),
-                    "관련 기억들:\n" + string.Join("\n", longTermMemories.TakeLast(5).Select(m => 
-                        $"[{m.timestamp}] {m.content}"))
-                })
-        };
-
-        return UniTask.FromResult(result);
     }
 
     /// <summary>

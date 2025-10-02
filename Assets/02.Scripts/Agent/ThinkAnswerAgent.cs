@@ -11,7 +11,7 @@ namespace Agent
     /// Think 액션에서 질문에 대한 답변을 생성하는 Agent
     /// ThinkQuestionAgent와 대화하며 깊이 있는 사색을 수행합니다
     /// </summary>
-    public class ThinkAnswerAgent : GPT
+    public class ThinkAnswerAgent : Claude
     {
         public ThinkAnswerAgent(Actor actor) : base(actor)
         {
@@ -39,11 +39,11 @@ namespace Agent
         /// <param name="topic">사색 주제</param>
         /// <param name="memoryContext">관련 메모리 정보</param>
         /// <returns>질문에 대한 답변</returns>
-        public async UniTask<string> GenerateAnswerAsync(string question, string thinkScope, string topic, string memoryContext)
+        public async UniTask<string> GenerateAnswerAsync(string question)
         {
             try
             {
-                var systemPrompt = LoadSystemPrompt(thinkScope, topic);
+                var systemPrompt = LoadSystemPrompt();
 
                 // 새로운 대화 시작 또는 기존 대화 이어가기
                 if (GetMessageCount() == 0)
@@ -59,7 +59,7 @@ namespace Agent
                 if (string.IsNullOrEmpty(response))
                 {
                     Debug.LogError($"[ThinkAnswerAgent] 답변 생성 실패: 응답이 null임");
-                    return GetFallbackAnswer(thinkScope, topic);
+                    throw new Exception($"[ThinkAnswerAgent] 답변 생성 실패: 응답이 null임");
                 }
 
                 return response;
@@ -67,7 +67,7 @@ namespace Agent
             catch (Exception ex)
             {
                 Debug.LogError($"[ThinkAnswerAgent] 답변 생성 실패: {ex.Message}");
-                return GetFallbackAnswer(thinkScope, topic);
+                throw new Exception($"[ThinkAnswerAgent] 답변 생성 실패: {ex.Message}");
             }
         }
 
@@ -82,7 +82,7 @@ namespace Agent
         /// <summary>
         /// 사색 범위와 주제에 맞는 시스템 프롬프트를 로드합니다
         /// </summary>
-        private string LoadSystemPrompt(string thinkScope, string topic)
+        private string LoadSystemPrompt()
         {
             try
             {
@@ -98,8 +98,8 @@ namespace Agent
                 {
                     ["current_time"] = $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}",
                     ["character_name"] = actor.Name,
-                    ["topic"] = topic,
-                    ["think_scope"] = thinkScope,
+                    // ["topic"] = topic,
+                    // ["think_scope"] = thinkScope,
                     ["personality"] = actor.LoadPersonality(),
                     ["info"] = actor.LoadCharacterInfo(),
                     ["character_situation"] = actor.LoadActorSituation(),
@@ -111,59 +111,8 @@ namespace Agent
             catch (Exception ex)
             {
                 Debug.LogError($"[ThinkAnswerAgent] 시스템 프롬프트 로드 실패, 기본값 사용: {ex.Message}");
-                return GetDefaultSystemPrompt(thinkScope, topic);
+                throw new Exception($"[ThinkAnswerAgent] 시스템 프롬프트 로드 실패, 기본값 사용: {ex.Message}");
             }
-        }
-
-        /// <summary>
-        /// 기본 시스템 프롬프트를 반환합니다
-        /// </summary>
-        private string GetDefaultSystemPrompt(string thinkScope, string topic)
-        {
-            return $"당신은 {actor.Name}입니다. 지금 '{topic}'에 대해 {thinkScope} 방식으로 사색하고 있습니다. " +
-                   "질문을 받으면 깊이 있고 진정성 있는 답변을 해주세요. 필요하다면 메모리 툴을 사용해서 더 자세한 기억을 찾아볼 수 있습니다.";
-        }
-
-        /// <summary>
-        /// 실패시 사용할 기본 답변 결과를 반환합니다
-        /// </summary>
-        private string GetFallbackAnswer(string thinkScope, string topic)
-        {
-            var answers = thinkScope switch
-            {
-                "past_reflection" => new[]
-                {
-                    $"{topic}에 대한 과거를 돌이켜보니 복잡한 감정이 든다.",
-                    $"그때는 지금과 다른 생각을 가지고 있었던 것 같다.",
-                    $"시간이 지나고 보니 그 경험도 나름의 의미가 있었다."
-                },
-
-                "future_planning" => new[]
-                {
-                    $"{topic}에 대해 앞으로 더 신중하게 접근해야겠다.",
-                    $"계획을 세우는 것도 중요하지만 유연성도 필요하다.",
-                    $"한 걸음씩 차근차근 나아가면 될 것 같다."
-                },
-
-                "current_analysis" => new[]
-                {
-                    $"지금 {topic}에 대해 느끼는 감정을 좀 더 들여다봐야겠다.",
-                    $"현재 상황을 다른 관점에서 바라볼 필요가 있을 것 같다.",
-                    $"이런 생각을 하는 나 자신이 흥미롭다."
-                },
-
-                _ => new[]
-                {
-                    $"{topic}에 대해 더 깊이 생각해볼 필요가 있겠다.",
-                    "생각이 복잡하지만 정리해나가다 보면 답이 보일 것이다.",
-                    "이런 고민을 하는 것 자체가 의미있는 일인 것 같다."
-                }
-            };
-
-            var random = new System.Random();
-            var answer = answers[random.Next(answers.Length)];
-
-            return answer;
         }
     }
 }

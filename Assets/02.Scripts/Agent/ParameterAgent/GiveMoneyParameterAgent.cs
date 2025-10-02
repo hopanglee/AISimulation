@@ -6,11 +6,12 @@ using System;
 using System.Linq;
 using UnityEngine;
 using System.Threading;
+using static Agent.IParameterAgentBase;
 
 
 namespace Agent
 {
-    public class GiveMoneyParameterAgent : ParameterAgentBase
+    public class GiveMoneyParameterAgent : GPT, IParameterAgentBase
     {
         public class GiveMoneyParameter
         {
@@ -56,7 +57,7 @@ namespace Agent
             return response;
         }
 
-        public override async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
+        public async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
             var param = await GenerateParametersAsync(new CommonContext
             {

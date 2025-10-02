@@ -63,7 +63,7 @@ public class WhiteBoard : InteractableProp
             }
 
             // Agent로부터 파라미터 생성
-            var context = new ParameterAgentBase.CommonContext
+            var context = new IParameterAgentBase.CommonContext
             {
                 Reasoning = reasoning,
                 Intention = intention
