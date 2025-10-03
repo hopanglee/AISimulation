@@ -15,7 +15,7 @@ namespace Agent
         public class iPhoneUseParameter
         {
             [JsonProperty("command")]
-            public string Command { get; set; } // "chat", "read", "continue"
+            public string Command { get; set; } // "chat", "recent_read", "continue_read"
             
             [JsonProperty("target_actor")]
             public string TargetActor { get; set; }
@@ -43,15 +43,15 @@ namespace Agent
                     { "memory", actor.LoadCharacterMemory() },
                     { "character_situation", actor.LoadActorSituation() }
                 });
-            var schemaJson = $@"{{
+                            var schemaJson = $@"{{
                             ""type"": ""object"",
-                            ""description"": ""iPhone 사용을 위한 파라미터 스키마"",
+                            ""description"": ""iPhone 사용을 위한 파라미터 스키마 (continue_read 시 message_count>0 이면 최신 방향으로, <0 이면 과거 방향으로 이동하여 해당 구간을 읽음)"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""command"": {{ ""type"": ""string"", ""enum"": [""chat"", ""read"", ""continue""], ""description"": ""수행할 iPhone 명령어: chat(메시지 보내기), read(메시지 읽기), continue(이어 읽기)"" }},
+                                ""command"": {{ ""type"": ""string"", ""enum"": [""chat"", ""recent_read"", ""continue_read""], ""description"": ""수행할 iPhone 명령어: chat(메시지 보내기), recent_read(가장 최신 메시지 읽기), continue_read(이어 읽기: message_count>0=최신쪽, <0=과거쪽)"" }},
                                 ""target_actor"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(GetCurrentAvailableActors())}, ""description"": ""대화 대상 인물 이름"" }},
                                 ""message"": {{ ""type"": [""string"", ""null""], ""description"": ""보낼 메시지 내용 (command=chat일 때 사용, 그 외 null)"" }},
-                                ""message_count"": {{ ""type"": [""integer"", ""null""], ""description"": ""읽을/이어 읽을 메시지 개수 (command=read/continue일 때 사용, 그 외 null)"" }}
+                                ""message_count"": {{ ""type"": [""integer"", ""null""], ""description"": ""읽을/이어 읽을 메시지 개수. (recent_read/continue_read일 때 사용, 그외 null), continue_read의 경우 부호에 따라 방향 결정(+는 최신, -는 과거)"" }}
                             }},
                             ""required"": [""command"", ""target_actor"", ""message"", ""message_count""]
                         }}";

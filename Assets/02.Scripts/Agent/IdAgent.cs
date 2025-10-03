@@ -44,7 +44,7 @@ public class IdAgent : Gemini
         {
             // 캐릭터 정보와 기억을 동적으로 로드
             var characterInfo = actor.LoadCharacterInfo();
-            var characterMemory = actor.LoadLongTermMemory();
+            var characterMemory = actor.LoadCharacterMemory();
             var recentPerceptionInterpretation = mainActor
                 .brain
                 ?.recentPerceptionResult
@@ -56,7 +56,7 @@ public class IdAgent : Gemini
                 { "character_name", actor.Name },
                 { "personality", actor.LoadPersonality() },
                 { "info", characterInfo },
-                { "long_term_memory", characterMemory },
+                { "memory", characterMemory },
                 { "character_situation", actor.LoadActorSituation() },
             };
 

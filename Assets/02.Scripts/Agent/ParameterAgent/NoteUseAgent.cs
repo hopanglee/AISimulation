@@ -17,16 +17,16 @@ namespace Agent
         public class NoteUseParameter
         {
             [JsonProperty("action")]
-            public string Action { get; set; } // "write", "read", "rewrite"
+            public string Action { get; set; } // "write", "read", "rewrite", "erase"
             
             [JsonProperty("page_number")]
             public int PageNumber { get; set; }
             
             [JsonProperty("line_number")]
-            public int? LineNumber { get; set; } // rewrite 명령어일 때만 사용
+            public int? LineNumber { get; set; } // rewrite/erase 명령어일 때만 사용
             
             [JsonProperty("text")]
-            public string Text { get; set; } // write/rewrite 명령어일 때만 사용
+            public string Text { get; set; } // write/rewrite/erase 명령어일 때만 사용
         }
 
         private readonly string systemPrompt;
@@ -41,6 +41,7 @@ namespace Agent
                     { "personality", actor.LoadPersonality() },
                     { "info", actor.LoadCharacterInfo() },
                     { "memory", actor.LoadCharacterMemory() },
+                    { "character_situation", actor.LoadActorSituation() }
                 });
             var schemaJson = $@"{{
                             ""type"": ""object"",
@@ -49,8 +50,8 @@ namespace Agent
                             ""properties"": {{
                                 ""action"": {{
                                     ""type"": ""string"",
-                                    ""enum"": [""write"", ""read"", ""rewrite""],
-                                    ""description"": ""수행할 동작: write(쓰기), read(읽기), rewrite(수정)""
+                                    ""enum"": [""write"", ""read"", ""rewrite"", ""erase""],
+                                    ""description"": ""수행할 동작: write(쓰기), read(읽기), rewrite(수정), erase(지우기)""
                                 }},
                                 ""page_number"": {{
                                     ""type"": ""integer"",
@@ -58,11 +59,11 @@ namespace Agent
                                 }},
                                 ""line_number"": {{
                                     ""type"": [""integer"", ""null""],
-                                    ""description"": ""대상 줄 번호 (rewrite일 때 사용, 그 외 null)""
+                                    ""description"": ""대상 줄 번호 (rewrite/erase일 때 사용, 그 외 null)""
                                 }},
                                 ""text"": {{
                                     ""type"": [""string"", ""null""],
-                                    ""description"": ""작성/수정할 텍스트 (write/rewrite일 때 사용, 그 외 null)""
+                                    ""description"": ""작성/수정할 텍스트 (write/rewrite/erase일 때 사용, 그 외 null)""
                                 }}
                             }},
                             ""required"": [""action"", ""page_number"", ""line_number"", ""text""]

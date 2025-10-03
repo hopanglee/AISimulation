@@ -150,15 +150,17 @@ namespace Agent
         private string GetiPhoneUsageInstructions()
         {
             return @"iPhone 사용법:
-• command: 'chat', 'read', 'continue' 중 선택
+• command: 'chat', 'recent_read', 'continue_read' 중 선택
 • target_actor: 대화할 대상 캐릭터 이름
 • message: 전송할 메시지 (chat 명령 시)
-• message_count: 읽을 메시지 개수 (read/continue 명령 시)
+• message_count: 읽을/이어읽을 메시지 개수 (recent_read/continue_read 명령 시)
+
+방향 규칙(continue_read): message_count>0이면 최신(앞)으로, <0이면 과거(뒤)로 이동하여 해당 구간을 읽습니다.
 
 예시:
 - 채팅: command='chat', target_actor='Hino', message='안녕하세요'
-- 메시지 읽기: command='read', target_actor='Hino', message_count='10'
-- 계속 읽기: command='continue', target_actor='Hino', message_count='5'";
+- 최신 읽기: command='recent_read', target_actor='Hino', message_count='10'
+- 이어 읽기: command='continue_read', target_actor='Hino', message_count='5'";
         }
 
         /// <summary>

@@ -18,11 +18,28 @@ public class Paper
         Read,
     }
 
-    public string Write(string text)
+    public bool HasContent()
+    {
+        if(lines == null || lines.Count == 0)
+        {
+            return false;
+        }
+        
+        foreach(var line in lines)
+        {
+            if(!string.IsNullOrEmpty(line))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public (bool, string) Write(string text)
     {
         if (lines.Count >= MaxLineNum)
         {
-            return "There is no more space to write.";
+            return (false, "더이상 적을 공간이 없다.");
         }
 
         string[] newLines = text.Split('\n');
@@ -31,20 +48,20 @@ public class Paper
         {
             if (lines.Count >= MaxLineNum)
             {
-                return $"Cannot write from line {startLine} onwards. Only part of the content was written.";
+                return (false, $"{startLine}번째 줄부터 적을 공간이 없다.");
             }
             lines.Add(line);
         }
         int endLine = lines.Count;
-        return $"Wrote text from line {startLine} to line {endLine}.";
+        return (true, $"{startLine}번째 줄부터 {endLine}번째 줄까지 적었다.");
     }
 
-    public string Rewrite(int lineNum, string text)
+    public (bool, string) Rewrite(int lineNum, string text)
     {
         int index = lineNum - 1;
         if (index < 0 || index >= MaxLineNum)
         {
-            return "Invalid line number.";
+            return (false, "유효하지 않은 줄 번호다.");
         }
 
         string[] newLines = text.Split('\n');
@@ -53,7 +70,7 @@ public class Paper
         {
             if (index + i >= MaxLineNum)
             {
-                return $"Cannot write from line {startLine + i} onwards.";
+                return (false, $"{startLine + i}번째 줄부터 적을 공간이 없다.");
             }
 
             if (index + i < lines.Count)
@@ -66,21 +83,112 @@ public class Paper
             }
         }
         int endLine = startLine + newLines.Length - 1;
-        return $"Rewritten text from line {startLine} to line {endLine}.";
+        return (true, $"{startLine}번째 줄부터 {endLine}번째 줄까지 고쳤다.");
     }
 
-    public string Read()
+    public (bool, string) Read()
     {
         if (lines.Count == 0)
         {
-            return "There is no content to read.";
+            return (false, "읽을 내용이 없다.");
         }
 
-        string result = "";
+        string result = "읽은 내용: ";
         for (int i = 0; i < lines.Count; i++)
         {
-            result += $"Line {i + 1}: {lines[i]}\n";
+            result += $"{i + 1}번째 줄: {lines[i]}\n";
         }
-        return result + "\nThe content has been read.";
+        return (true, result);
+    }
+
+    public (bool, string) Erase(int? lineNum = null, string text = null)
+    {
+        bool hasLineNum = lineNum.HasValue;
+        bool hasText = !string.IsNullOrEmpty(text);
+
+        // Case 4: No line number and no text -> clear entire paper
+        if (!hasLineNum && !hasText)
+        {
+            if (lines.Count == 0)
+            {
+                return (false, "지울 내용이 없다.");
+            }
+            lines.Clear();
+            return (true, "종이를 전부 지웠다.");
+        }
+
+        // Helper to count occurrences of a substring in a string (non-overlapping)
+        int CountOccurrences(string source, string sub)
+        {
+            if (string.IsNullOrEmpty(source) || string.IsNullOrEmpty(sub)) return 0;
+            int count = 0;
+            int start = 0;
+            while (true)
+            {
+                int idx = source.IndexOf(sub, start, StringComparison.Ordinal);
+                if (idx == -1) break;
+                count++;
+                start = idx + sub.Length;
+            }
+            return count;
+        }
+
+        // Case 3: Line number provided, text empty -> delete the entire line
+        if (hasLineNum && !hasText)
+        {
+            int index = lineNum.Value - 1;
+            if (index < 0 || index >= lines.Count)
+            {
+                return (false, "유효하지 않은 줄 번호다.");
+            }
+
+            lines.RemoveAt(index);
+            return (true, $"{lineNum.Value}번째 줄을 지웠다.");
+        }
+
+        // Case 1: Line number and text provided -> erase text from that line
+        if (hasLineNum && hasText)
+        {
+            int index = lineNum.Value - 1;
+            if (index < 0 || index >= lines.Count)
+            {
+                return (false, "유효하지 않은 줄 번호다.");
+            }
+
+            string before = lines[index];
+            int removedCount = CountOccurrences(before, text);
+            if (removedCount == 0)
+            {
+                return (false, $"{lineNum.Value}번째 줄에서 지울 내용이 없다.");
+            }
+
+            string after = before.Replace(text, string.Empty);
+            lines[index] = after;
+            return (true, $"{lineNum.Value}번째 줄에서 '{text}'를 모두 지웠다.");
+        }
+
+        // Case 2: No line number, text provided -> erase text from entire paper
+        if (!hasLineNum && hasText)
+        {
+            int totalRemoved = 0;
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string before = lines[i];
+                int removed = CountOccurrences(before, text);
+                if (removed > 0)
+                {
+                    lines[i] = before.Replace(text, string.Empty);
+                    totalRemoved += removed;
+                }
+            }
+
+            if (totalRemoved == 0)
+            {
+                return (false, "지울 내용이 없다.");
+            }
+            return (true, $"종이에서 '{text}'를 모두 지웠다.");
+        }
+
+        return (false, "지울 내용이 없다.");
     }
 }

@@ -41,7 +41,7 @@ public class EgoAgent : Claude
                 { "character_name", actor.Name },
                 { "personality", actor.LoadPersonality() },
                 { "info", characterInfo },
-                // { "memory", characterMemory },
+                { "memory", characterMemory },
                 { "character_situation", actor.LoadActorSituation() }
             };
 

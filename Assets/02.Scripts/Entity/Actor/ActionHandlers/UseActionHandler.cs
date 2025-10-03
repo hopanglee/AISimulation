@@ -151,10 +151,10 @@ namespace Agent.ActionHandlers
                     case "chat":
                         return await HandleiPhoneChat(iphone, parameters, token);
 
-                    case "read":
+                    case "recent_read":
                         return await HandleiPhoneRead(iphone, parameters, token);
 
-                    case "continue":
+                    case "continue_read":
                         return await HandleiPhoneContinue(iphone, parameters, token);
 
                     default:

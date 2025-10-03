@@ -374,17 +374,6 @@ public class Note : Item, IUsable
     public async UniTask<(bool, string)> Use(Actor actor, object parameters, CancellationToken token = default)
     {
         var bubble = actor?.activityBubbleUI;
-        // string msg = "노트 사용 중";
-        // if (parameters is Dictionary<string, object> d1 && d1.TryGetValue("action", out var aObj) && aObj is string a)
-        // {
-        //     switch (a.ToLower())
-        //     {
-        //         case "write": msg = "노트 쓰는 중"; break;
-        //         case "read": msg = "노트 읽는 중"; break;
-        //         case "rewrite": msg = "노트 고치는 중"; break;
-        //         case "erase": msg = "노트 지우는 중"; break;
-        //     }
-        // }
         if (bubble != null)
         {
             bubble.SetFollowTarget(actor.transform);
@@ -402,33 +391,92 @@ public class Note : Item, IUsable
                         if (dict.TryGetValue("page_number", out var pageObj) && pageObj is int pageNum &&
                             dict.TryGetValue("text", out var textObj) && textObj is string text)
                         {
-                            bubble.Show($"노트 쓰는 중: {text}", 0);
+                            bubble.Show($"노트 쓰는 중: {text} 쓰기", 0);
                             await SimDelay.DelaySimMinutes(2, token);
-                            return (true, Write(pageNum, text));
+                            return Write(pageNum, text);
                         }
-                        return (false, "페이지 번호와 텍스트가 필요합니다.");
+                        return (false, "페이지 번호와 텍스트가 필요했다.");
                     case "read":
                         if (dict.TryGetValue("page_number", out var readPageObj) && readPageObj is int readPageNum)
                         {
-                            bubble.Show($"노트 읽는 중: {readPageNum}", 0);
+                            bubble.Show($"노트 읽는 중: {readPageNum} 페이지", 0);
                             await SimDelay.DelaySimMinutes(2, token);
-                            return (true, Read(readPageNum));
+                            return Read(readPageNum);
                         }
-                        return (false, "페이지 번호가 필요합니다.");
+                        return (false, "페이지 번호가 필요했다.");
                     case "rewrite":
                         if (dict.TryGetValue("page_number", out var rewritePageObj) && rewritePageObj is int rewritePageNum &&
                             dict.TryGetValue("line_number", out var lineObj) && lineObj is int lineNum &&
                             dict.TryGetValue("text", out var rewriteTextObj) && rewriteTextObj is string rewriteText)
                         {
-                            bubble.Show($"노트 고치는 중: {rewritePageNum}쪽, {lineNum}줄, {rewriteText}", 0);
+                            bubble.Show($"노트 고치는 중: {rewritePageNum}쪽, {lineNum}줄, {rewriteText} 수정", 0);
                             await SimDelay.DelaySimMinutes(2, token);
-                            return (true, Rewrite(rewritePageNum, lineNum, rewriteText));
+                            AddPreModificationSnapshot(actor, rewritePageNum);
+                            var result = Rewrite(rewritePageNum, lineNum, rewriteText);
+                            if (result.Item1)
+                            {
+                                AddPostModificationSnapshot(actor, rewritePageNum);
+                            }
+                            return result;
                         }
-                        return (false, "페이지 번호, 줄 번호, 텍스트가 필요합니다.");
+                        return (false, "페이지 번호, 줄 번호, 텍스트가 필요했다.");
                     case "erase":
-                        bubble.Show("노트 내용을 지우는 중", 0);
-                        await SimDelay.DelaySimMinutes(2, token);
-                        return (true, "노트 내용을 지웠습니다.");
+                        if (dict.TryGetValue("page_number", out var erasePageObj) && erasePageObj is int erasePageNum)
+                        {
+                            AddPreModificationSnapshot(actor, erasePageNum);
+                            if (dict.TryGetValue("line_number", out var eraseLineObj) && eraseLineObj is int eraseLineNum)
+                            {
+                                if (dict.TryGetValue("text", out var eraseTextObj) && eraseTextObj is string eraseText)
+                                {
+                                    bubble.Show($"노트 내용을 지우는 중: {erasePageNum}쪽, {eraseLineNum}줄, {eraseText} 지우기", 0);
+                                    await SimDelay.DelaySimMinutes(2, token);
+                                    var result = Erase(erasePageNum, eraseLineNum, eraseText);
+                                    if (result.Item1)
+                                    {
+                                        AddPostModificationSnapshot(actor, erasePageNum);
+                                    }
+                                    return result;
+                                }
+                                else
+                                {
+                                    bubble.Show($"노트 내용을 지우는 중: {erasePageNum}쪽, {eraseLineNum}줄 지우기", 0);
+                                    await SimDelay.DelaySimMinutes(2, token);
+                                    var result = Erase(erasePageNum, eraseLineNum, null);
+                                    if (result.Item1)
+                                    {
+                                        AddPostModificationSnapshot(actor, erasePageNum);
+                                    }
+                                    return result;
+                                }
+                            }
+                            else
+                            {
+                                if (dict.TryGetValue("text", out var eraseTextObj) && eraseTextObj is string eraseText)
+                                {
+                                    bubble.Show($"노트 내용을 지우는 중: {erasePageNum}쪽, {eraseText} 지우기", 0);
+                                    await SimDelay.DelaySimMinutes(2, token);
+                                    var result = Erase(erasePageNum, null, eraseText);
+                                    if (result.Item1)
+                                    {
+                                        AddPostModificationSnapshot(actor, erasePageNum);
+                                    }
+                                    return result;
+                                }
+                                else
+                                {
+                                    bubble.Show($"노트 내용을 지우는 중: {erasePageNum}쪽 지우기", 0);
+                                    await SimDelay.DelaySimMinutes(2, token);
+                                    var result = Erase(erasePageNum, null, null);
+                                    if (result.Item1)
+                                    {
+                                        AddPostModificationSnapshot(actor, erasePageNum);
+                                    }
+                                    return result;
+                                }
+                            }
+                        }
+                        return (false, "페이지 번호, 줄 번호, 텍스트가 필요했다.");
+
                     default:
                         return (false, "알 수 없는 액션입니다.");
                 }
@@ -437,48 +485,131 @@ public class Note : Item, IUsable
 
         // 기본 사용 (기존 Use 메서드 호출)
         if (bubble != null) bubble.Hide();
-        return (false, "노트를 사용할 수 없습니다.");
+        return (false, "노트를 사용할 수 없었다.");
     }
 
-    public string Read(int pageNum)
-    {
-        if (pages.ContainsKey(pageNum))
-        {
-            return "\n"+pages[pageNum].Read();
-        }
-        return "The page does not exist.";
-    }
-
-    public string Write(int pageNum, string text)
+    public (bool, string) Erase(int pageNum, int? lineNum, string text)
     {
         if (pageNum < 1 || pageNum > maxPageNum)
         {
-            return "Invalid page number.";
+            return (false, "유효하지 않은 페이지 번호다.");
+        }
+        if (pages.ContainsKey(pageNum))
+        {
+            return pages[pageNum].Erase(lineNum, text);
+        }
+        return (false, "이 페이지에는 아무것도 적혀있지 않았다.");
+    }
+
+    public (bool, string) Read(int pageNum)
+    {
+        if (pages.ContainsKey(pageNum) && pages[pageNum].HasContent())
+        {
+            return pages[pageNum].Read();
+        }
+        return (false, "이 페이지에는 아무것도 적혀있지 않았다.");
+    }
+
+    public (bool, string) Write(int pageNum, string text)
+    {
+        if (pageNum < 1 || pageNum > maxPageNum)
+        {
+            return (false, "유효하지 않은 페이지 번호다.");
         }
 
         if (!pages.ContainsKey(pageNum))
         {
             pages[pageNum] = new Paper();
         }
+        else if (pages[pageNum].HasContent())
+        {
+            var content = pages[pageNum].Read();
+            return (false, "이 페이지에는 이미 다음과 같은 내용이 적혀 있다.\n"+content.Item2);
+        }
         return pages[pageNum].Write(text);
     }
 
-    public string Rewrite(int pageNum, int lineNum, string text)
+    public (bool, string) Rewrite(int pageNum, int lineNum, string text)
     {
         if (pageNum < 1 || pageNum > maxPageNum)
         {
-            return "Invalid page number.";
+            return (false, "유효하지 않은 페이지 번호다.");
         }
 
         if (pages.ContainsKey(pageNum))
         {
             return pages[pageNum].Rewrite(lineNum, text);
         }
-        return "The page does not exist.";
+        return (false, "이 페이지에는 아무것도 적혀있지 않았다.");
+    }
+
+    private void AddPreModificationSnapshot(Actor actor, int pageNum)
+    {
+        try
+        {
+            if (actor is MainActor mainActor && mainActor.brain?.memoryManager != null)
+            {
+                string content = pages.ContainsKey(pageNum) && pages[pageNum].HasContent()
+                    ? pages[pageNum].Read().Item2
+                    : "(빈 페이지)";
+                var details = $"수정 전 {pageNum}쪽 내용";
+                mainActor.brain.memoryManager.AddShortTermMemory("note_snapshot", content, details);
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[Note] AddPreModificationSnapshot 실패: {ex.Message}");
+        }
+    }
+
+    private void AddPostModificationSnapshot(Actor actor, int pageNum)
+    {
+        try
+        {
+            if (actor is MainActor mainActor && mainActor.brain?.memoryManager != null)
+            {
+                string content = pages.ContainsKey(pageNum) && pages[pageNum].HasContent()
+                    ? pages[pageNum].Read().Item2
+                    : "(빈 페이지)";
+                var details = $"수정 후 {pageNum}쪽 내용";
+                mainActor.brain.memoryManager.AddShortTermMemory("note_snapshot", content, details);
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[Note] AddPostModificationSnapshot 실패: {ex.Message}");
+        }
     }
 
     public override string Get()
     {
         return base.Get();
+    }
+
+    public override string GetWhenOnHand()
+    {
+        if (pages == null || pages.Count == 0)
+        {
+            return "아직 아무 페이지도 작성되지 않았다.";
+        }
+
+        int lastWrittenPage = 0;
+        foreach (var page in pages)
+        {
+            if (page.Value != null && page.Value.HasContent())
+            {
+                if (page.Key > lastWrittenPage)
+                {
+                    lastWrittenPage = page.Key;
+                }
+            }
+        }
+
+        if (lastWrittenPage == 0)
+        {
+            return "아직 아무 페이지도 작성되지 않았다.";
+        }
+
+        return $"{lastWrittenPage}쪽까지 작성되어 있다.";
     }
 }

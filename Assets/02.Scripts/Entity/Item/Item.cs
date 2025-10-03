@@ -2,7 +2,10 @@ using System;
 
 public abstract class Item : Entity, ICollectible
 {
-    
+    public virtual string GetWhenOnHand()
+    {
+        return Get();
+    }
     /// <summary>
     /// IInteractable과 상호작용합니다. 기본 구현은 true를 반환합니다.
     /// 하위 클래스에서 오버라이드하여 구체적인 상호작용을 구현할 수 있습니다.

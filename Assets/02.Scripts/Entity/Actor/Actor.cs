@@ -1126,7 +1126,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         var currentTime = timeService.CurrentTime;
 
         // 기본 정보 준비
-        var handItem = String.IsNullOrEmpty(HandItem?.Get()) ? $"{HandItem?.Name}" : $"{HandItem?.Name} => {HandItem?.Get()}";
+        var handItem = String.IsNullOrEmpty(HandItem?.GetWhenOnHand()) ? $"{HandItem?.Name}" : $"{HandItem?.Name} => {HandItem?.GetWhenOnHand()}";
         var inventoryItems = new List<string>();
         for (int i = 0; i < InventoryItems.Length; i++)
         {

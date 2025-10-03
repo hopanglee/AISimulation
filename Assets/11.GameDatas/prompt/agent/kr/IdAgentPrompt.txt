@@ -41,7 +41,7 @@ Now, we present the simulation situation for the study as follows.
 - 성격: {personality}
 - 정보: {info}
 
-{long_term_memory}
+{memory}
 
 {character_name}의 현재 상태
 {character_situation}

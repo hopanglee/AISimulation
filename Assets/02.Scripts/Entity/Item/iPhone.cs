@@ -55,8 +55,6 @@ public class iPhone : Item, IUsable
         if (bubble != null)
         {
             bubble.SetFollowTarget(actor.transform);
-
-            //else bubble.Show("아이폰 사용 중", 0);
         }
 
         if (variable is Dictionary<string, object> dict)
@@ -65,8 +63,8 @@ public class iPhone : Item, IUsable
             {
                 cmd = cmd.ToLower();
                 if (cmd == "chat") bubble.Show("아이폰 채팅 중", 0);
-                else if (cmd == "read") bubble.Show("아이폰 읽는 중", 0);
-                else if (cmd == "continue") bubble.Show("아이폰 계속 읽는 중", 0);
+                else if (cmd == "recent_read") bubble.Show("아이폰 최신 읽는 중", 0);
+                else if (cmd == "continue_read") bubble.Show("아이폰 계속 읽는 중", 0);
                 else bubble.Show("아이폰 사용 중", 0);
 
                 await SimDelay.DelaySimMinutes(2, token);
@@ -84,21 +82,21 @@ public class iPhone : Item, IUsable
                         }
                         else
                             return (false, "유효하지 않은 입력값입니다.");
-                    case "read":
+                    case "recent_read":
                         if (dict.TryGetValue("target_actor", out var readTargetActorObj) && readTargetActorObj is string readTargetName)
                         {
                             int count = 10;
                             if (dict.TryGetValue("message_count", out var messageCountObj) && messageCountObj is int messageCount)
                                 count = messageCount;
 
-                            bubble.Show($"아이폰 {readTargetName}의 채팅 읽는 중", 0);
+                            bubble.Show($"아이폰 {readTargetName}의 가장 최근 채팅 읽는 중", 0);
                             await SimDelay.DelaySimMinutes(2, token);
                             if (bubble != null) bubble.Hide();
                             return (true, Read(actor, readTargetName, count));
                         }
                         else
                             return (false, "유효하지 않은 입력값입니다.");
-                    case "continue":
+                    case "continue_read":
                         if (dict.TryGetValue("target_actor", out var continueTargetActorObj) && continueTargetActorObj is string continueTargetName)
                         {
                             int count = 10;
@@ -168,6 +166,9 @@ public class iPhone : Item, IUsable
             // ExternalEventService에 iPhone 알림 발생을 알림
             Services.Get<IExternalEventService>().NotifyiPhoneNotification(target, notificationMessage);
 
+            // Add recent chat snapshot (up to last 5) to sender's short-term memory
+            AddRecentChatsToSTM(actor, targetKey);
+
             return $"Message sent to {target.Name}.";
         }
         else
@@ -198,8 +199,8 @@ public class iPhone : Item, IUsable
             totalMessages - startIndex
         );
 
-        // Store the starting index for paging (to be used by Continue)
-        conversationReadIndices[key] = startIndex;
+        // Store last-read index (most recent shown)
+        conversationReadIndices[key] = totalMessages - 1;
 
         // Process chat read: remove only the notifications related to the target conversation
         notifications.RemoveAll(n => n.Contains($"from {targetName}"));
@@ -213,6 +214,9 @@ public class iPhone : Item, IUsable
         {
             sb.AppendLine(msg.ToString());
         }
+        // Add recent chat snapshot (up to last 5) to reader's short-term memory
+        AddRecentChatsToSTM(actor, key);
+
         return "\n" + sb.ToString();
     }
 
@@ -229,18 +233,45 @@ public class iPhone : Item, IUsable
         int currentIndex;
         if (!conversationReadIndices.TryGetValue(key, out currentIndex))
         {
-            return "You must call Read first to load the latest chat.";
+            // If Continue is called before Read, assume boundary is the latest message (most recent index)
+            currentIndex = chatHistory[key].Count - 1;
         }
-        if (currentIndex <= 0)
+
+        // Positive count: move toward newer messages (recent side)
+        // Negative count: move toward older messages (past side)
+        int direction = count >= 0 ? 1 : -1;
+        int steps = Mathf.Abs(count);
+
+        int total = chatHistory[key].Count;
+        int newIndex = currentIndex + (direction > 0 ? steps : -steps);
+        if (newIndex < 0) newIndex = 0;
+        if (newIndex > total - 1) newIndex = total - 1;
+
+        int startIndex, endIndex;
+        if (direction > 0)
         {
-            return "No older chat messages available.";
+            // Move forward (to more recent). Show (currentIndex+1 .. newIndex)
+            startIndex = Mathf.Min(currentIndex + 1, total - 1);
+            endIndex = newIndex;
         }
-        int startIndex = currentIndex - count;
-        if (startIndex < 0)
-            startIndex = 0;
+        else
+        {
+            // Move backward (to older). Show (newIndex .. currentIndex-1)
+            startIndex = newIndex;
+            endIndex = Mathf.Max(currentIndex - 1, 0);
+        }
+
+        if (endIndex < startIndex)
+        {
+            return "메세지가 더 이상 없다.";
+        }
+
+        int length = endIndex - startIndex + 1;
         List<ChatMessage> messagesToShow = chatHistory[key]
-            .GetRange(startIndex, currentIndex - startIndex);
-        conversationReadIndices[key] = startIndex;
+            .GetRange(startIndex, length);
+
+        // Update last-read index for subsequent continues: always set to the most recent index among messages read now
+        conversationReadIndices[key] = endIndex;
 
         StringBuilder sb = new StringBuilder();
         foreach (var msg in messagesToShow)
@@ -257,6 +288,41 @@ public class iPhone : Item, IUsable
     private string GetTime()
     {
         return System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+    }
+
+    private void AddRecentChatsToSTM(Actor actor, string partnerName)
+    {
+        try
+        {
+            if (!(actor is MainActor mainActor) || mainActor.brain?.memoryManager == null)
+            {
+                return;
+            }
+
+            if (!chatHistory.TryGetValue(partnerName, out var conversation) || conversation == null || conversation.Count == 0)
+            {
+                return;
+            }
+
+            int take = Mathf.Min(5, conversation.Count);
+            int startIndex = conversation.Count - take;
+            var recent = conversation.GetRange(startIndex, take);
+
+            var sb = new StringBuilder();
+            sb.Append($"눈에 보이는 가장 최근 5개의 채팅 (상대: {partnerName})\n");
+            for (int i = 0; i < recent.Count; i++)
+            {
+                sb.AppendLine(recent[i].ToString());
+            }
+
+            string content = sb.ToString().TrimEnd();
+            string details = "최근 채팅 5개 내용";
+            mainActor.brain.memoryManager.AddShortTermMemory("recent_chat", content, details);
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogWarning($"[iPhone] AddRecentChatsToSTM 실패: {ex.Message}");
+        }
     }
 
     protected override void Awake()
@@ -295,13 +361,13 @@ public class iPhone : Item, IUsable
         if (!chatHistory.ContainsKey(partner)) chatHistory[partner] = new List<ChatMessage>();
         chatHistory[partner].AddRange(BuildHinoKamiyaInitialConversation());
 
-        // Set read index and notification: assume Hino missed the latest message from partner
+        // Set read index and notification: Hino has read up to just before the last message from Kamiya
         var list = chatHistory[partner];
         if (list != null && list.Count > 0)
         {
-            // mark as if last page read started a few messages before the end
-            int startIndex = Mathf.Max(0, list.Count - 10);
-            if (conversationReadIndices.ContainsKey(partner)) conversationReadIndices[partner] = startIndex; else conversationReadIndices.Add(partner, startIndex);
+            // Read progress: last-read index = total-2 (leave the very last message as unread)
+            int lastReadIndex = Mathf.Max(0, list.Count - 2);
+            if (conversationReadIndices.ContainsKey(partner)) conversationReadIndices[partner] = lastReadIndex; else conversationReadIndices.Add(partner, lastReadIndex);
 
             // find last message sent by partner and notify
             var lastPartnerMsg = list.LastOrDefault(m => m.sender == partner);
@@ -322,23 +388,17 @@ public class iPhone : Item, IUsable
         if (!chatHistory.ContainsKey(partner)) chatHistory[partner] = new List<ChatMessage>();
         chatHistory[partner].AddRange(BuildHinoKamiyaInitialConversation());
 
-        // Set read index and notification: assume Kamiya didn't read the last reply from Hino
+        // Set read index and notification: Kamiya has read everything; no pending notifications
         var list = chatHistory[partner];
         if (list != null && list.Count > 0)
         {
-            // set read start index to just before last message
-            int startIndex = Mathf.Max(0, list.Count - 1);
-            if (conversationReadIndices.ContainsKey(partner)) conversationReadIndices[partner] = startIndex; else conversationReadIndices.Add(partner, startIndex);
+            // Fully read => lastReadIndex = total-1
+            int lastReadIndex = Mathf.Max(0, list.Count - 1);
+            if (conversationReadIndices.ContainsKey(partner)) conversationReadIndices[partner] = lastReadIndex; else conversationReadIndices.Add(partner, lastReadIndex);
 
-            var lastPartnerMsg = list.LastOrDefault(m => m.sender == partner);
-            if (lastPartnerMsg != null)
-            {
-                var localizationService = Services.Get<ILocalizationService>();
-                bool isKr = false; try { isKr = localizationService != null && localizationService.CurrentLanguage == Language.KR; } catch { }
-                string notificationMessage = isKr ? $"[{lastPartnerMsg.time}] 새로운 메시지가 왔습니다. from {partner}" : $"New message from {partner} at {lastPartnerMsg.time}";
-                notifications.Add(notificationMessage);
-                chatNotification = true;
-            }
+            // Clear notifications for fully read state
+            notifications.RemoveAll(n => n.Contains($"from {partner}"));
+            chatNotification = notifications.Count > 0;
         }
     }
 
@@ -459,12 +519,17 @@ public class iPhone : Item, IUsable
             bool isKr = false;
             try { isKr = (localizationService != null && localizationService.CurrentLanguage == Language.KR); } catch { }
             var senderCounts = new Dictionary<string, int>();
+            var senderLatestSnippet = new Dictionary<string, string>();
             foreach (var n in notifications)
             {
                 string sender = ExtractSenderFromNotification(n);
                 if (string.IsNullOrEmpty(sender)) sender = isKr ? "발신자 미상" : "Unknown";
                 if (!senderCounts.ContainsKey(sender)) senderCounts[sender] = 0;
                 senderCounts[sender]++;
+                if (!senderLatestSnippet.ContainsKey(sender))
+                {
+                    senderLatestSnippet[sender] = GetLatestMessageSnippetForSender(sender, 12);
+                }
             }
 
             if (isKr)
@@ -474,7 +539,11 @@ public class iPhone : Item, IUsable
                 {
                     var kv = senderCounts.First();
                     int cnt = kv.Value;
-                    return $"알림: {kv.Key}로부터 메세지가 +{cnt}개 왔습니다.";
+                    var snippet = senderLatestSnippet.TryGetValue(kv.Key, out var s) ? s : string.Empty;
+                    if (!string.IsNullOrEmpty(snippet))
+                        return $"알림: {kv.Key}로부터 메세지가 +{cnt}개 왔습니다:'{snippet}'";
+                    else
+                        return $"알림: {kv.Key}로부터 메세지가 +{cnt}개 왔습니다.";
                 }
                 else
                 {
@@ -482,11 +551,13 @@ public class iPhone : Item, IUsable
                     foreach (var kv in senderCounts)
                     {
                         int cnt = kv.Value;
+                        var snippet = senderLatestSnippet.TryGetValue(kv.Key, out var s) ? s : string.Empty;
                         sbKr.Append("알림: ")
                             .Append(kv.Key)
                             .Append("로부터 메세지가 +")
                             .Append(cnt)
                             .Append("개 왔습니다.")
+                            .Append(!string.IsNullOrEmpty(snippet) ? $": '{snippet}'" : "")
                             .AppendLine();
                     }
                     return sbKr.ToString().TrimEnd();
@@ -500,15 +571,77 @@ public class iPhone : Item, IUsable
                 foreach (var kv in senderCounts)
                 {
                     int cnt = kv.Value;
+                    var snippet = senderLatestSnippet.TryGetValue(kv.Key, out var s) ? s : string.Empty;
                     if (cnt > 1)
-                        sbEn.Append("- ").Append(kv.Key).Append(" +").Append(cnt).AppendLine();
+                        sbEn.Append("- ").Append(kv.Key).Append(" +").Append(cnt)
+                            .Append(!string.IsNullOrEmpty(snippet) ? $" — latest: '{snippet}'" : "")
+                            .AppendLine();
                     else
-                        sbEn.Append("- ").Append(kv.Key).AppendLine();
+                        sbEn.Append("- ").Append(kv.Key)
+                            .Append(!string.IsNullOrEmpty(snippet) ? $" — latest: '{snippet}'" : "")
+                            .AppendLine();
                 }
                 return sbEn.ToString().TrimEnd();
             }
         }
         return baseText;
+    }
+
+    public override string GetWhenOnHand()
+    {
+        // Base notification text
+        var baseText = Get();
+
+        // Append per-partner read progress and last read message
+        var sb = new StringBuilder();
+        if (!string.IsNullOrEmpty(baseText))
+        {
+            sb.Append(baseText).AppendLine();
+        }
+
+        if (chatHistory != null && chatHistory.Count > 0)
+        {
+            foreach (var kv in chatHistory)
+            {
+                string partner = kv.Key;
+                var list = kv.Value;
+                if (list == null || list.Count == 0) continue;
+
+                // Last-read index stored in conversationReadIndices
+                int lastReadIndex;
+                bool hasLastRead = conversationReadIndices.TryGetValue(partner, out lastReadIndex);
+                int total = list.Count;
+
+                // Determine preview index: use lastReadIndex if present; otherwise fallback to the most recent message
+                int previewIndex = hasLastRead ? lastReadIndex : (total - 1);
+                if (previewIndex < 0) previewIndex = 0;
+                if (previewIndex >= total) previewIndex = total - 1;
+
+                // Use previewIndex for the last-read preview text
+                string lastReadText = list[previewIndex].message ?? "";
+
+                // Truncate last read text to 12 chars with ellipsis
+                string lastReadPreview = lastReadText.Length > 12 ? lastReadText.Substring(0, 12) + "..." : lastReadText;
+
+                // Compute progress: (lastReadIndex + 1) / total
+                int readCount = hasLastRead ? Mathf.Clamp(lastReadIndex + 1, 0, total) : 0;
+
+                sb.Append("읽기 진행 상황 - ")
+                  .Append(partner)
+                  .Append(": ")
+                  .Append(readCount)
+                  .Append("번째 / 총 ")
+                  .Append(total)
+                  .Append("개, ")
+                  .Append("마지막 읽은 채팅: '")
+                  .Append(lastReadPreview)
+                  .Append("'")
+                  .AppendLine();
+            }
+        }
+
+        var result = sb.ToString().TrimEnd();
+        return string.IsNullOrEmpty(result) ? baseText : result;
     }
 
     private static string ExtractSenderFromNotification(string message)
@@ -527,5 +660,34 @@ public class iPhone : Item, IUsable
             return after;
         }
         return "";
+    }
+
+    private string GetLatestMessageSnippetForSender(string sender, int maxChars)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(sender)) return string.Empty;
+            if (!chatHistory.TryGetValue(sender, out var list) || list == null || list.Count == 0)
+            {
+                return string.Empty;
+            }
+            // Find most recent message sent by this sender
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                var m = list[i];
+                if (m != null && m.sender == sender)
+                {
+                    var text = m.message ?? string.Empty;
+                    if (text.Length > maxChars)
+                        return text.Substring(0, maxChars) + "...";
+                    return text;
+                }
+            }
+            return string.Empty;
+        }
+        catch
+        {
+            return string.Empty;
+        }
     }
 }
