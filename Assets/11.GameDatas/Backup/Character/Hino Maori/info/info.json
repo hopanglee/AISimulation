@@ -1,0 +1,41 @@
+{
+    "name": "Hino Maori",
+    "age": 18,
+    "birthday": "3월 15일",
+    "gender": "female",
+    "temperament": [
+        "kind",
+        "thoughtful",
+        "passionate about literature",
+        "emotionally expressive"
+    ],
+    "personality": [
+        "curious",
+        "determined", 
+        "confused about her condition"
+    ],
+    "personality_interests": [
+        "reading books",
+        "writing",
+        "poetry",
+        "school literature club",
+        "spending time with friends",
+        "exploring new places"
+    ],
+    "personality_fears": [
+        "being alone",
+        "forgetting important things",
+        "losing connections with people",
+        "not understanding what's happening to her"
+    ],
+    "relationships": [
+        "parents",
+        "literature club friends",
+        "Kamiya Tooru"
+    ],
+    "emotions": {
+        "행복": 0.6,
+        "사랑": 0.8,
+        "불안": 0.5
+    }
+}
