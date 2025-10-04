@@ -55,7 +55,8 @@ public class Gemini : LLMClient
 
         this.request.Model = modelName;
         this.request.GenerationConfig = generationConfig;
-        //this.request.Tools = new Tools();
+        // Ensure Tools collection is initialized to avoid null reference during AddTools
+        this.request.Tools = new Tools();
         this.SetActor(actor);
         // this.request.SafetySettings = null;
         // this.request.SystemInstruction = null;
@@ -566,6 +567,11 @@ public class Gemini : LLMClient
     {
         Debug.Log($"[Gemini] AddTools");
         if (tools == null || tools.Length == 0) return;
+        // Defensive: initialize Tools if not yet set
+        if (this.request.Tools == null)
+        {
+            this.request.Tools = new Tools();
+        }
 
         foreach (var schema in tools)
         {

@@ -6,7 +6,14 @@
       "content": "차가 매우 빠르게 다가와 부딪침",
       "details": "위치: 신주쿠:가부키초:1-chome-6",
       "emotions": []
+    },
+    {
+      "timestamp": "2025-02-23T07:00:00Z",
+      "type": "wake up",
+      "content": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:거실:침대에서 일어남",
+      "details": "체력 조금 회복",
+      "emotions": []
     }
   ],
-  "lastUpdated": "2025-02-23T06:58:00Z"
+  "lastUpdated": "2025-02-23T07:00:00Z"
 }

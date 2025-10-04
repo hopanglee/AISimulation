@@ -214,28 +214,37 @@ public class Brain
 
     public async UniTask<PerceptionResult> Perception()
     {
-        // GPT 사용이 비활성화된 경우 기본 Wait 액션 반환
-        if (!actor.UseGPT)
+        try
         {
-            Debug.Log($"[{actor.Name}] GPT 비활성화됨 - Think 프로세스 건너뜀, Wait 액션 반환");
-
-            // 기본 PerceptionResult 생성
-            var defaultPerceptionResult = new PerceptionResult
+            // GPT 사용이 비활성화된 경우 기본 Wait 액션 반환
+            if (!actor.UseGPT)
             {
-                situation_interpretation = "GPT 비활성화로 인한 기본 상황 해석",
-                thought_chain = new List<string> { "GPT 비활성화", "기본 대기 모드" }
-            };
+                Debug.Log($"[{actor.Name}] GPT 비활성화됨 - Think 프로세스 건너뜀, Wait 액션 반환");
 
-            return defaultPerceptionResult;
+                // 기본 PerceptionResult 생성
+                var defaultPerceptionResult = new PerceptionResult
+                {
+                    situation_interpretation = "GPT 비활성화로 인한 기본 상황 해석",
+                    thought_chain = new List<string> { "GPT 비활성화", "기본 대기 모드" }
+                };
+
+                return defaultPerceptionResult;
+            }
+
+            // PerceptionAgent를 통해 시각정보 해석
+            var perceptionResult = await InterpretVisualInformationAsync();
+
+            // Enhanced Memory System: Perception 결과를 Short Term Memory에 추가
+            memoryManager.AddPerceptionResult(perceptionResult);
+
+            return perceptionResult;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[{actor.Name}] Perception 실행 중 오류: {ex.Message}");
+            throw;
         }
 
-        // PerceptionAgent를 통해 시각정보 해석
-        var perceptionResult = await InterpretVisualInformationAsync();
-
-        // Enhanced Memory System: Perception 결과를 Short Term Memory에 추가
-        memoryManager.AddPerceptionResult(perceptionResult);
-        
-        return perceptionResult;
     }
 
     public async UniTask DayPlan()
