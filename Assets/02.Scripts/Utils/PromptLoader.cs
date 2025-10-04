@@ -221,7 +221,7 @@ public static class PromptLoader
         var actionDescriptions = new List<string>();
 
         // 공통 액션 목록 (Common에서 관리)
-        var commonActions = new HashSet<string> { "Wait", "Talk", "PutDown", "GiveItem", "GiveMoney" };
+        var commonActions = new HashSet<NPCActionType> { NPCActionType.Wait, NPCActionType.Talk, NPCActionType.PutDown, NPCActionType.GiveItem, NPCActionType.GiveMoney };
 
         foreach (var action in availableActions)
         {
@@ -234,7 +234,7 @@ public static class PromptLoader
                 if (commonActions.Contains(action.ActionName))
                 {
                     // 공통 액션: Common 폴더에서 찾기
-                    string commonActionPath = localizationService.GetNpcPromptPath($"Common/actions/{action.ActionName}.txt");
+                    string commonActionPath = localizationService.GetNpcPromptPath($"Common/actions/{action.ActionName.ToString()}.txt");
                     
                     if (File.Exists(commonActionPath))
                     {
@@ -243,23 +243,23 @@ public static class PromptLoader
                     else
                     {
                         // Fallback to English
-                        var fallbackPath = $"Assets/11.GameDatas/prompt/NPC/en/Common/actions/{action.ActionName}.txt";
+                        var fallbackPath = $"Assets/11.GameDatas/prompt/NPC/en/Common/actions/{action.ActionName.ToString()}.txt";
                         if (File.Exists(fallbackPath))
                         {
                             description = File.ReadAllText(fallbackPath);
-                            Debug.Log($"[PromptLoader] 공통 액션 프롬프트 폴백 로드: {action.ActionName} (원본 언어: {localizationService.CurrentLanguage} → 영어 폴더에서 찾음)");
+                            Debug.Log($"[PromptLoader] 공통 액션 프롬프트 폴백 로드: {action.ActionName.ToString()} (원본 언어: {localizationService.CurrentLanguage} → 영어 폴더에서 찾음)");
                         }
                         else
                         {
                             Debug.LogWarning($"[PromptLoader] 공통 액션 프롬프트 파일을 찾을 수 없습니다: {commonActionPath}");
-                            description = $"**{action.ActionName}**: {action.Description}";
+                            description = $"**{action.ActionName.ToString()}**: {action.Description}";
                         }
                     }
                 }
                 else
                 {
                     // 전용 액션: 역할별 폴더에서만 찾기
-                    string roleActionPath = localizationService.GetNpcPromptPath($"{roleFolder}/actions/{action.ActionName}.txt");
+                    string roleActionPath = localizationService.GetNpcPromptPath($"{roleFolder}/actions/{action.ActionName.ToString()}.txt");
                     
                     if (File.Exists(roleActionPath))
                     {
@@ -268,16 +268,16 @@ public static class PromptLoader
                     else
                     {
                         // Fallback to English
-                        var fallbackPath = $"Assets/11.GameDatas/prompt/NPC/en/{roleFolder}/actions/{action.ActionName}.txt";
+                        var fallbackPath = $"Assets/11.GameDatas/prompt/NPC/en/{roleFolder}/actions/{action.ActionName.ToString()}.txt";
                         if (File.Exists(fallbackPath))
                         {
                             description = File.ReadAllText(fallbackPath);
-                            Debug.Log($"[PromptLoader] 전용 액션 프롬프트 폴백 로드: {roleFolder}/{action.ActionName} (원본 언어: {localizationService.CurrentLanguage} → 영어 폴더에서 찾음)");
+                            Debug.Log($"[PromptLoader] 전용 액션 프롬프트 폴백 로드: {roleFolder}/{action.ActionName.ToString()} (원본 언어: {localizationService.CurrentLanguage} → 영어 폴더에서 찾음)");
                         }
                         else
                         {
                             Debug.LogWarning($"[PromptLoader] 전용 액션 프롬프트 파일을 찾을 수 없습니다: {roleActionPath}");
-                            description = $"**{action.ActionName}**: {action.Description}";
+                            description = $"**{action.ActionName.ToString()}**: {action.Description}";
                         }
                     }
                 }
@@ -288,7 +288,7 @@ public static class PromptLoader
                 // Fallback to original path
                 if (commonActions.Contains(action.ActionName))
                 {
-                    string commonActionPath = $"Assets/11.GameDatas/prompt/NPC/Common/actions/{action.ActionName}.txt";
+                    string commonActionPath = $"Assets/11.GameDatas/prompt/NPC/Common/actions/{action.ActionName.ToString()}.txt";
                     if (File.Exists(commonActionPath))
                     {
                         description = File.ReadAllText(commonActionPath);
@@ -296,7 +296,7 @@ public static class PromptLoader
                 }
                 else
                 {
-                    string roleActionPath = $"Assets/11.GameDatas/prompt/NPC/{roleFolder}/actions/{action.ActionName}.txt";
+                    string roleActionPath = $"Assets/11.GameDatas/prompt/NPC/{roleFolder}/actions/{action.ActionName.ToString()}.txt";
                     if (File.Exists(roleActionPath))
                     {
                         description = File.ReadAllText(roleActionPath);
@@ -305,7 +305,7 @@ public static class PromptLoader
                 
                 if (description == null)
                 {
-                    description = $"**{action.ActionName}**: {action.Description}";
+                    description = $"**{action.ActionName.ToString()}**: {action.Description}";
                 }
             }
 

@@ -44,6 +44,20 @@ namespace Agent
         public Dictionary<string, object> Parameters { get; set; }
     }
 
+    // NPC 전용 DTOs
+    public class NPCActParameterRequest
+    {
+        public string Reasoning { get; set; }
+        public string Intention { get; set; }
+        public NPCActionType ActType { get; set; }
+    }
+
+    public class NPCActParameterResult
+    {
+        public NPCActionType ActType { get; set; }
+        public Dictionary<string, object> Parameters { get; set; }
+    }
+
     /// <summary>
     /// Factory for creating ParameterAgents for a given actor and action type.
     /// </summary>
@@ -98,32 +112,28 @@ namespace Agent
         }
 
         /// <summary>
-        /// 액터 주변의 캐릭터 목록을 가져옵니다.
+        /// 특정 NPCActionType에 대한 ParameterAgent를 생성합니다. (기존 ActionType 오버로드는 유지)
         /// </summary>
-        private static List<string> GetNearbyCharacters(Actor actor)
+        public static IParameterAgentBase CreateParameterAgent(NPCActionType actionType, Actor actor)
         {
-            try
+            // NPCActionType을 적절한 메인 ActionType 또는 대응되는 ParameterAgent로 매핑
+            switch (actionType)
             {
-                var characterList = new List<string>();
-
-                // Sensor의 InteractableActors에서 캐릭터들을 가져옵니다
-                if (actor.sensor?.GetInteractableEntities().actors != null)
-                {
-                    foreach (var interactableActor in actor.sensor.GetInteractableEntities().actors)
-                    {
-                        if (interactableActor.Value != actor) // 자기 자신은 제외
-                        {
-                            characterList.Add(interactableActor.Key);
-                        }
-                    }
-                }
-
-                return characterList;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[ParameterAgentFactory] 주변 캐릭터 목록 가져오기 실패: {ex.Message}");
-                return new List<string>();
+                case NPCActionType.Move: return new NPCMoveParameterAgent(actor);
+                case NPCActionType.Talk: return CreateParameterAgent(ActionType.Talk, actor);
+                case NPCActionType.PutDown: return CreateParameterAgent(ActionType.PutDown, actor);
+                case NPCActionType.GiveMoney: return CreateParameterAgent(ActionType.GiveMoney, actor);
+                case NPCActionType.GiveItem: return CreateParameterAgent(ActionType.GiveItem, actor);
+                case NPCActionType.Wait: return CreateParameterAgent(ActionType.Wait, actor);
+                case NPCActionType.PrepareMenu: return new NPCPrepareMenuParameterAgent(actor);
+                case NPCActionType.Cook: return new NPCCookParameterAgent(actor);
+                case NPCActionType.Examine: return new NPCExamineParameterAgent(actor);
+                case NPCActionType.NotifyReceptionist: return new NPCNotifyReceptionistParameterAgent(actor);
+                case NPCActionType.NotifyDoctor: return new NPCNotifyDoctorParameterAgent(actor);
+                case NPCActionType.Payment: return new NPCPaymentParameterAgent(actor);
+                default:
+                    Debug.LogWarning($"[ParameterAgentFactory] 지원되지 않는 NPCActionType: {actionType}");
+                    return null;
             }
         }
     }
