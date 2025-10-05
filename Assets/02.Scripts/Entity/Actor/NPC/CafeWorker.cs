@@ -10,7 +10,7 @@ using Cysharp.Threading.Tasks;
 /// 카페 알바생 NPC
 /// 메뉴 일괄 준비, 커피 원두 보충 포함
 /// </summary>
-public class CafeWorker : NPC, IHasExtraSenseAreas
+public class CafeWorker : NPC, IHasExtraSenseAreas, IPaymentable
 {
     [Title("Cafe References")]
     [SerializeField] private DrinkDispenser beverageMachine;   // 음료 머신 (일반 음료)
@@ -30,15 +30,9 @@ public class CafeWorker : NPC, IHasExtraSenseAreas
     [SerializeField, ReadOnly]
     private int totalRevenue = 0; // 총 수익
 
-    [System.Serializable]
-    public class PriceItem
-    {
-        [TableColumnWidth(200)]
-        public string itemName; // 아이템 이름 (예: "americano", "latte", "croissant")
+    List<PriceItem> IPaymentable.priceList { get => priceList; set => priceList = value; }
+    int IPaymentable.totalRevenue { get => totalRevenue; set => totalRevenue = value; }
 
-        [TableColumnWidth(100)]
-        public int price; // 가격
-    }
 
     /// <summary>
     /// 카페 전용 액션

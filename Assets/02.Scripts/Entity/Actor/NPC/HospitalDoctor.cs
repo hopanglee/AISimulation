@@ -14,6 +14,7 @@ public class HospitalDoctor : NPC
 {
     [Title("References")]
     [SerializeField] private HospitalReceptionist receptionist;
+    public HospitalReceptionist Receptionist => receptionist;
 
     /// <summary>
     /// 병원 의사 전용 액션들

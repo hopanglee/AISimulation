@@ -21,8 +21,8 @@ namespace Agent
         public NPCCookParameterAgent(Actor actor) : base(actor)
         {
             SetAgentType(nameof(NPCCookParameterAgent));
-            systemPrompt = PromptLoader.LoadPrompt("NPCCookParameterAgentPrompt.txt",
-                "You are a parameter generator that selects a dish key to cook.");
+            var sysRepl = new Dictionary<string, string> { { "character_name", actor?.Name ?? string.Empty } };
+            systemPrompt = PromptLoader.LoadPromptWithReplacements("NPCCookParameterAgentPrompt.txt", sysRepl);
 
             var schemaJson = @"{{
                 ""type"": ""object"",

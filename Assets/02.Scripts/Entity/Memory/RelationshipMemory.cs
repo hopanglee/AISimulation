@@ -48,6 +48,28 @@ namespace Memory
         [JsonProperty("shared_memories")]
         public List<string> SharedMemories { get; set; } = new List<string>();
 
+        // Appearance/Profile (no goal here)
+        [JsonProperty("height")]
+        public float Height { get; set; }
+
+        [JsonProperty("weight")]
+        public float Weight { get; set; }
+
+        [JsonProperty("hair_color")]
+        public string HairColor { get; set; }
+
+        [JsonProperty("skin_color")]
+        public string SkinColor { get; set; }
+
+        [JsonProperty("eye_color")]
+        public string EyeColor { get; set; }
+
+        [JsonProperty("hair_style")]
+        public string HairStyle { get; set; }
+
+        [JsonProperty("body_type")]
+        public string BodyType { get; set; }
+
         [JsonProperty("last_updated")]
         [JsonConverter(typeof(GameTimeConverter))]
         public GameTime LastUpdated { get; set; }

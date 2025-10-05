@@ -13,20 +13,6 @@ using System.Text.RegularExpressions;
 
 namespace Agent
 {
-    /// <summary>
-    /// ActSelectorAgent selects an action type (ActType) with reasoning and intention.
-    /// The result (ActSelectionResult) is used to create an ActParameterRequest,
-    /// which is then passed to the appropriate ParameterAgent to generate ActParameterResult.
-    ///
-    /// Example usage:
-    /// var selection = await actSelectorAgent.SelectActAsync(situation);
-    /// var paramRequest = new ActParameterRequest {
-    ///     Reasoning = selection.Reasoning,
-    ///     Intention = selection.Intention,
-    ///     ActType = selection.ActType
-    /// };
-    /// var paramResult = await parameterAgent.GenerateParametersAsync(paramRequest);
-    /// </summary>
     public class ActSelectorAgent : GPT
     {
         private DayPlanner dayPlanner; // DayPlanner 참조 추가

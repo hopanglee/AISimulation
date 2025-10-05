@@ -21,8 +21,13 @@ namespace Agent
         public NPCNotifyDoctorParameterAgent(Actor actor) : base(actor)
         {
             SetAgentType(nameof(NPCNotifyDoctorParameterAgent));
-            systemPrompt = PromptLoader.LoadPrompt("NPCNotifyDoctorParameterAgentPrompt.txt",
-                "You are a parameter generator that creates a short message for notifying a doctor.");
+            var doctorName = (actor as HospitalReceptionist)?.Doctor?.Name ?? string.Empty;
+            var sysRepl = new Dictionary<string, string>
+            {
+                { "character_name", actor?.Name ?? string.Empty },
+                { "doctor_name", doctorName }
+            };
+            systemPrompt = PromptLoader.LoadPromptWithReplacements("NPCNotifyDoctorParameterAgentPrompt.txt", sysRepl);
 
             var schemaJson = @"{{
                 ""type"": ""object"",

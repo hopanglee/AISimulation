@@ -11,7 +11,7 @@ using Cysharp.Threading.Tasks;
 /// 호스트클럽 직원 NPC
 /// 기본 액션(Wait, Talk, GiveItem)과 Move 액션을 수행할 수 있습니다.
 /// </summary>
-public class HostClubWorker : NPC
+public class HostClubWorker : NPC, IPaymentable
 {
     [Title("Payment Settings")]
     [SerializeField, TableList]
@@ -20,15 +20,9 @@ public class HostClubWorker : NPC
     [SerializeField, ReadOnly]
     private int totalRevenue = 0; // 총 수익
     
-    [System.Serializable]
-    public class PriceItem
-    {
-        [TableColumnWidth(200)]
-        public string itemName; // 아이템 이름 (예: "서비스비", "음료비")
-        
-        [TableColumnWidth(100)]
-        public int price; // 가격
-    }
+    List<PriceItem> IPaymentable.priceList { get => priceList; set => priceList = value; }
+    int IPaymentable.totalRevenue { get => totalRevenue; set => totalRevenue = value; }
+
     /// <summary>
     /// 호스트클럽 직원 전용 액션
     /// </summary>

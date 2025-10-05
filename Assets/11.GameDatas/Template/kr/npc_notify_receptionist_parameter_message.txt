@@ -1,0 +1,5 @@
+[현재 상황]
+- 사고 과정: {reasoning}
+- 의도: {intention}
+
+접수처 직원에게 전달할 message 한 문장을 작성하세요.

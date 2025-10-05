@@ -11,16 +11,16 @@
 {stamina}
 {cleanliness}
 {stress}
-{sleepiness}
 {mental_pleasure}
+{sleepiness}
 
-=== 볼 수 있는 개체들 ===
+=== 눈에 보이는 것들 ===
 {lookableEntities}
 
-=== Pickup 가능한 개체들 ===
+=== 근처에 지금 주울 수 있는 것들 ===
 {collectibleEntities}
 
-=== Interact 가능한 개체들 ===
+=== 근처에 상호작용 가능한 것들 ===
 {interactableEntities}
 
 === 이동 가능한 위치들 ===

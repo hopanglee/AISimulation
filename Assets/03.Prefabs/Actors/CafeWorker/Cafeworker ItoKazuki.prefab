@@ -891,6 +891,8 @@ SkinnedMeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -912,6 +914,7 @@ SkinnedMeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -1623,18 +1626,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000013142441716}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67cbf3be105a0574f91e6987d2abf137, type: 3}
+  m_Script: {fileID: 11500000, guid: bfba38003e31ed74d8c58d884c4373bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: of
-  _prepositionKr: 
-  _isHideChild: 1
-  _name: Kazuki
-  _nameKr: 
+  _prepositionKr: "\uC758"
+  _isHideChild: 0
+  _name: kazuki
+  _nameKr: "\uCE74\uC988\uD0A4"
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
   useGPT: 1
+  cacheCount: 0
   money: 0
   Hunger: 0
   Thirst: 0
@@ -1656,7 +1660,6 @@ MonoBehaviour:
   activityBubbleUI: {fileID: 2166419664114752995}
   npcRole: 3
   debugActionType: Wait
-  debugParameters: []
   beverageMachine: {fileID: 0}
   coffeeMachine: {fileID: 0}
   showcaseBig: {fileID: 0}

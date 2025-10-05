@@ -25,8 +25,8 @@ namespace Agent
         public NPCExamineParameterAgent(Actor actor) : base(actor)
         {
             SetAgentType(nameof(NPCExamineParameterAgent));
-            systemPrompt = PromptLoader.LoadPrompt("NPCExamineParameterAgentPrompt.txt",
-                "You are a parameter generator that selects patient name and examination content.");
+            var sysRepl = new Dictionary<string, string> { { "character_name", actor?.Name ?? string.Empty } };
+            systemPrompt = PromptLoader.LoadPromptWithReplacements("NPCExamineParameterAgentPrompt.txt", sysRepl);
 
             var schemaJson = @"{{
                 ""type"": ""object"",

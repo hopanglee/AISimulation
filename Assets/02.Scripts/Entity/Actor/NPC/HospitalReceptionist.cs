@@ -12,10 +12,11 @@ using Cysharp.Threading.Tasks;
 /// 환자 접수 및 의사에게 전달 역할을 수행
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
-public class HospitalReceptionist : NPC
+public class HospitalReceptionist : NPC, IPaymentable
 {
     [Title("References")]
     [SerializeField] private HospitalDoctor doctor;
+    public HospitalDoctor Doctor => doctor;
 
     [Title("Payment Settings")]
     [SerializeField, TableList]
@@ -24,15 +25,8 @@ public class HospitalReceptionist : NPC
     [SerializeField, ReadOnly]
     private int totalRevenue = 0; // 총 수익
 
-    [System.Serializable]
-    public class PriceItem
-    {
-        [TableColumnWidth(200)]
-        public string itemName; // 아이템 이름 (예: "진료비", "약품비")
-
-        [TableColumnWidth(100)]
-        public int price; // 가격
-    }
+    List<PriceItem> IPaymentable.priceList { get => priceList; set => priceList = value; }
+    int IPaymentable.totalRevenue { get => totalRevenue; set => totalRevenue = value; }
 
     public void ReceiveMessage(Actor from, string text)
     {

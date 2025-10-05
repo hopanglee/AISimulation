@@ -127,49 +127,7 @@ public abstract class MainActor : Actor
 	[SerializeField] protected GameTime yesterdaySleepTime;
 	[SerializeField] protected string yesterdaySleepLocation;
 
-	public override string Get()
-	{
-		string status = "";
-
-		// 손에 든 아이템
-		if (HandItem != null)
-		{
-			status += $"손에 {HandItem.Name} 있음";
-		}
-		else
-		{
-			status += "빈손";
-		}
-
-		// 현재 활동
-		if (!string.IsNullOrEmpty(CurrentActivity))
-		{
-			status += $", 현재: {CurrentActivity}";
-		}
-
-		// 생체 상태 해석 (간단한 임계값 기반)
-		// Hunger
-		if (Hunger >= 70) status += ", 배고파보인다";
-		else if (Hunger <= 30) status += ", 배불러보인다";
-
-		// Thirst
-		if (Thirst >= 70) status += ", 목말라보인다";
-		else if (Thirst <= 30) status += ", 갈증은 없어보인다";
-
-		// Stress
-		if (Stress >= 70) status += ", 스트레스를 많이 받아보인다";
-		else if (Stress <= 30) status += ", 여유로워보인다";
-
-		// Sleepiness
-		if (Sleepiness >= 70) status += ", 졸려보인다";
-		else if (Sleepiness <= 30) status += ", 상쾌해보인다";
-
-		if (String.IsNullOrEmpty(GetLocalizedStatusDescription()))
-		{
-			return $"{GetLocalizedStatusDescription()}, {status}";
-		}
-		return $"{status}";
-	}
+	
 
 	protected override void Awake()
 	{

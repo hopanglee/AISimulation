@@ -1159,6 +1159,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 6311184137823263902}
   - {fileID: 6783693955441108504}
   - {fileID: 4000013197599826}
   - {fileID: 4000010344263960}
@@ -1197,10 +1198,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000012683174682}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1298,18 +1299,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000012683174682}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9bcc2b7c3eb31a84f97b57f45eb30199, type: 3}
+  m_Script: {fileID: 11500000, guid: f4b77803c9af8fc49bf1e0d2d4a820dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: of
-  _prepositionKr: 
-  _isHideChild: 1
-  _name: Mela
-  _nameKr: 
+  _prepositionKr: "\uC758"
+  _isHideChild: 0
+  _name: mela
+  _nameKr: "\uBA5C\uB77C"
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
   useGPT: 1
+  cacheCount: 0
   money: 0
   Hunger: 0
   Thirst: 0
@@ -1319,19 +1321,18 @@ MonoBehaviour:
   Stress: 0
   Sleepiness: 0
   _handItem: {fileID: 0}
-  Hand: {fileID: 4536020286617292138}
+  Hand: {fileID: 2033243630333192094}
   _inventoryItems: []
   Inven: {fileID: 224181246035588120}
   _gender: 1
   _currentOutfit: {fileID: 0}
   _characterRenderer: {fileID: 0}
   _nakedFbx: {fileID: 0}
-  _currentClothesRoot: {fileID: 0}
+  _currentClothesRoot: {fileID: 6311184137823263902}
   speechBubble: {fileID: 3264900318262404860}
   activityBubbleUI: {fileID: 8695139622942189228}
   npcRole: 2
   debugActionType: Wait
-  debugParameters: []
   doctor: {fileID: 0}
   priceList: []
   totalRevenue: 0
@@ -1736,6 +1737,8 @@ SkinnedMeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -1757,6 +1760,7 @@ SkinnedMeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -2464,6 +2468,37 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
+--- !u!1 &6866681841264950013
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6311184137823263902}
+  m_Layer: 0
+  m_Name: Current Clothes
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6311184137823263902
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6866681841264950013}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4000013358686016}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7942787214502962658
 GameObject:
   m_ObjectHideFlags: 0

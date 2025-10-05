@@ -1123,7 +1123,6 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     {
         var timeService = Services.Get<ITimeService>();
         var localizationService = Services.Get<ILocalizationService>();
-        var currentTime = timeService.CurrentTime;
 
         // 기본 정보 준비
         var handItem = String.IsNullOrEmpty(HandItem?.GetWhenOnHand()) ? $"{HandItem?.Name}" : $"{HandItem?.Name} => {HandItem?.GetWhenOnHand()}";
@@ -1140,135 +1139,138 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             }
         }
 
-        // ThinkingActor인 경우 추가 정보 제공
-        if (this is MainActor thinkingActor)
+        // 주변 엔티티 정보 수집
+        var lookable = this.sensor.GetLookableEntities();
+        var collectible = this.sensor.GetCollectibleEntities();
+        var interactable = this.sensor.GetInteractableEntities();
+        var movable = this.sensor.GetMovablePositions();
+
+        var lookableEntities = new List<string>();
+        foreach (var entity in lookable)
         {
-            var sleepStatus = thinkingActor.IsSleeping ? "자는 중" : "깨어있음";
+            var text = String.IsNullOrEmpty(entity.Value.Get()) ? "" : "=> " + entity.Value.Get();
+            lookableEntities.Add($"- {entity.Key} {text}");
+        }
 
-            // 주변 엔티티 정보 수집
-            var lookable = thinkingActor.sensor.GetLookableEntities();
-            var collectible = thinkingActor.sensor.GetCollectibleEntities();
-            var interactable = thinkingActor.sensor.GetInteractableEntities();
-            var movable = thinkingActor.sensor.GetMovablePositions();
+        var collectibleEntities = new List<string>();
+        foreach (var entity in collectible)
+        {
+            collectibleEntities.Add($"{entity.Key}");
+        }
 
-            var lookableEntities = new List<string>();
-            foreach (var entity in lookable)
-            {
-                var text = String.IsNullOrEmpty(entity.Value.Get()) ? "" : "=> " + entity.Value.Get();
-                lookableEntities.Add($"- {entity.Key} {text}");
-            }
+        // Interactable entities are organized by type
+        var allInteractable = new List<string>();
+        foreach (var actor in interactable.actors)
+        {
+            allInteractable.Add($"{actor.Key}");
+        }
+        foreach (var item in interactable.items)
+        {
+            allInteractable.Add($"{item.Key}");
+        }
+        foreach (var building in interactable.buildings)
+        {
+            allInteractable.Add($"{building.Key}");
+        }
+        foreach (var prop in interactable.props)
+        {
+            allInteractable.Add($"{prop.Key}");
+        }
 
-            var collectibleEntities = new List<string>();
-            foreach (var entity in collectible)
-            {
-                collectibleEntities.Add($"{entity.Key}");
-            }
+        var movablePositions = new List<string>();
+        foreach (var position in movable)
+        {
+            movablePositions.Add($"{position.Key}");
+        }
 
-            // Interactable entities are organized by type
-            var allInteractable = new List<string>();
-            foreach (var actor in interactable.actors)
+        string sitText;
+        if (curLocation is SitableProp sitableProp && sitableProp.IsActorSeated(this))
+        {
+            if (sitableProp is Bed)
             {
-                allInteractable.Add($"{actor.Key}");
-            }
-            foreach (var item in interactable.items)
-            {
-                allInteractable.Add($"{item.Key}");
-            }
-            foreach (var building in interactable.buildings)
-            {
-                allInteractable.Add($"{building.Key}");
-            }
-            foreach (var prop in interactable.props)
-            {
-                allInteractable.Add($"{prop.Key}");
-            }
-
-            var movablePositions = new List<string>();
-            foreach (var position in movable)
-            {
-                movablePositions.Add($"{position.Key}");
-            }
-
-            var sitText = "";
-            if (curLocation is SitableProp sitableProp && sitableProp.IsActorSeated(this))
-            {
-                if (sitableProp is Bed)
-                {
-                    sitText = "누워 있음";
-                }
-                else
-                {
-                    sitText = "앉아있음";
-                }
+                sitText = "누워 있음";
             }
             else
             {
-                sitText = "서있음";
+                sitText = "앉아있음";
             }
+        }
+        else
+        {
+            sitText = "서있음";
+        }
 
-            var hungerText = "배고픔: ";
-            if (Hunger <= 10) hungerText += "위험! 기력이 끊기기 직전 (심각한 허기)";
-            else if (Hunger <= 30) hungerText += "심한 허기와 어지러움";
-            else if (Hunger <= 50) hungerText += "허기";
-            else if (Hunger <= 70) hungerText += "무난한 포만감";
-            else if (Hunger <= 90) hungerText += "충분한 포만과 만족";
-            else if (Hunger < 100) hungerText += "과식으로 속이 불편함";
-            else hungerText += "위험! 과도한 포만으로 구토감";
-
-
-            var thirstText = "갈증: ";
-            if (Thirst <= 10) thirstText += "위험! 탈수로 쓰러지기 직전";
-            else if (Thirst <= 30) thirstText += "심한 갈증과 입 마름";
-            else if (Thirst <= 50) thirstText += "갈증";
-            else if (Thirst <= 70) thirstText += "적당한 수분 상태";
-            else if (Thirst <= 90) thirstText += "수분 충분, 상쾌함";
-            else if (Thirst < 100) thirstText += "수분 과다로 속이 더부룩함";
-            else thirstText += "위험! 과도한 수분으로 불편";
+        var hungerText = "배고픔: ";
+        if (Hunger <= 10) hungerText += "위험! 기력이 끊기기 직전 (심각한 허기)";
+        else if (Hunger <= 30) hungerText += "심한 허기와 어지러움";
+        else if (Hunger <= 50) hungerText += "허기";
+        else if (Hunger <= 70) hungerText += "무난한 포만감";
+        else if (Hunger <= 90) hungerText += "충분한 포만과 만족";
+        else if (Hunger < 100) hungerText += "과식으로 속이 불편함";
+        else hungerText += "위험! 과도한 포만으로 구토감";
 
 
-            var cleanlinessText = "청결도: ";
-            if (Cleanliness <= 10) cleanlinessText += "위험! 감염 위험이 큰 수준";
-            else if (Cleanliness <= 30) cleanlinessText += "매우 불결함";
-            else if (Cleanliness <= 50) cleanlinessText += "불결함";
-            else if (Cleanliness <= 70) cleanlinessText += "보통의 청결";
-            else if (Cleanliness <= 90) cleanlinessText += "청결하고 상쾌함";
-            else cleanlinessText += "매우 청결하고 쾌적함";
-
-            var staminaText = "체력: ";
-            if (Stamina <= 10) staminaText += "위험! 기력 소진으로 쓰러지기 직전";
-            else if (Stamina <= 30) staminaText += "기력이 매우 부족함";
-            else if (Stamina <= 50) staminaText += "기력이 부족함";
-            else if (Stamina <= 70) staminaText += "보통의 체력";
-            else if (Stamina <= 90) staminaText += "체력이 충분하고 가벼움";
-            else staminaText += "매우 좋은 컨디션";
+        var thirstText = "갈증: ";
+        if (Thirst <= 10) thirstText += "위험! 탈수로 쓰러지기 직전";
+        else if (Thirst <= 30) thirstText += "심한 갈증과 입 마름";
+        else if (Thirst <= 50) thirstText += "갈증";
+        else if (Thirst <= 70) thirstText += "적당한 수분 상태";
+        else if (Thirst <= 90) thirstText += "수분 충분, 상쾌함";
+        else if (Thirst < 100) thirstText += "수분 과다로 속이 더부룩함";
+        else thirstText += "위험! 과도한 수분으로 불편";
 
 
-            var stressText = "스트레스: ";
-            if (Stress >= 90) stressText += "위험! 압도적인 스트레스";
-            else if (Stress >= 70) stressText += "스트레스가 매우 높음";
-            else if (Stress >= 50) stressText += "스트레스가 높음";
-            else if (Stress >= 30) stressText += "약간의 긴장";
-            else if (Stress >= 10) stressText += "차분함";
-            else stressText += "매우 평온하고 안정적임";
+        var cleanlinessText = "청결도: ";
+        if (Cleanliness <= 10) cleanlinessText += "위험! 감염 위험이 큰 수준";
+        else if (Cleanliness <= 30) cleanlinessText += "매우 불결함";
+        else if (Cleanliness <= 50) cleanlinessText += "불결함";
+        else if (Cleanliness <= 70) cleanlinessText += "보통의 청결";
+        else if (Cleanliness <= 90) cleanlinessText += "청결하고 상쾌함";
+        else cleanlinessText += "매우 청결하고 쾌적함";
 
-            var mentalPleasureText = "정신적 쾌락: ";
-            if (MentalPleasure <= 0) mentalPleasureText = "";
-            else if (MentalPleasure >= 90) mentalPleasureText += "믿을 수 없는 쾌락과 충만함";
-            else if (MentalPleasure >= 70) mentalPleasureText += "편안하고 행복함";
-            else if (MentalPleasure >= 50) mentalPleasureText += "흥분스러움";
-            else if (MentalPleasure >= 30) mentalPleasureText += "작은 쾌락";
-            else mentalPleasureText += "아주 작은 만족";
+        var staminaText = "체력: ";
+        if (Stamina <= 10) staminaText += "위험! 기력 소진으로 쓰러지기 직전";
+        else if (Stamina <= 30) staminaText += "기력이 매우 부족함";
+        else if (Stamina <= 50) staminaText += "기력이 부족함";
+        else if (Stamina <= 70) staminaText += "보통의 체력";
+        else if (Stamina <= 90) staminaText += "체력이 충분하고 가벼움";
+        else staminaText += "매우 좋은 컨디션";
 
-            var sleepinessText = "피곤도: ";
-            if (thinkingActor.Sleepiness >= 90) sleepinessText += "위험! 졸려서 쓰러지기 직전";
-            else if (thinkingActor.Sleepiness >= 70) sleepinessText += "매우 졸림";
-            else if (thinkingActor.Sleepiness >= 50) sleepinessText += "졸림";
-            else if (thinkingActor.Sleepiness >= 30) sleepinessText += "약간 졸림";
-            else if (thinkingActor.Sleepiness >= 10) sleepinessText += "또렷함";
-            else sleepinessText += "매우 또렷하고 상쾌함";
 
-            // 통합 치환 정보
-            var replacements = new Dictionary<string, string>
+        var stressText = "스트레스: ";
+        if (Stress >= 90) stressText += "위험! 압도적인 스트레스";
+        else if (Stress >= 70) stressText += "스트레스가 매우 높음";
+        else if (Stress >= 50) stressText += "스트레스가 높음";
+        else if (Stress >= 30) stressText += "약간의 긴장";
+        else if (Stress >= 10) stressText += "차분함";
+        else stressText += "매우 평온하고 안정적임";
+
+        var mentalPleasureText = "정신적 쾌락: ";
+        if (MentalPleasure <= 0) mentalPleasureText = "";
+        else if (MentalPleasure >= 90) mentalPleasureText += "믿을 수 없는 쾌락과 충만함";
+        else if (MentalPleasure >= 70) mentalPleasureText += "편안하고 행복함";
+        else if (MentalPleasure >= 50) mentalPleasureText += "흥분스러움";
+        else if (MentalPleasure >= 30) mentalPleasureText += "작은 쾌락";
+        else mentalPleasureText += "아주 작은 만족";
+
+        var sleepinessText = "피곤도: ";
+        if (Sleepiness >= 90) sleepinessText += "위험! 졸려서 쓰러지기 직전";
+        else if (Sleepiness >= 70) sleepinessText += "매우 졸림";
+        else if (Sleepiness >= 50) sleepinessText += "졸림";
+        else if (Sleepiness >= 30) sleepinessText += "약간 졸림";
+        else if (Sleepiness >= 10) sleepinessText += "또렷함";
+        else sleepinessText += "매우 또렷하고 상쾌함";
+
+        var sleepStatus = "";
+        // ThinkingActor인 경우 추가 정보 제공
+        if (this is MainActor thinkingActor)
+        {
+            sleepStatus = thinkingActor.IsSleeping ? "자는 중" : "깨어있음";
+        }
+
+
+        // 통합 치환 정보
+        var replacements = new Dictionary<string, string>
             {
                 { "location", curLocation != null ? curLocation.LocationToString() : "Unknown" },
                 { "is_sit", sitText},
@@ -1288,11 +1290,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 { "movablePositions", string.Join(", ", movablePositions) }
             };
 
-            return localizationService.GetLocalizedText("brain_status", replacements);
-        }
-
-        // NPC는 Brain이 없으므로 여기까지 오면 안 됨
-        throw new System.InvalidOperationException("Brain should only be used with MainActor");
+        return localizationService.GetLocalizedText("brain_status", replacements);
     }
 
     public string LoadCharacterInfo()
@@ -1347,14 +1345,15 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             infoText += $"현재 감정: {characterInfo.LoadEmotions()} ";
         }
 
+        // 외형 정보 추가
+        var appearance = LoadCharacterAppearance();
+        if (appearance.Length > 0)
+        {
+            infoText += $"\n외형:\n{string.Join("\n", appearance)}";
+        }
 
         return infoText;
     }
-
-    /// <summary>
-    /// 감정 딕셔너리를 읽기 쉬운 문자열로 변환합니다.
-    /// </summary>
-
 
     private string LoadMainCharacterInfo()
     {
@@ -1409,7 +1408,111 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             infoText += $"현재 감정: {characterInfo.LoadEmotions()} ";
         }
 
+        // 외형 정보 추가
+        var appearance = LoadCharacterAppearance();
+        if (appearance.Length > 0)
+        {
+            infoText += $"\n외형:\n{string.Join("\n", appearance)}";
+        }
+
         return infoText;
+    }
+
+    /// <summary>
+    /// 캐릭터 외형 프로필을 로드합니다. (goal 제외)
+    /// </summary>
+    public string[] LoadCharacterAppearance()
+    {
+        try
+        {
+            var characterMemoryManager = new CharacterMemoryManager(this);
+            var info = characterMemoryManager.GetCharacterInfo();
+            if (info == null) return new string[0];
+
+            var parts = new List<string>();
+            if (info.Height > 0) parts.Add($"키: {info.Height:F0}cm");
+            if (info.Weight > 0) parts.Add($"체중: {info.Weight:F0}kg");
+            if (!string.IsNullOrEmpty(info.HairColor)) parts.Add($"머리색: {info.HairColor}");
+            if (!string.IsNullOrEmpty(info.EyeColor)) parts.Add($"눈색: {info.EyeColor}");
+            if (!string.IsNullOrEmpty(info.SkinColor)) parts.Add($"피부색: {info.SkinColor}");
+            if (!string.IsNullOrEmpty(info.HairStyle)) parts.Add($"헤어스타일: {info.HairStyle}");
+            if (!string.IsNullOrEmpty(info.BodyType)) parts.Add($"체형: {info.BodyType}");
+
+            if (parts.Count == 0) return new string[0];
+            return parts.ToArray();
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogWarning($"[{Name}] LoadCharacterAppearance 실패: {ex.Message}");
+            return new string[0];
+        }
+    }
+
+    public override string Get()
+    {
+        string status = "";
+
+        // 앉아/서/눕기 상태
+        string sitText;
+        if (curLocation is SitableProp sitableProp && sitableProp.IsActorSeated(this))
+        {
+            if (sitableProp is Bed)
+            {
+                sitText = $"{sitableProp.Name}에 누워 있다";
+            }
+            else
+            {
+                sitText = $"{sitableProp.Name}에 앉아있다";
+            }
+        }
+        else
+        {
+            sitText = "서 있다";
+        }
+        status += sitText;
+
+        // 손에 든 아이템 (인벤토리 제외) - 아이템 상태(Get/WhenOnHand)까지 포함
+        if (HandItem != null)
+        {
+            string handState = string.Empty;
+            try
+            {
+                handState = HandItem.GetWhenOnHand();
+            }
+            catch { /* 일부 아이템은 GetWhenOnHand 미구현일 수 있음 */ }
+
+            if (string.IsNullOrEmpty(handState))
+            {
+                try { handState = HandItem.Get(); } catch { handState = string.Empty; }
+            }
+
+            if (!string.IsNullOrEmpty(handState))
+                status += $", 손에 들고있는 아이템: {HandItem.Name} => {handState}";
+            else
+                status += $", 손에 {HandItem.Name}을(를) 들고 있는 것 같다";
+        }
+        else
+        {
+            status += ", 빈손인 것 같다";
+        }
+
+        // 극단값만 노출되는 상태 텍스트 (관찰자 시점 묘사)
+        if (Hunger <= 10) status += ", 매우 배고파 보인다";
+        if (Thirst <= 10) status += ", 심하게 목이 말라 보인다";
+        if (Cleanliness <= 10) status += ", 몸에서 안좋은 냄새가 나는 것 같다";
+        if (Stamina <= 10) status += ", 기력이 거의 남지 않은 것 같다";
+        if (Stress >= 90) status += ", 극도로 스트레스를 받는 것 같다";
+        if (Sleepiness >= 90) status += ", 금방이라도 쓰러질 듯 졸려 보인다";
+        if (MentalPleasure >= 95) status += ", 황홀한 기분을 느끼는 듯 보인다"; else if (MentalPleasure <= 5 && MentalPleasure > 0) status += ", 정신적으로 무기력해 보인다";
+
+        // 외형 정보 추가 (goal 제외)
+        var appearance = LoadCharacterAppearance();
+        if (appearance.Length > 0)
+        {
+            status += ", " + string.Join(", ", appearance);
+        }
+
+        return status;
     }
 
     public string LoadCharacterMemory()

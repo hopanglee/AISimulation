@@ -1,4 +1,7 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Agent;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
@@ -20,15 +23,26 @@ namespace Agent
         public NPCPaymentParameterAgent(Actor actor) : base(actor)
         {
             SetAgentType(nameof(NPCPaymentParameterAgent));
-            systemPrompt = PromptLoader.LoadPrompt("NPCPaymentParameterAgentPrompt.txt",
-                "You are a parameter generator that selects an item/menu name to pay for.");
+            // Build price list and enum
+            var priceItems = GetPriceItemsFromActor(actor);
+            var itemNames = priceItems.Select(p => p.name).Where(n => !string.IsNullOrEmpty(n)).Distinct().OrderBy(n => n).ToList();
 
-            var schemaJson = @"{{
+            var priceListText = BuildPriceListText(priceItems);
+            var sysRepl = new Dictionary<string, string>
+            {
+                { "character_name", actor?.Name ?? string.Empty },
+                { "price_list", priceListText }
+            };
+            systemPrompt = PromptLoader.LoadPromptWithReplacements("NPCPaymentParameterAgentPrompt.txt", sysRepl);
+
+            string enumJson = Newtonsoft.Json.JsonConvert.SerializeObject(itemNames);
+            var schemaJson = $@"{{
                 ""type"": ""object"",
                 ""additionalProperties"": false,
                 ""properties"": {{
                     ""item_name"": {{
                         ""type"": ""string"",
+                        ""enum"": {enumJson},
                         ""description"": ""결제할 메뉴 이름""
                     }}
                 }},
@@ -65,7 +79,41 @@ namespace Agent
             });
             return new ActParameterResult { ActType = request.ActType, Parameters = new Dictionary<string, object> { { "item_name", param.item_name } } };
         }
+
+        // Helpers
+        internal static List<(string name, int price)> GetPriceItemsFromActor(Actor actor)
+        {
+            var result = new List<(string name, int price)>();
+            if (actor == null) return result;
+
+            try
+            {
+                if (actor is IPaymentable paymentable && paymentable.priceList != null)
+                {
+                    foreach (var item in paymentable.priceList)
+                    {
+                        if (item == null) continue;
+                        result.Add((item.itemName, item.price));
+                    }
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[NPCPaymentParameterAgent] Failed to read price list: {ex.Message}");
+            }
+
+            return result;
+        }
+
+        internal static string BuildPriceListText(List<(string name, int price)> items)
+        {
+            if (items == null || items.Count == 0) return "(가격 정보 없음)";
+            var lines = items
+                .Where(i => !string.IsNullOrEmpty(i.name))
+                .OrderBy(i => i.name)
+                .Select(i => $"- {i.name}: {i.price}원");
+            return string.Join("\n", lines);
+        }
     }
 }
-
-

@@ -14,7 +14,7 @@ using Cysharp.Threading.Tasks;
 /// - Move: key에 해당하는 위치로 이동
 /// - Cook: key에 해당하는 prefab을 만들어 손(우선) 또는 인벤토리에 보관
 /// </summary>
-public class IzakayaWorker : NPC
+public class IzakayaWorker : NPC, IPaymentable
 {
     [Title("Izakaya Settings")]
     [InfoBox("Cook으로 만들 수 있는 요리 prefab을 key와 함께 등록하세요. key는 에이전트가 사용할 문자열입니다.")]
@@ -30,19 +30,12 @@ public class IzakayaWorker : NPC
     [Title("Payment Settings")]
     [SerializeField, TableList]
     private List<PriceItem> priceList = new List<PriceItem>();
-    
+
     [SerializeField, ReadOnly]
     private int totalRevenue = 0; // 총 수익
-    
-    [System.Serializable]
-    public class PriceItem
-    {
-        [TableColumnWidth(200)]
-        public string itemName; // 아이템 이름 (예: "sake", "yakitori")
-        
-        [TableColumnWidth(100)]
-        public int price; // 가격
-    }
+
+    List<PriceItem> IPaymentable.priceList { get => priceList; set => priceList = value; }
+    int IPaymentable.totalRevenue { get => totalRevenue; set => totalRevenue = value; }
 
     /// <summary>
     /// 이자카야 전용 액션
@@ -229,7 +222,7 @@ public class IzakayaWorker : NPC
                 ShowSpeech("결제할 아이템을 알려주세요.");
                 throw new InvalidOperationException("결제할 아이템 매개변수가 없습니다.");
             }
-            
+
             string itemName = parameters["item_name"]?.ToString();
             if (string.IsNullOrEmpty(itemName))
             {
@@ -237,7 +230,7 @@ public class IzakayaWorker : NPC
                 ShowSpeech("결제할 아이템을 알려주세요.");
                 throw new InvalidOperationException("결제할 아이템 이름이 없습니다.");
             }
-            
+
             // 가격표에서 아이템 찾기
             PriceItem priceItem = FindPriceItem(itemName);
             if (priceItem == null)
@@ -246,10 +239,10 @@ public class IzakayaWorker : NPC
                 ShowSpeech($"죄송합니다. '{itemName}' 아이템은 판매하지 않습니다.");
                 throw new InvalidOperationException($"'{itemName}' 아이템을 찾을 수 없습니다.");
             }
-            
+
             Debug.Log($"[{Name}] 결제 처리 시작 - 아이템: {priceItem.itemName}, 가격: {priceItem.price}원");
             ShowSpeech($"{priceItem.itemName} {priceItem.price}원 결제 도와드릴게요.");
-            
+
             // 보유 금액 0원 특수 처리
             if (Money <= 0)
             {
@@ -257,7 +250,7 @@ public class IzakayaWorker : NPC
                 ShowSpeech("결제를 위해 먼저 돈을 받아야 합니다.");
                 throw new InvalidOperationException("보유 금액이 0원입니다. 먼저 돈을 받아야 합니다.");
             }
-            
+
             // 보유 금액 체크
             if (Money < priceItem.price)
             {
@@ -265,18 +258,18 @@ public class IzakayaWorker : NPC
                 ShowSpeech("죄송합니다. 금액이 부족합니다.");
                 throw new InvalidOperationException($"보유 금액이 부족합니다. (보유: {Money}원, 필요: {priceItem.price}원)");
             }
-            
+
             // 결제 처리 시뮬레이션
             await SimDelay.DelaySimMinutes(2);
-            
+
             // 결제 성공: 수익 증가, 보유 금액 차감
             Money -= priceItem.price;
             totalRevenue += priceItem.price;
-            
+
             string paymentReport = $"이자카야 직원 {Name}이 {priceItem.itemName} {priceItem.price}원 결제를 처리했습니다. 현재 보유금: {Money}원, 총 수익: {totalRevenue}원";
             Debug.Log($"[{Name}] 결제 완료: {paymentReport}");
             ShowSpeech("결제가 완료되었습니다. 감사합니다!");
-            
+
             // AI Agent에 결제 완료 메시지 추가
             if (actionAgent != null)
             {

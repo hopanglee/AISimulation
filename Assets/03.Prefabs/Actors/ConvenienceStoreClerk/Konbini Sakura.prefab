@@ -889,6 +889,8 @@ SkinnedMeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -911,6 +913,7 @@ SkinnedMeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -1496,18 +1499,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 170598}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 122b047e5f4f93345a78b79b1bd0c022, type: 3}
+  m_Script: {fileID: 11500000, guid: 181d327a39659cf47a20031dfa426e49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: of
-  _prepositionKr: 
-  _isHideChild: 1
-  _name: Sakura
-  _nameKr: 
+  _prepositionKr: "\uC758"
+  _isHideChild: 0
+  _name: sakura
+  _nameKr: "\uC0AC\uCFE0\uB77C"
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
   useGPT: 1
+  cacheCount: 0
   money: 0
   Hunger: 0
   Thirst: 0
@@ -1517,7 +1521,7 @@ MonoBehaviour:
   Stress: 0
   Sleepiness: 0
   _handItem: {fileID: 0}
-  Hand: {fileID: 6084161877259313578}
+  Hand: {fileID: 4500013285508402338}
   _inventoryItems: []
   Inven: {fileID: 2569731250843167694}
   _gender: 1
@@ -1529,7 +1533,6 @@ MonoBehaviour:
   activityBubbleUI: {fileID: 8253188555723843619}
   npcRole: 0
   debugActionType: Wait
-  debugParameters: []
   priceList: []
   totalRevenue: 0
   seatingArea: {fileID: 0}

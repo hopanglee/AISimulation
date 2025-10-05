@@ -366,6 +366,29 @@ public class RelationshipMemoryManager
                         relationship.SharedMemories.Add(memoryStr);
                     }
                     break;
+                case "height":
+                    if (float.TryParse(update.NewValue?.ToString(), out float height))
+                        relationship.Height = height;
+                    break;
+                case "weight":
+                    if (float.TryParse(update.NewValue?.ToString(), out float weight))
+                        relationship.Weight = weight;
+                    break;
+                case "hair_color":
+                    relationship.HairColor = update.NewValue?.ToString();
+                    break;
+                case "skin_color":
+                    relationship.SkinColor = update.NewValue?.ToString();
+                    break;
+                case "eye_color":
+                    relationship.EyeColor = update.NewValue?.ToString();
+                    break;
+                case "hair_style":
+                    relationship.HairStyle = update.NewValue?.ToString();
+                    break;
+                case "body_type":
+                    relationship.BodyType = update.NewValue?.ToString();
+                    break;
             }
 
             // LastUpdated를 현재 시간으로 설정

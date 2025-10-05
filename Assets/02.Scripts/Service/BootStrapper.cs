@@ -7,9 +7,6 @@ public class BootStrapper : MonoBehaviour
 {
     void Awake()
     {
-        // Set global log handler to prefix logs with Entity.Name when available
-        Debug.unityLogger.logHandler = new PrefixedLogHandler(Debug.unityLogger.logHandler);
-
         // GameService를 MonoBehaviour로 생성
         var gameServiceGO = new GameObject("GameService");
         var gameService = gameServiceGO.AddComponent<GameService>();
@@ -55,80 +52,5 @@ public class BootStrapper : MonoBehaviour
         Debug.Log("[BootStrapper] LocalizationService가 성공적으로 초기화되었습니다");
 
         Debug.Log("[BootStrapper] 모든 서비스가 성공적으로 초기화되었습니다");
-    }
-}
-
-// Global log handler that prefixes with [Name] if context is an Entity (or component on same GameObject)
-public class PrefixedLogHandler : ILogHandler
-{
-    private readonly ILogHandler inner;
-
-    public PrefixedLogHandler(ILogHandler inner)
-    {
-        this.inner = inner;
-    }
-
-    public void LogFormat(LogType logType, Object context, string format, params object[] args)
-    {
-        // Build the message once for filtering and optional prefixing
-        string message;
-        try { message = string.Format(format, args); }
-        catch { message = format; }
-
-        // Ignore noisy engine/library logs
-        if (ShouldIgnore(logType, message)) return;
-
-        // Prefix with Entity name when available
-        string prefix = GetPrefix(context);
-        if (!string.IsNullOrEmpty(prefix))
-        {
-            message = $"[{prefix}] {message}";
-        }
-
-        inner.LogFormat(logType, context, "{0}", message);
-    }
-
-    public void LogException(System.Exception exception, Object context)
-    {
-        inner.LogException(exception, context);
-    }
-
-    private string GetPrefix(Object context)
-    {
-        if (context == null) return null;
-
-        // Direct Entity
-        if (context is Entity entity)
-        {
-            return entity.Name;
-        }
-
-        // Component or GameObject that might have Entity
-        if (context is Component comp)
-        {
-            var ent = comp.GetComponent<Entity>();
-            if (ent != null) return ent.Name;
-        }
-        else if (context is GameObject go)
-        {
-            var ent = go.GetComponent<Entity>();
-            if (ent != null) return ent.Name;
-        }
-
-        return null;
-    }
-
-    private bool ShouldIgnore(LogType logType, string message)
-    {
-        if (string.IsNullOrEmpty(message)) return false;
-
-        // Suppress A* path debug spam
-        if (message.StartsWith("Path Completed")) return true;
-        if (message.StartsWith("Path Number")) return true;
-
-        // Suppress frequent shadow atlas warnings
-        if (message.StartsWith("Reduced additional punctual light shadows resolution")) return true;
-
-        return false;
     }
 }

@@ -24,9 +24,9 @@ namespace Agent
         {
             SetAgentType(nameof(NPCMoveParameterAgent));
 
-            // 시스템 프롬프트 로드
-            systemPrompt = PromptLoader.LoadPrompt("NPCMoveParameterAgentPrompt.txt",
-                "You are a parameter generator that selects the best movement destination for the NPC.");
+            // 시스템 프롬프트 로드 (character_name 치환)
+            var sysRepl = new Dictionary<string, string> { { "character_name", actor?.Name ?? string.Empty } };
+            systemPrompt = PromptLoader.LoadPromptWithReplacements("NPCMoveParameterAgentPrompt.txt", sysRepl);
 
             // 가능한 목적지 키 수집 (Area + Entity 통합)
             var targetKeys = GetCombinedTargetKeys();

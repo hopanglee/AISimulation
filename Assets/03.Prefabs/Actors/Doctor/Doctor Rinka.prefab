@@ -1042,6 +1042,8 @@ SkinnedMeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -1063,6 +1065,7 @@ SkinnedMeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -2026,10 +2029,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000014071260156}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -2127,18 +2130,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000014071260156}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f98a2ffe676c8645880345a6943e6d2, type: 3}
+  m_Script: {fileID: 11500000, guid: 22bbb62454991a548945f1da3bab6365, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 0}
   _preposition: of
-  _prepositionKr: 
-  _isHideChild: 1
-  _name: Rinka
-  _nameKr: 
+  _prepositionKr: "\uC758"
+  _isHideChild: 0
+  _name: rinka
+  _nameKr: "\uB9C1\uCE74"
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
   useGPT: 1
+  cacheCount: 0
   money: 0
   Hunger: 0
   Thirst: 0
@@ -2148,7 +2152,7 @@ MonoBehaviour:
   Stress: 0
   Sleepiness: 0
   _handItem: {fileID: 0}
-  Hand: {fileID: 4388770765705707105}
+  Hand: {fileID: 5241914293149345122}
   _inventoryItems: []
   Inven: {fileID: 7441721718330265831}
   _gender: 1
@@ -2160,7 +2164,6 @@ MonoBehaviour:
   activityBubbleUI: {fileID: 5084625150459860294}
   npcRole: 1
   debugActionType: Wait
-  debugParameters: []
   receptionist: {fileID: 0}
 --- !u!1 &1000014266759616
 GameObject:

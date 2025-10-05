@@ -24,6 +24,13 @@ public enum RelationshipFieldKey
     personality_traits,
     shared_interests,
     shared_memories,
+    height,
+    weight,
+    hair_color,
+    skin_color,
+    eye_color,
+    hair_style,
+    body_type,
 }
 
 /// <summary>
@@ -97,7 +104,7 @@ public class RelationshipAgent : GPT
                                             },
                                             ""field_key"": {
                                                 ""type"": ""string"",
-                                                ""enum"": [""name"", ""age"", ""birthday"", ""house_location"", ""relationship_type"", ""closeness"", ""trust"", ""interaction_history"", ""notes"", ""personality_traits"", ""shared_interests"", ""shared_memories""],
+                                                ""enum"": [""name"", ""age"", ""birthday"", ""house_location"", ""relationship_type"", ""closeness"", ""trust"", ""interaction_history"", ""notes"", ""personality_traits"", ""shared_interests"", ""shared_memories"", ""height"", ""weight"", ""hair_color"", ""skin_color"", ""eye_color"", ""hair_style"", ""body_type""],
                                                 ""description"": ""관계를 수정할 항목""
                                             },
                                             ""new_value"": {

@@ -22,8 +22,8 @@ namespace Agent
         public NPCPrepareMenuParameterAgent(Actor actor) : base(actor)
         {
             SetAgentType(nameof(NPCPrepareMenuParameterAgent));
-            systemPrompt = PromptLoader.LoadPrompt("NPCPrepareMenuParameterAgentPrompt.txt",
-                "You are a parameter generator that selects multiple menu items to prepare.");
+            var sysRepl = new Dictionary<string, string> { { "character_name", actor?.Name ?? string.Empty } };
+            systemPrompt = PromptLoader.LoadPromptWithReplacements("NPCPrepareMenuParameterAgentPrompt.txt", sysRepl);
 
             // ResponseFormat: 배열 형태 [{ food_name, count }]
             var schemaJson = @"{
