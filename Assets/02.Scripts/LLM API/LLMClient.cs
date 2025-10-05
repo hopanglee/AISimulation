@@ -8,6 +8,8 @@ using Newtonsoft.Json.Linq;
 using UnityEngine;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Security.Cryptography;
+using System.Text;
 
 public abstract class LLMClient
 {
@@ -16,7 +18,6 @@ public abstract class LLMClient
     protected string actorName = "Unknown"; // Actor 이름을 저장할 변수
     protected IToolExecutor toolExecutor;
     protected Actor actor;
-    protected List<AgentChatMessage> llm_messages = new();
     public LLMClient(LLMClientProps options)
     {
         this.llmOptions = options;
@@ -45,6 +46,9 @@ public abstract class LLMClient
         actorName = actor.Name;
         Debug.Log($"[LLMClient] Actor name set to: {actorName}");
     }
+    
+    // 각 LLM 구현체에서 캐시 키 생성을 위해 필요한 객체를 반환합니다.
+    protected abstract object GetHashKey();
     #region 메시지 관리
     protected abstract int GetMessageCount();
     protected abstract void RemoveAt(int index);
@@ -65,8 +69,6 @@ public abstract class LLMClient
         LLMClientSchema schema = null,
         ChatDeserializer<T> deserializer = null)
     {
-        //messages ??= this.llm_messages;
-
         #region 캐시 가능한 로그 기록 있는지 체크
         try
         {
@@ -76,9 +78,10 @@ public abstract class LLMClient
             {
                 int count = Math.Max(0, actor?.CacheCount ?? 0);
                 var agentPart = string.IsNullOrEmpty(agentTypeOverride) ? "UNKNOWN" : agentTypeOverride;
+                var msgHash = ComputeMessagesHash(GetHashKey());
 
-                // 정확한 파일명으로 먼저 시도: {count}_{timeKey}_{agentPart}.json
-                var exactMatch = Directory.GetFiles(baseDir, $"{count}_*_{agentPart}.json");
+                // 정확한 파일명으로 먼저 시도: {count}_{timeKey}_{agentPart}_{msgHash}.json
+                var exactMatch = Directory.GetFiles(baseDir, $"{count}_*_{agentPart}_{msgHash}.json");
                 string matchPath = null;
 
                 if (exactMatch != null && exactMatch.Length > 0)
@@ -88,7 +91,7 @@ public abstract class LLMClient
                 else
                 {
                     // 정확한 매치가 없으면 불일치 여부 확인 없이 해당 count부터 이후 캐시 모두 삭제
-                    Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 정확 매치 없음. count {count}부터 이후 캐시 삭제 실행");
+                    Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 정확 매치 없음(hash={msgHash}). count {count}부터 이후 캐시 삭제 실행");
                     DeleteCacheFilesFromCount(baseDir, count);
                 }
 
@@ -234,7 +237,8 @@ public abstract class LLMClient
             if (!Directory.Exists(baseDir)) Directory.CreateDirectory(baseDir);
 
             int count = Math.Max(0, actor?.CacheCount ?? 0);
-            var filePath = Path.Combine(baseDir, $"{count}_{timeKey}_{agentPart}.json");
+            var msgHash = ComputeMessagesHash(GetHashKey());
+            var filePath = Path.Combine(baseDir, $"{count}_{timeKey}_{agentPart}_{msgHash}.json");
             var json = JsonConvert.SerializeObject(data, Formatting.Indented, EnumAsStringJsonSettings);
             File.WriteAllText(filePath, json, System.Text.Encoding.UTF8);
             Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 저장: {filePath}");
@@ -243,6 +247,29 @@ public abstract class LLMClient
         catch (Exception ex)
         {
             Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 저장 실패: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// 입력 객체를 기반으로 고정 길이 해시(HEX)를 생성합니다.
+    /// 캐시 파일명에 포함되어 동일 키일 때만 히트하도록 합니다.
+    /// </summary>
+    private string ComputeMessagesHash(object key)
+    {
+        try
+        {
+            var json = JsonConvert.SerializeObject(key ?? new { });
+            using (var sha = SHA256.Create())
+            {
+                var bytes = Encoding.UTF8.GetBytes(json ?? string.Empty);
+                var hash = sha.ComputeHash(bytes);
+                var hex = BitConverter.ToString(hash).Replace("-", "");
+                return hex.Substring(0, Math.Min(16, hex.Length)); // 16자 prefix 사용
+            }
+        }
+        catch
+        {
+            return "NOHASH";
         }
     }
     protected abstract UniTask<T> Send<T>(

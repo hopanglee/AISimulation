@@ -49,6 +49,13 @@ public class GPT : LLMClient
         this.SetActor(actor);
     }
 
+    protected override object GetHashKey()
+    {
+        // 기본 구현: 캐시 키 비활성화에 가까운 고정 키 제공
+        // 추후 실제 메시지/옵션/툴 상태를 반영하도록 확장
+        return actor.sensor.GetLookableEntities() + actor.LoadCharacterInfo();
+    }
+
     #region 메시지 관리 override
     protected override int GetMessageCount() => messages.Count;
     protected override void ClearMessages(bool keepSystemMessage = false)

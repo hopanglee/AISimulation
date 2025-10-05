@@ -19,11 +19,10 @@ public class Gemini : LLMClient
     //private List<Tool> registeredTools = new List<Tool>();
     private GenerateContentRequest request = new();
 
-    const int maxToolRounds = 5;
     private bool enableLogging = true; // GPT와 동일한 플래그
     private static string sessionDirectoryName = null;
     private string modelName = "gemini-2.5-flash";
-    private int maxToolCallRounds = 3;
+    const int maxToolCallRounds = 3;
     private string jsonSystemMessage = null;
     public static void SetSessionDirectoryName(string sessionName)
     {
@@ -61,6 +60,13 @@ public class Gemini : LLMClient
         // this.request.SafetySettings = null;
         // this.request.SystemInstruction = null;
         // this.request.ToolConfig = null;
+    }
+
+    protected override object GetHashKey()
+    {
+        // 기본 구현: 캐시 키 비활성화에 가까운 고정 키 제공
+        // 추후 실제 메시지/옵션/툴 상태를 반영하도록 확장
+        return actor.sensor.GetLookableEntities() + actor.LoadCharacterInfo();
     }
 
     #region 메시지 관리 override
