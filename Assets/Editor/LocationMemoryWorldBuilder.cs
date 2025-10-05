@@ -103,19 +103,29 @@ public static class LocationMemoryWorldBuilder
     {
         try
         {
-            // 1) Find all Areas in scene
-            var areas = UnityEngine.Object.FindObjectsByType<Area>(FindObjectsSortMode.None);
+            // 1) Find all Areas in scene (active only)
+            var areas = UnityEngine.Object.FindObjectsByType<Area>(FindObjectsSortMode.None)
+                .Where(a => a != null && a.gameObject.activeInHierarchy && a.enabled)
+                .ToArray();
             if (areas == null || areas.Length == 0)
             {
                 Debug.LogWarning("[LocationMemoryWorldBuilder] No Area components found in scene.");
                 return;
             }
 
-            // Preload entity arrays for membership check
-            var items = UnityEngine.Object.FindObjectsByType<Item>(FindObjectsSortMode.None) ?? System.Array.Empty<Item>();
-            var props = UnityEngine.Object.FindObjectsByType<Prop>(FindObjectsSortMode.None) ?? System.Array.Empty<Prop>();
-            var actors = UnityEngine.Object.FindObjectsByType<Actor>(FindObjectsSortMode.None) ?? System.Array.Empty<Actor>();
-            var buildings = UnityEngine.Object.FindObjectsByType<Building>(FindObjectsSortMode.None) ?? System.Array.Empty<Building>();
+            // Preload entity arrays for membership check (active only)
+            var items = (UnityEngine.Object.FindObjectsByType<Item>(FindObjectsSortMode.None) ?? System.Array.Empty<Item>())
+                .Where(e => e != null && e.gameObject.activeInHierarchy && e.enabled)
+                .ToArray();
+            var props = (UnityEngine.Object.FindObjectsByType<Prop>(FindObjectsSortMode.None) ?? System.Array.Empty<Prop>())
+                .Where(e => e != null && e.gameObject.activeInHierarchy && e.enabled)
+                .ToArray();
+            var actors = (UnityEngine.Object.FindObjectsByType<Actor>(FindObjectsSortMode.None) ?? System.Array.Empty<Actor>())
+                .Where(e => e != null && e.gameObject.activeInHierarchy && e.enabled)
+                .ToArray();
+            var buildings = (UnityEngine.Object.FindObjectsByType<Building>(FindObjectsSortMode.None) ?? System.Array.Empty<Building>())
+                .Where(e => e != null && e.gameObject.activeInHierarchy && e.enabled)
+                .ToArray();
 
             // Build memory
             var memoryRoot = new JObject();
@@ -133,7 +143,10 @@ public static class LocationMemoryWorldBuilder
                 var areaProps = props.Where(e => e != null && e.transform.IsChildOf(areaTf)).Select(GetEntityKrName).Where(n => !string.IsNullOrEmpty(n)).ToList();
                 var areaActors = actors.Where(e => e != null && e.transform.IsChildOf(areaTf)).Select(GetEntityKrName).Where(n => !string.IsNullOrEmpty(n)).ToList();
                 var areaBuildings = buildings.Where(e => e != null && e.transform.IsChildOf(areaTf)).Select(GetEntityKrName).Where(n => !string.IsNullOrEmpty(n)).ToList();
-                var connected = (area.connectedAreas ?? new List<Area>()).Where(a => a != null && !string.IsNullOrEmpty(a.locationName)).Select(GetAreaKrName).ToList();
+                var connected = (area.connectedAreas ?? new List<Area>())
+                    .Where(a => a != null && a.gameObject.activeInHierarchy && a.enabled && !string.IsNullOrEmpty(a.locationName))
+                    .Select(GetAreaKrName)
+                    .ToList();
 
                 // Make names unique with suffixes instead of dropping duplicates
                 areaItems = SortList(MakeUniqueWithSuffix(areaItems));
