@@ -77,7 +77,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
     [Header("Sleepiness")]
     [Range(0, 100)]
-    public int Sleepiness; // 졸림 수치. 일정 수치(예: 80 이상) 이상이면 강제로 잠들게 할 수 있음
+    public int Sleepiness; // 졸림 수치. 일정 수치(예: 100 이상) 이상이면 강제로 잠들게 할 수 있음
 
     [Header("Judgment")]
     [Range(0, 100)]
@@ -1246,10 +1246,10 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
         var mentalPleasureText = "정신적 쾌락: ";
         if (MentalPleasure <= 0) mentalPleasureText = "";
-        else if (MentalPleasure >= 90) mentalPleasureText += "믿을 수 없는 쾌락과 충만함";
-        else if (MentalPleasure >= 70) mentalPleasureText += "편안하고 행복함";
-        else if (MentalPleasure >= 50) mentalPleasureText += "흥분스러움";
-        else if (MentalPleasure >= 30) mentalPleasureText += "작은 쾌락";
+        else if (MentalPleasure >= 90) mentalPleasureText += "중독되는 믿을 수 없는 쾌락과 이 감각으로부터 벗어나고 싶지 않은 충동";
+        else if (MentalPleasure >= 70) mentalPleasureText += "흥분되고 다른 생각을 하기가 어려움";
+        else if (MentalPleasure >= 50) mentalPleasureText += "편안하고 행복함";
+        else if (MentalPleasure >= 30) mentalPleasureText += "작은 쾌락이 있음";
         else mentalPleasureText += "아주 작은 만족";
 
         var sleepinessText = "피곤도: ";
