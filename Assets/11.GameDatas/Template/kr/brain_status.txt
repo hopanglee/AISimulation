@@ -13,6 +13,7 @@
 {stress}
 {mental_pleasure}
 {sleepiness}
+{judgment}
 
 === 눈에 보이는 것들 ===
 {lookableEntities}

@@ -16,6 +16,7 @@ public interface ILocation
     public string preposition { get; set; } // in the, on the, under the, near the, next to, ...
     public string GetLocalizedPreposition();
     public string GetLocalizedName();
+    public void ApplyStatus(Actor actor);
 
     public bool IsHideChild { get; set; } // 자식들은 감지 될 수 있는가?
 
@@ -23,6 +24,24 @@ public interface ILocation
 
 public abstract class Entity : MonoBehaviour, ILocation
 {
+    [System.Serializable]
+    public class StatusModifier
+    {
+        [Tooltip("이 효과를 사용할지 여부")]
+        public bool enabled = false;
+
+        [Range(0, 100)]
+        [Tooltip("이 범위 이상일 때만 적용 (포함)")]
+        public int minValue = 0;
+
+        [Range(0, 100)]
+        [Tooltip("이 범위 이하일 때만 적용 (포함)")]
+        public int maxValue = 100;
+
+        [Range(-10, 10)]
+        [Tooltip("틱마다 변경할 값 (+/-)")]
+        public int deltaPerTick = 0;
+    }
     private string _locationName;
     public string locationName
     {
@@ -129,6 +148,35 @@ public abstract class Entity : MonoBehaviour, ILocation
     [FoldoutGroup("Localization")]
     [SerializeField, TextArea]
     private string _currentStatusDescriptionKr;
+
+    [FoldoutGroup("Status Effects"), Header("Actor Status Effects (0~100)"), Tooltip("Actor의 각 상태를 범위 조건에 따라 변경합니다.")]
+    public StatusModifier hungerEffect = new();
+    [FoldoutGroup("Status Effects")] public StatusModifier thirstEffect = new();
+    [FoldoutGroup("Status Effects")] public StatusModifier staminaEffect = new();
+    [FoldoutGroup("Status Effects")] public StatusModifier cleanlinessEffect = new();
+    [FoldoutGroup("Status Effects")] public StatusModifier mentalPleasureEffect = new();
+    [FoldoutGroup("Status Effects")] public StatusModifier stressEffect = new();
+    [FoldoutGroup("Status Effects")] public StatusModifier sleepinessEffect = new();
+    [FoldoutGroup("Status Effects")] public StatusModifier judgmentEffect = new();
+
+    private static void ApplyIfInRange(ref int actorValue, StatusModifier effect)
+    {
+        if (effect == null || !effect.enabled) return;
+        int min = Mathf.Clamp(effect.minValue, 0, 100);
+        int max = Mathf.Clamp(effect.maxValue, 0, 100);
+        if (min > max)
+        {
+            int tmp = min;
+            min = max;
+            max = tmp;
+        }
+
+        if (actorValue >= min && actorValue <= max)
+        {
+            int next = actorValue + effect.deltaPerTick;
+            actorValue = Mathf.Clamp(next, 0, 100);
+        }
+    }
 
     // === Localization helpers ===
     private static ILocalizationService SafeGetLocalizationService()
@@ -313,5 +361,23 @@ public abstract class Entity : MonoBehaviour, ILocation
                 Debug.LogWarning($"[{safeName}] curLocation이 null이고 부모 ILocation도 없어 LocationService에 등록할 수 없습니다.");
             }
         }
+    }
+
+    public virtual void ApplyStatus(Actor actor)
+    {
+        if (actor != null)
+        {
+            ApplyIfInRange(ref actor.Hunger, hungerEffect);
+            ApplyIfInRange(ref actor.Thirst, thirstEffect);
+            ApplyIfInRange(ref actor.Stamina, staminaEffect);
+            ApplyIfInRange(ref actor.Cleanliness, cleanlinessEffect);
+            ApplyIfInRange(ref actor.MentalPleasure, mentalPleasureEffect);
+            ApplyIfInRange(ref actor.Stress, stressEffect);
+            ApplyIfInRange(ref actor.Sleepiness, sleepinessEffect);
+            ApplyIfInRange(ref actor.Judgment, judgmentEffect);
+        }
+
+        if (curLocation != null)
+            curLocation.ApplyStatus(actor);
     }
 }

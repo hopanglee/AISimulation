@@ -79,10 +79,9 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     [Range(0, 100)]
     public int Sleepiness; // 졸림 수치. 일정 수치(예: 80 이상) 이상이면 강제로 잠들게 할 수 있음
 
-    // 수면 관련 시스템은 ThinkingActor로 이동
-
-    // Activity System은 ThinkingActor로 이동
-
+    [Header("Judgment")]
+    [Range(0, 100)]
+    public int Judgment; // 판단력
 
 
     /// <summary>
@@ -1261,6 +1260,13 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         else if (Sleepiness >= 10) sleepinessText += "또렷함";
         else sleepinessText += "매우 또렷하고 상쾌함";
 
+        var judgmentText = "판단력: ";
+        if(Judgment >= 90) judgmentText += "괜찮은 상태";
+        else if(Judgment >= 50) judgmentText += "일반적인 상태";
+        else if(Judgment >= 30) judgmentText += "조금 흐려진 상태";
+        else if(Judgment >= 10) judgmentText += "매우 흐려진 상태";
+        else judgmentText += "스스로 판단할 수 없는 상태";
+
         var sleepStatus = "";
         // ThinkingActor인 경우 추가 정보 제공
         if (this is MainActor thinkingActor)
@@ -1283,6 +1289,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 { "stamina", staminaText },
                 { "stress", stressText },
                 { "sleepiness", sleepinessText },
+                { "judgment", judgmentText},
                 { "mental_pleasure", mentalPleasureText },
                 { "lookableEntities", string.Join("\n", lookableEntities) },
                 { "collectibleEntities", string.Join(", ", collectibleEntities) },
@@ -1503,6 +1510,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         if (Stamina <= 10) status += ", 기력이 거의 남지 않은 것 같다";
         if (Stress >= 90) status += ", 극도로 스트레스를 받는 것 같다";
         if (Sleepiness >= 90) status += ", 금방이라도 쓰러질 듯 졸려 보인다";
+        if (Judgment <= 30) status += ", 술에 취한 것처럼 판단력이 흐려져 보인다";
         if (MentalPleasure >= 95) status += ", 황홀한 기분을 느끼는 듯 보인다"; else if (MentalPleasure <= 5 && MentalPleasure > 0) status += ", 정신적으로 무기력해 보인다";
 
         // 외형 정보 추가 (goal 제외)

@@ -84,7 +84,12 @@ public abstract class MainActor : Actor
 	private int cleanlinessDecayIntervalMinutes = 10; // 10분마다
 	[SerializeField, Tooltip("한 번에 감소하는 청결도")]
 	private int cleanlinessDecayAmount = 1;
+
+	[Header("Status Update System")]
+	[SerializeField, Tooltip("스텟 업데이트하는 간격 (분)")]
+	private int statusUpdateIntervalMinutes = 5; // 5분마다
 	private GameTime lastCleanlinessDecayTime;
+	private GameTime lastStatusUpdateTime;
 
 	[Header("Activity System")]
 	[SerializeField]
@@ -401,6 +406,8 @@ public abstract class MainActor : Actor
 		// 청결도 감소 처리 (시뮬레이션 시간 기준)
 		UpdateCleanlinessDecay(currentTime);
 
+		UpdateStatus();
+
 		if (!useGPT) return;
 
 		// 기상 시간 처리 - wakeUpTime과 비교
@@ -409,6 +416,26 @@ public abstract class MainActor : Actor
 			Debug.Log($"[{Name}] WakeUpTime: {wakeUpTime.ToString()}, CurrentTime: {currentTime.ToString()}");
 			_ = WakeUp(); // async WakeUp 백그라운드 호출
 		}
+	}
+
+	public void UpdateStatus()
+	{
+		if (lastStatusUpdateTime == null)
+		{
+			lastStatusUpdateTime = currentTime;
+			return;
+		}
+
+		// 현재 시간과 마지막 감소 시간의 차이를 분 단위로 계산
+		int minutesDiff = currentTime.GetMinutesSince(lastStatusUpdateTime);
+
+		// 설정된 간격만큼 시간이 지났으면 청결도 감소
+		if (minutesDiff >= statusUpdateIntervalMinutes)
+		{
+			
+			lastStatusUpdateTime = currentTime;
+		}
+		curLocation.ApplyStatus(this);
 	}
 
 	/// <summary>
