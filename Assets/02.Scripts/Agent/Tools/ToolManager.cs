@@ -35,8 +35,7 @@ namespace Agent.Tools
         {
             public static readonly ChatTool GetCookableRecipes = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetCookableRecipes),
-                functionDescription: "현재 요리 가능한 레시피 목록을 반환합니다. 각 항목은 {name, ingredients[], minutes} 구조입니다.",
-            
+                functionDescription: "현재 요리 가능한 레시피 목록을 반환합니다. 각 항목은 {name, ingredients[], minutes} 구조입니다."            
             );
             public static readonly ChatTool SwapInventoryToHand = ChatTool.CreateFunctionTool(
                 functionName: nameof(SwapInventoryToHand),
@@ -250,6 +249,13 @@ namespace Agent.Tools
         #region  공급자-중립 도구 정의 (LLMToolSchema)
         public static class NeutralToolDefinitions
         {
+            public static readonly LLMToolSchema GetCookableRecipes = new LLMToolSchema
+            {
+                name = nameof(GetCookableRecipes),
+                description = "현재 요리 가능한 레시피 목록을 반환합니다. 각 항목은 {name, ingredients[], minutes} 구조입니다.",
+                format = null
+            };
+
             public static readonly LLMToolSchema SwapInventoryToHand = new LLMToolSchema
             {
                 name = nameof(SwapInventoryToHand),
@@ -413,13 +419,14 @@ namespace Agent.Tools
         #region 공급자-중립 도구 세트
         public static class NeutralToolSets
         {
+            public static readonly LLMToolSchema[] Cooking = { NeutralToolDefinitions.GetCookableRecipes };
             public static readonly LLMToolSchema[] ItemManagement = { NeutralToolDefinitions.SwapInventoryToHand };
             public static readonly LLMToolSchema[] Payment = { NeutralToolDefinitions.GetPaymentPriceList };
             public static readonly LLMToolSchema[] ActionInfo = { };
             public static readonly LLMToolSchema[] WorldInfo = { NeutralToolDefinitions.GetWorldAreaInfo, NeutralToolDefinitions.GetCurrentTime, NeutralToolDefinitions.FindBuildingAreaPath, NeutralToolDefinitions.FindShortestAreaPathFromActor, NeutralToolDefinitions.GetWorldAreaStructureText };
             public static readonly LLMToolSchema[] Memory = { NeutralToolDefinitions.GetUserMemory, NeutralToolDefinitions.GetShortTermMemory, NeutralToolDefinitions.GetLongTermMemory, NeutralToolDefinitions.GetMemoryStats, NeutralToolDefinitions.GetActorLocationMemories, NeutralToolDefinitions.GetActorLocationMemoriesFiltered, NeutralToolDefinitions.LoadRelationshipByName };
             public static readonly LLMToolSchema[] Plan = { NeutralToolDefinitions.GetCurrentPlan, NeutralToolDefinitions.GetCurrentSpecificAction };
-            public static readonly LLMToolSchema[] All = { NeutralToolDefinitions.SwapInventoryToHand, NeutralToolDefinitions.GetWorldAreaInfo, NeutralToolDefinitions.GetUserMemory, NeutralToolDefinitions.GetShortTermMemory, NeutralToolDefinitions.GetLongTermMemory, NeutralToolDefinitions.GetMemoryStats, NeutralToolDefinitions.GetCurrentTime, NeutralToolDefinitions.GetCurrentPlan, NeutralToolDefinitions.GetCurrentSpecificAction, NeutralToolDefinitions.FindBuildingAreaPath, NeutralToolDefinitions.FindShortestAreaPathFromActor, NeutralToolDefinitions.LoadRelationshipByName };
+            public static readonly LLMToolSchema[] All = { NeutralToolDefinitions.GetCookableRecipes, NeutralToolDefinitions.SwapInventoryToHand, NeutralToolDefinitions.GetWorldAreaInfo, NeutralToolDefinitions.GetUserMemory, NeutralToolDefinitions.GetShortTermMemory, NeutralToolDefinitions.GetLongTermMemory, NeutralToolDefinitions.GetMemoryStats, NeutralToolDefinitions.GetCurrentTime, NeutralToolDefinitions.GetCurrentPlan, NeutralToolDefinitions.GetCurrentSpecificAction, NeutralToolDefinitions.FindBuildingAreaPath, NeutralToolDefinitions.FindShortestAreaPathFromActor, NeutralToolDefinitions.LoadRelationshipByName };
         }
         #endregion
 
@@ -483,6 +490,11 @@ namespace Agent.Tools
         // 도구 세트 정의
         public static class ToolSets
         {
+            /// <summary>
+            /// 요리 관련 도구들
+            /// </summary>
+            public static readonly ChatTool[] Cooking = { ToolDefinitions.GetCookableRecipes };
+
             /// <summary>
             /// 아이템 관리 관련 도구들
             /// </summary>

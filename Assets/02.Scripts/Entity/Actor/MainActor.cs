@@ -7,6 +7,7 @@ using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using PlanStructures;
+using System.Threading;
 
 /// <summary>
 /// 메인 캐릭터(생각하는 Actor)
@@ -152,7 +153,6 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
     return list.ToArray();
 }
 
-	[Header("Cooking System")]
 	[System.Serializable]
 	public class CookRecipe
 	{
@@ -450,7 +450,7 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 		// 청결도 감소 처리 (시뮬레이션 시간 기준)
 		UpdateCleanlinessDecay(currentTime);
 
-		UpdateStatus();
+		UpdateStatus(currentTime);
 
 		if (!useGPT) return;
 
@@ -462,7 +462,7 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 		}
 	}
 
-	public void UpdateStatus()
+	public void UpdateStatus(GameTime currentTime)
 	{
 		if (lastStatusUpdateTime == null)
 		{
@@ -749,6 +749,7 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 
 	private IEnumerable<Item> EnumerateNearbyCollectibleItems()
 	{
+		var result = new List<Item>();
 		try
 		{
 			var collectible = sensor?.GetCollectibleEntities();
@@ -756,11 +757,12 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 			{
 				foreach (var kv in collectible)
 				{
-					if (kv.Value is Item it) yield return it;
+					if (kv.Value is Item it) result.Add(it);
 				}
 			}
 		}
 		catch { }
+		return result;
 	}
 
 	private bool TryGatherAndConsumeIngredients(CookRecipe recipe, out List<Item> consumedItems)

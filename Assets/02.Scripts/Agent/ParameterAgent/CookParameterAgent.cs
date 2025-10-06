@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Agent.Tools;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using OpenAI.Chat;
@@ -56,7 +57,7 @@ namespace Agent
 	""properties"": {{
 		""target_key"": {{
 			""type"": ""string"",
-            ""enum"": [ {string.Join(", ", cookables.Select(a => $"\"{a}\""))} ],
+            ""enum"": [{string.Join(", ", cookables)}],
 			""description"": ""만들 요리 이름 (음식 이름)""
 		}}
 	}},
@@ -71,7 +72,7 @@ namespace Agent
             SetResponseFormat(schema);
 
             // 요리 레시피 조회 도구 추가
-            AddTools(ToolManager.ToolDefinitions.GetCookableRecipes);
+            AddTools(ToolManager.NeutralToolDefinitions.GetCookableRecipes);
         }
 
         public async UniTask<CookParameter> GenerateParametersAsync(CommonContext context)

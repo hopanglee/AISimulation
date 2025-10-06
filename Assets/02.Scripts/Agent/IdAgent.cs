@@ -25,7 +25,7 @@ public class IdAgent : Gemini
 
         InitializeOptions();
             // 요리 레시피 조회 도구 추가
-        AddTools(ToolManager.ToolDefinitions.GetCookableRecipes);
+        AddTools(ToolManager.NeutralToolDefinitions.GetCookableRecipes);
     }
 
     /// <summary>
