@@ -430,11 +430,28 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 
 	public override string GetStatusDescription()
 	{
+		var status = new System.Text.StringBuilder();
+		
+		// 현재 활동 정보
 		if (!string.IsNullOrEmpty(CurrentActivity) && CurrentActivity != "Idle")
 		{
-			return $"현재: {CurrentActivity}";
+			status.AppendLine($"현재: {CurrentActivity}");
 		}
-		return base.GetStatusDescription();
+		
+		// 기본 상태 정보
+		status.AppendLine(base.GetStatusDescription());
+		
+		// 착용 중인 옷 정보 추가
+		if (CurrentOutfit != null)
+		{
+			status.AppendLine($", {CurrentOutfit.Name}을(를) 입고 있다");
+		}
+		else
+		{
+			status.AppendLine(", 옷을 전부 벗은 상태이다");
+		}
+		
+		return status.ToString().TrimEnd('\n', '\r');
 	}
 
 	public override void Death()

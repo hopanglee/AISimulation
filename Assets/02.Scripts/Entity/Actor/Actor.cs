@@ -1275,6 +1275,10 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         }
 
 
+        // 외형 정보 로드
+        var appearance = LoadCharacterAppearance();
+        var appearanceText = appearance.Length > 0 ? string.Join("\n", appearance) : "외형 정보 없음";
+
         // 통합 치환 정보
         var replacements = new Dictionary<string, string>
             {
@@ -1282,6 +1286,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 { "is_sit", sitText},
                 { "handItem", handItem },
                 { "inventory", string.Join(", ", inventoryItems) },
+                { "appearance", appearanceText },
                 { "sleepStatus", sleepStatus },
                 { "hunger", hungerText },
                 { "thirst", thirstText },
@@ -1352,12 +1357,12 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             infoText += $"현재 감정: {characterInfo.LoadEmotions()} ";
         }
 
-        // 외형 정보 추가
-        var appearance = LoadCharacterAppearance();
-        if (appearance.Length > 0)
-        {
-            infoText += $"\n외형:\n{string.Join("\n", appearance)}";
-        }
+        // // 외형 정보 추가
+        // var appearance = LoadCharacterAppearance();
+        // if (appearance.Length > 0)
+        // {
+        //     infoText += $"\n외형:\n{string.Join("\n", appearance)}";
+        // }
 
         return infoText;
     }
@@ -1415,12 +1420,12 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             infoText += $"현재 감정: {characterInfo.LoadEmotions()} ";
         }
 
-        // 외형 정보 추가
-        var appearance = LoadCharacterAppearance();
-        if (appearance.Length > 0)
-        {
-            infoText += $"\n외형:\n{string.Join("\n", appearance)}";
-        }
+        // // 외형 정보 추가
+        // var appearance = LoadCharacterAppearance();
+        // if (appearance.Length > 0)
+        // {
+        //     infoText += $"\n외형:\n{string.Join("\n", appearance)}";
+        // }
 
         return infoText;
     }
@@ -1444,6 +1449,16 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             if (!string.IsNullOrEmpty(info.SkinColor)) parts.Add($"피부색: {info.SkinColor}");
             if (!string.IsNullOrEmpty(info.HairStyle)) parts.Add($"헤어스타일: {info.HairStyle}");
             if (!string.IsNullOrEmpty(info.BodyType)) parts.Add($"체형: {info.BodyType}");
+            
+            // 착용 중인 옷 정보 추가
+            if (_currentOutfit != null)
+            {
+                parts.Add($"{_currentOutfit.Name}을(를) 입고 있다");
+            }
+            else
+            {
+                parts.Add("옷을 전부 벗은 상태다.");
+            }
 
             if (parts.Count == 0) return new string[0];
             return parts.ToArray();

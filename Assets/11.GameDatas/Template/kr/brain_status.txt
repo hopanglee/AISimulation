@@ -1,5 +1,8 @@
 당신은 {location}에 있습니다. {is_sit}
 
+=== 외형 ===
+{appearance}
+
 === 현재 소지품 ===
 손에 든 것: {handItem}
 

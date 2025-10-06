@@ -1,3 +1,7 @@
+=== Appearance ===
+{appearance}
+
+=== Inventory ===
 Inventory: {inventory}
 Sleep status: {sleepStatus}
 Current state: Hunger({hunger}), Thirst({thirst}), Stamina({stamina}), Stress({stress}), Sleepiness({sleepiness})

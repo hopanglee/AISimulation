@@ -7,6 +7,13 @@ public class EntityLocalizationInspector : OdinEditor
 {
     public override void OnInspectorGUI()
     {
+        // null 체크 추가
+        if (target == null)
+        {
+            EditorGUILayout.HelpBox("Target object is null or destroyed.", MessageType.Error);
+            return;
+        }
+        
         base.OnInspectorGUI();
 
         EditorGUILayout.Space();
@@ -30,6 +37,8 @@ public class EntityLocalizationInspector : OdinEditor
     {
         foreach (var t in targets)
         {
+            if (t == null) continue; // null 체크 추가
+            
             var so = new SerializedObject(t);
             action.Invoke(so);
             so.ApplyModifiedProperties();

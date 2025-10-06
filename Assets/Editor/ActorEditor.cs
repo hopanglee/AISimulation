@@ -16,10 +16,24 @@ public class ActorEditor : OdinEditor
     
     public override void OnInspectorGUI()
     {
+        // null 체크 추가
+        if (target == null)
+        {
+            EditorGUILayout.HelpBox("Target object is null or destroyed.", MessageType.Error);
+            return;
+        }
+
         // 기본 Odin Inspector 그리기
         base.OnInspectorGUI();
 
         Actor actor = (Actor)target;
+        
+        // Actor null 체크
+        if (actor == null)
+        {
+            EditorGUILayout.HelpBox("Actor component is null.", MessageType.Error);
+            return;
+        }
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Sensor Information", EditorStyles.boldLabel);
 
