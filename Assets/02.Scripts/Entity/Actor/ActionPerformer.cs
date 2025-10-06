@@ -32,6 +32,7 @@ public class ActionPerformer
     private readonly ClothingActionHandler clothingHandler;
     private readonly ThinkActionHandler thinkHandler;
     private readonly BedActionHandler bedHandler;
+    private readonly CookActionHandler cookHandler;
     private CancellationToken currentToken;
 
     public ActionPerformer(Actor actor)
@@ -47,6 +48,7 @@ public class ActionPerformer
         this.clothingHandler = new ClothingActionHandler(actor);
         this.thinkHandler = new ThinkActionHandler(actor);
         this.bedHandler = new BedActionHandler(actor);
+        this.cookHandler = new CookActionHandler(actor);
         
         RegisterActionHandlers();
     }
@@ -193,6 +195,12 @@ public class ActionPerformer
         actionExecutor.RegisterHandler(
             ActionType.Think,
             async (parameters) => await thinkHandler.HandleThink(parameters, currentToken)
+        );
+
+        // Cook handler
+        actionExecutor.RegisterHandler(
+            ActionType.Cook,
+            async (parameters) => await cookHandler.HandleCook(parameters, currentToken)
         );
 
         // ObserveEnvironment: 간단 처리(즉시 완료로 간주). Perception에 맡겨 다음 사이클로

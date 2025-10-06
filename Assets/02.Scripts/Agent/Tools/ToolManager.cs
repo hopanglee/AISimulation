@@ -33,6 +33,11 @@ namespace Agent.Tools
         # region GPT Tool 정의
         public static class ToolDefinitions
         {
+            public static readonly ChatTool GetCookableRecipes = ChatTool.CreateFunctionTool(
+                functionName: nameof(GetCookableRecipes),
+                functionDescription: "현재 요리 가능한 레시피 목록을 반환합니다. 각 항목은 {name, ingredients[], minutes} 구조입니다.",
+            
+            );
             public static readonly ChatTool SwapInventoryToHand = ChatTool.CreateFunctionTool(
                 functionName: nameof(SwapInventoryToHand),
                 functionDescription: "인벤토리의 아이템 이름을 지정해 손으로 옮기거나 교체합니다. 손이 비어 있으면 이동만 하고, 손에 아이템이 있으면 서로 교체합니다.",
@@ -511,7 +516,7 @@ namespace Agent.Tools
             /// <summary>
             /// 모든 도구들
             /// </summary>
-            public static readonly ChatTool[] All = { ToolDefinitions.SwapInventoryToHand, ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetUserMemory, ToolDefinitions.GetShortTermMemory, ToolDefinitions.GetLongTermMemory, ToolDefinitions.GetMemoryStats, ToolDefinitions.GetCurrentTime, ToolDefinitions.GetCurrentPlan, ToolDefinitions.GetCurrentSpecificAction, ToolDefinitions.FindBuildingAreaPath, ToolDefinitions.FindShortestAreaPathFromActor, ToolDefinitions.LoadRelationshipByName };
+            public static readonly ChatTool[] All = { ToolDefinitions.SwapInventoryToHand, ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetUserMemory, ToolDefinitions.GetShortTermMemory, ToolDefinitions.GetLongTermMemory, ToolDefinitions.GetMemoryStats, ToolDefinitions.GetCurrentTime, ToolDefinitions.GetCurrentPlan, ToolDefinitions.GetCurrentSpecificAction, ToolDefinitions.FindBuildingAreaPath, ToolDefinitions.FindShortestAreaPathFromActor, ToolDefinitions.LoadRelationshipByName, ToolDefinitions.GetCookableRecipes };
         }
 
         /// <summary>
@@ -599,6 +604,8 @@ namespace Agent.Tools
             {
                 case nameof(SwapInventoryToHand):
                     return SwapInventoryToHand(arguments);
+                case nameof(GetCookableRecipes):
+                    return GetCookableRecipes();
                 case nameof(GetPaymentPriceList):
                     return GetPaymentPriceList();
                 case nameof(GetWorldAreaInfo):
@@ -631,6 +638,23 @@ namespace Agent.Tools
                     return LoadRelationshipByName(arguments);
                 default:
                     return $"Error: Unknown tool '{toolName}'";
+            }
+        }
+
+        private string GetCookableRecipes()
+        {
+            try
+            {
+                if (actor is MainActor ma)
+                {
+                    var summaries = ma.GetCookRecipeSummaries();
+                    return System.Text.Json.JsonSerializer.Serialize(summaries);
+                }
+                return System.Text.Json.JsonSerializer.Serialize(new { error = "actor_is_not_mainactor" });
+            }
+            catch (System.Exception ex)
+            {
+                return System.Text.Json.JsonSerializer.Serialize(new { error = ex.Message });
             }
         }
 

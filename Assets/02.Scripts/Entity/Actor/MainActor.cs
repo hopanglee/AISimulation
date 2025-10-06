@@ -121,6 +121,50 @@ public abstract class MainActor : Actor
 	public string ActivityDescription => activityDescription;
 	public bool IsPerformingActivity => currentActivity != "Idle";
 
+	public string[] GetCookableDishKeys()
+	{
+		if (cookRecipes == null || cookRecipes.Count == 0) return System.Array.Empty<string>();
+		return cookRecipes.Keys.ToArray();
+	}
+
+public class CookRecipeSummary
+{
+    public string name;
+    public int minutes;
+    public string[] ingredients;
+}
+
+public CookRecipeSummary[] GetCookRecipeSummaries()
+{
+    if (cookRecipes == null || cookRecipes.Count == 0) return System.Array.Empty<CookRecipeSummary>();
+    var list = new List<CookRecipeSummary>();
+    foreach (var kv in cookRecipes)
+    {
+        var rec = kv.Value;
+        if (rec == null) continue;
+        list.Add(new CookRecipeSummary
+        {
+            name = kv.Key,
+            minutes = Mathf.Clamp(rec.cookSimMinutes, 0, 120),
+            ingredients = rec.ingredients != null ? rec.ingredients.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray() : System.Array.Empty<string>()
+        });
+    }
+    return list.ToArray();
+}
+
+	[Header("Cooking System")]
+	[System.Serializable]
+	public class CookRecipe
+	{
+		public GameObject prefab; // FoodBlock 또는 FoodItem 모두 가능
+		[Range(0, 120)] public int cookSimMinutes = 10;
+		[Tooltip("필요 재료 이름 목록 (손/인벤/주변에서 찾음)")]
+		public List<string> ingredients = new();
+	}
+	[SerializeField, Tooltip("요리 가능한 레시피 (key, prefab, 조리시간)")]
+	private SerializableDictionary<string, CookRecipe> cookRecipes = new();
+
+
 	[Header("Event History")]
 	[SerializeField] private List<string> _eventHistory = new();
 
@@ -615,6 +659,184 @@ public abstract class MainActor : Actor
 			Debug.LogWarning($"[{Name}] Failed to apply per-actor force plan flag: {ex.Message}");
 		}
 	}
+
+#region Cooking
+	public async UniTask<bool> Cook(string dishKey, CancellationToken token)
+	{
+		if (string.IsNullOrEmpty(dishKey)) return false;
+
+		// 부엌에 있을 때만 가능: curLocation 경로에 "Kitchen" 또는 "부엌" 포함 체크
+		var locationPath = curLocation != null ? curLocation.LocationToString() : "";
+		bool isInKitchen = !string.IsNullOrEmpty(locationPath) && (locationPath.Contains("Kitchen") || locationPath.Contains("부엌"));
+		if (!isInKitchen)
+		{
+			Debug.LogWarning($"[{Name}] 부엌이 아니어서 요리할 수 없습니다.");
+			return false;
+		}
+
+
+		if (cookRecipes == null || !cookRecipes.ContainsKey(dishKey) || cookRecipes[dishKey] == null || cookRecipes[dishKey].prefab == null)
+		{
+			Debug.LogWarning($"[{Name}] {dishKey}는(은) 요리 레시피에 없습니다.");
+			return false;
+		}
+		var recipe = cookRecipes[dishKey];
+
+		var bubble = activityBubbleUI;
+		try
+		{
+			if (bubble != null)
+			{
+				bubble.SetFollowTarget(transform);
+				bubble.Show($"{dishKey} 조리 중", 0);
+			}
+
+			// 재료 확인 및 소비
+			if (!TryGatherAndConsumeIngredients(recipe, out var consumed))
+			{
+				Debug.LogWarning($"[{Name}] 재료가 부족하여 {dishKey}를 조리할 수 없습니다.");
+				return false;
+			}
+			int minutes = Mathf.Clamp(recipe.cookSimMinutes, 0, 120);
+			await SimDelay.DelaySimMinutes(minutes, token);
+		}
+		finally
+		{
+			if (bubble != null) bubble.Hide();
+		}
+
+		Vector3 spawnPos = transform.position;
+		GameObject tempParent = new GameObject("_SpawnBuffer_TempParent_MainActor");
+		tempParent.SetActive(false);
+		GameObject cookedGo = Instantiate(recipe.prefab, spawnPos, Quaternion.identity, tempParent.transform);
+		var foodComponent = cookedGo.GetComponent<Item>();
+		if (foodComponent != null)
+		{
+			foodComponent.Name = recipe.prefab.name;
+			if (curLocation != null) foodComponent.curLocation = curLocation;
+		}
+		cookedGo.transform.SetParent(null);
+		cookedGo.SetActive(true);
+		Destroy(tempParent);
+
+		bool picked = false;
+		if (foodComponent is FoodBlock fb)
+		{
+			picked = PickUp(fb);
+		}
+		else if (foodComponent is FoodItem fi)
+		{
+			picked = PickUp(fi);
+		}
+		await SimDelay.DelaySimMinutes(1, token);
+		return picked;
+	}
+#endregion
+
+	#region Cooking Helpers
+	private static Dictionary<string, int> BuildIngredientCounts(List<string> ingredients)
+	{
+		var map = new Dictionary<string, int>(System.StringComparer.OrdinalIgnoreCase);
+		if (ingredients == null) return map;
+		foreach (var ing in ingredients)
+		{
+			if (string.IsNullOrWhiteSpace(ing)) continue;
+			map.TryGetValue(ing, out int c);
+			map[ing] = c + 1;
+		}
+		return map;
+	}
+
+	private IEnumerable<Item> EnumerateNearbyCollectibleItems()
+	{
+		try
+		{
+			var collectible = sensor?.GetCollectibleEntities();
+			if (collectible != null)
+			{
+				foreach (var kv in collectible)
+				{
+					if (kv.Value is Item it) yield return it;
+				}
+			}
+		}
+		catch { }
+	}
+
+	private bool TryGatherAndConsumeIngredients(CookRecipe recipe, out List<Item> consumedItems)
+	{
+		consumedItems = new List<Item>();
+		var needed = BuildIngredientCounts(recipe?.ingredients);
+		if (needed.Count == 0) return true; // 재료가 없으면 조건 없음
+
+		// 수집 대상 풀 구성: Hand, Inventory, Nearby
+		var pools = new List<Item>();
+		if (HandItem != null) pools.Add(HandItem);
+		if (InventoryItems != null)
+		{
+			for (int i = 0; i < InventoryItems.Length; i++)
+			{
+				if (InventoryItems[i] != null) pools.Add(InventoryItems[i]);
+			}
+		}
+		pools.AddRange(EnumerateNearbyCollectibleItems());
+
+		// 필요 수량만큼 매칭
+		var used = new Dictionary<Item, bool>();
+		foreach (var kv in needed.ToArray())
+		{
+			string needName = kv.Key;
+			int count = kv.Value;
+			for (int take = 0; take < count; take++)
+			{
+				var found = pools.FirstOrDefault(it => !used.ContainsKey(it) && string.Equals(it.Name, needName, System.StringComparison.OrdinalIgnoreCase));
+				if (found == null)
+				{
+					// 실패: 롤백 없음 (아직 소비 전)
+					return false;
+				}
+				used[found] = true;
+				consumedItems.Add(found);
+			}
+		}
+
+		// 소비: Hand, Inventory, World 순으로 제거
+		foreach (var item in consumedItems)
+		{
+			if (item == null) continue;
+			// Hand
+			if (HandItem == item)
+			{
+				HandItem = null;
+				if (item.gameObject != null) Destroy(item.gameObject);
+				continue;
+			}
+			// Inventory
+			bool removedFromInven = false;
+			if (InventoryItems != null)
+			{
+				for (int i = 0; i < InventoryItems.Length; i++)
+				{
+					if (InventoryItems[i] == item)
+					{
+						InventoryItems[i] = null;
+						removedFromInven = true;
+						break;
+					}
+				}
+			}
+			if (removedFromInven)
+			{
+				if (item.gameObject != null) Destroy(item.gameObject);
+				continue;
+			}
+			// World (주변)
+			if (item.gameObject != null) Destroy(item.gameObject);
+		}
+
+		return true;
+	}
+#endregion
 
 #if UNITY_EDITOR
 	[FoldoutGroup("Debug"), Button("Toggle Force New DayPlan (Per-Actor)")]

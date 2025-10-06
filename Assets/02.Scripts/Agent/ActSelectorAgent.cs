@@ -46,6 +46,8 @@ namespace Agent
             AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
             AddTools(ToolManager.NeutralToolDefinitions.LoadRelationshipByName);
             AddTools(ToolManager.NeutralToolDefinitions.GetWorldAreaInfo);
+            // 요리 레시피 조회 도구 추가
+            AddTools(ToolManager.ToolDefinitions.GetCookableRecipes);
         }
 
         /// <summary>

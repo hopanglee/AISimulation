@@ -103,6 +103,9 @@ namespace Agent
                 case ActionType.Think:
                     agent = new ThinkParameterAgent(actor);
                     break;
+                case ActionType.Cook:
+                    agent = new CookParameterAgent(actor);
+                    break;
                 default:
                     Debug.LogWarning($"[ParameterAgentFactory] 지원되지 않는 ActionType: {actionType}");
                     return null;
