@@ -1262,9 +1262,10 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
         var judgmentText = "판단력: ";
         if(Judgment >= 90) judgmentText += "괜찮은 상태";
-        else if(Judgment >= 50) judgmentText += "일반적인 상태";
-        else if(Judgment >= 30) judgmentText += "조금 흐려진 상태";
-        else if(Judgment >= 10) judgmentText += "매우 흐려진 상태";
+        else if(Judgment > 80) judgmentText += "일반적인 상태";
+        else if(Judgment >= 60) judgmentText += "조금 흐려진 상태";
+        else if(Judgment >= 40) judgmentText += "조금 헤롱헤롱 거리는 상태";
+        else if(Judgment >= 20) judgmentText += "술에 많이 취한 듯한 상태";
         else judgmentText += "스스로 판단할 수 없는 상태";
 
         var sleepStatus = "";
@@ -1525,7 +1526,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         if (Stamina <= 10) status += ", 기력이 거의 남지 않은 것 같다";
         if (Stress >= 90) status += ", 극도로 스트레스를 받는 것 같다";
         if (Sleepiness >= 90) status += ", 금방이라도 쓰러질 듯 졸려 보인다";
-        if (Judgment <= 30) status += ", 술에 취한 것처럼 판단력이 흐려져 보인다";
+        if (Judgment <= 50) status += ", 술에 취한 것처럼 판단력이 흐려져 보인다";
         if (MentalPleasure >= 95) status += ", 황홀한 기분을 느끼는 듯 보인다"; else if (MentalPleasure <= 5 && MentalPleasure > 0) status += ", 정신적으로 무기력해 보인다";
 
         // 외형 정보 추가 (goal 제외)

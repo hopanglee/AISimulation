@@ -64,10 +64,48 @@ MonoBehaviour:
   _nameKr: "\uC2A4\uC2DC"
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
-  hungerValue: 10
+  hungerEffect:
+    enabled: 1
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 12
+  thirstEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  staminaEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  cleanlinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  mentalPleasureEffect:
+    enabled: 1
+    minValue: 0
+    maxValue: 30
+    deltaPerTick: 10
+  stressEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  sleepinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  judgmentEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
   currentAmount: 100
-  consumePerInteract: 10
+  consumePerInteract: 50
 --- !u!1001 &65964064332260187
 PrefabInstance:
   m_ObjectHideFlags: 0

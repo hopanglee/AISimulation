@@ -63,6 +63,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -85,6 +87,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -131,7 +134,45 @@ MonoBehaviour:
   _nameKr: "\uBA54\uB860\uBE75"
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
-  Description: 
-  hungerValue: 10
+  hungerEffect:
+    enabled: 1
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 8
+  thirstEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  staminaEffect:
+    enabled: 1
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 10
+  cleanlinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  mentalPleasureEffect:
+    enabled: 1
+    minValue: 0
+    maxValue: 30
+    deltaPerTick: 5
+  stressEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  sleepinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  judgmentEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
   currentAmount: 100
-  consumePerInteract: 10
+  consumePerInteract: 25

@@ -132,7 +132,7 @@ public class CookRecipeSummary
 {
     public string name;
     public int minutes;
-    public string[] ingredients;
+    public string[] ingredients; // Entity의 GetSimpleKey() 결과를 저장
 }
 
 public CookRecipeSummary[] GetCookRecipeSummaries()
@@ -147,7 +147,7 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
         {
             name = kv.Key,
             minutes = Mathf.Clamp(rec.cookSimMinutes, 0, 120),
-            ingredients = rec.ingredients != null ? rec.ingredients.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray() : System.Array.Empty<string>()
+            ingredients = rec.ingredients != null ? rec.ingredients.Where(e => e != null).Select(e => e.Name).ToArray() : System.Array.Empty<string>()
         });
     }
     return list.ToArray();
@@ -158,8 +158,8 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 	{
 		public GameObject prefab; // FoodBlock 또는 FoodItem 모두 가능
 		[Range(0, 120)] public int cookSimMinutes = 10;
-		[Tooltip("필요 재료 이름 목록 (손/인벤/주변에서 찾음)")]
-		public List<string> ingredients = new();
+		[Tooltip("필요 재료 Entity 목록 (손/인벤/주변에서 찾음)")]
+		public List<Entity> ingredients = new();
 	}
 	[SerializeField, Tooltip("요리 가능한 레시피 (key, prefab, 조리시간)")]
 	private SerializableDictionary<string, CookRecipe> cookRecipes = new();
@@ -751,15 +751,16 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 #endregion
 
 	#region Cooking Helpers
-	private static Dictionary<string, int> BuildIngredientCounts(List<string> ingredients)
+	private static Dictionary<string, int> BuildIngredientCounts(List<Entity> ingredients)
 	{
 		var map = new Dictionary<string, int>(System.StringComparer.OrdinalIgnoreCase);
 		if (ingredients == null) return map;
 		foreach (var ing in ingredients)
 		{
-			if (string.IsNullOrWhiteSpace(ing)) continue;
-			map.TryGetValue(ing, out int c);
-			map[ing] = c + 1;
+			if (ing == null) continue;
+			string key = ing.Name; // Entity의 고유 키 사용
+			map.TryGetValue(key, out int c);
+			map[key] = c + 1;
 		}
 		return map;
 	}
@@ -804,11 +805,11 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 		var used = new Dictionary<Item, bool>();
 		foreach (var kv in needed.ToArray())
 		{
-			string needName = kv.Key;
+			string needKey = kv.Key; // Entity의 고유 키
 			int count = kv.Value;
 			for (int take = 0; take < count; take++)
 			{
-				var found = pools.FirstOrDefault(it => !used.ContainsKey(it) && string.Equals(it.Name, needName, System.StringComparison.OrdinalIgnoreCase));
+				var found = pools.FirstOrDefault(it => !used.ContainsKey(it) && string.Equals(it.Name, needKey, System.StringComparison.OrdinalIgnoreCase));
 				if (found == null)
 				{
 					// 실패: 롤백 없음 (아직 소비 전)

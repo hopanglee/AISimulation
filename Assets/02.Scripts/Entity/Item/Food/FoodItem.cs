@@ -6,9 +6,6 @@ using Cysharp.Threading.Tasks;
 [System.Serializable]
 public abstract class FoodItem : Item, IUsable
 {
-
-    [Range(0, 100)]
-    public int HungerRecovery = 10;
     /// <summary>
     /// Virtual Eat method: consumes the food, increasing the actor's hunger satisfaction.
     /// </summary>
@@ -21,9 +18,23 @@ public abstract class FoodItem : Item, IUsable
         string foodName = this != null ? this.Name : "음식";
         var go = this != null ? this.gameObject : null;
 
-        actor.Hunger += HungerRecovery; // 기본 배고픔 해결량
-        if (actor.Hunger > 100)
-            actor.Hunger = 100;
+        // 모든 Status Effects 적용
+        Entity.ApplyIfInRange(ref actor.Hunger, hungerEffect);
+        Entity.ApplyIfInRange(ref actor.Thirst, thirstEffect);
+        Entity.ApplyIfInRange(ref actor.Stamina, staminaEffect);
+        Entity.ApplyIfInRange(ref actor.Cleanliness, cleanlinessEffect);
+        Entity.ApplyIfInRange(ref actor.MentalPleasure, mentalPleasureEffect);
+        Entity.ApplyIfInRange(ref actor.Stress, stressEffect);
+        Entity.ApplyIfInRange(ref actor.Sleepiness, sleepinessEffect);
+        Entity.ApplyIfInRange(ref actor.Judgment, judgmentEffect);
+
+
+        // 음료를 마셨으면 오브젝트 삭제
+        if (gameObject != null)
+        {
+            Destroy(gameObject);
+        }
+
 
         // 손에 든 것이 이 음식이라면 먼저 손에서 비워둠 (파괴 전 참조 정리)
         if (actor.HandItem == this)
@@ -37,7 +48,8 @@ public abstract class FoodItem : Item, IUsable
             Destroy(go);
         }
 
-        return $"{actor.Name}가 {foodName}을(를) 먹어서 배고픔을 {HungerRecovery}만큼 회복했습니다.";
+        return $"{actor.Name}가 {foodName}을(를) 먹었습니다.";
+
     }
 
     /// <summary>
@@ -45,11 +57,11 @@ public abstract class FoodItem : Item, IUsable
     /// </summary>
     public override string Get()
     {
-        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        if (String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {
-            return $"{GetLocalizedStatusDescription()}, 배고픔 회복: {HungerRecovery}";
+            return $"{GetLocalizedStatusDescription()}, 배고픔 회복: {hungerEffect?.deltaPerTick}";
         }
-        return $"배고픔 회복: {HungerRecovery}";
+        return $"배고픔 회복: {hungerEffect?.deltaPerTick}";
     }
 
     /// <summary>

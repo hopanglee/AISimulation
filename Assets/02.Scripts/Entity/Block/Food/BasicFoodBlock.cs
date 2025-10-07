@@ -12,7 +12,7 @@ public class BasicFoodBlock : FoodBlock
     /// </summary>
     public override string Get()
     {
-        string status = $"{Name} - 영양가: {hungerValue}, 남은 양: {GetRemainingAmount()}%";
+        string status = $"{Name} - 남은 양: {GetRemainingAmount()}%";
 
         if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {

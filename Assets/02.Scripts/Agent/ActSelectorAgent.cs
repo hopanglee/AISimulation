@@ -367,6 +367,18 @@ namespace Agent
                         return availableActions;
                     }
 
+                    // 부엌에 있을 때만 Cook 액션 추가
+                    try
+                    {
+                        var locationPath = thinkingActor.curLocation != null ? thinkingActor.curLocation.LocationToString() : "";
+                        bool isInKitchen = !string.IsNullOrEmpty(locationPath) && (locationPath.Contains("Kitchen") || locationPath.Contains("부엌"));
+                        if (isInKitchen)
+                        {
+                            availableActions.Add(ActionType.Cook);
+                        }
+                    }
+                    catch { }
+
                     // 이동 가능 위치/엔티티 확인
                     try
                     {

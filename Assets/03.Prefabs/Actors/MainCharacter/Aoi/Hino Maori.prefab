@@ -155,6 +155,46 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
+  hungerEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  thirstEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  staminaEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  cleanlinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  mentalPleasureEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  stressEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  sleepinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  judgmentEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
 --- !u!1 &3524782942030797403
 GameObject:
   m_ObjectHideFlags: 0
@@ -207,6 +247,46 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
+  hungerEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  thirstEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  staminaEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  cleanlinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  mentalPleasureEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  stressEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  sleepinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  judgmentEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
 --- !u!1 &3814719316798269449
 GameObject:
   m_ObjectHideFlags: 0
@@ -392,6 +472,46 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
+  hungerEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  thirstEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  staminaEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  cleanlinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  mentalPleasureEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  stressEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  sleepinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  judgmentEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
 --- !u!1 &8068268842101662216
 GameObject:
   m_ObjectHideFlags: 0
@@ -720,7 +840,48 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
+  hungerEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  thirstEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  staminaEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  cleanlinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  mentalPleasureEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  stressEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  sleepinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  judgmentEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
   useGPT: 1
+  cacheCount: 0
   money: 0
   Hunger: 0
   Thirst: 0
@@ -729,6 +890,7 @@ MonoBehaviour:
   MentalPleasure: 0
   Stress: 0
   Sleepiness: 0
+  Judgment: 0
   _handItem: {fileID: 0}
   Hand: {fileID: 3188549841946335990}
   _inventoryItems: []
@@ -741,6 +903,7 @@ MonoBehaviour:
   speechBubble: {fileID: 1287264044770947123}
   activityBubbleUI: {fileID: 1096538947983407992}
   useInsightAgent: 1
+  useCachedEgo: 1
   iPhone: {fileID: 0}
   sleepHour: 22
   sleepinessThreshold: 80
@@ -759,11 +922,44 @@ MonoBehaviour:
     minute: 0
   cleanlinessDecayIntervalMinutes: 30
   cleanlinessDecayAmount: 3
+  statusUpdateIntervalMinutes: 5
   currentActivity: Idle
   forceNewDayPlanForThisActor: 0
   activityDescription: 
   activityStartTime: 0
   activityDuration: 0
+  cookRecipes:
+    keys:
+    - "\uBE75"
+    - "\uD1A0\uB9C8\uD1A0 \uB1E8\uB07C"
+    - "\uBC84\uD130 \uCE58\uD0A8"
+    - "\uB77C\uBA74"
+    - "\uBBF8\uD2B8\uBCFC \uC2A4\uD30C\uAC8C\uD2F0"
+    values:
+    - prefab: {fileID: 5743514497555107439, guid: 1a01a1d47e963eb48a3e255ce5237779, type: 3}
+      cookSimMinutes: 10
+      ingredients:
+      - {fileID: -2052116025471725793, guid: 0412da73630dc1a4fa11e9954759da55, type: 3}
+      - {fileID: 5159199546302714590, guid: cd34e36aeaf1bad4095970c60043ab39, type: 3}
+    - prefab: {fileID: 3584034718085067398, guid: af38201d01ec9074a9e5265886f47e03, type: 3}
+      cookSimMinutes: 15
+      ingredients:
+      - {fileID: -2052116025471725793, guid: 0412da73630dc1a4fa11e9954759da55, type: 3}
+      - {fileID: 6577384104988659126, guid: 631b072a88243ca4c99acaa4414cd28f, type: 3}
+    - prefab: {fileID: 3098245469162611848, guid: 80d7221f2435769478183ecc57ed512d, type: 3}
+      cookSimMinutes: 15
+      ingredients:
+      - {fileID: 983170447568844572, guid: 86404d6d44e2f834cbc72d8014f193cf, type: 3}
+      - {fileID: 6637191387719179173, guid: 4607e9ad1ab980d45bccc957fd1d2f8d, type: 3}
+    - prefab: {fileID: 2481596309928425116, guid: c3ceab9bfba82234a9221de1f214f1ee, type: 3}
+      cookSimMinutes: 10
+      ingredients:
+      - {fileID: -2052116025471725793, guid: 0412da73630dc1a4fa11e9954759da55, type: 3}
+    - prefab: {fileID: 7056699002046159029, guid: 5b422cb9caf671c40bf167dfe9c43b19, type: 3}
+      cookSimMinutes: 15
+      ingredients:
+      - {fileID: -2052116025471725793, guid: 0412da73630dc1a4fa11e9954759da55, type: 3}
+      - {fileID: -6817912488044917964, guid: 1d9df283f9aaa1f46affda151512363b, type: 3}
   _eventHistory: []
   manualActionController:
     debugActionType: 11
@@ -775,6 +971,13 @@ MonoBehaviour:
     secondaryAgentParameters:
       keys: []
       values: []
+  yesterdaySleepTime:
+    year: 0
+    month: 0
+    day: 0
+    hour: 0
+    minute: 0
+  yesterdaySleepLocation: 
   useMemoryResetSystem: 1
 --- !u!114 &4887048522806061288
 MonoBehaviour:
@@ -870,10 +1073,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 529616869720701619}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}

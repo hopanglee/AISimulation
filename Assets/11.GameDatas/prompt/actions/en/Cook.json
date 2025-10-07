@@ -1,0 +1,23 @@
+{
+  "name": "Cook",
+  "description": "Cook food according to recipes in the kitchen.",
+  "parameters": [
+    {
+      "name": "target_key",
+      "type": "string",
+      "description": "Recipe key for the dish to cook (e.g., \"Yakitori\", \"Oden\", \"Karaage\", \"Edamame\")",
+      "required": true
+    }
+  ],
+  "requirements": [
+    "Must be located in a kitchen",
+    "The recipe for the dish must be registered",
+    "Must be able to find required ingredients in hand, inventory, or nearby"
+  ],
+  "whenToUse": [
+    "When hungry and want to make food",
+    "When preparing food for others",
+    "When wanting to practice cooking skills",
+    "When wanting to make special dishes"
+  ]
+}

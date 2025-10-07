@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -8,7 +9,6 @@ using UnityEngine;
 public abstract class FoodBlock : Item, IInteractable
 {
     [Header("Food Properties")]
-    public int hungerValue = 10; // 배고픔 해결량
 
     [Header("Amount Management")]
     [Range(0, 100)]
@@ -43,17 +43,23 @@ public abstract class FoodBlock : Item, IInteractable
                 return $"{Name}은(는) 이미 비어있습니다.";
             }
 
-            // 음식을 먹어서 배고픔 해결
-            actor.Hunger += hungerValue;
-            if (actor.Hunger > 100)
-                actor.Hunger = 100;
+            // 모든 Status Effects 적용
+            Entity.ApplyIfInRange(ref actor.Hunger, hungerEffect);
+            Entity.ApplyIfInRange(ref actor.Thirst, thirstEffect);
+            Entity.ApplyIfInRange(ref actor.Stamina, staminaEffect);
+            Entity.ApplyIfInRange(ref actor.Cleanliness, cleanlinessEffect);
+            Entity.ApplyIfInRange(ref actor.MentalPleasure, mentalPleasureEffect);
+            Entity.ApplyIfInRange(ref actor.Stress, stressEffect);
+            Entity.ApplyIfInRange(ref actor.Sleepiness, sleepinessEffect);
+            Entity.ApplyIfInRange(ref actor.Judgment, judgmentEffect);
+
 
             // 양 줄이기
             currentAmount -= consumePerInteract;
             if (currentAmount < 0)
                 currentAmount = 0;
 
-            string result = $"{actor.Name}이(가) {Name}을(를) 먹어서 배고픔을 {hungerValue}만큼 해결했습니다.";
+            string result = $"{actor.Name}이(가) {Name}을(를) 먹었습니다.";
 
             if (currentAmount <= 0)
             {
@@ -83,6 +89,16 @@ public abstract class FoodBlock : Item, IInteractable
     public int GetRemainingAmount()
     {
         return currentAmount;
+    }
+
+    public override string Get()
+    {
+        string status = $"{Name} - 남은 양: {currentAmount}%";
+        if (String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{GetLocalizedStatusDescription()} {status}";
+        }
+        return $"{status}";
     }
 
     /// <summary>

@@ -38,7 +38,7 @@ public abstract class Entity : MonoBehaviour, ILocation
         [Tooltip("이 범위 이하일 때만 적용 (포함)")]
         public int maxValue = 100;
 
-        [Range(-10, 10)]
+        [Range(-50, 50)]
         [Tooltip("틱마다 변경할 값 (+/-)")]
         public int deltaPerTick = 0;
     }
@@ -159,7 +159,7 @@ public abstract class Entity : MonoBehaviour, ILocation
     [FoldoutGroup("Status Effects")] public StatusModifier sleepinessEffect = new();
     [FoldoutGroup("Status Effects")] public StatusModifier judgmentEffect = new();
 
-    private static void ApplyIfInRange(ref int actorValue, StatusModifier effect)
+    public static void ApplyIfInRange(ref int actorValue, StatusModifier effect)
     {
         if (effect == null || !effect.enabled) return;
         int min = Mathf.Clamp(effect.minValue, 0, 100);
