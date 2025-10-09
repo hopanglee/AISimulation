@@ -118,25 +118,6 @@ public class ThinkParameterAgent : Claude, IParameterAgentBase
     /// </summary>
     private string BuildUserMessage(CommonContext context)
     {
-        // MainActor인지 확인하고 메모리 정보 수집
-        List<ShortTermMemoryEntry> shortTermMemories = new List<ShortTermMemoryEntry>();
-        List<LongTermMemory> longTermMemories = new List<LongTermMemory>();
-        
-        if (actor is MainActor mainActor && mainActor.brain?.memoryManager != null)
-        {
-            shortTermMemories = mainActor.brain.memoryManager.GetShortTermMemory() ?? new List<ShortTermMemoryEntry>();
-            longTermMemories = mainActor.brain.memoryManager.GetLongTermMemories() ?? new List<LongTermMemory>();
-        }
-        
-        // 최근 Short Term Memory (최대 10개)
-        var recentSTM = shortTermMemories.OrderByDescending(m => m.timestamp.ToDateTime()).Take(10).ToList();
-        var stmText = string.Join("\n", recentSTM.Select(m => $"[{m.type}] {m.content}"));
-        
-        // 최근 Long Term Memory (최대 5개)
-        var recentLTM = longTermMemories.TakeLast(5).ToList();
-        var ltmText = string.Join("\n", recentLTM.Select(m => 
-            $"[{m.timestamp}] {m.content}"));
-
         var timeService = Services.Get<ITimeService>();
         var currentTime = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 0, 0);
         var year = currentTime.year;

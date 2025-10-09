@@ -134,7 +134,7 @@ public class iPhone : Item, IUsable
             iPhone targetIPhone = thinkingTarget.iPhone;
             if (targetIPhone == null)
             {
-                return "The target does not have an iPhone.";
+                return "아이폰이 없다.";
             }
 
             string time = GetTime();
@@ -169,11 +169,11 @@ public class iPhone : Item, IUsable
             // Add recent chat snapshot (up to last 5) to sender's short-term memory
             AddRecentChatsToSTM(actor, targetKey);
 
-            return $"Message sent to {target.Name}.";
+            return $"{target.Name}에게 메시지를 보냈다.";
         }
         else
         {
-            return "The target does not have an iPhone.";
+            return "아이폰이 없다.";
         }
     }
 
@@ -228,7 +228,7 @@ public class iPhone : Item, IUsable
         string key = targetName;
         if (!chatHistory.ContainsKey(key) || chatHistory[key].Count == 0)
         {
-            return "There is no chat content to read.";
+            return "읽을 내용이 없다.";
         }
         int currentIndex;
         if (!conversationReadIndices.TryGetValue(key, out currentIndex))
@@ -309,15 +309,14 @@ public class iPhone : Item, IUsable
             var recent = conversation.GetRange(startIndex, take);
 
             var sb = new StringBuilder();
-            sb.Append($"눈에 보이는 가장 최근 5개의 채팅 (상대: {partnerName})\n");
             for (int i = 0; i < recent.Count; i++)
             {
                 sb.AppendLine(recent[i].ToString());
             }
 
             string content = sb.ToString().TrimEnd();
-            string details = "최근 채팅 5개 내용";
-            mainActor.brain.memoryManager.AddShortTermMemory("recent_chat", content, details);
+            string details = $"{partnerName}와의 최근 채팅 목록 5개";
+            mainActor.brain.memoryManager.AddShortTermMemory(content, details, mainActor?.curLocation?.GetSimpleKey());
         }
         catch (System.Exception ex)
         {

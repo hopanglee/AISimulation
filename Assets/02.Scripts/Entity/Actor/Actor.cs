@@ -1319,6 +1319,29 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         return "";
     }
 
+    /// <summary>
+    /// info.json에 저장된 캐릭터의 최상위 목표(goal)를 로드하여 문자열로 반환합니다.
+    /// </summary>
+    public string LoadGoal()
+    {
+        try
+        {
+            var characterMemoryManager = new CharacterMemoryManager(this);
+            var characterInfo = characterMemoryManager.GetCharacterInfo();
+            var goal = characterInfo?.Goal;
+            if (string.IsNullOrWhiteSpace(goal))
+            {
+                return "";
+            }
+            return goal.Trim();
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogWarning($"[{Name}] LoadGoal 실패: {ex.Message}");
+            return "";
+        }
+    }
+
     private string LoadNPCCharacterInfo()
     {
         var characterMemoryManager = new CharacterMemoryManager(this);
@@ -1609,12 +1632,15 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                     {
                         timestamp = "날짜&시간 모름";
                     }
+                        var location = !string.IsNullOrEmpty(memory.locationName)
+                            ? $" <장소: {memory.locationName}>"
+                            : "";
                     var emotions = memory.emotions != null && memory.emotions.Count > 0
-                        ? $", 당시 감정: {string.Join(", ", memory.emotions.OrderByDescending(e => e.intensity).Take(2).Select(e => $"{e.name}"))}"
+                        ? $", 감정: {string.Join(", ", memory.emotions.OrderByDescending(e => e.intensity).Take(2).Select(e => $"{e.name}"))}"
                         : "";
                     var details = !string.IsNullOrEmpty(memory.details) ? $" ({memory.details})" : "";
 
-                    memoryText += $"[{timestamp}] {memory.content} {details}{emotions}\n";
+                        memoryText += $"[{timestamp}]{location} {memory.content}{details}{emotions}\n";
                 }
             }
 

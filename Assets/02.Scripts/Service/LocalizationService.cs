@@ -127,7 +127,7 @@ public class LocalizationService : ILocalizationService
                     }
                     else
                     {
-                        Debug.LogError($"[LocalizationService] Template '{templateName}' does not contain placeholder '{placeholder}'. Available placeholders: {GetAvailablePlaceholders(template)}");
+						Debug.LogWarning($"[LocalizationService] Template '{templateName}' does not contain placeholder '{placeholder}'. Available placeholders: {GetAvailablePlaceholders(template)}");
                     }
                 }
             }

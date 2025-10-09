@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Agent;
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 using UnityEngine;
 using PlanStructures;
 using OpenAI.Chat;
@@ -105,32 +106,7 @@ public class Brain
         Debug.Log($"[{actor.Name}] Plan only mode {(only ? "enabled" : "disabled")}");
     }
 
-    /// <summary>
-    /// DayPlan 생성을 시작합니다 (비동기).
-    /// </summary>
-    public async UniTask StartDayPlan()
-    {
-        // 현재 설정된 강제 새 계획 플래그를 DayPlanner에 반영 (방어적 동기화)
-        try { dayPlanner?.SetForceNewDayPlan(forceNewDayPlan); } catch { }
-        // PerceptionAgent를 통해 시각정보 해석
-        var perceptionResult = await InterpretVisualInformationAsync();
-        Debug.Log($"[{actor.Name}] DayPlan 시작");
-        await dayPlanner.PlanToday();
 
-        // Enhanced Memory System: 계획 생성을 Short Term Memory에 추가
-        var dayPlan = dayPlanner.GetCurrentDayPlan();
-        if (dayPlan?.HighLevelTasks != null && dayPlan.HighLevelTasks.Count > 0)
-        {
-            var planDescription = $"오늘의 계획: {string.Join(", ", dayPlan.HighLevelTasks.ConvertAll(t => t.Description))}";
-            memoryManager.AddPlanCreated(planDescription);
-        }
-
-        // planOnly가 true이면 계획 생성 후 종료
-        if (planOnly)
-        {
-            Debug.Log($"[{actor.Name}] Plan only mode - 계획 생성 완료, Think 루프 시작하지 않음");
-        }
-    }
 
     /// <summary>
     /// Think/Act 루프를 백그라운드에서 시작합니다.
@@ -146,64 +122,27 @@ public class Brain
         _ = thinker.StartThinkAndActLoop();
     }
 
-    /// <summary>
-    /// [Legacy] DayPlan 생성 및 Think/Act 루프를 시작합니다.
-    /// </summary>
-    public void StartDayPlanAndThink()
-    {
-        _ = StartDayPlanAndThinkAsync();
-    }
-
-    /// <summary>
-    /// [Legacy] DayPlan 생성 후 Think/Act 루프를 시작하는 비동기 메서드입니다.
-    /// </summary>
-    private async UniTask StartDayPlanAndThinkAsync()
-    {
-        if (Services.Get<IGameService>().IsDayPlannerEnabled())
-        {
-            await StartDayPlan();
-        }
-        StartThinkLoop();
-    }
 
 
     /// <summary>
     /// 외부 이벤트가 발생했을 때 호출됩니다.
     /// PerceptionAgent를 실행하고 반응 여부를 결정한 후 적절한 조치를 취합니다.
     /// </summary>
-    public void OnExternalEvent()
+    public void OnExternalEvent(string description = null)
     {
         try
         {
             Debug.Log($"[{actor.Name}] 외부 이벤트 발생 - 반응 여부 결정 시작");
+            if (!string.IsNullOrEmpty(description))
+            {
+                try
+                {
+                    memoryManager.AddShortTermMemory("주변에서 변화가 감지되었다.", description, actor?.curLocation?.GetSimpleKey());
+                }
+                catch { }
+            }
             thinker.OnExternalEventAsync();
-            // 1. PerceptionAgent를 통해 외부 이벤트 인식
-            // var perceptionResult = await InterpretVisualInformationAsync();
-
-            // 2. Perception 직후 계획 유지/수정 결정 및 필요 시 재계획
-            //await dayPlanner.DecideAndMaybeReplanAsync(perceptionResult);
-
-            // 3. React 기능 (현재 비활성화)
-            /*
-            reactionDecisionAgent = new ReactionDecisionAgent(actor);
-            reactionDecisionAgent.SetDayPlanner(dayPlanner); // DayPlanner 설정
-            var reactionDecision = await reactionDecisionAgent.DecideReactionAsync(perceptionResult);
-            
-            Debug.Log($"[{actor.Name}] 반응 결정: {reactionDecision.ShouldReact}, 우선순위: {reactionDecision.PriorityLevel}, 이유: {reactionDecision.Reasoning}");
-            
-            if (reactionDecision.ShouldReact)
-            {
-                // 반응하기로 결정: Think/Act 루프 재시작
-                Debug.Log($"[{actor.Name}] 외부 이벤트에 반응 - Think/Act 루프 재시작");
-                thinker.OnExternalEventAsync();
-            }
-            else
-            {
-                // 반응하지 않기로 결정: 현재 활동 계속
-                Debug.Log($"[{actor.Name}] 외부 이벤트 무시 - 현재 활동 계속");
-                // 현재 Think/Act 루프는 그대로 유지됨
-            }
-            */
+        
         }
         catch (Exception ex)
         {
@@ -234,8 +173,17 @@ public class Brain
             // PerceptionAgent를 통해 시각정보 해석
             var perceptionResult = await InterpretVisualInformationAsync();
 
-            // Enhanced Memory System: Perception 결과를 Short Term Memory에 추가
-            memoryManager.AddPerceptionResult(perceptionResult);
+            // Enhanced Memory System: Perception 결과를 Short Term Memory에 직접 추가
+
+            // 위치명을 반드시 포함
+            string locName = actor.curLocation.GetSimpleKey();
+
+            memoryManager.AddShortTermMemory(
+                $"{perceptionResult.situation_interpretation}",
+                "혼자 생각하는 중",
+                locName,
+                perceptionResult.emotions
+            );
 
             return perceptionResult;
         }
@@ -254,12 +202,12 @@ public class Brain
             Debug.Log($"[{actor.Name}] DayPlan 시작");
             await dayPlanner.PlanToday();
 
-            // Enhanced Memory System: 계획 생성을 Short Term Memory에 추가
+            // Enhanced Memory System: 계획 생성을 Short Term Memory에 직접 추가
             var dayPlan = dayPlanner.GetCurrentDayPlan();
             if (dayPlan?.HighLevelTasks != null && dayPlan.HighLevelTasks.Count > 0)
             {
-                var planDescription = $"오늘의 계획: {string.Join(", ", dayPlan.HighLevelTasks.ConvertAll(t => t.Description))}";
-                memoryManager.AddPlanCreated(planDescription);
+                var planSummary = string.Join(", ", dayPlan.HighLevelTasks.ConvertAll(t => t.Description));
+                memoryManager.AddShortTermMemory("오늘의 계획을 세웠다.", $"목록: {planSummary}", actor?.curLocation?.GetSimpleKey());
             }
 
             // planOnly가 true이면 계획 생성 후 종료
@@ -322,10 +270,13 @@ public class Brain
             }
             catch { }
 
-            // Enhanced Memory System: ActSelector 결과를 Short Term Memory에 추가
+            // Enhanced Memory System: ActSelector 결과를 Short Term Memory에 직접 추가
             if (selection != null)
             {
-                memoryManager.AddActSelectorResult(selection);
+                memoryManager.AddShortTermMemory(
+                    $"{selection.ActType.ToKorean()}을(를) 하기로 결정했다.",
+                    $"의도: {selection.Intention}"
+                , actor?.curLocation?.GetSimpleKey());
             }
 
             // ActSelectResult를 ActorManager에 저장
@@ -350,8 +301,15 @@ public class Brain
     {
         try
         {
-            // Enhanced Memory System: 행동 시작 기록
-            memoryManager.AddActionStart(paramResult.ActType, paramResult.Parameters);
+            // Enhanced Memory System: 행동 시작을 Short Term Memory에 직접 기록
+            var startContent = !string.IsNullOrEmpty(paramResult.StartMemoryContent)
+                ? paramResult.StartMemoryContent
+                : $"{paramResult.ActType.ToKorean()}을(를) 시작했다.";
+            memoryManager.AddShortTermMemory(
+                startContent,
+                "",
+                actor?.curLocation?.GetSimpleKey()
+            );
 
             // AgentAction으로 변환
             var action = new AgentAction
@@ -374,9 +332,6 @@ public class Brain
             catch (OperationCanceledException)
             {
                 isSuccess = false;
-                // 외부 이벤트로 취소된 경우: 이유 없이 '멈췄다'로 기록
-                memoryManager.AddActionInterrupted(paramResult.ActType);
-                mainActor.CurrentActivity = "Idle";
                 throw;
             }
             catch (Exception actionEx)
@@ -388,11 +343,7 @@ public class Brain
             }
             finally
             {
-                // 정상 완료된 경우에만 완료 기록
-                if (isSuccess)
-                {
-                    memoryManager.AddActionComplete(paramResult.ActType, paramResult.Parameters, true);
-                }
+                // 성공 STM은 각 핸들러에서 컨텍스트에 맞게 기록한다.
                 mainActor.CurrentActivity = "Idle";
             }
         }
@@ -424,7 +375,12 @@ public class Brain
                 ActType = selection.ActType
             };
             var useActionManager = new UseActionManager(actor);
-            return await useActionManager.ExecuteUseActionAsync(request);
+            var useResult = await useActionManager.ExecuteUseActionAsync(request);
+            if (useResult != null && string.IsNullOrEmpty(useResult.StartMemoryContent))
+            {
+                useResult.StartMemoryContent = BuildStartMemoryContent(selection.ActType, useResult.Parameters);
+            }
+            return useResult;
         }
 
         // 매개변수가 필요 없는 액션들은 바로 반환
@@ -458,18 +414,168 @@ public class Brain
                 var selectionRetryResult = await actSelectorAgent.SelectActAsync(recentPerceptionResult);
                 return await GenerateActionParameters(selectionRetryResult, actSelectorAgent);
             }
+            if (string.IsNullOrEmpty(result.StartMemoryContent))
+            {
+                result.StartMemoryContent = BuildStartMemoryContent(selection.ActType, result.Parameters);
+            }
             return result;
         }
         else
         {
             // Wait, Use 등 매개변수가 필요 없는 액션들
             Debug.Log($"[{actor.Name}] {selection.ActType} 액션은 매개변수가 필요 없음 - 바로 실행");
-            return new ActParameterResult
+            var simpleResult = new ActParameterResult
             {
                 ActType = selection.ActType,
                 Parameters = new Dictionary<string, object>()
             };
+            simpleResult.StartMemoryContent = BuildStartMemoryContent(selection.ActType, simpleResult.Parameters);
+            return simpleResult;
         }
+    }
+
+    /// <summary>
+    /// 액션 시작 시 STM에 기록할 자연어 문장을 생성합니다.
+    /// </summary>
+    private string BuildStartMemoryContent(ActionType actionType, Dictionary<string, object> parameters)
+    {
+        try
+        {
+            switch (actionType)
+            {
+                case ActionType.MoveToArea:
+                    if (parameters != null && parameters.TryGetValue("area_name", out var areaObj))
+                    {
+                        var area = areaObj?.ToString();
+                        if (!string.IsNullOrEmpty(area)) return $"'{area}'으로 이동하기로 했다.";
+                    }
+                    return "다른 곳으로 이동하기로 했다.";
+
+                case ActionType.MoveToEntity:
+                    if (parameters != null && parameters.TryGetValue("entity_name", out var entObj))
+                    {
+                        var entity = entObj?.ToString();
+                        if (!string.IsNullOrEmpty(entity)) return $"'{entity}' 쪽으로 다가가기로 했다.";
+                    }
+                    return "누군가/무언가에게 다가가기로 했다.";
+
+                case ActionType.Talk:
+                    {
+                        var who = parameters != null && parameters.TryGetValue("character_name", out var whoObj) ? whoObj?.ToString() : null;
+                        var msg = parameters != null && parameters.TryGetValue("message", out var msgObj) ? msgObj?.ToString() : null;
+                        //if (!string.IsNullOrEmpty(who) && !string.IsNullOrEmpty(msg)) return $"'{who}'에게 이렇게 말하기로 했다: '{msg}'.";
+                        if (!string.IsNullOrEmpty(who)) return $"'{who}'에게 말을 하기로 했다.";
+                        return "말을 하기로 했다.";
+                    }
+
+                case ActionType.PickUpItem:
+                    {
+                        var item = parameters != null && (parameters.TryGetValue("item_name", out var nameObj) || parameters.TryGetValue("target_item", out nameObj)) ? nameObj?.ToString() : null;
+                        if (!string.IsNullOrEmpty(item)) return $"'{item}'을(를) 집기로 했다.";
+                        return "눈앞의 물건을 집기로 했다.";
+                    }
+
+                case ActionType.InteractWithObject:
+                    if (parameters != null && parameters.TryGetValue("object_name", out var objObj))
+                    {
+                        var obj = objObj?.ToString();
+                        if (!string.IsNullOrEmpty(obj)) return $"'{obj}'과(와) 상호작용하기로 했다.";
+                    }
+                    return "주변 물건과 상호작용하기로 했다.";
+
+                case ActionType.PutDown:
+                    {
+                        var targetKey = parameters != null && parameters.TryGetValue("target_key", out var tk) ? tk?.ToString() : null;
+                        var heldName = (actor as MainActor)?.HandItem?.Name ?? "물건";
+                        if (!string.IsNullOrEmpty(targetKey)) return $"'{heldName}'을(를) '{targetKey}'에 내려놓기로 했다.";
+                        return $"'{heldName}'을(를) 내려놓기로 했다.";
+                    }
+
+                case ActionType.GiveMoney:
+                    {
+                        var who = parameters != null && parameters.TryGetValue("target_character", out var to) ? to?.ToString() : null;
+                        var amount = parameters != null && parameters.TryGetValue("amount", out var a) ? a?.ToString() : null;
+                        if (!string.IsNullOrEmpty(who) && !string.IsNullOrEmpty(amount)) return $"'{who}'에게 {amount}원을 건네기로 했다.";
+                        return "돈을 건네기로 했다.";
+                    }
+
+                case ActionType.GiveItem:
+                    {
+                        var who = parameters != null && parameters.TryGetValue("target_character", out var to) ? to?.ToString() : null;
+                        var heldName = (actor as MainActor)?.HandItem?.Name ?? "물건";
+                        if (!string.IsNullOrEmpty(who)) return $"'{who}'에게 '{heldName}'을(를) 건네기로 했다.";
+                        return $"'{heldName}'을(를) 건네기로 했다.";
+                    }
+
+                case ActionType.PerformActivity:
+                    {
+                        var name = parameters != null && parameters.TryGetValue("activity_name", out var an) ? an?.ToString() : null;
+                        var duration = parameters != null && parameters.TryGetValue("duration", out var du) ? du?.ToString() : null;
+                        if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(duration)) return $"'{name}'을(를) 하기로 했다. (약 {duration}분)";
+                        if (!string.IsNullOrEmpty(name)) return $"'{name}'을(를) 하기로 했다.";
+                        return "어떤 활동을 하기로 했다.";
+                    }
+
+                case ActionType.UseObject:
+                    {
+                        var hand = (actor as MainActor)?.HandItem;
+                        if (hand is iPhone)
+                        {
+                            var cmd = parameters != null && parameters.TryGetValue("command", out var c) ? c?.ToString() : null;
+                            var target = parameters != null && parameters.TryGetValue("target_actor", out var ta) ? ta?.ToString() : null;
+                            if (cmd == "chat" && !string.IsNullOrEmpty(target) && parameters.TryGetValue("message", out var msg))
+                                return $"아이폰으로 '{target}'에게 메시지를 보내기로 했다: '{msg}'.";
+                            if (cmd == "recent_read" && !string.IsNullOrEmpty(target) && parameters.TryGetValue("message_count", out var mc))
+                                return $"아이폰에서 '{target}'와의 최근 대화를 {mc}개 읽어보기로 했다.";
+                            if (cmd == "continue_read" && !string.IsNullOrEmpty(target) && parameters.TryGetValue("message_count", out var cc))
+                                return $"아이폰에서 '{target}'와의 지난 대화를 더 읽어보기로 했다 ({cc}).";
+                            return "아이폰을 사용해 보기로 했다.";
+                        }
+                        if (hand is Note)
+                        {
+                            var action = parameters != null && parameters.TryGetValue("action", out var a) ? a?.ToString() : null;
+                            if (action == "write") return "노트에 글을 적어보기로 했다.";
+                            if (action == "read") return "노트를 읽어보기로 했다.";
+                            if (action == "rewrite") return "노트의 글을 고쳐 쓰기로 했다.";
+                            if (action == "erase") return "노트에서 일부를 지우기로 했다.";
+                            return "노트를 사용해 보기로 했다.";
+                        }
+                        if (hand is Book)
+                        {
+                            int page = 1;
+                            if (parameters != null)
+                            {
+                                if (parameters.TryGetValue("page_number", out var pn) && pn is int i1) page = i1;
+                                else if (parameters.TryGetValue("page", out var p) && p is int i2) page = i2;
+                            }
+                            return $"책을 읽어보기로 했다. {page}쪽부터.";
+                        }
+                        var name = hand?.Name ?? "물건";
+                        return $"'{name}'을(를) 사용해 보기로 했다.";
+                    }
+
+                case ActionType.Wait:
+                    return "잠시 생각을 정리하기로 했다.";
+
+                case ActionType.RemoveClothing:
+                    return "입은 옷을 벗기로 했다.";
+
+                case ActionType.ObserveEnvironment:
+                    return "주변을 살펴보기로 했다.";
+
+                case ActionType.Sleep:
+                    return "잠자리에 들기로 했다.";
+
+                case ActionType.Cook:
+                    {
+                        var key = parameters != null && parameters.TryGetValue("target_key", out var tk) ? tk?.ToString() : null;
+                        if (!string.IsNullOrEmpty(key)) return $"'{key}'를 만들기로 했다.";
+                        return "무언가를 만들어 보기로 했다.";
+                    }
+            }
+        }
+        catch { }
+        return $"{actionType.ToKorean()}을(를) 시작했다.";
     }
 
     /// <summary>

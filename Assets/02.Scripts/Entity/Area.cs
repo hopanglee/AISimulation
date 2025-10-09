@@ -171,4 +171,12 @@ public class Area : MonoBehaviour, ILocation
             curLocation.ApplyStatus(actor);
         }
     }
+
+    public string GetSimpleKey()
+    {
+        if (curLocation == null) return GetLocalizedName();
+
+        // 단순히 :로 구분하여 표시 (전체 경로)
+        return curLocation.LocationToString() + ":" + GetLocalizedName();
+    }
 }

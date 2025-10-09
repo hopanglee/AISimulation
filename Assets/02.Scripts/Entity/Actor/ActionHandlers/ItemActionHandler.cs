@@ -61,6 +61,10 @@ namespace Agent.ActionHandlers
                         if (actor.PickUp(item))
                         {
                             Debug.Log($"[{actor.Name}] 아이템을 성공적으로 집었습니다: {itemName}");
+                            if (actor is MainActor main)
+                            {
+                                main.brain.memoryManager.AddShortTermMemory($"'{itemName}'을(를) 손에 들었다.", "", main?.curLocation?.GetSimpleKey());
+                            }
                             return true;
                         }
                         else
@@ -109,6 +113,10 @@ namespace Agent.ActionHandlers
                                         if (actor.PickUp(itemAfterMove))
                                         {
                                             Debug.Log($"[{actor.Name}] 아이템을 성공적으로 집었습니다: {itemName}");
+                                            if (actor is MainActor main)
+                                            {
+                                                main.brain.memoryManager.AddShortTermMemory($"'{itemName}'을(를) 소지했다.", "", main?.curLocation?.GetSimpleKey());
+                                            }
                                             return true;
                                         }
                                         else
@@ -125,14 +133,14 @@ namespace Agent.ActionHandlers
                                 else
                                 {
                                     Debug.LogWarning($"[{actor.Name}] 이동 후에도 집을 수 있는 거리/상태가 아님: {itemName}");
-                                    mainActor.brain.memoryManager.AddShortTermMemory("action_fail", $"이동 후에도 집을 수 있는 거리가 아님: {itemName}");
+                                    mainActor.brain.memoryManager.AddShortTermMemory($"{itemName}을(를) 집으려 했지만 손에 닿지 않는다.", "", mainActor?.curLocation?.GetSimpleKey());
 
                                 }
                             }
                             else
                             {
                                 // lookable에도 없다면 Perception 새로고침만 수행
-                                mainActor.brain.memoryManager.AddShortTermMemory("action_fail", $"찾을 수 없음: {itemName}");
+                                mainActor.brain.memoryManager.AddShortTermMemory($"{itemName}을(를) 찾지 못했다.", "", mainActor?.curLocation?.GetSimpleKey());
                             }
                         }
                     }
@@ -184,7 +192,7 @@ namespace Agent.ActionHandlers
                             if (targetLocation == null)
                             {
                                 Debug.LogWarning($"[{actor.Name}] 이동 후에도 ILocation을 찾을 수 없습니다: {targetKey}");
-                                mainActor.brain.memoryManager.AddShortTermMemory("action_fail", $"찾을 수 없는 위치임: {targetKey}");
+                                mainActor.brain.memoryManager.AddShortTermMemory($"근처에 {targetKey}를 찾지 못했다.", "", mainActor?.curLocation?.GetSimpleKey());
                                 return false;
                             }
                         }
@@ -211,10 +219,15 @@ namespace Agent.ActionHandlers
                     }
                     // 실제 ILocation 객체를 사용하여 PutDown 호출
                     await SimDelay.DelaySimMinutes(2, token);
+                    var prev = actor.HandItem?.Name;
                     actor.PutDown(targetLocation);
                     await SimDelay.DelaySimMinutes(1, token);
 
-                    Debug.Log($"[{actor.Name}] PutDown 완료: {actor.HandItem?.Name ?? "아이템"}을(를) {targetKey}에 내려놓았습니다.");
+                    Debug.Log($"[{actor.Name}] PutDown 완료: {prev ?? "아이템"}을(를) {targetKey}에 내려놓았습니다.");
+                    if (actor is MainActor main)
+                    {
+                        main.brain.memoryManager.AddShortTermMemory($"'{prev ?? "아이템"}'을(를) '{targetKey}'에 내려놓았다.", "", main?.curLocation?.GetSimpleKey());
+                    }
                     return true;
                 }
                 finally
@@ -321,6 +334,10 @@ namespace Agent.ActionHandlers
                             Debug.LogWarning($"[{actor.Name}] GiveMoney 기능을 사용할 수 없습니다.");
                         }
                         Debug.Log($"[{actor.Name}] {targetActor.Name}에게 {amount}원을 성공적으로 주었습니다.");
+                        if (actor is MainActor main)
+                        {
+                            main.brain.memoryManager.AddShortTermMemory($"'{targetActor.Name}'에게 {amount}원을 건넸다.", "", main?.curLocation?.GetSimpleKey());
+                        }
                         return true;
                     }
                     catch (System.Exception ex)
@@ -363,10 +380,14 @@ namespace Agent.ActionHandlers
                                                 bubble.Show($"{targetActor.Name}에게 돈 {amount}원을 주는 중", 0);
                                                 await SimDelay.DelaySimMinutes(2, token);
                                             }
-                                            thinkingActor.GiveMoney(targetActor, amount);
+                                    thinkingActor.GiveMoney(targetActor, amount);
                                             await SimDelay.DelaySimMinutes(1, token);
                                         }
                                         Debug.Log($"[{actor.Name}] {targetActor.Name}에게 {amount}원을 성공적으로 주었습니다.");
+                                if (actor is MainActor main)
+                                {
+                                    main.brain.memoryManager.AddShortTermMemory($"'{targetActor.Name}'에게 {amount}원을 건넸다.", "", main?.curLocation?.GetSimpleKey());
+                                }
                                         return true;
                                     }
                                     finally
@@ -377,12 +398,12 @@ namespace Agent.ActionHandlers
                                 else
                                 {
                                     Debug.LogWarning($"[{actor.Name}] 이동 후에도 대상 캐릭터가 상호작용 범위에 없음: {targetCharacter}");
-                                    mainActor.brain.memoryManager.AddShortTermMemory("action_fail", $"{targetCharacter}에게 이동했으나, 상호작용 범위에 없음");
+                                    mainActor.brain.memoryManager.AddShortTermMemory($"{targetCharacter}에게 다가갔는데 안보인다.", "", mainActor?.curLocation?.GetSimpleKey());
                                 }
                             }
                             else
                             {
-                                mainActor.brain.memoryManager.AddShortTermMemory("action_fail", $"찾을 수 없음: {targetCharacter}");
+                                mainActor.brain.memoryManager.AddShortTermMemory($"{targetCharacter}을(를) 찾지 못했다.", "", mainActor?.curLocation?.GetSimpleKey());
                             }
                         }
                     }
@@ -432,9 +453,14 @@ namespace Agent.ActionHandlers
                         bubble.Show($"{targetActor.Name}에게 {actor.HandItem?.Name ?? "아이템"} 건네주는 중", 0);
                     }
                     await SimDelay.DelaySimMinutes(2, token);
+                    var given = actor.HandItem?.Name ?? "아이템";
                     actor.Give(targetCharacter);
                     await SimDelay.DelaySimMinutes(1, token);
-                    Debug.Log($"[{actor.Name}] {targetActor.Name}에게 {actor.HandItem?.Name ?? "아이템"}을 성공적으로 주었습니다.");
+                    Debug.Log($"[{actor.Name}] {targetActor.Name}에게 {given}을 성공적으로 주었습니다.");
+                    if (actor is MainActor main)
+                    {
+                        main.brain.memoryManager.AddShortTermMemory($"'{targetActor.Name}'에게 '{given}'을(를) 건넸다.", "", main?.curLocation?.GetSimpleKey());
+                    }
                     if (bubble != null) bubble.Hide();
                     return true;
                 }
@@ -467,21 +493,26 @@ namespace Agent.ActionHandlers
                                         bubble.Show($"{targetActor.Name}에게 {actor.HandItem?.Name ?? "아이템"} 건네주는 중", 0);
                                     }
                                     await SimDelay.DelaySimMinutes(2, token);
+                                    var given2 = actor.HandItem?.Name ?? "아이템";
                                     actor.Give(targetCharacter);
                                     await SimDelay.DelaySimMinutes(1, token);
-                                    Debug.Log($"[{actor.Name}] {targetActor.Name}에게 {actor.HandItem?.Name ?? "아이템"}을 성공적으로 주었습니다.");
+                                    Debug.Log($"[{actor.Name}] {targetActor.Name}에게 {given2}을 성공적으로 주었습니다.");
+                                    if (actor is MainActor main)
+                                    {
+                                        main.brain.memoryManager.AddShortTermMemory($"'{targetActor.Name}'에게 '{given2}'을(를) 건넸다.", "", main?.curLocation?.GetSimpleKey());
+                                    }
                                     if (bubble != null) bubble.Hide();
                                     return true;
                                 }
                                 else
                                 {
                                     Debug.LogWarning($"[{actor.Name}] 이동 후에도 대상 캐릭터가 상호작용 범위에 없음: {targetCharacter}");
-                                    mainActor.brain.memoryManager.AddShortTermMemory("action_fail", $"{targetCharacter}에게 이동했으나, 상호작용 범위에 없음");
+                                    mainActor.brain.memoryManager.AddShortTermMemory($"{targetCharacter}에게 건네주려 했지만 아직 가까워지지 않았다.", "", mainActor?.curLocation?.GetSimpleKey());
                                 }
                             }
                             else
                             {
-                                mainActor.brain.memoryManager.AddShortTermMemory("action_fail", $"찾을 수 없음: {targetCharacter}");
+                                mainActor.brain.memoryManager.AddShortTermMemory($"{targetCharacter}을(를) 찾지 못했다.", "", mainActor?.curLocation?.GetSimpleKey());
                             }
                         }
                     }

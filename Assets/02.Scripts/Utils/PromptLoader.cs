@@ -405,7 +405,15 @@ Available Actions:
             {
                 foreach (var replacement in replacements)
                 {
-                    prompt = prompt.Replace($"{{{replacement.Key}}}", replacement.Value);
+                    var placeholder = $"{{{replacement.Key}}}";
+                    if (prompt.Contains(placeholder))
+                    {
+                        prompt = prompt.Replace(placeholder, replacement.Value);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[PromptLoader] Placeholder '{placeholder}' not found in '{promptFileName}'.");
+                    }
                 }
             }
 

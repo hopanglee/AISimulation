@@ -95,7 +95,7 @@ public class ExternalEventService : IExternalEventService
                     SourceActor = completedActor,
                     TargetActor = targetActor,
                     CompletedActionType = actionType,
-                    AdditionalInfo = $"{completedActor.Name} completed {actionType}"
+                    AdditionalInfo = $"{completedActor.Name}가 {actionType.ToKorean()}을(를) 완료했다."
                 };
 
                 SendExternalEvent(externalEvent);
@@ -120,14 +120,14 @@ public class ExternalEventService : IExternalEventService
             
             foreach (var leftActorName in leftActors)
             {
-                if (CanSendEvent(actor))
+                if (CanSendEvent(actor) && !leftActors.Contains(actor.Name))
                 {
                     var externalEvent = new ExternalEvent
                     {
                         EventType = ExternalEventType.ActorLeftArea,
                         SourceActor = null, // 떠난 Actor는 더 이상 근처에 없음
                         TargetActor = actor,
-                        AdditionalInfo = $"{leftActorName} left the area"
+                        AdditionalInfo = $"{leftActorName}가 안보이는 곳으로 나갔다."
                     };
 
                     SendExternalEvent(externalEvent);
@@ -152,7 +152,7 @@ public class ExternalEventService : IExternalEventService
                 EventType = ExternalEventType.iPhoneNotification,
                 SourceActor = null,
                 TargetActor = targetActor,
-                AdditionalInfo = notificationContent
+                AdditionalInfo = $"iPhone 알림이 왔다. {notificationContent}"
             };
 
             SendExternalEvent(externalEvent);
@@ -216,7 +216,7 @@ public class ExternalEventService : IExternalEventService
                         SourceActor = movedActor,
                         TargetActor = target,
                         CompletedActionType = ActionType.MoveToArea,
-                        AdditionalInfo = $"{movedActor.Name} moved from {fromArea?.locationName ?? "Unknown"} to {toArea.locationName}"
+                        AdditionalInfo = $"{movedActor.Name}가 {fromArea?.locationName ?? "Unknown"}에서 {toArea.locationName}로 이동했다."
                     };
                     SendExternalEvent(externalEvent);
                 }
@@ -245,8 +245,8 @@ public class ExternalEventService : IExternalEventService
                 // 이벤트 전송 시간 기록 (중복 방지용)
                 lastEventTimes[targetActor] = DateTime.Now;
                 
-                // Brain의 OnExternalEvent 호출
-                mainActor.brain.OnExternalEvent();
+                // Brain에 외부 이벤트 설명과 함께 전달
+                mainActor.brain.OnExternalEvent(externalEvent.AdditionalInfo);
             }
         }
         catch (Exception ex)

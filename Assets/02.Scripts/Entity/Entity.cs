@@ -16,6 +16,7 @@ public interface ILocation
     public string preposition { get; set; } // in the, on the, under the, near the, next to, ...
     public string GetLocalizedPreposition();
     public string GetLocalizedName();
+    public string GetSimpleKey();
     public void ApplyStatus(Actor actor);
 
     public bool IsHideChild { get; set; } // 자식들은 감지 될 수 있는가?

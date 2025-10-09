@@ -61,6 +61,7 @@ public class SuperegoAgent : Claude
                 { "info", characterInfo },
                 { "memory", characterMemory },
                 { "character_situation", actor.LoadActorSituation() },
+                { "goal", actor.LoadGoal() },
             };
 
             // PromptLoader를 사용하여 프롬프트 로드 및 플레이스홀더 교체

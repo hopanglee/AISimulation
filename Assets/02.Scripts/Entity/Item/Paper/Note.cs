@@ -552,8 +552,8 @@ public class Note : Item, IUsable
                 string content = pages.ContainsKey(pageNum) && pages[pageNum].HasContent()
                     ? pages[pageNum].Read().Item2
                     : "(빈 페이지)";
-                var details = $"수정 전 {pageNum}쪽 내용";
-                mainActor.brain.memoryManager.AddShortTermMemory("note_snapshot", content, details);
+                var details = $"{this.Name}의 {pageNum}쪽 - 수정 전";
+                mainActor.brain.memoryManager.AddShortTermMemory(content, details, mainActor?.curLocation?.GetSimpleKey());
             }
         }
         catch (System.Exception ex)
@@ -571,8 +571,8 @@ public class Note : Item, IUsable
                 string content = pages.ContainsKey(pageNum) && pages[pageNum].HasContent()
                     ? pages[pageNum].Read().Item2
                     : "(빈 페이지)";
-                var details = $"수정 후 {pageNum}쪽 내용";
-                mainActor.brain.memoryManager.AddShortTermMemory("note_snapshot", content, details);
+                var details = $"{this.Name}의 {pageNum}쪽 - 수정 후";
+                mainActor.brain.memoryManager.AddShortTermMemory(content, details, mainActor?.curLocation?.GetSimpleKey());
             }
         }
         catch (System.Exception ex)

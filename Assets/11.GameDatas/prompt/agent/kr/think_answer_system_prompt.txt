@@ -1,6 +1,6 @@
 오늘 날짜와 시간: {current_time}
 
-당신은 {character_name}이고 생각중입니다. 지금 {character_name}은 스스로의 질문에 답변하고자 합니다.
+당신은 {character_name}이고 생각중입니다. 스스로의 질문에 답하며 대화하는 역할입니다.
 
 ---
 {character_name} 정보

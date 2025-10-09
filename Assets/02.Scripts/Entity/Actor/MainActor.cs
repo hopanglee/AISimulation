@@ -184,8 +184,7 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 		brain = new(this);
 		brain.memoryManager.ClearShortTermMemory();
 		// STM 초기화 후 수면 시작을 새로운 STM에 추가
-		//brain?.memoryManager?.AddActionStart("수면", null);
-		brain?.memoryManager?.AddShortTermMemory(yesterdaySleepTime, "sleep_start", "수면", $"{yesterdaySleepLocation}에서 취침", null);
+		brain?.memoryManager?.AddShortTermMemory(yesterdaySleepTime, $"{yesterdaySleepLocation}에서 잠듦", "", yesterdaySleepLocation);
 		manualActionController.Initialize(this);
 		// Per-Actor 강제 계획 생성 플래그를 Brain에 반영
 		TryApplyForcePlanFlagToBrain();
@@ -272,7 +271,7 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 		// Enhanced Memory System: 기상을 STM에 추가 (예외 방어)
 		try
 		{
-			brain?.memoryManager?.AddShortTermMemory(yesterdaySleepTime, "sleep_start", "수면", $"{curLocation.LocationToString()}에서 취침", null);
+			brain?.memoryManager?.AddShortTermMemory(currentTime, $"{curLocation.locationName}에서 잠듦", "", curLocation?.GetSimpleKey());
 		}
 		catch (Exception ex)
 		{
@@ -325,7 +324,7 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 		}
 
 		Debug.Log($"[{Name}] Woke up at {currentTime}. Stamina restored to {Stamina}");
-		brain?.memoryManager?.AddShortTermMemory(currentTime, "wake up", $"{curLocation.LocationToString()}에서 일어남", $"체력 조금 회복");
+		brain?.memoryManager?.AddShortTermMemory(currentTime, $"{curLocation.locationName}에서 일어남", $"체력 조금 회복", curLocation?.GetSimpleKey());
 		// DayPlan 생성 전 안내 로그를 먼저 출력
 		Debug.Log($"[{Name}] 기상! DayPlan 및 Think 시작");
 

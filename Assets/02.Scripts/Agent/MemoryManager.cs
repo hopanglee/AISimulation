@@ -13,37 +13,37 @@ using Memory;
 /// Short Term Memory 엔트리 구조
 /// </summary>
 [System.Serializable]
-    public class ShortTermMemoryEntry
+public class ShortTermMemoryEntry
 {
     [JsonConverter(typeof(GameTimeConverter))]
     public GameTime timestamp;
-    public string type; // "perception", "thinking", "action_start", "action_complete", "plan", "sensor_update", "action_interrupt"
     public string content;
     public string details; // 추가 세부 정보 (JSON 형태)
-        [JsonConverter(typeof(EmotionsListConverter))]
-        public List<Emotions> emotions; // 감정과 강도
+    [JsonConverter(typeof(EmotionsListConverter))]
+    public List<Emotions> emotions; // 감정과 강도
+    public string locationName;
 
     // Json 역직렬화를 위한 기본 생성자
     public ShortTermMemoryEntry()
     {
     }
 
-    public ShortTermMemoryEntry(string type, string content, string details = null, List<Emotions> emotions = null)
+    public ShortTermMemoryEntry(string content, string details = null, string locationName = null, List<Emotions> emotions = null)
     {
         var timeService = Services.Get<ITimeService>();
         this.timestamp = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 0, 0);
-        this.type = type;
         this.content = content;
         this.details = details;
+        this.locationName = locationName ?? "Unknown";
         this.emotions = emotions ?? new List<Emotions>();
     }
 
-    public ShortTermMemoryEntry(GameTime timestamp, string type, string content, string details = null, List<Emotions> emotions = null)
+    public ShortTermMemoryEntry(GameTime timestamp, string content, string details = null, string locationName = null, List<Emotions> emotions = null)
     {
         this.timestamp = timestamp;
-        this.type = type;
         this.content = content;
         this.details = details;
+        this.locationName = locationName ?? "Unknown";
         this.emotions = emotions ?? new List<Emotions>();
     }
 }
@@ -66,9 +66,6 @@ public class MemoryManager
 {
     // Enhanced Memory System Agents
     public LocationMemoryManager locationMemoryManager;
-    // public LongTermMemoryConsolidationAgent consolidationAgent;
-    // public LongTermMemoryFilterAgent filterAgent;
-    // public LongTermMemoryMaintenanceAgent maintenanceAgent;
 
     private readonly Actor owner;
 
@@ -193,31 +190,14 @@ public class MemoryManager
     /// <summary>
     /// Short Term Memory에 엔트리를 추가합니다.
     /// </summary>
-    public void AddShortTermMemory(string type, string content, string details = null, List<Emotions> emotions = null)
+    public void AddShortTermMemory(string content, string details, string locationName, List<Emotions> emotions = null)
     {
-        // 경로 보장
-        if (string.IsNullOrEmpty(shortTermMemoryPath))
-            InitializeMemoryPaths();
-
-        // 메모리가 비어 있으면 먼저 로드 시도
-        if (shortTermMemory == null || shortTermMemory.entries == null)
-            LoadShortTermMemory();
-
-        // 여전히 null이면 안전 초기화
-        if (shortTermMemory == null)
-            shortTermMemory = new ShortTermMemoryData();
-        if (shortTermMemory.entries == null)
-            shortTermMemory.entries = new List<ShortTermMemoryEntry>();
-
-        string logOwner = owner != null ? owner.Name : "Unknown";
-        Debug.Log($"[{logOwner}] Short Term Memory 추가: [{type}] {content}");
-
-        var entry = new ShortTermMemoryEntry(type, content, details, emotions);
-        shortTermMemory.entries.Add(entry);
-        SaveShortTermMemory();
+        var timeService = Services.Get<ITimeService>();
+        var timestamp = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 0, 0);
+        AddShortTermMemory(timestamp, content, details, locationName, emotions);
     }
 
-    public void AddShortTermMemory(GameTime timestamp, string type, string content, string details = null, List<Emotions> emotions = null)
+    public void AddShortTermMemory(GameTime timestamp, string content, string details, string locationName, List<Emotions> emotions = null)
     {
         // 경로 보장
         if (string.IsNullOrEmpty(shortTermMemoryPath))
@@ -234,9 +214,10 @@ public class MemoryManager
             shortTermMemory.entries = new List<ShortTermMemoryEntry>();
 
         string logOwner = owner != null ? owner.Name : "Unknown";
-        Debug.Log($"[{logOwner}] Short Term Memory 추가: [{type}] {content}");
+        Debug.Log($"[{logOwner}] Short Term Memory 추가: {content}");
 
-        var entry = new ShortTermMemoryEntry(timestamp, type, content, details, emotions);
+
+        var entry = new ShortTermMemoryEntry(timestamp, content, details, locationName, emotions);
         shortTermMemory.entries.Add(entry);
         SaveShortTermMemory();
     }
@@ -283,7 +264,7 @@ public class MemoryManager
         {
             longTermMemories = new List<LongTermMemory>();
         }
-        
+
         // Null 안전 가드(이중 보강)
         if (longTermMemories == null)
             longTermMemories = new List<LongTermMemory>();
@@ -361,100 +342,6 @@ public class MemoryManager
             SaveLongTermMemory();
             Debug.Log($"[{owner.Name}] Long Term Memory 업데이트 완료: {longTermMemories.Count}개");
         }
-    }
-
-    // === Short Term Memory Operations ===
-
-    /// <summary>
-    /// Perception Agent 결과를 Short Term Memory에 추가합니다.
-    /// </summary>
-    public void AddPerceptionResult(PerceptionResult perceptionResult)
-    {
-        string content = $"상황 인식: {perceptionResult.situation_interpretation}";
-        string details = $"생각 체인: {string.Join(" -> ", perceptionResult.thought_chain)}";
-        // string details = JsonConvert.SerializeObject(new
-        // {
-        //     thought_chain = perceptionResult.thought_chain,
-        //     situation_interpretation = perceptionResult.situation_interpretation
-        // });
-
-        AddShortTermMemory("perception", content, details, perceptionResult.emotions);
-    }
-
-    /// <summary>
-    /// ActSelector Agent 결과를 Short Term Memory에 추가합니다.
-    /// </summary>
-    public void AddActSelectorResult(ActSelectorAgent.ActSelectionResult actSelection)
-    {
-        string content = $"{actSelection.ActType.ToKorean()}을(를) 하기로 결정했다.";
-        string details = $"의도: {actSelection.Intention}";//이유: {actSelection.Reasoning}, 
-        // string details = JsonConvert.SerializeObject(new
-        // {
-        //     act_type = actSelection.ActType.ToString(),
-        //     reasoning = actSelection.Reasoning,
-        //     intention = actSelection.Intention
-        // });
-
-        AddShortTermMemory("thinking", content, details);
-    }
-
-    /// <summary>
-    /// 행동 시작을 Short Term Memory에 추가합니다.
-    /// </summary>
-    public void AddActionStart(ActionType actionType, Dictionary<string, object> parameters)
-    {
-        string content = $"{actionType.ToKorean()}을(를) 시작했다.";
-        string details = $"파라미터: {JsonConvert.SerializeObject(parameters)}";
-
-        AddShortTermMemory("action_start", content, details);
-    }
-
-    public void AddActionStart(string actionType, Dictionary<string, object> parameters)
-    {
-        string content = $"{actionType}을(를) 시작했다.";
-        string details = $"파라미터: {JsonConvert.SerializeObject(parameters)}";
-
-        AddShortTermMemory("action_start", content, details);
-    }
-
-    /// <summary>
-    /// 행동 완료를 Short Term Memory에 추가합니다.
-    /// </summary>
-    public void AddActionComplete(ActionType actionType, Dictionary<string, object> parameters, bool isSuccess = true)
-    {
-        string content = $"{actionType.ToKorean()}을(를) 완료했다.";
-        string details = $"파라미터: {JsonConvert.SerializeObject(parameters)}, 성공 여부: {isSuccess}";
-
-        AddShortTermMemory("action_complete", content, details);
-    }
-
-    public void AddActionComplete(string actionType, string result, bool isSuccess = true)
-    {
-        Debug.Log($"[{owner.Name}] AddActionComplete: {actionType} - {result}");
-        string content = $"{actionType}을(를) 완료했다.";
-        string details = $"결과: {result}, 성공 여부: {isSuccess}";
-
-        AddShortTermMemory("action_complete", content, details);
-    }
-
-    /// <summary>
-    /// 외부 이벤트로 인한 행동 중단을 기록합니다.
-    /// </summary>
-    public void AddActionInterrupted(ActionType actionType)
-    {
-        string content = $"{actionType.ToKorean()}을(를) 중단했다.";
-        string details = $"외부 이벤트로 인한 중단";
-
-        AddShortTermMemory("action_interrupt", content, details);
-    }
-
-    /// <summary>
-    /// 계획 생성을 Short Term Memory에 추가합니다.
-    /// </summary>
-    public void AddPlanCreated(string planDescription)
-    {
-        string content = $"계획 생성: {planDescription}";
-        AddShortTermMemory("plan", content);
     }
 
     // === Location Memory Operations ===
@@ -729,7 +616,7 @@ public class MemoryManager
             // 가장 오래된 20개만 유지보수 처리
             var maintenanceAgent = new LongTermMemoryMaintenanceAgent(owner);
             var maintenanceResult = await maintenanceAgent.MaintainMemoriesAsync(oldest20, currentTime);
-            
+
             if (maintenanceResult != null)
             {
                 var maintainedMemories = maintenanceAgent.ApplyMaintenanceResult(oldest20, maintenanceResult);

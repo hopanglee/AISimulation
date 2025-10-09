@@ -68,8 +68,12 @@ namespace Agent.ActionHandlers
                                 Debug.Log($"[{actor.Name}] {targetActor.Name}에게 말함: {message}");
 
                                 // 성공적인 대화에 대한 피드백
-                                var feedback =
-                                    $"Successfully spoke to {targetActor.Name}: '{message}'. The conversation was delivered.";
+                                
+                                thinkingActor.brain.memoryManager.AddShortTermMemory(
+                                    $"나: '{message}'",
+                                    "",
+                                    thinkingActor?.curLocation?.LocationToString()
+                                );
                                 await SimDelay.DelaySimMinutes(1, token);
                                 return true;
                             }
@@ -132,8 +136,9 @@ namespace Agent.ActionHandlers
                             {
                                 string result = await interactable.TryInteract(actor, token);
                                 thinkingActor.brain.memoryManager.AddShortTermMemory(
-                                    "interaction_result",
-                                    result
+                                    $"{result}",
+                                    "",
+                                    thinkingActor?.curLocation?.LocationToString()
                                 );
                                 Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
                                 return true;
@@ -155,8 +160,9 @@ namespace Agent.ActionHandlers
                             {
                                 string result = await interactable.TryInteract(actor, token);
                                 thinkingActor.brain.memoryManager.AddShortTermMemory(
-                                    "interaction_result",
-                                    result
+                                    $"{result}",
+                                    "",
+                                    thinkingActor?.curLocation?.LocationToString()
                                 );
 
                                 Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
@@ -179,8 +185,9 @@ namespace Agent.ActionHandlers
                             {
                                 string result = await interactable.TryInteract(actor, token);
                                 thinkingActor.brain.memoryManager.AddShortTermMemory(
-                                    "interaction_result",
-                                    result
+                                    $"{result}",
+                                    "",
+                                    thinkingActor?.curLocation?.LocationToString()
                                 );
 
                                 Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
@@ -221,8 +228,9 @@ namespace Agent.ActionHandlers
                                 {
                                     string result = await interProp.TryInteract(actor, token);
                                     thinkingActor.brain.memoryManager.AddShortTermMemory(
-                                        "interaction_result",
-                                        result
+                                        $"{result}",
+                                        "",
+                                        thinkingActor?.curLocation?.LocationToString()
                                     );
                                     Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
                                     await SimDelay.DelaySimMinutes(1, token);
@@ -236,8 +244,9 @@ namespace Agent.ActionHandlers
                                 {
                                     string result = await interBld.TryInteract(actor, token);
                                     thinkingActor.brain.memoryManager.AddShortTermMemory(
-                                        "interaction_result",
-                                        result
+                                        $"{result}",
+                                        "",
+                                        thinkingActor?.curLocation?.LocationToString()
                                     );
                                     Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
                                     await SimDelay.DelaySimMinutes(1, token);
@@ -251,8 +260,9 @@ namespace Agent.ActionHandlers
                                 {
                                     string result = await interItem.TryInteract(actor, token);
                                     thinkingActor.brain.memoryManager.AddShortTermMemory(
-                                        "interaction_result",
-                                        result
+                                        $"{result}",
+                                        "",
+                                        thinkingActor?.curLocation?.LocationToString()
                                     );
                                     Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
                                     await SimDelay.DelaySimMinutes(1, token);
@@ -264,8 +274,9 @@ namespace Agent.ActionHandlers
                                     $"[{actor.Name}] 이동 후에도 상호작용 불가: {objectName}"
                                 );
                                 thinkingActor.brain.memoryManager.AddShortTermMemory(
-                                    "action_fail",
-                                    $"{objectName}으로 이동했으나, 상호작용 범위에 없음"
+                                    $"{objectName}에 다가갔지만 아직 상호작용하기엔 멀다.",
+                                    "",
+                                    thinkingActor?.curLocation?.LocationToString()
                                 );
                             }
                             catch (OperationCanceledException)
@@ -285,8 +296,9 @@ namespace Agent.ActionHandlers
                                 $"[{actor.Name}] 오브젝트를 찾을 수 없음: {objectName}"
                             );
                             thinkingActor.brain.memoryManager.AddShortTermMemory(
-                                "action_fail",
-                                $"찾을 수 없음: {objectName}"
+                                $"{objectName}을(를) 찾지 못했다.",
+                                "",
+                                thinkingActor?.curLocation?.LocationToString()
                             );
                         }
                     }
@@ -372,16 +384,17 @@ namespace Agent.ActionHandlers
                 try
                 {
                     stmActor.brain.memoryManager.AddShortTermMemory(
-                        "activity_result",
                         $"활동 '{activityName}'을(를) 마쳤다.",
-                        $"결과: {resultText}"
+                        $"결과: {resultText}",
+                        stmActor?.curLocation?.LocationToString()
                     );
                 }
                 catch
                 {
                     stmActor.brain.memoryManager.AddShortTermMemory(
-                        "activity_result",
-                        $"활동 '{activityName}'을(를) 마쳤다."
+                        $"활동 '{activityName}'을(를) 마쳤다.",
+                        null,
+                        stmActor?.curLocation?.LocationToString()
                     );
                 }
             }

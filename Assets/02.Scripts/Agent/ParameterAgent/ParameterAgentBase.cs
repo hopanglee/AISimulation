@@ -42,6 +42,8 @@ namespace Agent
     {
         public ActionType ActType { get; set; } // enum으로 복구
         public Dictionary<string, object> Parameters { get; set; }
+        // 액션 시작 시 STM에 바로 사용할 자연어 문장 (파라미터를 포함한 서술형)
+        public string StartMemoryContent { get; set; }
     }
 
     // NPC 전용 DTOs

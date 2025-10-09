@@ -64,7 +64,7 @@ public class HinoMaori : MainActor
 		base.Awake();
 		//brain = new(this);
 		brain.memoryManager.ClearShortTermMemory();
-		brain.memoryManager.AddShortTermMemory(yesterdaySleepTime, "event_occurred", "차가 매우 빠르게 다가와 부딪침", $"위치: {yesterdaySleepLocation}", null);
+		brain.memoryManager.AddShortTermMemory(yesterdaySleepTime, $"차가 매우 빠르게 다가와 부딪침", "쾅!", yesterdaySleepLocation, null);
 	}
     public override async UniTask Sleep(int? minutes = null)
     {

@@ -167,17 +167,13 @@ public class LongTermMemoryConsolidationAgent : GPT
             var localizationService = Services.Get<ILocalizationService>();
             var entryTexts = sortedEntries.Select((entry, index) =>
             {
-                var entryReplacements = new Dictionary<string, string>
-                {
-                    ["emotions"] = FormatEmotions(entry.emotions),
-                    ["entry_number"] = index.ToString(),
-                    ["timestamp"] = $"{entry.timestamp.year}-{entry.timestamp.month:D2}-{entry.timestamp.day:D2} {entry.timestamp.hour:D2}:{entry.timestamp.minute:D2}",
-                    ["entry_type"] = entry.type,
-                    ["content"] = entry.content,
-                    ["details"] = entry.details
-                };
+                var entry_number = index.ToString();
+                var timestamp = $"{entry.timestamp.year}-{entry.timestamp.month:D2}-{entry.timestamp.day:D2} {entry.timestamp.hour:D2}:{entry.timestamp.minute:D2}";
+                var emotions = FormatEmotions(entry.emotions);
+                var content = entry.content;
+                var details = entry.details;
 
-                return localizationService.GetLocalizedText("memory_entry_item_template", entryReplacements);
+                return $"[{entry_number}] {timestamp} <{emotions}> {content} ({details})";
             });
 
             var entriesText = string.Join("\n", entryTexts);

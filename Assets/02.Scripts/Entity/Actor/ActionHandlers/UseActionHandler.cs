@@ -63,13 +63,13 @@ namespace Agent.ActionHandlers
                         var (isSuccess, result) = await usable.Use(actor, null, token);
                         if (isSuccess)
                         {
-                            actor.brain.memoryManager.AddShortTermMemory("action_success", $"{usedItemName} 사용 완료: {result}");
+                            actor.brain.memoryManager.AddShortTermMemory($"{result}", $"", actor?.curLocation?.GetSimpleKey());
                             await SimDelay.DelaySimMinutes(2, token);
                             return true;
                         }
                         else
                         {
-                            actor.brain.memoryManager.AddShortTermMemory("action_fail", $"{usedItemName} 사용 실패: {result}");
+                            actor.brain.memoryManager.AddShortTermMemory($"{result}", $"{result}", actor?.curLocation?.GetSimpleKey());
                             await SimDelay.DelaySimMinutes(2, token);
                             return false;
                         }
@@ -106,11 +106,11 @@ namespace Agent.ActionHandlers
                 var (isSuccess, result) = await clothing.Use(actor, null, token);
                 if (isSuccess)
                 {
-                    actor.brain.memoryManager.AddShortTermMemory("action_success", $"착용 완료: {clothing.Name} - {result}");
+                    actor.brain.memoryManager.AddShortTermMemory($"{result}", $"", actor?.curLocation?.GetSimpleKey());
                 }
                 else
                 {
-                    actor.brain.memoryManager.AddShortTermMemory("action_fail", $"착용 실패: {clothing.Name} - {result}");
+                    actor.brain.memoryManager.AddShortTermMemory($"{result}", $"", actor?.curLocation?.GetSimpleKey());
                 }
                 Debug.Log($"[{actor.Name}] Clothing 착용 결과: {result}");
 
@@ -192,11 +192,11 @@ namespace Agent.ActionHandlers
                 var (isSuccess, result) = await iphone.Use(actor, parameters, token);
                 if (isSuccess)
                 {
-                    actor.brain.memoryManager.AddShortTermMemory("action_success", $"iPhone 메시지 전송: {result}");
+                    actor.brain.memoryManager.AddShortTermMemory($"{result}", $"", actor?.curLocation?.GetSimpleKey());
                 }
                 else
                 {
-                    actor.brain.memoryManager.AddShortTermMemory("action_fail", $"iPhone 메시지 전송 실패: {result}");
+                    actor.brain.memoryManager.AddShortTermMemory($"{result}", $"", actor?.curLocation?.GetSimpleKey());
                 }
                 Debug.Log($"[{actor.Name}] iPhone Chat 결과: {result}");
 
@@ -228,11 +228,12 @@ namespace Agent.ActionHandlers
                 var (isSuccess, result) = await iphone.Use(actor, parameters, token);
                 if (isSuccess)
                 {
-                    actor.brain.memoryManager.AddShortTermMemory("action_success", $"iPhone 메시지 읽기: {result}");
+                    actor.brain.memoryManager.AddShortTermMemory($"아이폰에서 {readTargetName}와의 최근 {count}개 대화를 읽었다.", "",actor?.curLocation?.GetSimpleKey());
+                    actor.brain.memoryManager.AddShortTermMemory($"{result}", $"", actor?.curLocation?.GetSimpleKey());
                 }
                 else
                 {
-                    actor.brain.memoryManager.AddShortTermMemory("action_fail", $"iPhone 메시지 읽기 실패: {result}");
+                    actor.brain.memoryManager.AddShortTermMemory($"아이폰에서 {readTargetName}의 대화를 읽지 못했다.", $"{result}", actor?.curLocation?.GetSimpleKey());
                 }
                 Debug.Log($"[{actor.Name}] iPhone Read 결과: {result}");
 
@@ -262,11 +263,12 @@ namespace Agent.ActionHandlers
                 var (isSuccess, result) = await iphone.Use(actor, parameters, token);
                 if (isSuccess)
                 {
-                    actor.brain.memoryManager.AddShortTermMemory("action_success", $"iPhone 메시지 계속 읽기: {result}");
+                    actor.brain.memoryManager.AddShortTermMemory($"아이폰에서 {continueTargetName}와의 지난 대화를 더 읽었다.", $"", actor?.curLocation?.GetSimpleKey());
+                    actor.brain.memoryManager.AddShortTermMemory($"{result}", $"", actor?.curLocation?.GetSimpleKey());
                 }
                 else
                 {
-                    actor.brain.memoryManager.AddShortTermMemory("action_fail", $"iPhone 메시지 계속 읽기 실패: {result}");
+                    actor.brain.memoryManager.AddShortTermMemory($"아이폰에서 {continueTargetName}의 지난 대화를 더 읽지 못했다.", $"{result}", actor?.curLocation?.GetSimpleKey());
                 }
                 Debug.Log($"[{actor.Name}] iPhone Continue 결과: {result}");
 
@@ -298,11 +300,22 @@ namespace Agent.ActionHandlers
                 Debug.Log($"[{actor.Name}] Note 사용 결과: {result}");
                 if (isSuccess)
                 {
-                    actor.brain.memoryManager.AddShortTermMemory("action_success", $"Note 사용 완료: {action}, {result}");
+                    string natural = action.ToLower() == "write" ? "노트에 글을 적었다."
+                        : action.ToLower() == "read" ? "노트를 읽었다."
+                        : action.ToLower() == "rewrite" ? "노트의 글을 고쳐 썼다."
+                        : action.ToLower() == "erase" ? "노트에서 글을 지웠다."
+                        : "노트를 사용했다.";
+                    actor.brain.memoryManager.AddShortTermMemory(natural, "", actor?.curLocation?.GetSimpleKey());
+                    actor.brain.memoryManager.AddShortTermMemory($"{result}", $"", actor?.curLocation?.GetSimpleKey());
                 }
                 else
                 {
-                    actor.brain.memoryManager.AddShortTermMemory("action_fail", $"Note 사용 실패: {action}, 원인 {result}");
+                    string naturalFail = action.ToLower() == "write" ? "노트에 글을 적으려 했지만 잘 되지 않았다."
+                        : action.ToLower() == "read" ? "노트를 읽으려 했지만 잘 되지 않았다."
+                        : action.ToLower() == "rewrite" ? "노트를 고쳐 쓰려 했지만 잘 되지 않았다."
+                        : action.ToLower() == "erase" ? "노트에서 지우려 했지만 잘 되지 않았다."
+                        : "노트를 사용하려 했지만 잘 되지 않았다.";
+                    actor.brain.memoryManager.AddShortTermMemory(naturalFail, $"{result}", actor?.curLocation?.GetSimpleKey());
                 }
 
                 // 통일된 SimDelay (2분)
@@ -342,11 +355,12 @@ namespace Agent.ActionHandlers
                 var (isSuccess, result) = await book.Use(actor, page, token);
                 if (isSuccess)
                 {
-                    actor.brain.memoryManager.AddShortTermMemory("action_success", $"Book 읽기 완료: {page}쪽 - {result}");
+                    actor.brain.memoryManager.AddShortTermMemory($"{book.Name}의 {page}쪽을 읽었다. ", $"", actor?.curLocation?.GetSimpleKey());
+                    actor.brain.memoryManager.AddShortTermMemory($"{result}", $"", actor?.curLocation?.GetSimpleKey());
                 }
                 else
                 {
-                    actor.brain.memoryManager.AddShortTermMemory("action_fail", $"Book 읽기 실패: {page}쪽 - {result}");
+                    actor.brain.memoryManager.AddShortTermMemory($"{book.Name}의 {page}쪽을 읽으려 했지만 잘 되지 않았다. ", $"{result}", actor?.curLocation?.GetSimpleKey());
                 }
                 Debug.Log($"[{actor.Name}] Book 읽기 결과: {result}");
 

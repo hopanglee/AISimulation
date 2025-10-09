@@ -79,10 +79,13 @@ namespace Agent.ActionHandlers
                     // 실제 사색 수행
                     var thinkResult = await PerformInteractiveThinkingAsync(topic, duration, token);
 
-                    var thinkingSummary = $"주제 '{topic}'에 대해 {duration}분간 사색함. " +
-                                        $"결론: {thinkResult.Conclusions}";
+                    var thinkingSummary = $"{thinkResult.Conclusions}";
 
-                    mainActor.brain.memoryManager.AddShortTermMemory("action_complete", thinkingSummary, "생각 완료");
+                    foreach (var thought in thinkResult.ThoughtChain)
+                    {
+                        mainActor.brain.memoryManager.AddShortTermMemory(thought, "혼자 생각하는 중", mainActor?.curLocation?.GetSimpleKey());
+                    }
+                    mainActor.brain.memoryManager.AddShortTermMemory(thinkingSummary, "혼자 생각하는 중", mainActor?.curLocation?.GetSimpleKey());
 
                     Debug.Log($"[{actor.Name}] Think 액션 완료: {thinkResult.Conclusions}");
                     return true;
