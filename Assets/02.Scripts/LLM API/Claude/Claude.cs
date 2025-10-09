@@ -69,7 +69,8 @@ public class Claude : LLMClient
     {
         // 기본 구현: 캐시 키 비활성화에 가까운 고정 키 제공
         // 추후 실제 메시지/옵션/툴 상태를 반영하도록 확장
-        return actor.sensor.GetLookableEntities() + actor.LoadCharacterInfo();
+        //return actor.sensor.GetLookableEntities() + actor.LoadCharacterInfo() + actor.LoadCharacterMemory();
+        return base.GetHashKey();
     }
 
     public static void SetSessionDirectoryName(string sessionName)

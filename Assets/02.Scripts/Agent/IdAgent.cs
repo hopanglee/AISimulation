@@ -60,7 +60,7 @@ public class IdAgent : Gemini
                 { "info", characterInfo },
                 { "memory", characterMemory },
                 { "character_situation", actor.LoadActorSituation() },
-                { "goal", actor.LoadGoal() },
+                { "goal", "본인만의 생존 및 안전 유지, 쾌락 추구"},//actor.LoadGoal() },
             };
 
             // PromptLoader를 사용하여 프롬프트 로드 및 플레이스홀더 교체

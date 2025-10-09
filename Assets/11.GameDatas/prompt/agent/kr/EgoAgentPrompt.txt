@@ -7,9 +7,8 @@
 ---
 
 {character_name} 정보
-- 성격: {personality}
+- 성격: {personality} 
 - 정보: {info}
-- 목표: {goal}
 
 {memory}
 
