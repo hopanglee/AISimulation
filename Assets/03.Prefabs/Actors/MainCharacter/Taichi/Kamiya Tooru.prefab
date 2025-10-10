@@ -986,6 +986,9 @@ MonoBehaviour:
   activityDescription: 
   activityStartTime: 0
   activityDuration: 0
+  goalAlreadyChanged: 1
+  whenToChangeGoal: 
+  afterGoal: 
   cookRecipes:
     keys:
     - "\uB77C\uBA74"

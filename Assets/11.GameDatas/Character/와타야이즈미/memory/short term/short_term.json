@@ -1,0 +1,12 @@
+{
+  "entries": [
+    {
+      "timestamp": "2025-02-22T22:00:00Z",
+      "type": "action_start",
+      "content": "수면",
+      "details": "거실 침대에서 취침",
+      "emotions": {}
+    }
+  ],
+  "lastUpdated": "2025-02-23T07:00:00Z"
+}

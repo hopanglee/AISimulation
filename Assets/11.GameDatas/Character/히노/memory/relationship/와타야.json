@@ -1,0 +1,38 @@
+{
+  "name": "와타야 이즈미",
+  "age": 16,
+  "birthday": "",
+  "house_location": "도쿄:세타가와:미나미 카라스야마:5-chome-11:와타야의 집",
+  "height": 163.0,
+  "weight": 49.0,
+  "hair_color": "검정색",
+  "skin_color": "태닝된 갈색",
+  "eye_color": "짙은 갈색",
+  "hair_style": "단정한 짧은 머리",
+  "body_type": "균형 잡힘",
+  "relationship_type": "절친",
+  "closeness": 0.9,
+  "trust": 0.85,
+  "last_interaction": "2025-07-23T19:50:00Z",
+  "interaction_history": [
+    "2024-12-20(금) 히노의 집: 나의 병을 처음으로 털어놓음.",
+    "2025-06-05(목) 로카 고등학교: 가짜 연애를 알지만 침묵을 요청함.",
+    "2025-07-14(월) 카페 모카하우스: 노트와 병에 대해 이야기함."
+  ],
+  "personality_traits": [
+    "조용하지만 강함",
+    "상냥함"
+  ],
+  "shared_interests": [
+    "조용한 카페",
+    "노트와 기록"
+  ],
+  "shared_memories": [
+    "비밀을 공유한 밤",
+    "서로를 지키겠다는 약속"
+  ],
+  "notes": [
+    "가장 믿는 친구.",
+    "가끔 거리를 두려는 순간이 있지만 소중한 존재."
+  ]
+}

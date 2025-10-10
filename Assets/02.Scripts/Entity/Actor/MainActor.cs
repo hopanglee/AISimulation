@@ -118,6 +118,16 @@ public abstract class MainActor : Actor
 	[SerializeField]
 	private float activityDuration = 0f; // 활동 지속 시간
 
+	[Header("Goal Update (One-time)")]
+	[SerializeField, Tooltip("이 캐릭터의 goal이 이미 변경되었는지 1회 플래그")]
+	public bool goalAlreadyChanged = false;
+
+	[SerializeField, Tooltip("goal 변경 조건")]
+	public string whenToChangeGoal;
+
+	[SerializeField, Tooltip("변경 후 goal")]
+	public string afterGoal;
+
 	public string CurrentActivity { get => currentActivity; set => currentActivity = value; }
 	public string ActivityDescription => activityDescription;
 	public bool IsPerformingActivity => currentActivity != "Idle";

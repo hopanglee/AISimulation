@@ -125,6 +125,42 @@ public class Brain
 
 
     /// <summary>
+    /// Perception 이전에 goal 업데이트가 필요한지 확인하고 한 번만 변경합니다.
+    /// </summary>
+    public async UniTask UpdateGoalBeforePerceptionAsync()
+    {
+        try
+        {
+            if (actor is not MainActor mainActor) return;
+            if (mainActor.goalAlreadyChanged) return;
+
+            // 설정이 없으면 스킵
+            var targetAfter = mainActor.afterGoal;
+            if (string.IsNullOrWhiteSpace(targetAfter)) return;
+
+            // 에이전트에게 변경 필요 여부 질의
+            var agent = new GoalUpdateAgent(actor);
+            var decision = await agent.DecideAsync();
+            if (decision == null || !decision.ShouldChange) return;
+
+            // CharacterInfo 수정 및 저장
+            var characterMemoryManager = new CharacterMemoryManager(actor);
+            var info = characterMemoryManager.GetCharacterInfo();
+
+            info.Goal = targetAfter.Trim();
+            await characterMemoryManager.SaveCharacterInfoAsync();
+
+            // 1회 플래그 세팅
+            mainActor.goalAlreadyChanged = true;
+            Debug.Log($"[{actor.Name}] goal 변경 완료 -> '{info.Goal}'");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[{actor.Name}] Goal 사전 업데이트 실패: {ex.Message}");
+        }
+    }
+
+    /// <summary>
     /// 외부 이벤트가 발생했을 때 호출됩니다.
     /// PerceptionAgent를 실행하고 반응 여부를 결정한 후 적절한 조치를 취합니다.
     /// </summary>

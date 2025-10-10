@@ -1,0 +1,38 @@
+[
+  {
+    "timestamp": "2024-12-20T16:00:00Z",
+    "type": "knowledge",
+    "category": "social",
+    "content": "히노 마오리의 기억 문제를 가장 먼저 알게 되었다. 그녀는 내 앞에서만 솔직했다. 나는 그녀를 지키겠다고 다짐했다.",
+    "emotions": { "결의": 0.7, "연민": 0.6 },
+    "relatedActors": ["히노"],
+    "location": "도쿄:세타가와:미나미 카라스야마:히노의 집:방"
+  },
+  {
+    "timestamp": "2025-06-05T16:00:00Z",
+    "type": "knowledge",
+    "category": "social",
+    "content": "카미야 토루가 히노와 '가짜 연애'를 시작했다는 사실을 알았다. 친구를 위해 참아야 한다고 스스로에게 말했다.",
+    "emotions": { "질투": 0.7, "혼란": 0.5 },
+    "relatedActors": ["히노", "카미야"],
+    "location": "도쿄:세타가와:로카 고등학교:복도"
+  },
+  {
+    "timestamp": "2025-06-10T14:00:00Z",
+    "type": "experience",
+    "category": "social",
+    "content": "카페에서 멀리서 두 사람을 보았다. 히노의 표정은 평온했고 카미야는 조심스러웠다. 마음이 복잡했다.",
+    "emotions": { "갈등": 0.6, "질투": 0.6, "체념": 0.4 },
+    "relatedActors": ["히노", "카미야"],
+    "location": "도쿄:신주쿠:카부키쵸:카페 모카하우스:창가"
+  },
+  {
+    "timestamp": "2025-06-20T18:00:00Z",
+    "type": "experience",
+    "category": "personal",
+    "content": "히노를 도와야 한다는 마음과, 카미야가 내 쪽을 봐주길 바라는 마음이 부딪혔다. 둘 다 가지는 법은 없을까.",
+    "emotions": { "갈등": 0.8, "소망": 0.6 },
+    "relatedActors": ["히노", "카미야"],
+    "location": "도쿄:세타가와:미나미 카라스야마:와타야의 집:방"
+  }
+]

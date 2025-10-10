@@ -39,9 +39,13 @@ public class SimulationController : MonoBehaviour
     [SerializeField]
     private Button focusKamiyaButton;
 
+    [SerializeField]
+    private Button focusWatayaButton;
+
     [Header("Actor Activity Texts")]
     public TextMeshProUGUI kamiyaActivityText;
     public TextMeshProUGUI hinoActivityText;
+    public TextMeshProUGUI watayaActivityText;
 
     [Header("AI Settings")]
     [SerializeField]
@@ -81,6 +85,7 @@ public class SimulationController : MonoBehaviour
     private CameraController cameraController;
     private GameObject hinoMaori;
     private GameObject kamiyaTooru;
+    private GameObject watayaIzumi;
 
     private enum PlayPauseState { Start, Pause, Resume }
     private PlayPauseState playPauseState = PlayPauseState.Start;
@@ -149,6 +154,13 @@ public class SimulationController : MonoBehaviour
             kamiyaTooru = GameObject.Find("Kamiya Tooru(Clone)");
         }
 
+        // Wataya Izumi 찾기
+        watayaIzumi = GameObject.Find("Wataya Izumi");
+        if (watayaIzumi == null)
+        {
+            watayaIzumi = GameObject.Find("Wataya Izumi(Clone)");
+        }
+
         if (hinoMaori == null)
         {
             Debug.LogWarning("[SimulationController] 씬에서 Hino Maori를 찾지 못했습니다!");
@@ -156,6 +168,10 @@ public class SimulationController : MonoBehaviour
         if (kamiyaTooru == null)
         {
             Debug.LogWarning("[SimulationController] 씬에서 Kamiya Tooru를 찾지 못했습니다!");
+        }
+        if (watayaIzumi == null)
+        {
+            Debug.LogWarning("[SimulationController] 씬에서 Wataya Izumi를 찾지 못했습니다!");
         }
     }
 
@@ -175,6 +191,9 @@ public class SimulationController : MonoBehaviour
 
         if (focusKamiyaButton != null)
             focusKamiyaButton.onClick.AddListener(FocusOnKamiya);
+
+        if (focusWatayaButton != null)
+            focusWatayaButton.onClick.AddListener(FocusOnWataya);
 
         // GPT 글로벌 토글 연결
         if (globalGPTToggle != null)
@@ -225,6 +244,9 @@ public class SimulationController : MonoBehaviour
         if (focusKamiyaButton != null)
             focusKamiyaButton.interactable = kamiyaTooru != null;
 
+        if (focusWatayaButton != null)
+            focusWatayaButton.interactable = watayaIzumi != null;
+
         // 상태 텍스트 업데이트
         if (statusText != null)
         {
@@ -250,6 +272,7 @@ public class SimulationController : MonoBehaviour
 
         bool isKamiya = IsKamiya(actorName);
         bool isHino = IsHino(actorName);
+        bool isWataya = IsWataya(actorName);
 
         if (isKamiya && kamiyaActivityText != null)
         {
@@ -260,6 +283,11 @@ public class SimulationController : MonoBehaviour
         {
             hinoActivityText.text = "<히노> " + (text ?? string.Empty);
             ForceTextLayoutUpdate(hinoActivityText);
+        }
+        if (isWataya && watayaActivityText != null)
+        {
+            watayaActivityText.text = "<와타야> " + (text ?? string.Empty);
+            ForceTextLayoutUpdate(watayaActivityText);
         }
     }
 
@@ -302,6 +330,14 @@ public class SimulationController : MonoBehaviour
         var first = tokens.Length > 0 ? tokens[0] : name;
         var lower = first.ToLowerInvariant();
         return lower == "hino" || lower == "히노";
+    }
+
+    private bool IsWataya(string name)
+    {
+        var tokens = name.Split((char[])null, System.StringSplitOptions.RemoveEmptyEntries);
+        var first = tokens.Length > 0 ? tokens[0] : name;
+        var lower = first.ToLowerInvariant();
+        return lower == "wataya" || lower == "izumi" || lower == "와타야" || lower == "이즈미";
     }
 
     [Button("Start Simulation")]
@@ -420,6 +456,20 @@ public class SimulationController : MonoBehaviour
         }
     }
 
+    [Button("Focus on Wataya Izumi")]
+    public void FocusOnWataya()
+    {
+        if (watayaIzumi != null && cameraController != null)
+        {
+            cameraController.FocusOnTransform(watayaIzumi.transform);
+            Debug.Log("[SimulationController] Wataya Izumi를 계속 따라다닙니다");
+        }
+        else
+        {
+            Debug.LogWarning("[SimulationController] Wataya Izumi에 포커스할 수 없습니다 - 캐릭터 또는 카메라를 찾지 못했습니다");
+        }
+    }
+
     
 
     private void OnDestroy()
@@ -446,6 +496,9 @@ public class SimulationController : MonoBehaviour
 
         if (focusKamiyaButton != null)
             focusKamiyaButton.onClick.RemoveListener(FocusOnKamiya);
+
+        if (focusWatayaButton != null)
+            focusWatayaButton.onClick.RemoveListener(FocusOnWataya);
 
         if (globalGPTToggle != null)
             globalGPTToggle.onValueChanged.RemoveListener(SetGlobalGPTUsage);

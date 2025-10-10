@@ -70,18 +70,21 @@ public class Thinker
                     break;
                 }
 
-                // 0. 상황 인식
+                // 0. Perception 전에 goal 업데이트(1회 한정) 체크
+                await brain.UpdateGoalBeforePerceptionAsync();
+
+                // 1. 상황 인식
                 var perceptionResult = await brain.Perception();
                 token.ThrowIfCancellationRequested();
 
                 await SimDelay.DelaySimSeconds(1, token);
                 token.ThrowIfCancellationRequested();
             
-                // 1. DayPlanner 실행
+                // 2. DayPlanner 실행
                 await brain.DayPlan();
                 token.ThrowIfCancellationRequested();
 
-                // 2. 관계 수정
+                // 3. 관계 수정
                 if (currentRelationshipUpdateCycle >= relationshipUpdateCycleCount)
                 {
                     await brain.UpdateRelationship(perceptionResult);
@@ -94,7 +97,7 @@ public class Thinker
                 }
                 token.ThrowIfCancellationRequested();
 
-                // 3. Think - 행동 선택
+                // 4. Think - 행동 선택
                 // Think → Act를 currentCycleBudget 회 번갈아 실행
                 for (int i = 0; i < currentCycleBudget; i++)
                 {
