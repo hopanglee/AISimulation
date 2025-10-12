@@ -8,6 +8,7 @@ using UnityEngine;
 public class AreaDataExporter : EditorWindow
 {
     public bool isKoreanVersion = false; // 기본값은 영어 버전
+    public bool createFoldersForConnectedAreas = true; // connected_areas 폴더 생성 옵션
 
     [System.Serializable]
     public class AreaInfo
@@ -41,6 +42,12 @@ public class AreaDataExporter : EditorWindow
         GUILayout.Label(versionLabel, EditorStyles.boldLabel);
         GUILayout.Space(10);
 
+        // 옵션: 씬에 Area 컴포넌트가 없어도 connected_areas에 대해 폴더를 생성
+        string toggleLabel = isKoreanVersion
+            ? "씬에 없는 connected_areas도 폴더 생성"
+            : "Create folders for connected_areas even if no Area exists in scene";
+        createFoldersForConnectedAreas = EditorGUILayout.Toggle(toggleLabel, createFoldersForConnectedAreas);
+
         string buttonText = isKoreanVersion ? "Export Connected Areas to GameData (KR)" : "Export Connected Areas to GameData (EN)";
         if (GUILayout.Button(buttonText))
         {
@@ -62,7 +69,8 @@ public class AreaDataExporter : EditorWindow
         var areas = Object.FindObjectsByType<Area>(FindObjectsSortMode.None);
         Debug.Log($"Found {areas.Length} Area components in the scene");
 
-        var areaDataMap = new Dictionary<string, AreaInfo>();
+        // Key by FULL RELATIVE PATH (e.g., 도쿄/세타가와/…/카미야의 집)
+        var areaDataMap = new Dictionary<string, AreaInfo>(System.StringComparer.Ordinal);
 
         foreach (var area in areas)
         {
@@ -92,19 +100,7 @@ public class AreaDataExporter : EditorWindow
                 }
             }
 
-            // Area 내부의 하위 Area들도 찾기 (예: Restaurant 내부의 Seating Area)
-            foreach (var otherArea in areas)
-            {
-                if (otherArea != area && otherArea.transform.IsChildOf(area.transform))
-                {
-                    string subAreaName = isKoreanVersion ? GetKoreanAreaName(otherArea) : GetEnglishAreaName(otherArea);
-                    if (!string.IsNullOrEmpty(subAreaName) && !areaInfo.connectedAreas.Contains(subAreaName))
-                    {
-                        areaInfo.connectedAreas.Add(subAreaName);
-                        Debug.Log($"Found sub-area '{subAreaName}' inside '{areaName}'");
-                    }
-                }
-            }
+            // connected_areas에는 실제 Area.connectedAreas만 포함 (하위 Area 자동 포함 제거)
 
             // 해당 Area에 있는 Building들 찾기
             var buildings = Object.FindObjectsByType<Building>(FindObjectsSortMode.None);
@@ -121,9 +117,12 @@ public class AreaDataExporter : EditorWindow
                 }
             }
 
-            areaDataMap[areaName] = areaInfo;
+            // Compute stable relative path for this Area
+            var relPath = BuildAreaRelativePath(area);
+
+            areaDataMap[relPath] = areaInfo;
             Debug.Log(
-                $"Area '{areaName}' has {areaInfo.connectedAreas.Count} connected areas: {string.Join(", ", areaInfo.connectedAreas)} and {areaInfo.buildings.Count} buildings: {string.Join(", ", areaInfo.buildings)}"
+                $"Area '{areaName}' (relPath='{relPath}') has {areaInfo.connectedAreas.Count} connected areas: {string.Join(", ", areaInfo.connectedAreas)} and {areaInfo.buildings.Count} buildings: {string.Join(", ", areaInfo.buildings)}"
             );
         }
 
@@ -138,10 +137,22 @@ public class AreaDataExporter : EditorWindow
             Directory.CreateDirectory(gameDataPath);
         }
 
+        // 정리: 대상 언어 폴더 내부 전체 삭제 후 재생성
+        CleanupLanguageFolder(gameDataPath);
+
         UpdateInfoJsonFiles(gameDataPath, areaDataMap);
         
         // 모든 Area에 대한 폴더 생성 (connected_areas에 있는 것뿐만 아니라 모든 Area)
         CreateAllAreaFolders(gameDataPath, areaDataMap, areas, isKoreanVersion);
+
+        // 옵션에 따라 connected_areas에 대해서도 부모 경로 기준으로 폴더 생성
+        if (createFoldersForConnectedAreas)
+        {
+            CreateFoldersForConnectedAreas(gameDataPath, areaDataMap);
+        }
+
+        // 에셋 데이터베이스 갱신
+        AssetDatabase.Refresh();
     }
 
     /// <summary>
@@ -169,10 +180,12 @@ public class AreaDataExporter : EditorWindow
 
         foreach (var infoFile in infoFiles)
         {
-            // 폴더명을 Area 이름으로 사용
-            var folderName = Path.GetFileName(Path.GetDirectoryName(infoFile));
+            // 폴더의 'basePath' 기준 상대 경로를 키로 사용 (도시/구/동/.../리프)
+            var folderDir = Path.GetDirectoryName(infoFile);
+            var relFolder = GetRelativePathUnderBase(basePath, folderDir);
 
-            if (areaDataMap.TryGetValue(folderName, out var areaInfo))
+            // 우선 전체 경로 기준으로 매칭
+            if (areaDataMap.TryGetValue(relFolder, out var areaInfo))
             {
                 // 기존 파일 읽기 (다른 필드가 있을 수 있으므로)
                 AreaInfo existingInfo = new AreaInfo();
@@ -208,7 +221,7 @@ public class AreaDataExporter : EditorWindow
             else
             {
                 Debug.LogWarning(
-                    $"No Area component found for folder: {folderName} (file: {infoFile})"
+                    $"No Area component found for folder: {relFolder} (file: {infoFile})"
                 );
                 notFoundCount++;
             }
@@ -342,11 +355,12 @@ public class AreaDataExporter : EditorWindow
         
         foreach (var kvp in areaDataMap)
         {
-            var areaName = kvp.Key;
+            // Key is full relative path under basePath
+            var relPath = kvp.Key;
             var areaInfo = kvp.Value;
             
-            // Area의 curLocation을 기반으로 폴더 경로 생성
-            var areaFolder = CreateAreaFolderPath(basePath, areaName, areaDataMap);
+            // Create directories by relative path
+            var areaFolder = EnsureDirectoriesForRelPath(basePath, relPath);
             
             // info.json 파일 생성
             var infoFilePath = Path.Combine(areaFolder, "info.json");
@@ -392,59 +406,8 @@ public class AreaDataExporter : EditorWindow
             return flatFolder;
         }
         
-        // curLocation 체인을 따라 폴더 구조 생성
-        var folderPath = basePath;
-        var locationChain = new List<string>();
-        
-        // curLocation 체인 수집
-        var currentLocation = targetArea.curLocation;
-        while (currentLocation != null)
-        {
-            string locationName = isKoreanVersion ? GetKoreanAreaName(currentLocation as Area) : GetEnglishAreaName(currentLocation as Area);
-            if (!string.IsNullOrEmpty(locationName))
-            {
-                locationChain.Insert(0, locationName); // 앞에 삽입해서 올바른 순서로
-            }
-            currentLocation = currentLocation.curLocation;
-        }
-        
-        // Area 내부의 하위 Area인지 확인하고 부모 Area 이름 추가
-        var allAreas = Object.FindObjectsByType<Area>(FindObjectsSortMode.None);
-        foreach (var parentArea in allAreas)
-        {
-            if (parentArea != targetArea && targetArea.transform.IsChildOf(parentArea.transform))
-            {
-                string parentAreaName = isKoreanVersion ? GetKoreanAreaName(parentArea) : GetEnglishAreaName(parentArea);
-                if (!string.IsNullOrEmpty(parentAreaName) && !locationChain.Contains(parentAreaName))
-                {
-                    locationChain.Add(parentAreaName);
-                    Debug.Log($"Area '{areaName}' is inside parent Area '{parentAreaName}', adding to path");
-                }
-                break;
-            }
-        }
-        
-        // 폴더 체인 생성
-        foreach (var locationName in locationChain)
-        {
-            folderPath = Path.Combine(folderPath, locationName);
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-                Debug.Log($"Created directory: {folderPath}");
-            }
-        }
-        
-        // 마지막에 Area 이름 폴더 생성
-        var finalFolder = Path.Combine(folderPath, areaName);
-        if (!Directory.Exists(finalFolder))
-        {
-            Directory.CreateDirectory(finalFolder);
-            Debug.Log($"Created directory: {finalFolder}");
-        }
-        
-        Debug.Log($"Area '{areaName}' folder path: {finalFolder}");
-        return finalFolder;
+        // 새 오버로드 사용
+        return CreateAreaFolderPath(basePath, targetArea);
     }
     
     /// <summary>
@@ -454,10 +417,10 @@ public class AreaDataExporter : EditorWindow
     {
         Debug.Log($"Creating folders for all {areas.Length} areas...");
         
-        // 이미 폴더가 있는 Area들 제외
+        // 이미 존재하는 폴더를 '상대 경로'로 수집
         var existingFolders = Directory.GetDirectories(basePath, "*", SearchOption.AllDirectories)
-            .Select(folder => Path.GetFileName(folder))
-            .ToHashSet();
+            .Select(folder => GetRelativePathUnderBase(basePath, folder))
+            .ToHashSet(System.StringComparer.Ordinal);
         
         int createdCount = 0;
         
@@ -471,13 +434,14 @@ public class AreaDataExporter : EditorWindow
                 continue;
             }
             
-            Debug.Log($"Checking area: '{areaName}' - existingFolders.Contains: {existingFolders.Contains(areaName)}");
+            var relPath = BuildAreaRelativePath(area);
+            Debug.Log($"Checking area: '{areaName}' relPath='{relPath}' - exists: {existingFolders.Contains(relPath)}");
             
-            // 이미 폴더가 있으면 건너뛰기
-            if (!existingFolders.Contains(areaName))
+            // 이미 폴더가 있으면 건너뛰기 (전체 경로 기준)
+            if (!existingFolders.Contains(relPath))
             {
-                // 해당 Area에 대한 폴더 생성
-                var folderPath = CreateAreaFolderPath(basePath, areaName, areaDataMap);
+                // 해당 Area에 대한 폴더 생성 (오버로드 사용)
+                var folderPath = CreateAreaFolderPath(basePath, area);
                 
                 // 빈 info.json 파일 생성
                 var infoFilePath = Path.Combine(folderPath, "info.json");
@@ -497,11 +461,198 @@ public class AreaDataExporter : EditorWindow
     }
 
     /// <summary>
+    /// 각 Area의 connected_areas 목록을 기준으로, 씬에 Area 컴포넌트가 없어도
+    /// 부모 Area의 전체 상대 경로 하위에 폴더와 빈 info.json을 생성합니다.
+    /// </summary>
+    private void CreateFoldersForConnectedAreas(string basePath, Dictionary<string, AreaInfo> areaDataMap)
+    {
+        Debug.Log("Creating folders for connected_areas under each parent area (path-based)...");
+
+        int createdCount = 0;
+
+        foreach (var kvp in areaDataMap)
+        {
+            var parentRelPath = kvp.Key; // 예: 도쿄/세타가와/.../카미야의 집
+            var parentFolder = EnsureDirectoriesForRelPath(basePath, parentRelPath);
+
+            // 중복 제거 후 처리
+            var uniqueChildNames = kvp.Value.connectedAreas.Distinct();
+            foreach (var childName in uniqueChildNames)
+            {
+                if (string.IsNullOrEmpty(childName))
+                    continue;
+
+                // 부모 경로 기준으로 하위 폴더 생성
+                var childRelPath = parentRelPath + "/" + childName;
+                var childFolder = EnsureDirectoriesForRelPath(basePath, childRelPath);
+
+                // 빈 info.json 생성 (없을 때만)
+                var infoFilePath = Path.Combine(childFolder, "info.json");
+                if (!File.Exists(infoFilePath))
+                {
+                    var jsonContent = JsonConvert.SerializeObject(new AreaInfo(), Formatting.Indented);
+                    File.WriteAllText(infoFilePath, jsonContent);
+                    Debug.Log($"Created connected-area folder and info.json: {infoFilePath}");
+                    createdCount++;
+                }
+            }
+        }
+
+        if (createdCount > 0)
+        {
+            Debug.Log($"Created {createdCount} connected-area folders (without Area component)");
+        }
+    }
+
+    /// <summary>
     /// connected_areas에 있는 Area들에 대한 폴더를 생성합니다.
     /// </summary>
     private void CreateMissingAreaFolders(string basePath, Dictionary<string, AreaInfo> areaDataMap)
     {
         // 이 메서드는 더 이상 사용하지 않음 - CreateAllAreaFolders로 대체됨
         Debug.Log("CreateMissingAreaFolders is deprecated - using CreateAllAreaFolders instead");
+    }
+
+    // ---------- Helpers for relative path based logic ----------
+
+    // Build stable relative path like "도쿄/세타가와/.../카미야의 집"
+    private string BuildAreaRelativePath(Area targetArea)
+    {
+        var chain = GetLocationChainNames(targetArea);
+        var leaf = isKoreanVersion ? GetKoreanAreaName(targetArea) : GetEnglishAreaName(targetArea);
+        if (!string.IsNullOrEmpty(leaf)) chain.Add(leaf);
+        var rel = string.Join("/", chain);
+        return rel;
+    }
+
+    // Collect location chain names from curLocation up to root, plus parent Area container if applicable
+    private List<string> GetLocationChainNames(Area targetArea)
+    {
+        var chain = new List<string>();
+
+        // curLocation chain
+        var currentLocation = targetArea != null ? targetArea.curLocation : null;
+        while (currentLocation != null)
+        {
+            var asArea = currentLocation as Area;
+            if (asArea != null)
+            {
+                string locationName = isKoreanVersion ? GetKoreanAreaName(asArea) : GetEnglishAreaName(asArea);
+                if (!string.IsNullOrEmpty(locationName))
+                {
+                    chain.Insert(0, locationName);
+                }
+            }
+            currentLocation = currentLocation.curLocation;
+        }
+
+        // if nested under another Area in hierarchy, include direct parent once
+        var allAreas = Object.FindObjectsByType<Area>(FindObjectsSortMode.None);
+        foreach (var parentArea in allAreas)
+        {
+            if (targetArea != null && parentArea != targetArea && targetArea.transform.IsChildOf(parentArea.transform))
+            {
+                string parentAreaName = isKoreanVersion ? GetKoreanAreaName(parentArea) : GetEnglishAreaName(parentArea);
+                if (!string.IsNullOrEmpty(parentAreaName) && !chain.Contains(parentAreaName))
+                {
+                    chain.Add(parentAreaName);
+                    Debug.Log($"Add parent Area to chain: '{parentAreaName}'");
+                }
+                break;
+            }
+        }
+
+        return chain;
+    }
+
+    // Normalize to base-relative path with forward slashes
+    private string GetRelativePathUnderBase(string basePath, string fullPath)
+    {
+        var baseNorm = basePath.Replace("\\", "/");
+        var fullNorm = fullPath.Replace("\\", "/");
+        if (fullNorm.StartsWith(baseNorm))
+        {
+            return fullNorm.Substring(baseNorm.Length).TrimStart('/');
+        }
+        return fullNorm;
+    }
+
+    // Ensure directories for a relative path under basePath exist, return full folder path
+    private string EnsureDirectoriesForRelPath(string basePath, string relPath)
+    {
+        var segments = relPath.Replace("\\", "/").Split(new[]{'/'}, System.StringSplitOptions.RemoveEmptyEntries);
+        var folderPath = basePath;
+        foreach (var seg in segments)
+        {
+            folderPath = Path.Combine(folderPath, seg);
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+                Debug.Log($"Created directory: {folderPath}");
+            }
+        }
+        return folderPath;
+    }
+
+    // Overload: Create folder path using specific Area (avoids name collisions)
+    private string CreateAreaFolderPath(string basePath, Area targetArea)
+    {
+        if (targetArea == null)
+        {
+            return basePath;
+        }
+
+        var rel = BuildAreaRelativePath(targetArea);
+        return EnsureDirectoriesForRelPath(basePath, rel);
+    }
+
+    /// <summary>
+    /// 대상 언어 폴더(basePath) 내부의 모든 파일/폴더를 삭제합니다(루트 폴더는 유지).
+    /// </summary>
+    private void CleanupLanguageFolder(string basePath)
+    {
+        try
+        {
+            if (!Directory.Exists(basePath))
+            {
+                return;
+            }
+
+            // 하위 디렉터리 모두 삭제
+            var subDirs = Directory.GetDirectories(basePath);
+            foreach (var dir in subDirs)
+            {
+                try
+                {
+                    Directory.Delete(dir, true);
+                    Debug.Log($"Deleted directory: {dir}");
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogWarning($"Failed to delete directory '{dir}': {e.Message}");
+                }
+            }
+
+            // 루트 하위 파일 모두 삭제(메타 포함)
+            var files = Directory.GetFiles(basePath);
+            foreach (var file in files)
+            {
+                try
+                {
+                    File.Delete(file);
+                    Debug.Log($"Deleted file: {file}");
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogWarning($"Failed to delete file '{file}': {e.Message}");
+                }
+            }
+
+            Debug.Log($"Cleanup completed for: {basePath}");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"CleanupLanguageFolder error for '{basePath}': {e.Message}");
+        }
     }
 }

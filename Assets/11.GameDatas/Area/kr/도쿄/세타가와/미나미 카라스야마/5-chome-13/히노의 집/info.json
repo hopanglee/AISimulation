@@ -1,11 +1,4 @@
 {
-  "connected_areas": [
-    "복도",
-    "런드리룸",
-    "욕실",
-    "부얶",
-    "화장실",
-    "거실"
-  ],
+  "connected_areas": [],
   "buildings": []
 }
