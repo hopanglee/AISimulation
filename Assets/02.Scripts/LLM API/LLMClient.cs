@@ -111,7 +111,7 @@ public abstract class LLMClient
                 else
                 {
                     // 정확한 매치가 없으면 불일치 여부 확인 없이 해당 count부터 이후 캐시 모두 삭제
-                    Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 정확 매치 없음(hash={msgHash}). count {count}부터 이후 캐시 삭제 실행");
+                    Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 정확 매치 없음(hash={msgHash}). count {count}부터 이후 캐시 삭제 실행");
                     DeleteCacheFilesFromCount(baseDir, count);
                 }
 
@@ -231,12 +231,12 @@ public abstract class LLMClient
                 {
                     File.Delete(file);
                     deletedCount++;
-                    Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 삭제: {file}");
+                    Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 삭제: {file}");
                 }
                 current++;
             }
-
-            Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 총 {deletedCount}개의 캐시 파일이 삭제되었습니다 (count {startCount}부터)");
+            if(deletedCount > 0)
+                Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 총 {deletedCount}개의 캐시 파일이 삭제되었습니다 (count {startCount}부터)");
         }
         catch (Exception ex)
         {

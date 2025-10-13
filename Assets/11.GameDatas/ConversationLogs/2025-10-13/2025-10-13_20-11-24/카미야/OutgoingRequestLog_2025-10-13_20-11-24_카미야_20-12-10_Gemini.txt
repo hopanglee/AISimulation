@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 카미야
+Agent Type: Gemini
+Real Time: 2025-10-13 20:12:10
+
+

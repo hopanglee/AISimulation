@@ -141,9 +141,11 @@ public class GPT : LLMClient
         {
             // Determine effective agent type
             string effectiveAgentType = agentTypeOverride ?? agentType;
-            // 세션별/캐릭터별 디렉토리 생성
+            // 날짜별/세션별/캐릭터별 디렉토리 생성
             string baseDirectoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "ConversationLogs");
-            string sessionPath = sessionDirectoryName != null ? Path.Combine(baseDirectoryPath, sessionDirectoryName) : baseDirectoryPath;
+            string dateFolder = System.DateTime.Now.ToString("yyyy-MM-dd");
+            string datePath = Path.Combine(baseDirectoryPath, dateFolder);
+            string sessionPath = sessionDirectoryName != null ? Path.Combine(datePath, sessionDirectoryName) : datePath;
             string characterDirectoryPath = Path.Combine(sessionPath, actorName);
 
             // actorName이 Unknown인 경우 경고 로그
@@ -231,11 +233,11 @@ public class GPT : LLMClient
             {
                 writer.WriteLine(logContent.ToString());
             }
-            Debug.Log($"[{agentTypeOverride??"Unknown"}] Conversation log saved (appended): {filePath}");
+            Debug.Log($"[{agentTypeOverride ?? "Unknown"}] Conversation log saved (appended): {filePath}");
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[{agentTypeOverride??"Unknown"}] Error saving conversation log: {ex.Message}");
+            Debug.LogError($"[{agentTypeOverride ?? "Unknown"}] Error saving conversation log: {ex.Message}");
         }
 
         return UniTask.CompletedTask;
@@ -253,10 +255,14 @@ public class GPT : LLMClient
         {
             // 세션별/캐릭터별 디렉토리 생성
             string baseDirectoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "ConversationLogs");
-            string sessionPath = sessionDirectoryName != null ? Path.Combine(baseDirectoryPath, sessionDirectoryName) : baseDirectoryPath;
+            string dateFolder = System.DateTime.Now.ToString("yyyy-MM-dd");
+            string datePath = Path.Combine(baseDirectoryPath, dateFolder);
+            string sessionPath = sessionDirectoryName != null ? Path.Combine(datePath, sessionDirectoryName) : datePath;
             string characterDirectoryPath = Path.Combine(sessionPath, actorName);
 
+
             if (!Directory.Exists(baseDirectoryPath)) Directory.CreateDirectory(baseDirectoryPath);
+            if (!Directory.Exists(datePath)) Directory.CreateDirectory(datePath);
             if (!Directory.Exists(sessionPath)) Directory.CreateDirectory(sessionPath);
             if (!Directory.Exists(characterDirectoryPath)) Directory.CreateDirectory(characterDirectoryPath);
 
@@ -305,12 +311,15 @@ public class GPT : LLMClient
 
         try
         {
-            // 세션별/캐릭터별 디렉토리 생성
+            // 날짜별/세션별/캐릭터별 디렉토리 생성
             string baseDirectoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "ConversationLogs");
-            string sessionPath = sessionDirectoryName != null ? Path.Combine(baseDirectoryPath, sessionDirectoryName) : baseDirectoryPath;
+            string dateFolder = System.DateTime.Now.ToString("yyyy-MM-dd");
+            string datePath = Path.Combine(baseDirectoryPath, dateFolder);
+            string sessionPath = sessionDirectoryName != null ? Path.Combine(datePath, sessionDirectoryName) : datePath;
             string characterDirectoryPath = Path.Combine(sessionPath, actorName);
 
             if (!Directory.Exists(baseDirectoryPath)) Directory.CreateDirectory(baseDirectoryPath);
+            if (!Directory.Exists(datePath)) Directory.CreateDirectory(datePath);
             if (!Directory.Exists(sessionPath)) Directory.CreateDirectory(sessionPath);
             if (!Directory.Exists(characterDirectoryPath)) Directory.CreateDirectory(characterDirectoryPath);
 
@@ -422,7 +431,7 @@ public class GPT : LLMClient
 
     public override void SetTemperature(float temperature)
     {
-        if(modelName == "gpt-5-mini" || modelName == "gpt-5")
+        if (modelName == "gpt-5-mini" || modelName == "gpt-5")
         {
             // TODO: gpt-5-mini, gpt-5 에서는 temperature 설정 불가
         }
@@ -681,7 +690,7 @@ public class GPT : LLMClient
     /// 예외에서 파일/라인/메서드 정보를 최대한 뽑아서 함께 로깅합니다.
     /// PDB가 없으면 파일/라인은 unknown으로 표시될 수 있습니다.
     /// </summary>
-    
+
     #endregion
 
 }

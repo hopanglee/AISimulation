@@ -163,7 +163,9 @@ public class Gemini : LLMClient
             string effectiveAgentType = agentTypeOverride ?? agentType;
 
             string baseDirectoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "ConversationLogs");
-            string sessionPath = sessionDirectoryName != null ? Path.Combine(baseDirectoryPath, sessionDirectoryName) : baseDirectoryPath;
+            string dateFolder = System.DateTime.Now.ToString("yyyy-MM-dd");
+            string datePath = Path.Combine(baseDirectoryPath, dateFolder);
+            string sessionPath = sessionDirectoryName != null ? Path.Combine(datePath, sessionDirectoryName) : datePath;
             string characterDirectoryPath = Path.Combine(sessionPath, actorName);
 
             if (actorName == "Unknown")
@@ -172,6 +174,7 @@ public class Gemini : LLMClient
             }
 
             if (!Directory.Exists(baseDirectoryPath)) Directory.CreateDirectory(baseDirectoryPath);
+            if (!Directory.Exists(datePath)) Directory.CreateDirectory(datePath);
             if (!Directory.Exists(sessionPath)) Directory.CreateDirectory(sessionPath);
             if (!Directory.Exists(characterDirectoryPath)) Directory.CreateDirectory(characterDirectoryPath);
 
@@ -229,10 +232,13 @@ public class Gemini : LLMClient
         try
         {
             string baseDirectoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "ConversationLogs");
-            string sessionPath = sessionDirectoryName != null ? Path.Combine(baseDirectoryPath, sessionDirectoryName) : baseDirectoryPath;
+            string dateFolder = System.DateTime.Now.ToString("yyyy-MM-dd");
+            string datePath = Path.Combine(baseDirectoryPath, dateFolder);
+            string sessionPath = sessionDirectoryName != null ? Path.Combine(datePath, sessionDirectoryName) : datePath;
             string characterDirectoryPath = Path.Combine(sessionPath, actorName);
 
             if (!Directory.Exists(baseDirectoryPath)) Directory.CreateDirectory(baseDirectoryPath);
+            if (!Directory.Exists(datePath)) Directory.CreateDirectory(datePath);
             if (!Directory.Exists(sessionPath)) Directory.CreateDirectory(sessionPath);
             if (!Directory.Exists(characterDirectoryPath)) Directory.CreateDirectory(characterDirectoryPath);
 
@@ -629,7 +635,7 @@ public class Gemini : LLMClient
     #region 도구 사용
     public override void AddTools(params LLMToolSchema[] tools)
     {
-        Debug.Log($"[Gemini] AddTools");
+       // Debug.Log($"[Gemini] AddTools");
         if (tools == null || tools.Length == 0) return;
         // Defensive: initialize Tools if not yet set
         if (this.request.Tools == null)
@@ -641,7 +647,7 @@ public class Gemini : LLMClient
         {
             request.Tools.AddFunction(schema.name, schema.description);
         }
-        Debug.Log($"[Gemini] AddTools done");
+      //  Debug.Log($"[Gemini] AddTools done");
     }
 
     // TODO: 이 함수를 직접 구현해야 합니다.

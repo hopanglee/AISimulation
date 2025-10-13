@@ -221,7 +221,7 @@ public class Claude : LLMClient
     public override void SetResponseFormat(LLMClientSchema schema)
     {
         if (schema == null || schema.format == null) return;
-        Debug.Log($"[Claude] SetResponseFormat");
+       // Debug.Log($"[Claude] SetResponseFormat");
         try
         {
             var innerSchema = schema.format.DeepClone();
@@ -241,7 +241,7 @@ public class Claude : LLMClient
         {
             Debug.LogError($"[Claude] SetResponseFormat failed: {ex.Message}");
         }
-        Debug.Log($"[Claude] SetResponseFormat done");
+        //Debug.Log($"[Claude] SetResponseFormat done");
     }
 
     public override void SetTemperature(float temperature)
@@ -461,9 +461,11 @@ public class Claude : LLMClient
         {
             // Determine effective agent type
             string effectiveAgentType = agentTypeOverride ?? agentType;
-            // 세션별/캐릭터별 디렉토리 생성
+            // 날짜별/세션별/캐릭터별 디렉토리 생성
             string baseDirectoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "ConversationLogs");
-            string sessionPath = sessionDirectoryName != null ? Path.Combine(baseDirectoryPath, sessionDirectoryName) : baseDirectoryPath;
+            string dateFolder = System.DateTime.Now.ToString("yyyy-MM-dd");
+            string datePath = Path.Combine(baseDirectoryPath, dateFolder);
+            string sessionPath = sessionDirectoryName != null ? Path.Combine(datePath, sessionDirectoryName) : datePath;
             string characterDirectoryPath = Path.Combine(sessionPath, actorName);
 
             // actorName이 Unknown인 경우 경고 로그
@@ -473,10 +475,9 @@ public class Claude : LLMClient
             }
 
             // 디렉토리 생성
-            if (!Directory.Exists(baseDirectoryPath))
-                Directory.CreateDirectory(baseDirectoryPath);
-            if (!Directory.Exists(sessionPath))
-                Directory.CreateDirectory(sessionPath);
+            if (!Directory.Exists(baseDirectoryPath)) Directory.CreateDirectory(baseDirectoryPath);
+            if (!Directory.Exists(datePath)) Directory.CreateDirectory(datePath);
+            if (!Directory.Exists(sessionPath)) Directory.CreateDirectory(sessionPath);
             if (!Directory.Exists(characterDirectoryPath))
                 Directory.CreateDirectory(characterDirectoryPath);
 
@@ -552,12 +553,15 @@ public class Claude : LLMClient
 
         try
         {
-            // 세션별/캐릭터별 디렉토리 생성
+            // 날짜별/세션별/캐릭터별 디렉토리 생성
             string baseDirectoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "ConversationLogs");
-            string sessionPath = sessionDirectoryName != null ? Path.Combine(baseDirectoryPath, sessionDirectoryName) : baseDirectoryPath;
+            string dateFolder = System.DateTime.Now.ToString("yyyy-MM-dd");
+            string datePath = Path.Combine(baseDirectoryPath, dateFolder);
+            string sessionPath = sessionDirectoryName != null ? Path.Combine(datePath, sessionDirectoryName) : datePath;
             string characterDirectoryPath = Path.Combine(sessionPath, actorName);
 
             if (!Directory.Exists(baseDirectoryPath)) Directory.CreateDirectory(baseDirectoryPath);
+            if (!Directory.Exists(datePath)) Directory.CreateDirectory(datePath);
             if (!Directory.Exists(sessionPath)) Directory.CreateDirectory(sessionPath);
             if (!Directory.Exists(characterDirectoryPath)) Directory.CreateDirectory(characterDirectoryPath);
 
@@ -606,12 +610,15 @@ public class Claude : LLMClient
 
         try
         {
-            // 세션별/캐릭터별 디렉토리 생성
+            // 날짜별/세션별/캐릭터별 디렉토리 생성
             string baseDirectoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "ConversationLogs");
-            string sessionPath = sessionDirectoryName != null ? Path.Combine(baseDirectoryPath, sessionDirectoryName) : baseDirectoryPath;
+            string dateFolder = System.DateTime.Now.ToString("yyyy-MM-dd");
+            string datePath = Path.Combine(baseDirectoryPath, dateFolder);
+            string sessionPath = sessionDirectoryName != null ? Path.Combine(datePath, sessionDirectoryName) : datePath;
             string characterDirectoryPath = Path.Combine(sessionPath, actorName);
 
             if (!Directory.Exists(baseDirectoryPath)) Directory.CreateDirectory(baseDirectoryPath);
+            if (!Directory.Exists(datePath)) Directory.CreateDirectory(datePath);
             if (!Directory.Exists(sessionPath)) Directory.CreateDirectory(sessionPath);
             if (!Directory.Exists(characterDirectoryPath)) Directory.CreateDirectory(characterDirectoryPath);
 

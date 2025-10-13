@@ -1,6 +1,14 @@
 {
+  "goal": "현재의 비정상적인 상황(병)이 타인에게 발각되거나 드러나지 않도록,'어제의 나'와 '주변 환경'의 정보에 빠르게 적응하여 '평범한 하루'를 시작하는 것.",
   "name": "히노 마오리",
   "age": 16,
+  "height": 165.0,
+  "weight": 52.0,
+  "hair_color": "파란색",
+  "eye_color": "파란색",
+  "skin_color": "흰색",
+  "hair_style": "포니테일",
+  "body_type": "슬림",
   "birthday": "2009-03-15T09:00:00Z",
   "gender": "여성",
   "temperament": [
@@ -29,18 +37,27 @@
   "house_location": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노 집",
   "daily_schedule": "",
   "additional_info": "아침에 일어나면 반드시 일기부터 읽는다.",
-  "emotions": {
-    "불안": 0.8,
-    "안도": 0.6,
-    "피곤": 0.3
-  },
-  "goal": "현재의 비정상적인 상황(병)이 타인에게 발각되거나 드러나지 않도록,'어제의 나'와 '주변 환경'의 정보에 빠르게 적응하여 '평범한 하루'를 시작하는 것.",
-  "height": 165.0,
-  "weight": 52.0,
-  "hair_color": "파란색",
-  "skin_color": "흰색",
-  "eye_color": "파란색",
-  "hair_style": "포니테일",
-  "body_type": "슬림",
-  "last_updated": "2025-09-30T09:47:16.3837882+09:00"
+  "emotions": [
+    {
+      "name": "혼란",
+      "intensity": 0.8
+    },
+    {
+      "name": "불안",
+      "intensity": 0.7
+    },
+    {
+      "name": "호기심",
+      "intensity": 0.6
+    },
+    {
+      "name": "낙관",
+      "intensity": 0.6
+    },
+    {
+      "name": "허기",
+      "intensity": 0.7
+    }
+  ],
+  "last_updated": "2025-10-13T20:06:34.7914312+09:00"
 }

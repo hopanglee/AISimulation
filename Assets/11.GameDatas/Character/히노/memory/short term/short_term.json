@@ -6,42 +6,7 @@
       "details": "쾅!",
       "emotions": [],
       "locationName": "신주쿠:가부키초:1-chome-6"
-    },
-    {
-      "timestamp": "2025-07-24T07:00:00Z",
-      "content": "침대에서 일어남",
-      "details": "체력 조금 회복",
-      "emotions": [],
-      "locationName": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:거실:침대"
-    },
-    {
-      "timestamp": "2025-07-24T07:00:00Z",
-      "content": "어제 교통사고를 당한 것 같은데 기억이 흐릿해... 시간이 많이 지난 것 같기도 하고. 불안하지만, 일단 일기부터 읽고 메시지도 확인해봐야겠어. 평소처럼 긍정적으로 생각하면서 침착하게 상황을 파악해볼게!",
-      "details": "혼자 생각하는 중",
-      "emotions": [
-        {
-          "name": "혼란",
-          "intensity": 0.8
-        },
-        {
-          "name": "불안",
-          "intensity": 0.7
-        },
-        {
-          "name": "호기심",
-          "intensity": 0.6
-        },
-        {
-          "name": "낙관",
-          "intensity": 0.6
-        },
-        {
-          "name": "허기",
-          "intensity": 0.7
-        }
-      ],
-      "locationName": "도쿄:세타가와:미나미 카라스야마:5-chome-13:히노의 집:거실:침대"
     }
   ],
-  "lastUpdated": "2025-07-24T07:00:00Z"
+  "lastUpdated": "2025-07-24T06:58:00Z"
 }

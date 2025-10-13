@@ -1,0 +1,42 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 카미야
+Agent Type: SuperegoAgent
+Real Time: 2025-10-13 20:11:42
+Based on the information gathered, here is my analysis of Kamiya's current situation and thoughts:
+
+```json
+{
+  "thought_chain": [
+    "오늘은 7월 24일 수요일, 아침 7시에 막 일어났다.",
+    "히노 마오리와의 관계가 매우 중요하며, 그녀는 선행성 기억상실증을 앓고 있다.",
+    "어제 히노에게 오늘 모카하우스에서 16시에 만나자는 메시지를 보냈고, '고마워'라는 답장을 받았다.",
+    "나는 심장 수술이 8월 7일로 예정되어 있으며 시간이 얼마 남지 않았다.",
+    "오늘도 히노를 위한 루틴을 따라야 하며, 그녀에게 내 병을 알리지 않고 평소처럼 행동해야 한다.",
+    "아침 식사와 집안일을 시작하고, 히노와의 만남을 위한 '오늘의 계획'을 준비해야 한다."
+  ],
+  "situation_interpretation": "아침에 일어난 나는 오늘도 히노 마오리와의 약속을 위해 준비해야 한다. 식탁에 도넛이 준비되어 있고, 히노가 보낸 '고마워'라는 메시지가 있다. 나의 심장 수술이 2주 정도 남은 상황에서 히노의 하루를 행복하게 만들어주는 것이 중요하다.",
+  "emotions": [
+    {
+      "name": "책임감",
+      "intensity": 0.9
+    },
+    {
+      "name": "사랑",
+      "intensity": 0.8
+    },
+    {
+      "name": "기대감",
+      "intensity": 0.7
+    },
+    {
+      "name": "불안",
+      "intensity": 0.6
+    },
+    {
+      "name": "희생",
+      "intensity": 0.7
+    }
+  ]
+}
+```
+
