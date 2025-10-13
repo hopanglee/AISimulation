@@ -47,6 +47,18 @@ public class SimulationController : MonoBehaviour
     public TextMeshProUGUI hinoActivityText;
     public TextMeshProUGUI watayaActivityText;
 
+    [Header("Split View Cameras")]
+    [SerializeField]
+    private Camera hinoCamera;
+    [SerializeField]
+    private Camera kamiyaCamera;
+    [SerializeField]
+    private Camera watayaCamera;
+
+    [SerializeField]
+    private Button splitViewButton; // 화면 분할 보기 버튼
+    private bool splitViewEnabled = false; // 토글 상태
+
     [Header("AI Settings")]
     [SerializeField]
     private Toggle globalGPTToggle; // 모든 Actor의 GPT 사용 여부 토글
@@ -194,6 +206,10 @@ public class SimulationController : MonoBehaviour
 
         if (focusWatayaButton != null)
             focusWatayaButton.onClick.AddListener(FocusOnWataya);
+
+        // 화면 분할 보기 버튼 이벤트 연결 (토글)
+        if (splitViewButton != null)
+            splitViewButton.onClick.AddListener(ToggleSplitViewCameras);
 
         // GPT 글로벌 토글 연결
         if (globalGPTToggle != null)
@@ -470,6 +486,18 @@ public class SimulationController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 전용 카메라(히노, 카미야, 이즈미) 3개를 토글합니다.
+    /// </summary>
+    private void ToggleSplitViewCameras()
+    {
+        splitViewEnabled = !splitViewEnabled;
+        if (hinoCamera != null) hinoCamera.gameObject.SetActive(splitViewEnabled);
+        if (kamiyaCamera != null) kamiyaCamera.gameObject.SetActive(splitViewEnabled);
+        if (watayaCamera != null) watayaCamera.gameObject.SetActive(splitViewEnabled);
+        Debug.Log($"[SimulationController] 전용 카메라 3개 {(splitViewEnabled ? "활성화" : "비활성화")} (히노/카미야/이즈미)");
+    }
+
     
 
     private void OnDestroy()
@@ -499,6 +527,9 @@ public class SimulationController : MonoBehaviour
 
         if (focusWatayaButton != null)
             focusWatayaButton.onClick.RemoveListener(FocusOnWataya);
+
+        if (splitViewButton != null)
+            splitViewButton.onClick.RemoveListener(ToggleSplitViewCameras);
 
         if (globalGPTToggle != null)
             globalGPTToggle.onValueChanged.RemoveListener(SetGlobalGPTUsage);
