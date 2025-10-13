@@ -517,7 +517,7 @@ public class Sensor
                                 if (kv.Key == area && kv.Value != null)
                                 {
                                     string uniqueKey = GetUniqueKey(result, connectedArea.locationName);
-                                    Debug.Log($"[{owner.Name}] Add {uniqueKey} {connectedArea.gameObject.name}");
+                                    //Debug.Log($"[{owner.Name}] Add {uniqueKey} {connectedArea.gameObject.name}");
                                     result.Add(uniqueKey, kv.Value.position);
                                 }
                             }

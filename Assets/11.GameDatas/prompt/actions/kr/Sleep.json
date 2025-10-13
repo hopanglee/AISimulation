@@ -1,0 +1,22 @@
+{
+  "name": "Sleep",
+  "description": "침대에서 잠을 자며 체력과 컨디션을 회복합니다. 지정 시간이 없으면 기본 기상 시간까지 잡니다.",
+  "parameters": [
+    {
+      "name": "minutes",
+      "type": "integer",
+      "description": "잠잘 시간(분). 지정하지 않으면 기본 기상 시간까지 수면.",
+      "required": false
+    }
+  ],
+  "requirements": [
+    "침대(Bed)에 누워있어야 합니다",
+    "수면 중이 아니어야 합니다"
+  ],
+  "whenToUse": [
+    "체력이 낮거나 졸림이 높을 때",
+    "그 외 상황에 맞춰 필요할 때"
+  ]
+}
+
+

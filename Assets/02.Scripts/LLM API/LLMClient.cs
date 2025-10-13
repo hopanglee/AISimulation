@@ -127,7 +127,7 @@ public abstract class LLMClient
 
                         if (cached != null)
                         {
-                            Debug.Log($"<b><color=blue>[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 로그 히트: {matchPath}</color></b>");
+                            Debug.Log($"<b><color=Yellow>[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 로그 히트: {matchPath}</color></b>");
                             actor.CacheCount++; // 히트 시 증가
                             return cached;
                         }
