@@ -438,17 +438,25 @@ namespace Agent
                         }
 
                         // 상호작용 가능한 오브젝트/아이템 없으면 관련 액션 제한
-                        if (propsCount == 0)
+                        if (propsCount + itemsCount + actorsCount == 0)
                         {
                             availableActions.Remove(ActionType.InteractWithObject);
                         }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"[ActSelectorAgent] Error getting interactable entities: {ex.Message}");
+                    }
 
-                        if (itemsCount == 0)
+                     try
+                    {
+                        var collectible = thinkingActor.sensor?.GetCollectibleEntities();
+                        if (collectible == null || collectible.Count == 0)
                         {
                             availableActions.Remove(ActionType.PickUpItem);
                         }
                     }
-                    catch (Exception ex)
+                    catch(Exception ex)
                     {
                         Debug.LogError($"[ActSelectorAgent] Error getting interactable entities: {ex.Message}");
                     }
