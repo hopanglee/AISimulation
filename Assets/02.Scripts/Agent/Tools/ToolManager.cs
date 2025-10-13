@@ -553,7 +553,19 @@ namespace Agent.Tools
                 if (actor is MainActor ma)
                 {
                     var summaries = ma.GetCookRecipeSummaries();
-                    return System.Text.Json.JsonSerializer.Serialize(summaries);
+                    if (summaries == null || summaries.Length == 0)
+                        return "지금 요리 가능한 레시피가 없습니다.";
+
+                    var sb = new System.Text.StringBuilder();
+                    sb.AppendLine($"요리 가능한 레시피 ({summaries.Length}개):");
+                    foreach (var s in summaries)
+                    {
+                        var ing = (s.ingredients != null && s.ingredients.Length > 0)
+                            ? string.Join(", ", s.ingredients)
+                            : "(재료 정보 없음)";
+                        sb.AppendLine($"- {s.name} ({s.minutes}분) | 재료: {ing}");
+                    }
+                    return sb.ToString().TrimEnd();
                 }
                 return System.Text.Json.JsonSerializer.Serialize(new { error = "actor_is_not_mainactor" });
             }
@@ -720,7 +732,9 @@ namespace Agent.Tools
             try
             {
                 var locationService = Services.Get<ILocationService>();
-                return locationService.GetWorldAreaInfo();
+                var info = locationService.GetWorldAreaInfo();
+                if (string.IsNullOrEmpty(info)) return "월드 에리어 정보를 가져오지 못했습니다.";
+                return "월드 에리어 정보:\n" + info;
             }
             catch (Exception ex)
             {
@@ -804,7 +818,7 @@ namespace Agent.Tools
                 var areaPath = target.curLocation != null ? target.curLocation.LocationToString() : null;
                 if (string.IsNullOrEmpty(areaPath))
                     return "Error: Could not resolve building's area path";
-                return areaPath;
+                return $"'{buildingName}'의 에리어 경로: {areaPath}";
             }
             catch (Exception ex)
             {
@@ -837,7 +851,9 @@ namespace Agent.Tools
                 if (path.Count == 0)
                     return $"No path found from {startArea.locationName} to {targetKey}";
 
-                return string.Join(" -> ", path);
+                var pretty = string.Join(" -> ", path);
+                var fromName = startArea.locationName ?? "현재 위치";
+                return $"{actor?.Name ?? "Actor"}의 현재 위치 '{fromName}'에서 '{targetKey}'까지의 최단 경로:\n{pretty}";
             }
             catch (Exception ex)
             {
@@ -932,7 +948,7 @@ namespace Agent.Tools
             {
                 var timeService = Services.Get<ITimeService>();
                 var currentTime = timeService.CurrentTime;
-                return $"Current simulation time: {currentTime} (Year: {currentTime.year}, Month: {currentTime.month}, Day: {currentTime.day}, Hour: {currentTime.hour:D2}, Minute: {currentTime.minute:D2})";
+                return $"현재 시간은 {currentTime.ToKoreanString()} 입니다.";
             }
             catch (Exception ex)
             {

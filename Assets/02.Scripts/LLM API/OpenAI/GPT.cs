@@ -20,6 +20,9 @@ public class GPT : LLMClient
     //private string agentTypeOverride = "UNKNOWN";
     // 도구 호출 라운드 최대 횟수 (기본 2)
     private int maxToolCallRounds = 3;
+    // API 재시도 설정 (과부하/일시 오류 대비)
+    private int maxApiRetries = 3;
+    private int apiRetryBaseDelayMs = 3000;
 
     private string modelName = "gpt-5-mini";
 
@@ -458,16 +461,61 @@ public class GPT : LLMClient
             await SaveRequestLogAsync(messages, options, agentTypeForLog);
             Debug.Log($"GPT Request: SaveRequestLogAsync 완료");
             ChatCompletion completion;
-            try
+            // 과부하/일시적 네트워크 오류에 대한 재시도 로직
             {
-                completion = await client.CompleteChatAsync(messages, options);
-                Debug.Log($"GPT Request: CompleteChatAsync 완료");
-            }
-            catch (Exception callEx)
-            {
-                LogExceptionWithLocation(callEx, "CompleteChatAsync failed");
-                try { await SaveConversationLogAsync(messages, $"ERROR(API): {callEx.Message}"); } catch { }
-                throw;
+                int attempt = 0;
+                while (true)
+                {
+                    try
+                    {
+                        completion = await client.CompleteChatAsync(messages, options);
+                        Debug.Log($"GPT Request: CompleteChatAsync 완료");
+                        break;
+                    }
+                    catch (Exception callEx)
+                    {
+                        var message = callEx.Message ?? string.Empty;
+                        bool isTransient = message.IndexOf("overloaded_error", StringComparison.OrdinalIgnoreCase) >= 0
+                                           || message.IndexOf("overloaded", StringComparison.OrdinalIgnoreCase) >= 0
+                                           || message.IndexOf("timeout", StringComparison.OrdinalIgnoreCase) >= 0
+                                           || message.IndexOf("temporarily", StringComparison.OrdinalIgnoreCase) >= 0
+                                           || message.IndexOf("again later", StringComparison.OrdinalIgnoreCase) >= 0
+                                           || message.IndexOf("rate_limit", StringComparison.OrdinalIgnoreCase) >= 0
+                                           || message.IndexOf("rate limited", StringComparison.OrdinalIgnoreCase) >= 0
+                                           || message.IndexOf("exceed the rate limit", StringComparison.OrdinalIgnoreCase) >= 0;
+
+                        if (isTransient && attempt < maxApiRetries)
+                        {
+                            int delay;
+                            if (message.IndexOf("rate_limit", StringComparison.OrdinalIgnoreCase) >= 0
+                                || message.IndexOf("rate limited", StringComparison.OrdinalIgnoreCase) >= 0
+                                || message.IndexOf("exceed the rate limit", StringComparison.OrdinalIgnoreCase) >= 0)
+                            {
+                                delay = 70_000; // 70초
+                                Debug.Log("[GPT] Rate limit detected. Waiting 70s before retry.");
+                            }
+                            else if (message.IndexOf("overloaded_error", StringComparison.OrdinalIgnoreCase) >= 0
+                                     || message.IndexOf("overloaded", StringComparison.OrdinalIgnoreCase) >= 0)
+                            {
+                                delay = 300_000; // 5분
+                                Debug.Log("[GPT] Overloaded detected. Waiting 5 minutes before retry.");
+                            }
+                            else
+                            {
+                                delay = apiRetryBaseDelayMs * (int)Math.Pow(2, attempt);
+                                delay += UnityEngine.Random.Range(0, 250);
+                            }
+                            Debug.LogWarning($"[GPT] Transient API error: {message}. Retrying in {delay}ms (attempt {attempt + 1}/{maxApiRetries})");
+                            await System.Threading.Tasks.Task.Delay(delay);
+                            attempt++;
+                            continue;
+                        }
+
+                        LogExceptionWithLocation(callEx, "CompleteChatAsync failed");
+                        try { await SaveConversationLogAsync(messages, $"ERROR(API): {callEx.Message}"); } catch { }
+                        throw;
+                    }
+                }
             }
             switch (completion.FinishReason)
             {

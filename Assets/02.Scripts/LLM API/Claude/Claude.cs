@@ -31,7 +31,7 @@ public class Claude : LLMClient
     private static string sessionDirectoryName = null;
     // API 재시도 설정 (과부하/일시 오류 대비)
     private int maxApiRetries = 3;
-    private int apiRetryBaseDelayMs = 1000;
+    private int apiRetryBaseDelayMs = 3000;
     // Prompt Caching mode (Automatic caches System + Tools; FineGrained lets you set CacheControl per content)
     private PromptCacheType promptCachingMode = PromptCacheType.AutomaticToolsAndSystem;
 
@@ -298,12 +298,34 @@ public class Claude : LLMClient
                                            || message.IndexOf("overloaded", StringComparison.OrdinalIgnoreCase) >= 0
                                            || message.IndexOf("timeout", StringComparison.OrdinalIgnoreCase) >= 0
                                            || message.IndexOf("temporarily", StringComparison.OrdinalIgnoreCase) >= 0
-                                           || message.IndexOf("again later", StringComparison.OrdinalIgnoreCase) >= 0;
+                                           || message.IndexOf("again later", StringComparison.OrdinalIgnoreCase) >= 0
+                                           || message.IndexOf("rate_limit_error", StringComparison.OrdinalIgnoreCase) >= 0
+                                           || message.IndexOf("rate limited", StringComparison.OrdinalIgnoreCase) >= 0
+                                           || message.IndexOf("exceed the rate limit", StringComparison.OrdinalIgnoreCase) >= 0;
 
                         if (isTransient && attempt < maxApiRetries)
                         {
-                            int delay = apiRetryBaseDelayMs * (int)Math.Pow(2, attempt);
-                            delay += UnityEngine.Random.Range(0, 250);
+                            int delay;
+                            // Rate limit의 경우 90초 대기 (실제 시간)
+                            if (message.IndexOf("rate_limit", StringComparison.OrdinalIgnoreCase) >= 0
+                                || message.IndexOf("rate limited", StringComparison.OrdinalIgnoreCase) >= 0
+                                || message.IndexOf("exceed the rate limit", StringComparison.OrdinalIgnoreCase) >= 0)
+                            {
+                                delay = 70_000; // 70초
+                                Debug.Log("[Claude] Rate limit detected. Waiting 70s before retry.");
+                            }
+                            // 서버 과부하(overloaded)인 경우 5분 대기 (실제 시간)
+                            else if (message.IndexOf("overloaded_error", StringComparison.OrdinalIgnoreCase) >= 0
+                                     || message.IndexOf("overloaded", StringComparison.OrdinalIgnoreCase) >= 0)
+                            {
+                                delay = 300_000; // 5분
+                                Debug.Log("[Claude] Overloaded detected. Waiting 5 minutes before retry.");
+                            }
+                            else
+                            {
+                                delay = apiRetryBaseDelayMs * (int)Math.Pow(2, attempt);
+                                delay += UnityEngine.Random.Range(0, 250);
+                            }
                             Debug.LogWarning($"[Claude] Transient API error: {message}. Retrying in {delay}ms (attempt {attempt + 1}/{maxApiRetries})");
                             await System.Threading.Tasks.Task.Delay(delay);
                             attempt++;
@@ -661,11 +683,28 @@ public class Claude : LLMClient
             }
             else if (part.Type == ContentType.tool_use && part is ToolUseContent toolUseContent)
             {
-                textParts.Add($"[Refusal: {toolUseContent.Input.ToJsonString()}]");
+                string name = toolUseContent.Name ?? "(unknown)";
+                string input = toolUseContent.Input != null ? toolUseContent.Input.ToJsonString() : "{}";
+                textParts.Add($"[ToolUse name={name} input={input}]");
             }
             else if (part.Type == ContentType.tool_result && part is ToolResultContent toolResultContent)
             {
-                textParts.Add($"[Refusal: {toolResultContent.Content}]");
+                string id = toolResultContent.ToolUseId ?? "(unknown)";
+                string resultText = "";
+                if (toolResultContent.Content != null)
+                {
+                    var results = toolResultContent.Content
+                        .OfType<TextContent>()
+                        .Select(t => t.Text)
+                        .Where(t => !string.IsNullOrEmpty(t))
+                        .ToList();
+                    resultText = results.Count > 0 ? string.Join("\n", results) : "[No content]";
+                }
+                else
+                {
+                    resultText = "[No content]";
+                }
+                textParts.Add($"[ToolResult id={id} result={resultText}]");
             }
         }
 

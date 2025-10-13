@@ -198,6 +198,7 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 		manualActionController.Initialize(this);
 		// Per-Actor 강제 계획 생성 플래그를 Brain에 반영
 		TryApplyForcePlanFlagToBrain();
+		Debug.Log($"[{Name}] Awake 완료");
 	}
 
 	protected override void OnEnable()

@@ -363,11 +363,6 @@ public class iPhone : Item, IUsable
         if (!chatHistory.ContainsKey(partner)) chatHistory[partner] = new List<ChatMessage>();
         chatHistory[partner].AddRange(BuildHinoKamiyaInitialConversation());
 
-        // Izumi와의 초기 채팅 추가 (절친 톤 + 카미야 뒷담화 뉘앙스)
-        string izumi = "와타야";
-        if (!chatHistory.ContainsKey(izumi)) chatHistory[izumi] = new List<ChatMessage>();
-        chatHistory[izumi].AddRange(BuildHinoIzumiInitialConversation());
-
         // Set read index and notification: Hino has read up to just before the last message from Kamiya
         var list = chatHistory[partner];
         if (list != null && list.Count > 0)
@@ -384,7 +379,32 @@ public class iPhone : Item, IUsable
                 bool isKr = false; try { isKr = localizationService != null && localizationService.CurrentLanguage == Language.KR; } catch { }
                 string notificationMessage = isKr ? $"[{lastPartnerMsg.time}] 새로운 메시지가 왔습니다. from {partner}" : $"New message from {partner} at {lastPartnerMsg.time}";
                 notifications.Add(notificationMessage);
-                chatNotification = true;
+                chatNotification = notifications.Count > 0;
+            }
+        }
+
+        // Izumi와의 초기 채팅 추가 (절친 톤 + 카미야 뒷담화 뉘앙스)
+        partner = "와타야";
+        if (!chatHistory.ContainsKey(partner)) chatHistory[partner] = new List<ChatMessage>();
+        chatHistory[partner].AddRange(BuildHinoIzumiInitialConversation());
+
+        // Set read index and notification: Hino has read up to just before the last message from Kamiya
+        list = chatHistory[partner];
+        if (list != null && list.Count > 0)
+        {
+            // Read progress: last-read index = total-2 (leave the very last message as unread)
+            int lastReadIndex = Mathf.Max(0, list.Count - 2);
+            if (conversationReadIndices.ContainsKey(partner)) conversationReadIndices[partner] = lastReadIndex; else conversationReadIndices.Add(partner, lastReadIndex);
+
+            // find last message sent by partner and notify
+            var lastPartnerMsg = list.LastOrDefault(m => m.sender == partner);
+            if (lastPartnerMsg != null)
+            {
+                var localizationService = Services.Get<ILocalizationService>();
+                bool isKr = false; try { isKr = localizationService != null && localizationService.CurrentLanguage == Language.KR; } catch { }
+                string notificationMessage = isKr ? $"[{lastPartnerMsg.time}] 새로운 메시지가 왔습니다. from {partner}" : $"New message from {partner} at {lastPartnerMsg.time}";
+                notifications.Add(notificationMessage);
+                chatNotification = notifications.Count > 0;
             }
         }
     }
@@ -395,12 +415,31 @@ public class iPhone : Item, IUsable
         if (!chatHistory.ContainsKey(partner)) chatHistory[partner] = new List<ChatMessage>();
         chatHistory[partner].AddRange(BuildHinoKamiyaInitialConversation());
 
-        // Izumi와의 초기 채팅 추가 (여성스러움 강조, 접근 시도)
-        string izumi = "와타야";
-        if (!chatHistory.ContainsKey(izumi)) chatHistory[izumi] = new List<ChatMessage>();
-        chatHistory[izumi].AddRange(BuildKamiyaIzumiInitialConversation());
         // Set read index and notification: Kamiya has read everything; no pending notifications
         var list = chatHistory[partner];
+        if (list != null && list.Count > 0)
+        {
+            int lastReadIndex = Mathf.Max(0, list.Count - 2);
+            if (conversationReadIndices.ContainsKey(partner)) conversationReadIndices[partner] = lastReadIndex; else conversationReadIndices.Add(partner, lastReadIndex);
+
+            var lastPartnerMsg = list.LastOrDefault(m => m.sender == partner);
+            if (lastPartnerMsg != null)
+            {
+                var localizationService = Services.Get<ILocalizationService>();
+                bool isKr = false; try { isKr = localizationService != null && localizationService.CurrentLanguage == Language.KR; } catch { }
+                string notificationMessage = isKr ? $"[{lastPartnerMsg.time}] 새로운 메시지가 왔습니다. from {partner}" : $"New message from {partner} at {lastPartnerMsg.time}";
+                notifications.Add(notificationMessage);
+                chatNotification = notifications.Count > 0;
+            }
+        }
+
+        // Izumi와의 초기 채팅 추가 (여성스러움 강조, 접근 시도)
+        partner = "와타야";
+        if (!chatHistory.ContainsKey(partner)) chatHistory[partner] = new List<ChatMessage>();
+        chatHistory[partner].AddRange(BuildKamiyaIzumiInitialConversation());
+
+        // Set read index and notification: Kamiya has read everything; no pending notifications
+        list = chatHistory[partner];
         if (list != null && list.Count > 0)
         {
             int lastReadIndex = Mathf.Max(0, list.Count - 1);
@@ -413,13 +452,41 @@ public class iPhone : Item, IUsable
     private void SeedForIzumi()
     {
         // Izumi 기기에서 히노/카미야 모두와의 대화가 보이도록
-        string hino = "히노";
-        if (!chatHistory.ContainsKey(hino)) chatHistory[hino] = new List<ChatMessage>();
-        chatHistory[hino].AddRange(BuildHinoIzumiInitialConversation());
+        string partner = "히노";
+        if (!chatHistory.ContainsKey(partner)) chatHistory[partner] = new List<ChatMessage>();
+        chatHistory[partner].AddRange(BuildHinoIzumiInitialConversation());
 
-        string kamiya = "카미야";
-        if (!chatHistory.ContainsKey(kamiya)) chatHistory[kamiya] = new List<ChatMessage>();
-        chatHistory[kamiya].AddRange(BuildKamiyaIzumiInitialConversation());
+        // Set read index and notification: Kamiya has read everything; no pending notifications
+        var list = chatHistory[partner];
+        if (list != null && list.Count > 0)
+        {
+            int lastReadIndex = Mathf.Max(0, list.Count - 1);
+            if (conversationReadIndices.ContainsKey(partner)) conversationReadIndices[partner] = lastReadIndex; else conversationReadIndices.Add(partner, lastReadIndex);
+            notifications.RemoveAll(n => n.Contains($"from {partner}"));
+            chatNotification = notifications.Count > 0;
+        }
+
+        partner = "카미야";
+        if (!chatHistory.ContainsKey(partner)) chatHistory[partner] = new List<ChatMessage>();
+        chatHistory[partner].AddRange(BuildKamiyaIzumiInitialConversation());
+
+        // Set read index and notification: Kamiya has read everything; no pending notifications
+        list = chatHistory[partner];
+        if (list != null && list.Count > 0)
+        {
+            int lastReadIndex = Mathf.Max(0, list.Count - 2);
+            if (conversationReadIndices.ContainsKey(partner)) conversationReadIndices[partner] = lastReadIndex; else conversationReadIndices.Add(partner, lastReadIndex);
+
+            var lastPartnerMsg = list.LastOrDefault(m => m.sender == partner);
+            if (lastPartnerMsg != null)
+            {
+                var localizationService = Services.Get<ILocalizationService>();
+                bool isKr = false; try { isKr = localizationService != null && localizationService.CurrentLanguage == Language.KR; } catch { }
+                string notificationMessage = isKr ? $"[{lastPartnerMsg.time}] 새로운 메시지가 왔습니다. from {partner}" : $"New message from {partner} at {lastPartnerMsg.time}";
+                notifications.Add(notificationMessage);
+                chatNotification = notifications.Count > 0;
+            }
+        }
     }
 
     // 히노 ↔ 이즈미 초기 대화 (절친 톤 + 카미야에 대한 뒷담화/의견 유도)
@@ -475,23 +542,23 @@ public class iPhone : Item, IUsable
     private static List<ChatMessage> BuildKamiyaIzumiInitialConversation()
     {
         var list = new List<ChatMessage>();
-        
+
         // --- 6월 초: 경계/공격적 반말 단계 (히노의 친구로서 겁주며 접근) ---
         list.Add(new ChatMessage("2025-06-10 18:40:00", "와타야", "야, 너 카미야 맞지? 나 히노 친구 와타야 이즈미야. 니가 히노한테 뭘 하면 안 되는지 딱 몇 가지만 얘기할게."));
         list.Add(new ChatMessage("2025-06-10 18:41:20", "카미야", "네. 말씀하세요.")); // 예의는 차리되 거리를 둠
-        list.Add(new ChatMessage("2025-06-10 18:42:05", "와타야", "쓸데없이 잘해줄 생각하지 마. 네 진심이 어쨌든, 걔한텐 부담이야. 겉만 보지 마. 🤨")); 
+        list.Add(new ChatMessage("2025-06-10 18:42:05", "와타야", "쓸데없이 잘해줄 생각하지 마. 네 진심이 어쨌든, 걔한텐 부담이야. 겉만 보지 마. 🤨"));
         list.Add(new ChatMessage("2025-06-10 18:42:50", "카미야", "알았어.")); // 와타야에게 맞춰 반말 사용
         list.Add(new ChatMessage("2025-06-14 20:10:50", "와타야", "너 카페에서 히노 기다리게 하더라. 시간 개념 좀 챙겨. 매일 기록해야 하는 애한테."));
         list.Add(new ChatMessage("2025-06-14 20:12:05", "카미야", "미안."));
-        
+
         // --- 6월 중순: 츤데레식 호감 단계 (신경 쓰기 시작, 돌려 말하기) ---
         list.Add(new ChatMessage("2025-06-16 09:05:10", "와타야", "너 맨날 아침에 피곤해 보이더라? 😑 걔 때문인 척하지 마. 혼자 힘든 거 숨기지 마라.")); // 명령형 관심
-        list.Add(new ChatMessage("2025-06-16 09:06:00", "카미야", "아니야. 신경 쓰지 마.")); 
+        list.Add(new ChatMessage("2025-06-16 09:06:00", "카미야", "아니야. 신경 쓰지 마."));
         list.Add(new ChatMessage("2025-06-20 17:10:31", "와타야", "야, 너 힘들 때. 걔 말고 나한테는 말해도 돼. (난 걔 베프니까 당연히 들어줘야지?)"));
         list.Add(new ChatMessage("2025-06-20 17:11:25", "카미야", "없어."));
         list.Add(new ChatMessage("2025-06-22 19:12:45", "와타야", "오늘 너 웃는 거 봤거든. 😒 뭐, 나쁘지 않더라. (츤데레 칭찬)"));
         list.Add(new ChatMessage("2025-06-22 19:13:30", "카미야", "고맙다."));
-        
+
         // --- 6월 말~7월 초: 적극적 쟁취/질투 단계 (선 넘는 접근, 직설적인 감정) ---
         list.Add(new ChatMessage("2025-06-24 16:15:40", "와타야", "오늘 너 걔 때문에 힘들어 보이던데? 내가 너한테 커피 사줄게. 나와. ☕")); // 강제적인 제안
         list.Add(new ChatMessage("2025-06-24 16:16:10", "카미야", "괜찮아."));
@@ -499,15 +566,15 @@ public class iPhone : Item, IUsable
         list.Add(new ChatMessage("2025-06-28 08:21:05", "카미야", "똑같지."));
         list.Add(new ChatMessage("2025-07-01 08:08:30", "와타야", "오늘 브루랩 창가 자리, 내가 먼저 맡아놓을까? 너랑 나랑 잠깐 같이 앉아있을 수 있게. ☀️")); // 대담한 동행 유도
         list.Add(new ChatMessage("2025-07-01 08:09:02", "카미야", "히노한테 물어볼게.")); // 히노가 기준
-        list.Add(new ChatMessage("2025-07-03 15:10:05", "와타야", "너 걔한테 추천해준 문장, 나도 읽어봤어. 생각보다 괜찮은 구석이 있네, 너. 😉")); 
+        list.Add(new ChatMessage("2025-07-03 15:10:05", "와타야", "너 걔한테 추천해준 문장, 나도 읽어봤어. 생각보다 괜찮은 구석이 있네, 너. 😉"));
         list.Add(new ChatMessage("2025-07-03 15:11:12", "카미야", "응."));
-        list.Add(new ChatMessage("2025-07-07 16:07:45", "와타야", "방학에도 매일? 너 그러다 쓰러진다. 🤨 걔 걱정보다 너 자신 좀 챙겨.")); 
+        list.Add(new ChatMessage("2025-07-07 16:07:45", "와타야", "방학에도 매일? 너 그러다 쓰러진다. 🤨 걔 걱정보다 너 자신 좀 챙겨."));
         list.Add(new ChatMessage("2025-07-07 16:08:20", "카미야", "괜찮아."));
         list.Add(new ChatMessage("2025-07-10 19:15:22", "와타야", "야, 솔직히 너 걔 친절 부담스럽지 않아? 네 마음의 소리를 들어. 내가 더 편할 텐데.")); // 직접적으로 히노 비난
         list.Add(new ChatMessage("2025-07-10 19:16:01", "카미야", "아니."));
         list.Add(new ChatMessage("2025-07-12 09:35:40", "와타야", "오늘은 걔 쉰다더라. 너도 쉬어. 내가 너랑 게임 해줄까? 🎮")); // 사적인 영역 침범 시도
         list.Add(new ChatMessage("2025-07-12 09:36:18", "카미야", "고맙지만 됐어."));
-        list.Add(new ChatMessage("2025-07-14 15:06:22", "와타야", "걔가 노트 쓴다고 말했대. 너 기분 어땠어? 솔직히 대답해봐.")); 
+        list.Add(new ChatMessage("2025-07-14 15:06:22", "와타야", "걔가 노트 쓴다고 말했대. 너 기분 어땠어? 솔직히 대답해봐."));
         list.Add(new ChatMessage("2025-07-14 15:07:01", "카미야", "좋았어."));
         list.Add(new ChatMessage("2025-07-16 21:12:05", "와타야", "걔 그림 늘었다더라. 네가 옆에 있는 게 그렇게 좋냐? 😤")); // 질투심 노출
         list.Add(new ChatMessage("2025-07-16 21:12:49", "카미야", "응."));
@@ -515,7 +582,7 @@ public class iPhone : Item, IUsable
         list.Add(new ChatMessage("2025-07-18 18:43:00", "카미야", "별로."));
         list.Add(new ChatMessage("2025-07-19 15:05:55", "와타야", "야, 걔 호흡 빨라질 때 멈추는 건 네가 지켜야 할 일이야. 너 자신을 지키는 일이라고."));
         list.Add(new ChatMessage("2025-07-19 15:06:42", "카미야", "알았어."));
-        list.Add(new ChatMessage("2025-07-20 18:07:22", "와타야", "노트 선 섬세해진 거 네 덕분일걸? 너 걔한테 너무 퍼주지 마라.")); 
+        list.Add(new ChatMessage("2025-07-20 18:07:22", "와타야", "노트 선 섬세해진 거 네 덕분일걸? 너 걔한테 너무 퍼주지 마라."));
         list.Add(new ChatMessage("2025-07-20 18:08:01", "카미야", "아니."));
         list.Add(new ChatMessage("2025-07-21 19:13:40", "와타야", "너 혼자 버티지 마. 나한테 기대도 돼. 난 너한테 아무것도 안 바라니까. 💖")); // 직접적인 감정 고백
         list.Add(new ChatMessage("2025-07-21 19:14:10", "카미야", "고맙다."));

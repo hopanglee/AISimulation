@@ -24,6 +24,9 @@ public class Gemini : LLMClient
     private string modelName = "gemini-2.5-flash";
     const int maxToolCallRounds = 3;
     private string jsonSystemMessage = null;
+    // API 재시도 설정 (과부하/일시 오류 대비)
+    private int maxApiRetries = 3;
+    private int apiRetryBaseDelayMs = 3000;
     public static void SetSessionDirectoryName(string sessionName)
     {
         sessionDirectoryName = sessionName;
@@ -461,7 +464,61 @@ public class Gemini : LLMClient
             // 2. API 호출
             request.Contents = chatHistory;
             if (request.Contents == null || request.Contents.Count == 0) Debug.LogError("request.Contents is null");
-            var response = await generativeModel.GenerateContent(request);
+            // 재시도 로직 적용
+            GenerateContentResponse response = null;
+            {
+                int attempt = 0;
+                while (true)
+                {
+                    try
+                    {
+                        response = await generativeModel.GenerateContent(request);
+                        break;
+                    }
+                    catch (Exception callEx)
+                    {
+                        var message = callEx.Message ?? string.Empty;
+                        bool isTransient = message.IndexOf("overloaded_error", StringComparison.OrdinalIgnoreCase) >= 0
+                                           || message.IndexOf("overloaded", StringComparison.OrdinalIgnoreCase) >= 0
+                                           || message.IndexOf("timeout", StringComparison.OrdinalIgnoreCase) >= 0
+                                           || message.IndexOf("temporarily", StringComparison.OrdinalIgnoreCase) >= 0
+                                           || message.IndexOf("again later", StringComparison.OrdinalIgnoreCase) >= 0
+                                           || message.IndexOf("rate_limit", StringComparison.OrdinalIgnoreCase) >= 0
+                                           || message.IndexOf("rate limited", StringComparison.OrdinalIgnoreCase) >= 0
+                                           || message.IndexOf("exceed the rate limit", StringComparison.OrdinalIgnoreCase) >= 0;
+
+                        if (isTransient && attempt < maxApiRetries)
+                        {
+                            int delay;
+                            if (message.IndexOf("rate_limit", StringComparison.OrdinalIgnoreCase) >= 0
+                                || message.IndexOf("rate limited", StringComparison.OrdinalIgnoreCase) >= 0
+                                || message.IndexOf("exceed the rate limit", StringComparison.OrdinalIgnoreCase) >= 0)
+                            {
+                                delay = 70_000; // 70초
+                                Debug.Log("[Gemini] Rate limit detected. Waiting 70s before retry.");
+                            }
+                            else if (message.IndexOf("overloaded_error", StringComparison.OrdinalIgnoreCase) >= 0
+                                     || message.IndexOf("overloaded", StringComparison.OrdinalIgnoreCase) >= 0)
+                            {
+                                delay = 300_000; // 5분
+                                Debug.Log("[Gemini] Overloaded detected. Waiting 5 minutes before retry.");
+                            }
+                            else
+                            {
+                                delay = apiRetryBaseDelayMs * (int)Math.Pow(2, attempt);
+                                delay += UnityEngine.Random.Range(0, 250);
+                            }
+                            Debug.LogWarning($"[Gemini] Transient API error: {message}. Retrying in {delay}ms (attempt {attempt + 1}/{maxApiRetries})");
+                            await System.Threading.Tasks.Task.Delay(delay);
+                            attempt++;
+                            continue;
+                        }
+
+                        Debug.LogError($"[Gemini] GenerateContent failed: {callEx.Message}");
+                        throw;
+                    }
+                }
+            }
 
             if (response.FunctionCalls != null && response.FunctionCalls.Count > 0)
             {
