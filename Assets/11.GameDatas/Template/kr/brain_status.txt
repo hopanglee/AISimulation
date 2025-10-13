@@ -7,6 +7,7 @@
 손에 든 것: {handItem}
 
 인벤토리: {inventory}
+소지금: {money}원
 수면 상태: {sleepStatus}
 현재 상태:
 {hunger}

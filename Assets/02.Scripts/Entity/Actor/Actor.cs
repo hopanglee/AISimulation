@@ -1308,6 +1308,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 { "is_sit", sitText},
                 { "handItem", handItem },
                 { "inventory", string.Join(", ", inventoryItems) },
+                { "money", Money.ToString() },
                 { "appearance", appearanceText },
                 { "sleepStatus", sleepStatus },
                 { "hunger", hungerText },

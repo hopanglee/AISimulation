@@ -139,10 +139,28 @@ public static class LocationMemoryWorldBuilder
 
                 // Collect child membership by transform hierarchy
                 var areaTf = area.transform;
-                var areaItems = items.Where(e => e != null && e.transform.IsChildOf(areaTf)).Select(GetEntityKrName).Where(n => !string.IsNullOrEmpty(n)).ToList();
-                var areaProps = props.Where(e => e != null && e.transform.IsChildOf(areaTf)).Select(GetEntityKrName).Where(n => !string.IsNullOrEmpty(n)).ToList();
-                var areaActors = actors.Where(e => e != null && e.transform.IsChildOf(areaTf)).Select(GetEntityKrName).Where(n => !string.IsNullOrEmpty(n)).ToList();
-                var areaBuildings = buildings.Where(e => e != null && e.transform.IsChildOf(areaTf)).Select(GetEntityKrName).Where(n => !string.IsNullOrEmpty(n)).ToList();
+                // Exclude entities that live under nested child Areas (only include directly-owned members)
+                var childAreaTfs = areas
+                    .Where(a => a != null && a != area && a.transform.IsChildOf(areaTf))
+                    .Select(a => a.transform)
+                    .ToArray();
+
+                bool IsOwnedByThisArea(Transform t)
+                {
+                    if (t == null) return false;
+                    if (!t.IsChildOf(areaTf)) return false;
+                    // Exclude anything under a child Area transform
+                    foreach (var cat in childAreaTfs)
+                    {
+                        if (t.IsChildOf(cat)) return false;
+                    }
+                    return true;
+                }
+
+                var areaItems = items.Where(e => e != null && IsOwnedByThisArea(e.transform)).Select(GetEntityKrName).Where(n => !string.IsNullOrEmpty(n)).ToList();
+                var areaProps = props.Where(e => e != null && IsOwnedByThisArea(e.transform)).Select(GetEntityKrName).Where(n => !string.IsNullOrEmpty(n)).ToList();
+                var areaActors = actors.Where(e => e != null && IsOwnedByThisArea(e.transform)).Select(GetEntityKrName).Where(n => !string.IsNullOrEmpty(n)).ToList();
+                var areaBuildings = buildings.Where(e => e != null && IsOwnedByThisArea(e.transform)).Select(GetEntityKrName).Where(n => !string.IsNullOrEmpty(n)).ToList();
                 var connected = (area.connectedAreas ?? new List<Area>())
                     .Where(a => a != null && a.gameObject.activeInHierarchy && a.enabled && !string.IsNullOrEmpty(a.locationName))
                     .Select(GetAreaKrName)
@@ -174,6 +192,7 @@ public static class LocationMemoryWorldBuilder
             // 2) Write to characters
             WriteMemoryForCharacter("카미야", memoryRoot);
             WriteMemoryForCharacter("히노", memoryRoot);
+            WriteMemoryForCharacter("와타야", memoryRoot);
 
             AssetDatabase.Refresh();
             Debug.Log("[LocationMemoryWorldBuilder] Built location memories from scene for 카미야, 히노.");
