@@ -110,7 +110,7 @@ public abstract partial class NPC : Actor
         // AI Agent 초기화
         InitializeAgent();
 
-        Debug.Log($"[{Name}] NPC 초기화 완료 - 역할: {npcRole}, 액션 수: {availableActions.Count}");
+        //Debug.Log($"[{Name}] NPC 초기화 완료 - 역할: {npcRole}, 액션 수: {availableActions.Count}");
     }
 
 
@@ -128,7 +128,7 @@ public abstract partial class NPC : Actor
 
         // NPCActionDecision 관련 코드 제거됨 - 더 이상 사용하지 않음
 
-        Debug.Log($"[{Name}] AI Agent 초기화 완료 - 역할: {npcRole}");
+       // Debug.Log($"[{Name}] AI Agent 초기화 완료 - 역할: {npcRole}");
     }
 
 

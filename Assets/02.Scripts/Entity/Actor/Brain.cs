@@ -85,7 +85,7 @@ public class Brain
     public void SetForceNewDayPlan(bool force)
     {
         forceNewDayPlan = force;
-        Debug.Log($"[{actor.Name}] Force new day plan {(force ? "enabled" : "disabled")}");
+        //Debug.Log($"[{actor.Name}] Force new day plan {(force ? "enabled" : "disabled")}");
         // DayPlanner에도 전달하여 로드 분기를 우회하도록 동기화
         try
         {

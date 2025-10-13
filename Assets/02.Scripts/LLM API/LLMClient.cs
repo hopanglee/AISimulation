@@ -48,7 +48,7 @@ public abstract class LLMClient
     {
         this.actor = actor;
         actorName = actor.Name;
-        Debug.Log($"[LLMClient] Actor name set to: {actorName}");
+        //Debug.Log($"[LLMClient] Actor name set to: {actorName}");
     }
     
     // 각 LLM 구현체에서 캐시 키 생성을 위해 필요한 객체를 반환합니다.

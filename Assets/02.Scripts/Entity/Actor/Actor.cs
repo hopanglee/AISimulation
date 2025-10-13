@@ -976,7 +976,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         {
             // SpeechBubbleUI에 이 Actor를 targetActor로 설정
             speechBubble.SetTargetActor(transform);
-            Debug.Log($"[{Name}] SpeechBubbleUI 초기화 완료 - targetActor 설정됨");
+            //Debug.Log($"[{Name}] SpeechBubbleUI 초기화 완료 - targetActor 설정됨");
         }
         else
         {

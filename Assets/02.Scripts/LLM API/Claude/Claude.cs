@@ -191,7 +191,7 @@ public class Claude : LLMClient
     public override void AddTools(params LLMToolSchema[] tools)
     {
         if (tools == null || tools.Length == 0) return;
-        Debug.Log($"[Claude] AddTools");
+        //Debug.Log($"[Claude] AddTools");
         foreach (var schema in tools)
         {
             var tool = ToolManager.ToClaudeTool(schema);
@@ -200,7 +200,7 @@ public class Claude : LLMClient
                 try { this.tools.Add(tool); } catch { }
             }
         }
-        Debug.Log($"[Claude] AddTools done");
+        //Debug.Log($"[Claude] AddTools done");
     }
 
     protected void ExecuteToolCall(string id, string name, JsonNode param)

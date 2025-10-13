@@ -45,11 +45,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 665670643773935698}
-  _preposition: 
-  _prepositionKr: 
+  _preposition: of
+  _prepositionKr: "\uC758"
   _isHideChild: 0
-  _name: 
-  _nameKr: 
+  _name: right hand
+  _nameKr: "\uC624\uB978\uC190"
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
   hungerEffect:
@@ -137,11 +137,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _curLocation: {fileID: 665670643773935698}
-  _preposition: 
-  _prepositionKr: 
+  _preposition: of
+  _prepositionKr: "\uC758"
   _isHideChild: 0
-  _name: 
-  _nameKr: 
+  _name: left hand
+  _nameKr: "\uC67C\uC190"
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
   hungerEffect:
