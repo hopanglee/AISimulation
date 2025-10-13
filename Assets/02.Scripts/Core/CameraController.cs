@@ -224,17 +224,17 @@ public class CameraController : MonoBehaviour
         
         // 방법 2: 삼각함수를 이용한 수학적 계산
         // 카메라의 Y축 회전을 라디안으로 변환
-        float cameraYRotation = this.transform.eulerAngles.y * Mathf.Deg2Rad;
+        //float cameraYRotation = this.transform.eulerAngles.y * Mathf.Deg2Rad;
         
         // 65도 기울어진 카메라에서의 수직 거리 계산
-        float verticalDistance = focusDistance * Mathf.Sin(65f * Mathf.Deg2Rad);
-        float horizontalDistance = focusDistance * Mathf.Cos(65f * Mathf.Deg2Rad);
+        // float verticalDistance = focusDistance * Mathf.Sin(65f * Mathf.Deg2Rad);
+        // float horizontalDistance = focusDistance * Mathf.Cos(65f * Mathf.Deg2Rad);
         
-        // 카메라 회전에 따른 X, Z 오프셋 계산
-        float offsetX = horizontalDistance * Mathf.Sin(cameraYRotation);
-        float offsetZ = horizontalDistance * Mathf.Cos(cameraYRotation);
+        // // 카메라 회전에 따른 X, Z 오프셋 계산
+        // float offsetX = horizontalDistance * Mathf.Sin(cameraYRotation);
+        // float offsetZ = horizontalDistance * Mathf.Cos(cameraYRotation);
         
-        Vector3 calculatedOffset = new Vector3(offsetX, 0f, offsetZ);
+        // Vector3 calculatedOffset = new Vector3(offsetX, 0f, offsetZ);
         
         // 캐릭터 위치에서 기본 오프셋 적용
         Vector3 cameraForward = this.transform.forward;

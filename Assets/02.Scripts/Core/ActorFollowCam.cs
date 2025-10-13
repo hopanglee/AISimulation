@@ -63,14 +63,14 @@ public class ActorFollowCam : MonoBehaviour
         float focusDistance = 3f;
         Vector3 rotationOffset = new Vector3(0f, 0f, -24.6638f);
 
-        float cameraYRotation = this.transform.eulerAngles.y * Mathf.Deg2Rad;
-        float verticalDistance = focusDistance * Mathf.Sin(65f * Mathf.Deg2Rad);
-        float horizontalDistance = focusDistance * Mathf.Cos(65f * Mathf.Deg2Rad);
+        //float cameraYRotation = this.transform.eulerAngles.y * Mathf.Deg2Rad;
+        //float verticalDistance = focusDistance * Mathf.Sin(65f * Mathf.Deg2Rad);
+        //float horizontalDistance = focusDistance * Mathf.Cos(65f * Mathf.Deg2Rad);
 
-        float offsetX = horizontalDistance * Mathf.Sin(cameraYRotation);
-        float offsetZ = horizontalDistance * Mathf.Cos(cameraYRotation);
+        //float offsetX = horizontalDistance * Mathf.Sin(cameraYRotation);
+        //float offsetZ = horizontalDistance * Mathf.Cos(cameraYRotation);
 
-        Vector3 calculatedOffset = new Vector3(offsetX, 0f, offsetZ);
+        //Vector3 calculatedOffset = new Vector3(offsetX, 0f, offsetZ);
 
         Vector3 cameraForward = this.transform.forward;
         Vector3 baseOffset = -cameraForward * focusDistance;
