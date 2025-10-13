@@ -2,11 +2,11 @@
   "entries": [
     {
       "timestamp": "2025-01-12T15:00:00Z",
-      "type": "event_occurred",
       "content": "차가 매우 빠르게 다가와 부딪침",
-      "details": "위치: 신주쿠:가부키초:1-chome-6",
-      "emotions": []
+      "details": "쾅!",
+      "emotions": [],
+      "locationName": "신주쿠:가부키초:1-chome-6"
     }
   ],
-  "lastUpdated": "2025-02-23T06:58:00Z"
+  "lastUpdated": "2025-07-24T06:58:00Z"
 }
