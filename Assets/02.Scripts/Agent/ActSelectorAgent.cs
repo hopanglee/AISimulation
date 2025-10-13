@@ -340,6 +340,7 @@ namespace Agent
                 availableActions.Add(ActionType.GiveMoney);
                 availableActions.Add(ActionType.GiveItem);
                 availableActions.Add(ActionType.RemoveClothing);
+                availableActions.Add(ActionType.PerformActivity);
                 availableActions.Add(ActionType.Wait);
                 availableActions.Add(ActionType.Think);
 
@@ -359,6 +360,24 @@ namespace Agent
                         return availableActions;
                     }
 
+                    // Sleep 액션 추가 조건: Actor가 Bed 위에 있고, 잠자는 중이 아니어야 함
+                    try
+                    {
+                        bool onBed = thinkingActor.curLocation is Bed;
+                        if (onBed && !thinkingActor.IsSleeping)
+                        {
+                            availableActions.Add(ActionType.Sleep);
+                        }
+                        else
+                        {
+                            //availableActions.Remove(ActionType.Sleep);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"[ActSelectorAgent] Error getting movable areas: {ex.Message}");
+                    }
+
                     // 부엌에 있을 때만 Cook 액션 추가
                     try
                     {
@@ -369,18 +388,37 @@ namespace Agent
                             availableActions.Add(ActionType.Cook);
                         }
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"[ActSelectorAgent] Error getting movable areas: {ex.Message}");
+                    }
 
                     // 이동 가능 위치/엔티티 확인
                     try
                     {
-                        var movablePositions = thinkingActor.sensor?.GetMovablePositions();
-                        if (movablePositions == null || movablePositions.Count == 0)
+                        var movableAreas = thinkingActor.sensor?.GetMovableAreas();
+                        if (movableAreas == null || movableAreas.Count == 0)
                         {
                             availableActions.Remove(ActionType.MoveToArea);
                         }
                     }
-                    catch { availableActions.Remove(ActionType.MoveToArea); }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"[ActSelectorAgent] Error getting movable areas: {ex.Message}");
+                    }
+
+                    try
+                    {
+                        var movableEntities = thinkingActor.sensor?.GetMovableEntities();
+                        if (movableEntities == null || movableEntities.Count == 0)
+                        {
+                            availableActions.Remove(ActionType.MoveToEntity);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"[ActSelectorAgent] Error getting movable entities: {ex.Message}");
+                    }
 
                     try
                     {
@@ -388,33 +426,31 @@ namespace Agent
                         int actorsCount = 0, propsCount = 0, itemsCount = 0;
                         if (interactable != null)
                         {
-                            try { actorsCount = interactable.actors?.Count ?? 0; } catch { }
-                            try { propsCount = interactable.props?.Count ?? 0; } catch { }
-                            try { itemsCount = interactable.items?.Count ?? 0; } catch { }
+                            actorsCount = interactable.actors?.Count ?? 0;
+                            propsCount = interactable.props?.Count ?? 0;
+                            itemsCount = interactable.items?.Count ?? 0;
                         }
 
-                        // 주변에 이동 대상 엔티티 없으면 MoveToEntity 제한
-                        if (actorsCount + propsCount + itemsCount == 0)
+                        if (actorsCount == 0)
                         {
-                            availableActions.Remove(ActionType.MoveToEntity);
-                            //availableActions.Remove(ActionType.Talk);
                             availableActions.Remove(ActionType.GiveMoney);
+                            availableActions.Remove(ActionType.GiveItem);
                         }
 
                         // 상호작용 가능한 오브젝트/아이템 없으면 관련 액션 제한
-                        if (propsCount == 0 && itemsCount == 0)
+                        if (propsCount == 0)
                         {
                             availableActions.Remove(ActionType.InteractWithObject);
+                        }
+
+                        if (itemsCount == 0)
+                        {
                             availableActions.Remove(ActionType.PickUpItem);
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        availableActions.Remove(ActionType.MoveToEntity);
-                        //availableActions.Remove(ActionType.Talk);
-                        availableActions.Remove(ActionType.GiveMoney);
-                        availableActions.Remove(ActionType.InteractWithObject);
-                        availableActions.Remove(ActionType.PickUpItem);
+                        Debug.LogError($"[ActSelectorAgent] Error getting interactable entities: {ex.Message}");
                     }
 
                     // 손/인벤토리 상태에 따른 제한
@@ -436,21 +472,6 @@ namespace Agent
                         availableActions.Remove(ActionType.GiveItem);
                         availableActions.Remove(ActionType.PutDown);
                     }
-
-                    // Sleep 액션 추가 조건: Actor가 Bed 위에 있고, 잠자는 중이 아니어야 함
-                    try
-                    {
-                        bool onBed = thinkingActor.curLocation is Bed;
-                        if (onBed && !thinkingActor.IsSleeping)
-                        {
-                            availableActions.Add(ActionType.Sleep);
-                        }
-                        else
-                        {
-                            //availableActions.Remove(ActionType.Sleep);
-                        }
-                    }
-                    catch { }
                 }
 
                 return availableActions;
