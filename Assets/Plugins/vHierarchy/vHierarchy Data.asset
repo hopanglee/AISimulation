@@ -94,6 +94,10 @@ MonoBehaviour:
         - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1752598725-0
         - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-608328551-0
         - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-185473519-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-1010079053-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-158020935-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-653741109-0
+        - globalObjectIdString: GlobalObjectId_V1-2-3593ce073bd93f74797273054295fb74-505224815-0
         values:
         - colorIndex: 0
           iconNameOrGuid: ScriptableObject Icon
@@ -241,6 +245,14 @@ MonoBehaviour:
           iconNameOrGuid: MeshCollider Icon
         - colorIndex: 1
           iconNameOrGuid: MeshCollider Icon
+        - colorIndex: 3
+          iconNameOrGuid: PreMatQuad
+        - colorIndex: 3
+          iconNameOrGuid: PreMatQuad
+        - colorIndex: 3
+          iconNameOrGuid: PreMatQuad
+        - colorIndex: 3
+          iconNameOrGuid: PreMatQuad
     - goDatas_byGlobalId:
         keys: []
         values: []
