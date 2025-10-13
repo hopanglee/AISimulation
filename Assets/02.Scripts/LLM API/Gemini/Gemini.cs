@@ -324,7 +324,7 @@ public class Gemini : LLMClient
 
             // 1. JObject를 JSON 문자열로 변환합니다.
             string schemaJson = fmt.ToString();
-            Debug.Log($"[Gemini] SetResponseFormat: {schemaJson}");
+            //Debug.Log($"[Gemini] SetResponseFormat: {schemaJson}");
 
             /*
             // 2. 라이브러리가 제공하는 공식 메서드 FromString()을 사용해 

@@ -17,7 +17,8 @@ public class Note : Item, IUsable
     {
         Unknown = 0,
         Hino = 1,
-        Kamiya = 2
+        Kamiya = 2,
+        Wataya = 3
     }
 
     [SerializeField]
