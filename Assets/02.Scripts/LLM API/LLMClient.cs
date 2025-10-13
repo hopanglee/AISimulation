@@ -10,6 +10,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.Text;
+using System.Collections.Concurrent;
 using System.Threading;
 
 public abstract class LLMClient
@@ -19,6 +20,7 @@ public abstract class LLMClient
     protected string actorName = "Unknown"; // Actor 이름을 저장할 변수
     protected IToolExecutor toolExecutor;
     protected Actor actor;
+    private static readonly ConcurrentDictionary<string, object> ActorCacheLocks = new ConcurrentDictionary<string, object>(System.StringComparer.Ordinal);
     // 전역 직렬화 게이트: 모든 LLM 요청을 한 번에 하나씩만 처리 (FIFO by semaphore)
     private static readonly SemaphoreSlim GlobalSendGate = new SemaphoreSlim(1, 1);
     private static volatile bool SerializeAllRequests = true;
@@ -96,12 +98,12 @@ public abstract class LLMClient
             var baseDir = Path.Combine(Application.dataPath, "11.GameDatas", "CachedLogs", actorName ?? "Unknown");
             if (cacheTimeService != null && Directory.Exists(baseDir))
             {
-                int count = Math.Max(0, actor?.CacheCount ?? 0);
+                //int count = actor.CacheCount;
                 var agentPart = string.IsNullOrEmpty(agentTypeOverride) ? "UNKNOWN" : agentTypeOverride;
                 var msgHash = ComputeMessagesHash(GetHashKey());
 
                 // 정확한 파일명으로 먼저 시도: {count}_{timeKey}_{agentPart}_{msgHash}.json
-                var exactMatch = Directory.GetFiles(baseDir, $"{count}_*_{agentPart}_{msgHash}.json");
+                var exactMatch = Directory.GetFiles(baseDir, $"{actor.CacheCount}_*_{agentPart}_{msgHash}.json");
                 string matchPath = null;
 
                 if (exactMatch != null && exactMatch.Length > 0)
@@ -111,8 +113,8 @@ public abstract class LLMClient
                 else
                 {
                     // 정확한 매치가 없으면 불일치 여부 확인 없이 해당 count부터 이후 캐시 모두 삭제
-                    Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 정확 매치 없음(hash={msgHash}). count {count}부터 이후 캐시 삭제 실행");
-                    DeleteCacheFilesFromCount(baseDir, count);
+                    Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 정확 매치 없음(hash={msgHash}). count {actor.CacheCount}부터 이후 캐시 삭제 실행");
+                    DeleteCacheFilesFromCount(baseDir, actor.CacheCount);
                 }
 
                 if (!string.IsNullOrEmpty(matchPath))
@@ -125,8 +127,8 @@ public abstract class LLMClient
 
                         if (cached != null)
                         {
-                            Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 로그 히트: {matchPath}");
-                            if (actor != null) actor.CacheCount = count + 1; // 히트 시 증가
+                            Debug.Log($"<b><color=blue>[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 로그 히트: {matchPath}</color></b>");
+                            actor.CacheCount++; // 히트 시 증가
                             return cached;
                         }
                     }
@@ -208,35 +210,23 @@ public abstract class LLMClient
     }
 
     /// <summary>
-    /// 지정된 count부터 이후의 모든 캐시 파일을 삭제합니다.
+    /// 지정된 count에 해당하는 현재 에이전트의 캐시 파일만 삭제합니다.
     /// </summary>
     private void DeleteCacheFilesFromCount(string baseDir, int startCount)
     {
         try
         {
             int deletedCount = 0;
-            var pattern = $"{startCount}_*.json";
-
-            // startCount부터 연속적으로 존재하는 모든 count의 파일을 와일드카드로 삭제
-            int current = startCount;
-            while (true)
+            //var agentPart = string.IsNullOrEmpty(agentTypeOverride) ? "UNKNOWN" : agentTypeOverride;
+            var files = Directory.GetFiles(baseDir, $"{startCount}_*.json");
+            foreach (var file in files)
             {
-                var files = Directory.GetFiles(baseDir, $"{current}_*.json");
-                if (files == null || files.Length == 0)
-                {
-                    // 다음 count가 없으면 종료
-                    break;
-                }
-                foreach (var file in files)
-                {
-                    File.Delete(file);
-                    deletedCount++;
-                    Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 삭제: {file}");
-                }
-                current++;
+                File.Delete(file);
+                deletedCount++;
+                Debug.LogWarning($"<b>[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 삭제: {file}</b>");
             }
-            if(deletedCount > 0)
-                Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 총 {deletedCount}개의 캐시 파일이 삭제되었습니다 (count {startCount}부터)");
+            if (deletedCount > 0)
+                Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 총 {deletedCount}개의 캐시 파일이 삭제되었습니다 (count {startCount}만)");
         }
         catch (Exception ex)
         {
@@ -264,13 +254,17 @@ public abstract class LLMClient
             var baseDir = Path.Combine(Application.dataPath, "11.GameDatas", "CachedLogs", actorName ?? "Unknown");
             if (!Directory.Exists(baseDir)) Directory.CreateDirectory(baseDir);
 
-            int count = Math.Max(0, actor?.CacheCount ?? 0);
-            var msgHash = ComputeMessagesHash(GetHashKey());
-            var filePath = Path.Combine(baseDir, $"{count}_{timeKey}_{agentPart}_{msgHash}.json");
-            var json = JsonConvert.SerializeObject(data, Formatting.Indented, EnumAsStringJsonSettings);
-            File.WriteAllText(filePath, json, System.Text.Encoding.UTF8);
-            Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 저장: {filePath}");
-            if (actor != null) actor.CacheCount = count + 1; // 저장 후 증가
+            var lockObj = ActorCacheLocks.GetOrAdd(actorName ?? "Unknown", _ => new object());
+            lock (lockObj)
+            {
+                //int count = actor.CacheCount;
+                var msgHash = ComputeMessagesHash(GetHashKey());
+                var filePath = Path.Combine(baseDir, $"{actor.CacheCount}_{timeKey}_{agentPart}_{msgHash}.json");
+                var json = JsonConvert.SerializeObject(data, Formatting.Indented, EnumAsStringJsonSettings);
+                File.WriteAllText(filePath, json, System.Text.Encoding.UTF8);
+                Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 저장: {filePath}");
+                actor.CacheCount++; // 저장 후 증가
+            }
         }
         catch (Exception ex)
         {

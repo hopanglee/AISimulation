@@ -14,7 +14,7 @@ using UnityEngine;
 /// 이성 에이전트 - 선한 특성을 가진 도덕적 판단 담당
 /// 도덕적 판단, 사회적 규범, 장기적 목표를 고려하여 상황을 해석합니다.
 /// </summary>
-public class SuperegoAgent : Claude
+public class SuperegoAgent : GPT
 {
     private DayPlanner dayPlanner; // DayPlanner 참조 추가
 

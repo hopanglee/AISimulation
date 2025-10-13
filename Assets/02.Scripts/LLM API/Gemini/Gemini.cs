@@ -274,10 +274,13 @@ public class Gemini : LLMClient
         try
         {
             string baseDirectoryPath = Path.Combine(Application.dataPath, "11.GameDatas", "ConversationLogs");
-            string sessionPath = sessionDirectoryName != null ? Path.Combine(baseDirectoryPath, sessionDirectoryName) : baseDirectoryPath;
+            string dateFolder = System.DateTime.Now.ToString("yyyy-MM-dd");
+            string datePath = Path.Combine(baseDirectoryPath, dateFolder);
+            string sessionPath = sessionDirectoryName != null ? Path.Combine(datePath, sessionDirectoryName) : datePath;
             string characterDirectoryPath = Path.Combine(sessionPath, actorName);
 
             if (!Directory.Exists(baseDirectoryPath)) Directory.CreateDirectory(baseDirectoryPath);
+            if (!Directory.Exists(datePath)) Directory.CreateDirectory(datePath);
             if (!Directory.Exists(sessionPath)) Directory.CreateDirectory(sessionPath);
             if (!Directory.Exists(characterDirectoryPath)) Directory.CreateDirectory(characterDirectoryPath);
 
@@ -479,6 +482,21 @@ public class Gemini : LLMClient
                     try
                     {
                         response = await generativeModel.GenerateContent(request);
+                        // 빈 응답(도구 호출 없음, 텍스트 비어있음) 재시도
+                        bool noTools = response?.FunctionCalls == null || response.FunctionCalls.Count == 0;
+                        bool emptyText = string.IsNullOrWhiteSpace(response?.Text);
+                        if (noTools && emptyText)
+                        {
+                            int delay = apiRetryBaseDelayMs * (int)Math.Pow(2, attempt) + UnityEngine.Random.Range(0, 250);
+                            Debug.LogWarning($"[Gemini] Empty response detected. Retrying in {delay}ms (attempt {attempt + 1}/{maxApiRetries})");
+                            if (attempt < maxApiRetries)
+                            {
+                                AddUserMessage("이전 응답이 비어 있습니다. 도구를 사용하지 말고 최종 결과만 JSON으로 응답하세요.");
+                                await System.Threading.Tasks.Task.Delay(delay);
+                                attempt++;
+                                continue;
+                            }
+                        }
                         break;
                     }
                     catch (Exception callEx)
@@ -550,7 +568,7 @@ public class Gemini : LLMClient
                 finalResponse = responseText;
                 // 응답 로깅
                 try { await SaveRawResponseLogAsync(responseText); } catch { }
-                Debug.Log($"Gemini Response: {responseText}");
+                Debug.Log($"<color=orange>Gemini Response: {responseText}</color>");
 
                 // 최종 Assistant 응답을 원본 chatHistory에 추가
                 this.chatHistory.Add(new Content(responseText, AgentRole.Assistant.ToGeminiRole()));
@@ -579,6 +597,7 @@ public class Gemini : LLMClient
                         var result = JsonConvert.DeserializeObject<T>(outer);
                         try { SaveCachedResponse(result); } catch { }
                         try { await SaveConversationLogAsync(responseText); } catch { }
+                        Debug.Log("<b>[Gemini][PARSE] Parsed successfully after outermost-object sanitization.</b>");
                         return result;
                     }
                     catch (Exception exOuter)
@@ -591,6 +610,7 @@ public class Gemini : LLMClient
                             var result = JsonConvert.DeserializeObject<T>(sanitized);
                             try { SaveCachedResponse(result); } catch { }
                             try { await SaveConversationLogAsync(responseText); } catch { }
+                            Debug.Log("<b>[Gemini][PARSE] Parsed successfully after trailing-comma sanitization.</b>");
                             return result;
                         }
                         catch (Exception ex2)

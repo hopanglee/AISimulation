@@ -33,7 +33,7 @@ public class ThinkParameters
 /// Think 행동을 위한 Parameter Agent
 /// 과거 회상, 미래 계획, 현재 상황 분석 등의 사색 활동을 처리하고 실제로 실행합니다
 /// </summary>
-public class ThinkParameterAgent : Claude, IParameterAgentBase
+public class ThinkParameterAgent : GPT, IParameterAgentBase
 {
     private readonly string systemPrompt;
 

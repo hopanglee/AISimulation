@@ -288,6 +288,21 @@ public class Claude : LLMClient
                     try
                     {
                         res = await client.Messages.GetClaudeMessageAsync(parameters);
+                        // 빈 응답일 경우(도구 호출도 없고 텍스트도 없음) 재시도
+                        bool noToolCalls = res?.ToolCalls == null || res.ToolCalls.Count == 0;
+                        bool isEmptyText = string.IsNullOrWhiteSpace(res?.FirstMessage);
+                        if (noToolCalls && isEmptyText)
+                        {
+                            int delay = apiRetryBaseDelayMs * (int)Math.Pow(2, attempt) + UnityEngine.Random.Range(0, 250);
+                            Debug.LogWarning($"[Claude] Empty response detected. Retrying in {delay}ms (attempt {attempt + 1}/{maxApiRetries})");
+                            if (attempt < maxApiRetries)
+                            {
+                                AddUserMessage("이전 응답이 비어 있습니다. 도구를 사용하지 말고 최종 결과만 JSON으로 응답하세요.");
+                                await System.Threading.Tasks.Task.Delay(delay);
+                                attempt++;
+                                continue;
+                            }
+                        }
                         Debug.Log($"Claude Request: CompleteChatAsync 완료");
                         break;
                     }
@@ -370,7 +385,7 @@ public class Claude : LLMClient
                 finalResponse = res.FirstMessage;
                 // 파싱 전에 생 텍스트를 OutgoingRequestLog에 저장
                 try { await SaveRawResponseLogAsync(finalResponse, agentTypeOverride); } catch { }
-                Debug.Log($"Gemini Response: {finalResponse}");
+                Debug.Log($"<color=orange>Claude Response: {finalResponse}</color>");
 
                 if (typeof(T) == typeof(string))
                 {
@@ -381,7 +396,7 @@ public class Claude : LLMClient
 
                 try
                 {
-                    Debug.Log($"[Claude][PARSE] Raw response before parse: {finalResponse}");
+                    Debug.Log($"<b>[Claude][PARSE] Raw response before parse: {finalResponse}</b>");
                     var result = JsonConvert.DeserializeObject<T>(finalResponse);
                     try { SaveCachedResponse(result); } catch { }
                     await SaveConversationLogAsync(messages, finalResponse);
@@ -396,7 +411,7 @@ public class Claude : LLMClient
                         var result = JsonConvert.DeserializeObject<T>(outer);
                         try { SaveCachedResponse(result); } catch { }
                         await SaveConversationLogAsync(messages, finalResponse);
-                        Debug.Log("[Claude][PARSE] Parsed successfully after outermost-object sanitization.");
+                        Debug.Log("<b>[Claude][PARSE] Parsed successfully after outermost-object sanitization.</b>");
                         return result;
                     }
                     catch (Exception exOuter)
@@ -408,7 +423,7 @@ public class Claude : LLMClient
                             var result = JsonConvert.DeserializeObject<T>(sanitized);
                             try { SaveCachedResponse(result); } catch { }
                             await SaveConversationLogAsync(messages, finalResponse);
-                            Debug.Log("[Claude][PARSE] Parsed successfully after trailing-comma sanitization.");
+                            Debug.Log("<b>[Claude][PARSE] Parsed successfully after trailing-comma sanitization.</b>");
                             return result;
                         }
                         catch (Exception ex2)

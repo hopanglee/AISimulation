@@ -14,7 +14,7 @@ using UnityEngine;
 /// 본능 에이전트 - 악한 특성을 가진 즉각적 욕구 담당
 /// 즉각적 욕구, 감정적 반응, 단기적 만족을 고려하여 상황을 해석합니다.
 /// </summary>
-public class IdAgent : Gemini
+public class IdAgent : Claude
 {
     private DayPlanner dayPlanner; // DayPlanner 참조 추가
 

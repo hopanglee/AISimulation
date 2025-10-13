@@ -2004,9 +2004,13 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         }
         else
         {
-            relationshipText = "기억나지 않는다..";
+            relationshipText = $"- {targetName}: 모르는 사람인 것 같다..";
         }
 
+        if(string.IsNullOrEmpty(relationshipText))
+        {
+            relationshipText = $"- {targetName}: 모르는 사람인 것 같다..";
+        }
         return relationshipText.Trim();
     }
 

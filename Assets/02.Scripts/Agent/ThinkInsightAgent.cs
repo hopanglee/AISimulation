@@ -10,7 +10,7 @@ namespace Agent
     /// Think 액션에서 대화 내용으로부터 통찰을 추출하는 Agent
     /// 중간 정리 역할을 하며 사색의 깊이를 측정합니다
     /// </summary>
-    public class ThinkInsightAgent : Claude
+    public class ThinkInsightAgent : GPT
     {
         public ThinkInsightAgent(Actor actor) : base(actor)
         {

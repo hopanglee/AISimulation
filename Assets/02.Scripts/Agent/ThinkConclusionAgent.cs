@@ -10,7 +10,7 @@ namespace Agent
     /// Think 액션에서 전체 사색 과정의 최종 결론을 생성하는 Agent
     /// 대화 전체와 추출된 통찰들을 종합하여 의미있는 결론을 도출합니다
     /// </summary>
-    public class ThinkConclusionAgent : Claude
+    public class ThinkConclusionAgent : GPT
     {
 
         public ThinkConclusionAgent(Actor actor) : base(actor)

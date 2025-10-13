@@ -478,6 +478,22 @@ public class GPT : LLMClient
                     try
                     {
                         completion = await client.CompleteChatAsync(messages, options);
+                        // 빈 응답(Stop인데 텍스트 비어있고 도구 호출 없음) 재시도
+                        bool noTools = completion?.ToolCalls == null || completion.ToolCalls.Count == 0;
+                        bool isStop = completion?.FinishReason == ChatFinishReason.Stop;
+                        bool emptyText = completion?.Content == null || completion.Content.Count == 0 || string.IsNullOrWhiteSpace(completion.Content[0]?.Text);
+                        if (isStop && noTools && emptyText)
+                        {
+                            int delay = apiRetryBaseDelayMs * (int)Math.Pow(2, attempt) + UnityEngine.Random.Range(0, 250);
+                            Debug.LogWarning($"[GPT] Empty response detected. Retrying in {delay}ms (attempt {attempt + 1}/{maxApiRetries})");
+                            if (attempt < maxApiRetries)
+                            {
+                                AddUserMessage("이전 응답이 비어 있습니다. 도구를 사용하지 말고 최종 결과만 JSON으로 응답하세요.");
+                                await System.Threading.Tasks.Task.Delay(delay);
+                                attempt++;
+                                continue;
+                            }
+                        }
                         Debug.Log($"GPT Request: CompleteChatAsync 완료");
                         break;
                     }
@@ -536,7 +552,7 @@ public class GPT : LLMClient
                         // 파싱 전에 생 텍스트를 OutgoingRequestLog에 저장
                         try { await SaveRawResponseLogAsync(responseText, agentTypeOverride); } catch { }
                         finalResponse = responseText;
-                        Debug.Log($"GPT Response: {responseText}");
+                        Debug.Log($"<color=orange>GPT Response: {responseText}</color>");
 
                         if (typeof(T) == typeof(string))
                         {
@@ -547,7 +563,7 @@ public class GPT : LLMClient
 
                         try
                         {
-                            Debug.Log($"[GPT][PARSE] Raw response before parse: {responseText}");
+                            Debug.Log($"<b>[GPT][PARSE] Raw response before parse: {responseText}</b>");
                             var result = JsonConvert.DeserializeObject<T>(responseText);
                             try { SaveCachedResponse(result); } catch { }
                             await SaveConversationLogAsync(messages, responseText);
@@ -562,7 +578,7 @@ public class GPT : LLMClient
                                 var result = JsonConvert.DeserializeObject<T>(outer);
                                 try { SaveCachedResponse(result); } catch { }
                                 await SaveConversationLogAsync(messages, responseText);
-                                Debug.Log("[GPT][PARSE] Parsed successfully after outermost-object sanitization.");
+                                Debug.Log("<b>[GPT][PARSE] Parsed successfully after outermost-object sanitization.</b>");
                                 return result;
                             }
                             catch (Exception exOuter)
@@ -574,7 +590,7 @@ public class GPT : LLMClient
                                     var result = JsonConvert.DeserializeObject<T>(sanitized);
                                     try { SaveCachedResponse(result); } catch { }
                                     await SaveConversationLogAsync(messages, responseText);
-                                    Debug.Log("[GPT][PARSE] Parsed successfully after trailing-comma sanitization.");
+                                    Debug.Log("<b>[GPT][PARSE] Parsed successfully after trailing-comma sanitization.</b>");
                                     return result;
                                 }
                                 catch (Exception ex2)

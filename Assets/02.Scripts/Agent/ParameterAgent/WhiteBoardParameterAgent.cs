@@ -14,7 +14,7 @@ namespace Agent
     /// <summary>
     /// WhiteBoard와 상호작용할 때 무엇을 적을지 결정하는 ParameterAgent
     /// </summary>
-    public class WhiteBoardParameterAgent : Gemini, IParameterAgentBase
+    public class WhiteBoardParameterAgent : GPT, IParameterAgentBase
     {
         public class WhiteBoardParameter
         {

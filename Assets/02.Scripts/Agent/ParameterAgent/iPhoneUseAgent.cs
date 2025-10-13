@@ -10,7 +10,7 @@ using static Agent.IParameterAgentBase;
 
 namespace Agent
 {
-    public class iPhoneUseAgent : Claude, IParameterAgentBase
+    public class iPhoneUseAgent : GPT, IParameterAgentBase
     {
         public class iPhoneUseParameter
         {
