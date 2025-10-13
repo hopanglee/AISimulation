@@ -927,6 +927,46 @@ MonoBehaviour:
   _nameKr: "\uB864\uB780\uB4DC"
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
+  hungerEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  thirstEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  staminaEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  cleanlinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  mentalPleasureEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  stressEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  sleepinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  judgmentEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
   useGPT: 1
   cacheCount: 0
   money: 0
@@ -937,6 +977,7 @@ MonoBehaviour:
   MentalPleasure: 0
   Stress: 0
   Sleepiness: 0
+  Judgment: 0
   _handItem: {fileID: 0}
   Hand: {fileID: 706240457257850816}
   _inventoryItems: []
@@ -2419,14 +2460,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fad56485fe04934e9674223bea65251, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _curLocation: {fileID: 0}
-  _preposition: 
-  _prepositionKr: 
+  _curLocation: {fileID: 2828183128784027590}
+  _preposition: of
+  _prepositionKr: "\uC758"
   _isHideChild: 0
-  _name: 
-  _nameKr: 
+  _name: left hand
+  _nameKr: "\uC67C\uC190"
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
+  hungerEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  thirstEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  staminaEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  cleanlinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  mentalPleasureEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  stressEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  sleepinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  judgmentEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
 --- !u!1 &7183270348989943655
 GameObject:
   m_ObjectHideFlags: 0
@@ -2502,14 +2583,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fad56485fe04934e9674223bea65251, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _curLocation: {fileID: 0}
-  _preposition: 
-  _prepositionKr: 
+  _curLocation: {fileID: 2828183128784027590}
+  _preposition: of
+  _prepositionKr: "\uC758"
   _isHideChild: 0
-  _name: 
-  _nameKr: 
+  _name: right hand
+  _nameKr: "\uC624\uB978\uC190"
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
+  hungerEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  thirstEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  staminaEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  cleanlinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  mentalPleasureEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  stressEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  sleepinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  judgmentEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
 --- !u!1 &8950957064790050372
 GameObject:
   m_ObjectHideFlags: 0
@@ -2554,7 +2675,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fd1911498378134ea206495af6fd226, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _curLocation: {fileID: 0}
+  _curLocation: {fileID: 2828183128784027590}
   _preposition: 
   _prepositionKr: 
   _isHideChild: 0
@@ -2562,6 +2683,46 @@ MonoBehaviour:
   _nameKr: 
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
+  hungerEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  thirstEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  staminaEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  cleanlinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  mentalPleasureEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  stressEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  sleepinessEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
+  judgmentEffect:
+    enabled: 0
+    minValue: 0
+    maxValue: 100
+    deltaPerTick: 0
 --- !u!1001 &2766037972969986618
 PrefabInstance:
   m_ObjectHideFlags: 0

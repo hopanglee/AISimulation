@@ -102,8 +102,8 @@ public class PathfindingService : IPathfindingService
             allAreasByFullPath[fullPath] = areaInfo;
         }
 
-        Debug.Log($"PathfindingService: Loaded {allAreas.Count} areas");
-        Debug.Log($"PathfindingService: Available full paths: {string.Join(", ", allAreasByFullPath.Keys)}");
+        //Debug.Log($"PathfindingService: Loaded {allAreas.Count} areas");
+       // Debug.Log($"PathfindingService: Available full paths: {string.Join(", ", allAreasByFullPath.Keys)}");
     }
 
     public List<string> FindPathToLocation(Area startArea, string targetLocationKey)

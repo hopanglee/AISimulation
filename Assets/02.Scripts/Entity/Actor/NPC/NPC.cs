@@ -479,7 +479,7 @@ public abstract partial class NPC : Actor
         }
 
         var examples = GetParameterExamples(debugActionType);
-        Debug.Log($"[{Name}] {debugActionType} 액션 파라미터 예시: {examples}");
+//        Debug.Log($"[{Name}] {debugActionType} 액션 파라미터 예시: {examples}");
     }
 
     /// <summary>

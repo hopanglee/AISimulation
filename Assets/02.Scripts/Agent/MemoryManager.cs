@@ -98,7 +98,7 @@ public class MemoryManager
             //filterAgent = new LongTermMemoryFilterAgent(owner);
             //maintenanceAgent = new LongTermMemoryMaintenanceAgent(owner);
 
-            Debug.Log($"[MemoryManager] All memory agents initialized for {owner.name}");
+           // Debug.Log($"[MemoryManager] All memory agents initialized for {owner.name}");
         }
         catch (Exception ex)
         {
@@ -174,7 +174,7 @@ public class MemoryManager
                 InitializeMemoryPaths();
 
             string logOwner = owner != null ? owner.Name : "Unknown";
-            Debug.Log($"[{logOwner}] Short Term Memory 저장 시작: {shortTermMemory.entries.Count}개");
+            //Debug.Log($"[{logOwner}] Short Term Memory 저장 시작: {shortTermMemory.entries.Count}개");
             var timeService = Services.Get<ITimeService>();
             shortTermMemory.lastUpdated = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 0, 0);
             string json = JsonConvert.SerializeObject(shortTermMemory, Formatting.Indented);

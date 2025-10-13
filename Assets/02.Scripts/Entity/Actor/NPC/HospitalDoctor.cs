@@ -123,8 +123,8 @@ public class HospitalDoctor : NPC
         RegisterActionHandler(DoctorAction.Examine, HandleExamine);
         RegisterActionHandler(DoctorAction.NotifyReceptionist, HandleNotifyReceptionist);
 
-        Debug.Log($"[{Name}] 병원 의사 액션 핸들러 초기화 완료");
-        Debug.Log($"[{Name}] 사용 가능한 액션: {string.Join(", ", availableActions)}");
+        //Debug.Log($"[{Name}] 병원 의사 액션 핸들러 초기화 완료");
+        //Debug.Log($"[{Name}] 사용 가능한 액션: {string.Join(", ", availableActions)}");
     }
 
     /// <summary>

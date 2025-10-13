@@ -63,7 +63,7 @@ public class PeopleWalkPathManager : MonoBehaviour
             // 시간 제어 설정만 적용 (레이어 마스크는 각 Path에서 개별 설정)
             path.SetTimeControl(useDeltaTime);
             
-            Debug.Log($"[PeopleWalkPathManager] Registered path: {path.name}");
+          //  Debug.Log($"[PeopleWalkPathManager] Registered path: {path.name}");
         }
     }
 
@@ -78,7 +78,7 @@ public class PeopleWalkPathManager : MonoBehaviour
         if (managedPaths.Contains(path))
         {
             managedPaths.Remove(path);
-            Debug.Log($"[PeopleWalkPathManager] Unregistered path: {path.name}");
+            //Debug.Log($"[PeopleWalkPathManager] Unregistered path: {path.name}");
         }
     }
 
@@ -100,7 +100,7 @@ public class PeopleWalkPathManager : MonoBehaviour
             }
         }
         
-        Debug.Log($"[PeopleWalkPathManager] Time control updated - UseDeltaTime: {useDeltaTime}");
+        //Debug.Log($"[PeopleWalkPathManager] Time control updated - UseDeltaTime: {useDeltaTime}");
     }
 
     /// <summary>
