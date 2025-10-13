@@ -1145,7 +1145,11 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         var localizationService = Services.Get<ILocalizationService>();
 
         // 기본 정보 준비
-        var handItem = String.IsNullOrEmpty(HandItem?.GetWhenOnHand()) ? $"{HandItem?.Name}" : $"{HandItem?.Name} => {HandItem?.GetWhenOnHand()}";
+        var handItem = HandItem == null
+            ? "없음"
+            : (String.IsNullOrEmpty(HandItem.GetWhenOnHand())
+                ? $"{HandItem.Name}"
+                : $"{HandItem.Name} => {HandItem.GetWhenOnHand()}");
         var inventoryItems = new List<string>();
         for (int i = 0; i < InventoryItems.Length; i++)
         {
