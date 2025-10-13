@@ -284,7 +284,18 @@ namespace Agent.ActionHandlers
             actor.MoveController.OnReached += () => moveCompleted.SetResult(true);
 
             await WaitForMoveCompletion(moveCompleted, targetLocation, token);
-            return true;
+
+            // MoveController의 최종 성공 여부로 반환
+            if (actor.MoveController != null && actor.MoveController.LastMoveSucceeded)
+            {
+                return true;
+            }
+            else
+            {
+                // 실패 시 단기 기억에 기록
+                TryAddMoveFailureShortTermMemory(targetLocation);
+                return false;
+            }
         }
 
         /// <summary>
@@ -302,7 +313,16 @@ namespace Agent.ActionHandlers
             actor.MoveController.OnReached += () => moveCompleted.SetResult(true);
 
             await WaitForMoveCompletion(moveCompleted, targetName, token);
-            return true;
+
+            if (actor.MoveController != null && actor.MoveController.LastMoveSucceeded)
+            {
+                return true;
+            }
+            else
+            {
+                TryAddMoveFailureShortTermMemory(targetName);
+                return false;
+            }
         }
 
         /// <summary>
@@ -366,6 +386,26 @@ namespace Agent.ActionHandlers
                 // 이동 취소 시 MoveController 정리
                 actor.MoveController.Reset();
                 throw; // 상위로 취소 예외 전파
+            }
+        }
+
+        private void TryAddMoveFailureShortTermMemory(string targetName)
+        {
+            try
+            {
+                var mainActor = actor as MainActor;
+                var memoryManager = mainActor?.brain?.memoryManager;
+                string locationKey = actor?.curLocation?.GetSimpleKey();
+                if (memoryManager != null)
+                {
+                    string content = $"{targetName}까지 아직 남았는데 갈 수 없다";
+                    string details = "경로상 장애물 또는 접근 불가";
+                    memoryManager.AddShortTermMemory(content, details, locationKey);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogWarning($"[MovementActionHandler] STM 추가 실패: {ex.Message}");
             }
         }
     }

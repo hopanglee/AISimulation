@@ -10,6 +10,7 @@ public class MoveController : MonoBehaviour
     private AIDestinationSetter aIDestinationSetter;
     public bool isMoving = false;
     public event Action OnReached;
+    public bool LastMoveSucceeded { get; private set; } = false;
 
     private Entity entity;
     private float baseMaxSpeed = 0f;
@@ -115,6 +116,34 @@ public class MoveController : MonoBehaviour
                 break;
 
             yield return null; // 프레임 대기
+        }
+
+        // 도착 판정 이후, 목표와의 실제 거리를 한 번 더 확인하여 성공/실패 결정
+        float threshold = 0.8f;
+        float thresholdSqr = threshold * threshold;
+
+        Vector3 currentPos = followerEntity != null ? followerEntity.transform.position : transform.position;
+        Vector3? finalTargetPos = null;
+        if (lastTargetTransform != null)
+            finalTargetPos = lastTargetTransform.position;
+        else if (lastTargetPosition.HasValue)
+            finalTargetPos = lastTargetPosition.Value;
+
+        if (finalTargetPos.HasValue)
+        {
+            float sqrDist = MathExtension.SquaredDistance2D(currentPos, finalTargetPos.Value);
+            LastMoveSucceeded = sqrDist <= thresholdSqr;
+            if (!LastMoveSucceeded)
+            {
+                var namePrefixWarn = entity != null ? entity.Name : gameObject.name;
+                float dist = Mathf.Sqrt(sqrDist);
+                Debug.LogWarning($"<b>[{namePrefixWarn}] 도착 전에 멈췄습니다. 목표까지 거리: {dist:F2}m (임계값 {threshold:F2}m)</b>");
+            }
+        }
+        else
+        {
+            // 목표 정보를 알 수 없으면 기존 도착 판정에 따름 (보수적으로 성공 처리)
+            LastMoveSucceeded = true;
         }
 
         isMoving = false;

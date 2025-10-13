@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: MoveToEntityParameterAgent
+Real Time: 2025-10-13 23:22:56
+{"entity_name":"식탁:접시:도넛_1"}
+

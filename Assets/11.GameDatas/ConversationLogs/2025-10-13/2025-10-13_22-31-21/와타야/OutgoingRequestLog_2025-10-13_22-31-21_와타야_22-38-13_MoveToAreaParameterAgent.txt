@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 와타야
+Agent Type: MoveToAreaParameterAgent
+Real Time: 2025-10-13 22:38:13
+{"area_name":"복도"}
+

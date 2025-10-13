@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 카미야
+Agent Type: MoveToEntityParameterAgent
+Real Time: 2025-10-13 23:18:43
+{"entity_name":"옷장:앞치마"}
+
