@@ -159,36 +159,25 @@ public class IdAgent : Gemini
                 {
                     try
                     {
-                        Debug.Log(
-                            "[ActSelectorAgent][DBG-AS-1] dayPlanner is set - starting context build"
-                        );
+
                         var currentAction = await dayPlanner.GetCurrentSpecificActionAsync();
                         if (currentAction == null)
                         {
-                            Debug.LogError(
-                                "[ActSelectorAgent][DBG-AS-2] currentAction is null (GetCurrentSpecificActionAsync returned null)"
-                            );
+
                             throw new NullReferenceException("currentAction is null");
                         }
 
                         var currentActivity = currentAction.ParentDetailedActivity;
                         if (currentActivity == null)
                         {
-                            Debug.LogError(
-                                "[ActSelectorAgent][DBG-AS-3] currentActivity is null (ParentDetailedActivity)"
-                            );
+
                             throw new NullReferenceException("currentActivity is null");
                         }
 
-                        Debug.Log(
-                            $"[ActSelectorAgent][DBG-AS-4] currentActivity: {currentActivity.ActivityName}, duration: {currentActivity.DurationMinutes}"
-                        );
 
                         // DayPlanner의 메서드를 사용하여 활동 시작 시간 계산
                         var activityStartTime = dayPlanner.GetActivityStartTime(currentActivity);
-                        Debug.Log(
-                            $"[ActSelectorAgent][DBG-AS-5] activityStartTime: {activityStartTime.hour:D2}:{activityStartTime.minute:D2}"
-                        );
+
 
                         // 모든 SpecificAction 나열 (null 방어)
                         var allActionsText = new List<string>();
@@ -196,9 +185,7 @@ public class IdAgent : Gemini
                             currentActivity.SpecificActions ?? new List<SpecificAction>();
                         if (currentActivity.SpecificActions == null)
                         {
-                            Debug.LogWarning(
-                                "[ActSelectorAgent][DBG-AS-6] currentActivity.SpecificActions is null - using empty list"
-                            );
+
                         }
 
                         for (int i = 0; i < specificActions.Count; i++)

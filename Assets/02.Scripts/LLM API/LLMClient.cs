@@ -10,6 +10,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 
 public abstract class LLMClient
 {
@@ -18,6 +19,9 @@ public abstract class LLMClient
     protected string actorName = "Unknown"; // Actor 이름을 저장할 변수
     protected IToolExecutor toolExecutor;
     protected Actor actor;
+    // 전역 직렬화 게이트: 모든 LLM 요청을 한 번에 하나씩만 처리 (FIFO by semaphore)
+    private static readonly SemaphoreSlim GlobalSendGate = new SemaphoreSlim(1, 1);
+    private static volatile bool SerializeAllRequests = true;
     public LLMClient(LLMClientProps options)
     {
         this.llmOptions = options;
@@ -72,6 +76,12 @@ public abstract class LLMClient
         LLMClientSchema schema = null,
         ChatDeserializer<T> deserializer = null)
     {
+        if (SerializeAllRequests)
+        {
+            await GlobalSendGate.WaitAsync();
+        }
+        try
+        {
         #region 캐시 가능한 로그 기록 있는지 체크
         try
         {
@@ -179,6 +189,14 @@ public abstract class LLMClient
                 Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] API 호출 종료 - 시뮬레이션 시간 재개됨");
             }
             #endregion
+        }
+        }
+        finally
+        {
+            if (SerializeAllRequests)
+            {
+                try { GlobalSendGate.Release(); } catch { }
+            }
         }
     }
 
@@ -291,6 +309,14 @@ public abstract class LLMClient
     #endregion
 
     #region 설정
+    /// <summary>
+    /// 전역 직렬화 토글. true면 모든 LLMClient 요청을 순차적으로 처리합니다.
+    /// </summary>
+    public static void SetGlobalSerialization(bool enabled)
+    {
+        SerializeAllRequests = enabled;
+        Debug.Log($"[LLMClient] Global serialization enabled = {SerializeAllRequests}");
+    }
     /// <summary>
     /// 공급자-중립 포맷 스키마를 설정합니다. 구현체에서 각 공급자 형식의 ResponseFormat/generationConfig로 반영됩니다.
     /// </summary>

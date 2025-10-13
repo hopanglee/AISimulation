@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json.Nodes;
+using System.Reflection;
 using Agent.Tools;
 using Anthropic.SDK;
 using Anthropic.SDK.Common;
@@ -21,12 +22,18 @@ public class Claude : LLMClient
     private MessageParameters parameters = new();
     List<ClaudeTool> tools = new();
     private List<Message> messages = new();
+    // Maintain a dedicated System messages list to enable Anthropic prompt caching of system prompts
+    private readonly List<SystemMessage> systemMessages = new();
+    // Track the first system message text for helper methods/appends
+    private string firstSystemMessageText = null;
     private int maxToolCallRounds = 3;
     private bool enableLogging = true; // 로깅 활성화 여부
     private static string sessionDirectoryName = null;
     // API 재시도 설정 (과부하/일시 오류 대비)
     private int maxApiRetries = 3;
     private int apiRetryBaseDelayMs = 1000;
+    // Prompt Caching mode (Automatic caches System + Tools; FineGrained lets you set CacheControl per content)
+    private PromptCacheType promptCachingMode = PromptCacheType.AutomaticToolsAndSystem;
 
     private string jsonSystemMessage = null;
     public Claude(Actor actor, string model = null) : base(new LLMClientProps() { model = model, provider = LLMClientProvider.Anthropic })
@@ -58,6 +65,10 @@ public class Claude : LLMClient
             Temperature = 1.0m,
             Tools = tools,
             ToolChoice = new ToolChoice() { Type = ToolChoiceType.Auto },
+            // Enable prompt caching by default: caches System + Tools automatically (subject to 5-minute TTL)
+            PromptCaching = promptCachingMode,
+            // Provide system messages separately to leverage Anthropic's cache for system prompts
+            System = systemMessages,
         };
 
 
@@ -82,21 +93,13 @@ public class Claude : LLMClient
     protected override int GetMessageCount() => messages.Count;
     protected override void ClearMessages(bool keepSystemMessage = false)
     {
-        if (keepSystemMessage)
+        // 메시지 히스토리 정리. 시스템 메시지는 별도의 systemMessages 컬렉션에서 관리한다.
+        if (!keepSystemMessage)
         {
-            // 시스템 프롬프트만 남기고 나머지 메시지 제거
-            var systemPrompt = messages.FirstOrDefault(m => m.Role == AgentRole.System.ToAnthropicRole());
-            messages.Clear();
-
-            if (systemPrompt != null)
-            {
-                messages.Add(systemPrompt);
-            }
+            try { systemMessages.Clear(); } catch { }
+            firstSystemMessageText = null;
         }
-        else
-        {
-            messages.Clear();
-        }
+        messages.Clear();
     }
     protected override void RemoveAt(int index)
     {
@@ -130,16 +133,11 @@ public class Claude : LLMClient
     }
     public override void AddSystemMessage(string message)
     {
-        if (String.IsNullOrEmpty(jsonSystemMessage))
-        {
-            messages.Add(new Message(AgentRole.System.ToAnthropicRole(), message));
-        }
-        else
-        {
-            var systemMessage = message + jsonSystemMessage;
-            messages.Add(new Message(AgentRole.System.ToAnthropicRole(), systemMessage));
-            jsonSystemMessage = null;
-        }
+        var finalSystem = String.IsNullOrEmpty(jsonSystemMessage) ? message : (message + jsonSystemMessage);
+        if (!String.IsNullOrEmpty(jsonSystemMessage)) jsonSystemMessage = null;
+        systemMessages.Add(new SystemMessage(finalSystem));
+        if (firstSystemMessageText == null)
+            firstSystemMessageText = finalSystem;
     }
     public override void AddUserMessage(string message)
     {
@@ -170,21 +168,21 @@ public class Claude : LLMClient
     #region 메시지 Extension
     private string GetSystemMessage()
     {
-        return messages.FirstOrDefault(m => m.Role == AgentRole.System.ToAnthropicRole())?.Content?.ToString();
+        // 첫 번째 시스템 메시지 내용을 반환 (존재 시)
+        return firstSystemMessageText;
     }
     private void ChangeSystemMessage(string message)
     {
         // 기존 시스템 메시지가 있으면 교체, 없으면 선두에 삽입
-        var systemRole = AgentRole.System.ToAnthropicRole();
-        int idx = messages.FindIndex(m => m.Role == systemRole);
-        if (idx >= 0)
+        if (systemMessages.Count > 0)
         {
-            messages[idx] = new Message(systemRole, message);
+            systemMessages[0] = new SystemMessage(message);
         }
         else
         {
-            messages.Insert(0, new Message(systemRole, message));
+            systemMessages.Insert(0, new SystemMessage(message));
         }
+        firstSystemMessageText = message;
     }
     #endregion
 
@@ -259,6 +257,9 @@ public class Claude : LLMClient
         if (messages != null)
         {
             this.messages = messages?.AsAnthropicMessage() ?? this.messages;
+            // Ensure parameters points to the current messages list reference
+            if (parameters != null)
+                parameters.Messages = this.messages;
         }
 
         return SendClaudeAsync<T>();
@@ -315,6 +316,16 @@ public class Claude : LLMClient
                     }
                 }
             }
+
+            // Log Anthropic prompt cache usage if available
+            try
+            {
+                if (res?.Usage != null)
+                {
+                    Debug.Log($"[Claude][Cache] creation_in={res.Usage.CacheCreationInputTokens}, read_in={res.Usage.CacheReadInputTokens}");
+                }
+            }
+            catch { }
 
             messages.Add(res.Message);
             if (res.ToolCalls != null && res.ToolCalls.Count > 0)
@@ -660,5 +671,63 @@ public class Claude : LLMClient
 
         return textParts.Count > 0 ? string.Join("\n", textParts) : "[Empty content]";
     }
+    
+    #region Prompt Caching Helpers
+    /// <summary>
+    /// Sets Anthropic prompt caching mode. Use AutomaticToolsAndSystem to automatically cache System and Tools.
+    /// Use FineGrained to enable manual CacheControl on messages/tools.
+    /// </summary>
+    public void SetPromptCachingMode(PromptCacheType mode)
+    {
+        promptCachingMode = mode;
+        if (parameters != null)
+        {
+            parameters.PromptCaching = promptCachingMode;
+        }
+    }
+
+    /// <summary>
+    /// Adds a SystemMessage with ephemeral CacheControl for fine-grained caching.
+    /// Only meaningful if PromptCaching is FineGrained.
+    /// </summary>
+    public void AddSystemMessageEphemeral(string message)
+    {
+        systemMessages.Add(new SystemMessage(message, new CacheControl() { Type = CacheControlType.ephemeral }));
+    }
+
+    /// <summary>
+    /// Marks the first SystemMessage as ephemeral cached (fine-grained).
+    /// </summary>
+    public void MarkFirstSystemAsEphemeral()
+    {
+        if (systemMessages.Count == 0) return;
+        var content = firstSystemMessageText ?? string.Empty;
+        systemMessages[0] = new SystemMessage(content, new CacheControl() { Type = CacheControlType.ephemeral });
+    }
+
+    /// <summary>
+    /// Attempts to set CacheControl=ephemeral on all tools (best-effort via reflection if supported by SDK version).
+    /// Only meaningful if PromptCaching is FineGrained.
+    /// </summary>
+    public void SetAllToolsEphemeralCache()
+    {
+        try
+        {
+            foreach (var t in tools)
+            {
+                try
+                {
+                    var prop = t?.GetType()?.GetProperty("CacheControl", BindingFlags.Public | BindingFlags.Instance);
+                    if (prop != null && prop.CanWrite)
+                    {
+                        prop.SetValue(t, new CacheControl() { Type = CacheControlType.ephemeral });
+                    }
+                }
+                catch { /* ignore per-tool errors */ }
+            }
+        }
+        catch { }
+    }
+    #endregion
     #endregion
 }

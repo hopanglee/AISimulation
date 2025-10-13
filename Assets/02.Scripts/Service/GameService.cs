@@ -108,8 +108,6 @@ public class GameService : MonoBehaviour, IGameService
 
     public void Initialize()
     {
-        Debug.Log("[GameService] Initializing...");
-        Debug.Log("[GameService] Initialization completed.");
     }
 
     private void Update()

@@ -360,12 +360,12 @@ public abstract class Entity : MonoBehaviour, ILocation
 
             if (nearestParentLocation != null)
             {
-                Debug.Log($"[{safeName}] curLocation이 null이어서 부모 ILocation('{(nearestParentLocation as MonoBehaviour)?.name}')로 등록합니다.");
+                Debug.LogWarning($"[{safeName}] curLocation이 null이어서 부모 ILocation('{(nearestParentLocation as MonoBehaviour)?.name}')로 등록합니다.");
                 Services.Get<ILocationService>().Add(nearestParentLocation, this);
             }
             else
             {
-                Debug.LogWarning($"[{safeName}] curLocation이 null이고 부모 ILocation도 없어 LocationService에 등록할 수 없습니다.");
+                Debug.LogError($"[{safeName}] curLocation이 null이고 부모 ILocation도 없어 LocationService에 등록할 수 없습니다.");
             }
         }
     }

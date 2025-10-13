@@ -71,7 +71,7 @@ public class ActorManager : IActorService
             return;
         }
         actorsByName[name] = actor;
-        Debug.Log($"[ActorManager] Actor 등록: {name}");
+        // Debug.Log($"[ActorManager] Actor 등록: {name}");
     }
 
     public void UnregisterActor(Actor actor)
@@ -81,7 +81,7 @@ public class ActorManager : IActorService
         if (string.IsNullOrEmpty(name)) return;
         if (actorsByName.Remove(name))
         {
-            Debug.Log($"[ActorManager] Actor 제거: {name}");
+            // Debug.Log($"[ActorManager] Actor 제거: {name}");
         }
     }
 

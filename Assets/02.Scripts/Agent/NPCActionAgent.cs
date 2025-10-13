@@ -43,8 +43,6 @@ public class NPCActionAgent : GPT
         {
             AddTools(ToolManager.NeutralToolSets.Payment);
         }
-
-        Debug.Log($"[NPCActionAgent] 생성됨 - 소유자: {actor?.Name}, 액션 수: {availableActions?.Length ?? 0}");
     }
 
     private void UpdateResponseFormatSchema()
@@ -95,7 +93,6 @@ public class NPCActionAgent : GPT
         if (!string.IsNullOrEmpty(template))
         {
             AddUserMessage(template);
-            Debug.Log($"[NPCActionAgent] 상황 템플릿 추가됨:\n{template}");
         }
         else Debug.LogError($"[NPCActionAgent] 상황 템플릿 추가 실패: {template}");
         return await SendWithCacheLog<NPCActSelectionResult>();
