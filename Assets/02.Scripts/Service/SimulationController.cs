@@ -137,6 +137,15 @@ public class SimulationController : MonoBehaviour
         // UI 버튼 이벤트 연결
         SetupUI();
 
+        // 초기 분할 화면 상태: OFF
+        splitViewEnabled = false;
+        if (hinoCamera != null) hinoCamera.gameObject.SetActive(false);
+        if (kamiyaCamera != null) kamiyaCamera.gameObject.SetActive(false);
+        if (watayaCamera != null) watayaCamera.gameObject.SetActive(false);
+        if (focusHinoButton != null) focusHinoButton.gameObject.SetActive(true);
+        if (focusKamiyaButton != null) focusKamiyaButton.gameObject.SetActive(true);
+        if (focusWatayaButton != null) focusWatayaButton.gameObject.SetActive(true);
+
         // 자동 시작 옵션
         if (autoStartOnPlay)
         {
@@ -253,15 +262,28 @@ public class SimulationController : MonoBehaviour
         if (stopButton != null)
             stopButton.interactable = true;
 
-        // 캐릭터 포커스 버튼 상태 업데이트
+        // 캐릭터 포커스 버튼 상태/표시 업데이트
+        bool showFocusButtons = !splitViewEnabled;
         if (focusHinoButton != null)
-            focusHinoButton.interactable = hinoMaori != null;
+        {
+            focusHinoButton.interactable = hinoMaori != null && showFocusButtons;
+            if (focusHinoButton.gameObject.activeSelf != showFocusButtons)
+                focusHinoButton.gameObject.SetActive(showFocusButtons);
+        }
 
         if (focusKamiyaButton != null)
-            focusKamiyaButton.interactable = kamiyaTooru != null;
+        {
+            focusKamiyaButton.interactable = kamiyaTooru != null && showFocusButtons;
+            if (focusKamiyaButton.gameObject.activeSelf != showFocusButtons)
+                focusKamiyaButton.gameObject.SetActive(showFocusButtons);
+        }
 
         if (focusWatayaButton != null)
-            focusWatayaButton.interactable = watayaIzumi != null;
+        {
+            focusWatayaButton.interactable = watayaIzumi != null && showFocusButtons;
+            if (focusWatayaButton.gameObject.activeSelf != showFocusButtons)
+                focusWatayaButton.gameObject.SetActive(showFocusButtons);
+        }
 
         // 상태 텍스트 업데이트
         if (statusText != null)
@@ -495,6 +517,14 @@ public class SimulationController : MonoBehaviour
         if (hinoCamera != null) hinoCamera.gameObject.SetActive(splitViewEnabled);
         if (kamiyaCamera != null) kamiyaCamera.gameObject.SetActive(splitViewEnabled);
         if (watayaCamera != null) watayaCamera.gameObject.SetActive(splitViewEnabled);
+        // 분할 화면 상태에 따라 포커스 버튼 표시/숨김 즉시 반영
+        bool showFocusButtons = !splitViewEnabled;
+        if (focusHinoButton != null && focusHinoButton.gameObject.activeSelf != showFocusButtons)
+            focusHinoButton.gameObject.SetActive(showFocusButtons);
+        if (focusKamiyaButton != null && focusKamiyaButton.gameObject.activeSelf != showFocusButtons)
+            focusKamiyaButton.gameObject.SetActive(showFocusButtons);
+        if (focusWatayaButton != null && focusWatayaButton.gameObject.activeSelf != showFocusButtons)
+            focusWatayaButton.gameObject.SetActive(showFocusButtons);
         Debug.Log($"[SimulationController] 전용 카메라 3개 {(splitViewEnabled ? "활성화" : "비활성화")} (히노/카미야/이즈미)");
     }
 
