@@ -13,9 +13,6 @@ public class Clothing : Item, IUsable
     [SerializeField] private ClothingType clothingType;
     [SerializeField] private Gender targetGender;
     
-    [Header("FBX File")]
-    [SerializeField] private GameObject fbxFile;
-    
     /// <summary>
     /// 옷의 타입
     /// </summary>
@@ -26,10 +23,6 @@ public class Clothing : Item, IUsable
     /// </summary>
     public Gender TargetGender => targetGender;
     
-    /// <summary>
-    /// 의상 FBX 파일
-    /// </summary>
-    public GameObject FbxFile => fbxFile;
     
     public override void Init()
     {

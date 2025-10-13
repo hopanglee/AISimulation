@@ -649,13 +649,34 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     /// <returns>적용 성공 여부</returns>
     private bool ApplyOutfitFbx(Clothing clothing)
     {
-        if (clothing?.FbxFile == null)
+        if (clothing == null)
+        {
+            Debug.LogWarning($"[{Name}] 의상 정보가 없습니다.");
+            return false;
+        }
+
+        // 1) ClothingDatabase에서 우선 검색 (actor English _name + clothingType + gender)
+        GameObject fbxPrefab = null;
+        var db = ClothingDatabase.Load();
+        if (db != null)
+        {
+            var englishName = GetEnglishName();
+            fbxPrefab = db.GetFbxByEnglishName(englishName, clothing.ClothingType, clothing.TargetGender);
+            if (fbxPrefab == null)
+            {
+                Debug.LogWarning($"[{Name}] ClothingDatabase에서 FBX를 찾지 못함 (actor={englishName}, type={clothing.ClothingType}, gender={clothing.TargetGender}).");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[{Name}] ClothingDatabase를 로드하지 못했습니다. 'Assets/Resources/ClothingDatabase.asset' 생성이 필요합니다.");
+        }
+
+        if (fbxPrefab == null)
         {
             Debug.LogWarning($"[{Name}] 의상 FBX가 없습니다.");
             return false;
         }
-
-        GameObject fbxPrefab = clothing.FbxFile;
         if (fbxPrefab == null)
         {
             Debug.LogWarning($"[{Name}] FBX를 찾을 수 없습니다.");

@@ -134,6 +134,12 @@ public abstract class Entity : MonoBehaviour, ILocation
         set { _name = value; }
     }
 
+	public string GetEnglishName()
+	{
+		// Returns the non-localized internal name used for data comparisons
+		return string.IsNullOrEmpty(_name) ? (gameObject != null ? gameObject.name : "") : _name;
+	}
+
     [FoldoutGroup("Localization")]
     [SerializeField]
     private string _nameKr;
