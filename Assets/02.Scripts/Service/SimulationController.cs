@@ -472,7 +472,7 @@ public class SimulationController : MonoBehaviour
         if (hinoMaori != null && cameraController != null)
         {
             cameraController.FocusOnTransform(hinoMaori.transform);
-            Debug.Log("[SimulationController] Hino Maori를 계속 따라다닙니다");
+            //Debug.Log("[SimulationController] Hino Maori를 계속 따라다닙니다");
         }
         else
         {
@@ -486,7 +486,7 @@ public class SimulationController : MonoBehaviour
         if (kamiyaTooru != null && cameraController != null)
         {
             cameraController.FocusOnTransform(kamiyaTooru.transform);
-            Debug.Log("[SimulationController] Kamiya Tooru를 계속 따라다닙니다");
+           // Debug.Log("[SimulationController] Kamiya Tooru를 계속 따라다닙니다");
         }
         else
         {
@@ -500,7 +500,7 @@ public class SimulationController : MonoBehaviour
         if (watayaIzumi != null && cameraController != null)
         {
             cameraController.FocusOnTransform(watayaIzumi.transform);
-            Debug.Log("[SimulationController] Wataya Izumi를 계속 따라다닙니다");
+            //Debug.Log("[SimulationController] Wataya Izumi를 계속 따라다닙니다");
         }
         else
         {
@@ -525,7 +525,7 @@ public class SimulationController : MonoBehaviour
             focusKamiyaButton.gameObject.SetActive(showFocusButtons);
         if (focusWatayaButton != null && focusWatayaButton.gameObject.activeSelf != showFocusButtons)
             focusWatayaButton.gameObject.SetActive(showFocusButtons);
-        Debug.Log($"[SimulationController] 전용 카메라 3개 {(splitViewEnabled ? "활성화" : "비활성화")} (히노/카미야/이즈미)");
+        //Debug.Log($"[SimulationController] 전용 카메라 3개 {(splitViewEnabled ? "활성화" : "비활성화")} (히노/카미야/이즈미)");
     }
 
     
@@ -572,18 +572,18 @@ public class SimulationController : MonoBehaviour
     private void SetGlobalGPTUsage(bool enabled)
     {
         var actors = Object.FindObjectsByType<Actor>(FindObjectsSortMode.None);
-        Debug.Log($"[SimulationController] 씬에서 액터 {actors.Length}명을 찾았습니다");
+        //Debug.Log($"[SimulationController] 씬에서 액터 {actors.Length}명을 찾았습니다");
         
         foreach (var actor in actors)
         {
             if (actor != null)
             {
-                Debug.Log($"[SimulationController] {actor.Name} ({actor.GetType().Name})의 GPT 사용을 {enabled}로 설정합니다");
+                //Debug.Log($"[SimulationController] {actor.Name} ({actor.GetType().Name})의 GPT 사용을 {enabled}로 설정합니다");
                 actor.SetGPTUsage(enabled);
-                Debug.Log($"[SimulationController] {actor.Name}의 GPT 사용 상태: {actor.UseGPT}");
+                //Debug.Log($"[SimulationController] {actor.Name}의 GPT 사용 상태: {actor.UseGPT}");
             }
         }
-        Debug.Log($"[SimulationController] 전역 GPT 사용을 {(enabled ? "활성화" : "비활성화")}했습니다. 대상 액터 수: {actors.Length}");
+        //Debug.Log($"[SimulationController] 전역 GPT 사용을 {(enabled ? "활성화" : "비활성화")}했습니다. 대상 액터 수: {actors.Length}");
     }
 
     #region GPT Approval Popup Methods
@@ -638,7 +638,7 @@ public class SimulationController : MonoBehaviour
         // 팝업창 표시
         gptApprovalPopup.SetActive(true);
         
-        Debug.Log($"[SimulationController] GPT 승인 팝업창 표시: {request.ActorName} - {request.AgentType}");
+        //Debug.Log($"[SimulationController] GPT 승인 팝업창 표시: {request.ActorName} - {request.AgentType}");
     }
 
     /// <summary>
@@ -661,7 +661,7 @@ public class SimulationController : MonoBehaviour
         if (gptApprovalPopup != null)
         {
             gptApprovalPopup.SetActive(false);
-            Debug.Log("[SimulationController] GPT 승인 팝업창 숨김");
+            //Debug.Log("[SimulationController] GPT 승인 팝업창 숨김");
         }
     }
 
@@ -673,7 +673,7 @@ public class SimulationController : MonoBehaviour
         if (gptApprovalService != null)
         {
             gptApprovalService.ApproveRequest(true);
-            Debug.Log("[SimulationController] GPT API 호출 승인됨");
+            //Debug.Log("[SimulationController] GPT API 호출 승인됨");
         }
     }
 
@@ -685,7 +685,7 @@ public class SimulationController : MonoBehaviour
         if (gptApprovalService != null)
         {
             gptApprovalService.ApproveRequest(false);
-            Debug.Log("[SimulationController] GPT API 호출 거부됨");
+           // Debug.Log("[SimulationController] GPT API 호출 거부됨");
         }
     }
 
@@ -694,7 +694,7 @@ public class SimulationController : MonoBehaviour
         if (gptApprovalService != null)
         {
             gptApprovalService.MoveSelection(-1);
-            Debug.Log("[SimulationController] Approval selection moved to previous");
+           // Debug.Log("[SimulationController] Approval selection moved to previous");
         }
     }
 
@@ -703,7 +703,7 @@ public class SimulationController : MonoBehaviour
         if (gptApprovalService != null)
         {
             gptApprovalService.MoveSelection(1);
-            Debug.Log("[SimulationController] Approval selection moved to next");
+            //Debug.Log("[SimulationController] Approval selection moved to next");
         }
     }
 
