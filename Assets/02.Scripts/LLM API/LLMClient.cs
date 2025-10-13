@@ -24,6 +24,8 @@ public abstract class LLMClient
     // 전역 직렬화 게이트: 모든 LLM 요청을 한 번에 하나씩만 처리 (FIFO by semaphore)
     private static readonly SemaphoreSlim GlobalSendGate = new SemaphoreSlim(1, 1);
     private static volatile bool SerializeAllRequests = true;
+    // 현재 요청 컨텍스트의 메시지 해시를 보관하여 저장 시 재사용
+    private string currentMsgHash;
     public LLMClient(LLMClientProps options)
     {
         this.llmOptions = options;
@@ -95,6 +97,7 @@ public abstract class LLMClient
                 //int count = actor.CacheCount;
                 var agentPart = string.IsNullOrEmpty(agentTypeOverride) ? "UNKNOWN" : agentTypeOverride;
                 var msgHash = ComputeMessagesHash(GetHashKey());
+                currentMsgHash = msgHash; // 저장 시 재사용
 
                 // 정확한 파일명으로 먼저 시도: {count}_{timeKey}_{agentPart}_{msgHash}.json
                 var exactMatch = Directory.GetFiles(baseDir, $"{actor.CacheCount}_*_{agentPart}_{msgHash}.json");
@@ -106,9 +109,8 @@ public abstract class LLMClient
                 }
                 else
                 {
-                    // 정확한 매치가 없으면 불일치 여부 확인 없이 해당 count부터 이후 캐시 모두 삭제
-                    Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 정확 매치 없음(hash={msgHash}). count {actor.CacheCount}부터 이후 캐시 삭제 실행");
-                    DeleteCacheFilesFromCount(baseDir, actor.CacheCount);
+                    // 정확 매치가 없으면 선 저장, 후 정리 전략으로 전환 (여기서는 삭제하지 않음)
+                    Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 정확 매치 없음(hash={msgHash}). 새 캐시 저장 후 동일 count 기존 캐시 정리 예정");
                 }
 
                 if (!string.IsNullOrEmpty(matchPath))
@@ -211,16 +213,16 @@ public abstract class LLMClient
         try
         {
             int deletedCount = 0;
-            //var agentPart = string.IsNullOrEmpty(agentTypeOverride) ? "UNKNOWN" : agentTypeOverride;
             var files = Directory.GetFiles(baseDir, $"{startCount}_*.json");
             foreach (var file in files)
             {
+                var content = File.ReadAllText(file);
                 File.Delete(file);
                 deletedCount++;
-                Debug.LogWarning($"<b>[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 삭제: {file}</b>");
+                Debug.LogWarning($"<b>[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 삭제: {file}</b> \n{content}");
             }
             if (deletedCount > 0)
-                Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 총 {deletedCount}개의 캐시 파일이 삭제되었습니다 (count {startCount}만)");
+                Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 총 {deletedCount}개의 캐시 파일이 삭제되었습니다 (count {startCount})");
         }
         catch (Exception ex)
         {
@@ -251,18 +253,48 @@ public abstract class LLMClient
             var lockObj = ActorCacheLocks.GetOrAdd(actorName ?? "Unknown", _ => new object());
             lock (lockObj)
             {
-                //int count = actor.CacheCount;
-                var msgHash = ComputeMessagesHash(GetHashKey());
-                var filePath = Path.Combine(baseDir, $"{actor.CacheCount}_{timeKey}_{agentPart}_{msgHash}.json");
+                // 현재 요청 컨텍스트 해시 재사용(없으면 안전하게 재계산)
+                var msgHash = currentMsgHash ?? ComputeMessagesHash(GetHashKey());
+                int countForThisSave = actor.CacheCount; // 저장 전 count 캡처
+                var filePath = Path.Combine(baseDir, $"{countForThisSave}_{timeKey}_{agentPart}_{msgHash}.json");
                 var json = JsonConvert.SerializeObject(data, Formatting.Indented, EnumAsStringJsonSettings);
                 File.WriteAllText(filePath, json, System.Text.Encoding.UTF8);
                 Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 저장: {filePath}");
+                // 동일 count의 기존 파일 정리 (방금 저장한 파일은 제외)
+                DeleteCacheFilesFromCountExcept(baseDir, countForThisSave, filePath);
                 actor.CacheCount++; // 저장 후 증가
             }
         }
         catch (Exception ex)
         {
             Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 저장 실패: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// 지정된 count의 캐시 파일 중 keepFilePath를 제외하고 삭제합니다.
+    /// </summary>
+    private void DeleteCacheFilesFromCountExcept(string baseDir, int startCount, string keepFilePath)
+    {
+        try
+        {
+            int deletedCount = 0;
+            var files = Directory.GetFiles(baseDir, $"{startCount}_*.json");
+            foreach (var file in files)
+            {
+                if (string.Equals(Path.GetFullPath(file), Path.GetFullPath(keepFilePath), StringComparison.OrdinalIgnoreCase))
+                    continue;
+                var content = File.ReadAllText(file);
+                File.Delete(file);
+                deletedCount++;
+                Debug.LogWarning($"<b>[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 삭제: {file}</b> \n{content}");
+            }
+            if (deletedCount > 0)
+                Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 총 {deletedCount}개의 캐시 파일이 삭제되었습니다 (count {startCount})");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 삭제 중 오류: {ex.Message}");
         }
     }
 

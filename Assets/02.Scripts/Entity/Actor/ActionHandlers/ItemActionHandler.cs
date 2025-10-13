@@ -80,11 +80,12 @@ namespace Agent.ActionHandlers
                 }
                 else
                 {
-                    Debug.LogWarning($"[{actor.Name}] 아이템을 찾을 수 없음(collectible 전용): {itemName}");
+
 
                     // Fallback: lookable에는 있지만 collectible/interaction 범위가 아니라면 이동 후 재시도
                     try
                     {
+                        Debug.LogWarning($"<b>[{actor.Name}] 아이템을 찾을 수 없어서 이동 후 다시 시도합니다 (collectible 전용): {itemName}</b>");
                         if (actor is MainActor mainActor && mainActor.sensor != null)
                         {
                             var lookable = mainActor.sensor.GetLookableEntities();
@@ -140,6 +141,7 @@ namespace Agent.ActionHandlers
                             else
                             {
                                 // lookable에도 없다면 Perception 새로고침만 수행
+                                Debug.LogWarning($"[{actor.Name}] PickUp: lookable에도 {itemName}이 없습니다.");
                                 mainActor.brain.memoryManager.AddShortTermMemory($"{itemName}을(를) 찾지 못했다.", "", mainActor?.curLocation?.GetSimpleKey());
                             }
                         }
@@ -380,14 +382,14 @@ namespace Agent.ActionHandlers
                                                 bubble.Show($"{targetActor.Name}에게 돈 {amount}원을 주는 중", 0);
                                                 await SimDelay.DelaySimMinutes(2, token);
                                             }
-                                    thinkingActor.GiveMoney(targetActor, amount);
+                                            thinkingActor.GiveMoney(targetActor, amount);
                                             await SimDelay.DelaySimMinutes(1, token);
                                         }
                                         Debug.Log($"[{actor.Name}] {targetActor.Name}에게 {amount}원을 성공적으로 주었습니다.");
-                                if (actor is MainActor main)
-                                {
-                                    main.brain.memoryManager.AddShortTermMemory($"'{targetActor.Name}'에게 {amount}원을 건넸다.", "", main?.curLocation?.GetSimpleKey());
-                                }
+                                        if (actor is MainActor main)
+                                        {
+                                            main.brain.memoryManager.AddShortTermMemory($"'{targetActor.Name}'에게 {amount}원을 건넸다.", "", main?.curLocation?.GetSimpleKey());
+                                        }
                                         return true;
                                     }
                                     finally

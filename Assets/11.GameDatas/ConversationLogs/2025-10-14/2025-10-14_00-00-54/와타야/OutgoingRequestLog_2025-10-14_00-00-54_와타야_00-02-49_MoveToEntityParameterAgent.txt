@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 와타야
+Agent Type: MoveToEntityParameterAgent
+Real Time: 2025-10-14 00:02:49
+{"entity_name":"협탁:아이폰"}
+

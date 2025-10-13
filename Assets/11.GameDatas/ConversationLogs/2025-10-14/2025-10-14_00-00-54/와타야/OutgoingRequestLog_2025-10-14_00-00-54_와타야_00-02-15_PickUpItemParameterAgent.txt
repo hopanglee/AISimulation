@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 와타야
+Agent Type: PickUpItemParameterAgent
+Real Time: 2025-10-14 00:02:15
+{"item_name":"식탁:접시:도넛_1"}
+

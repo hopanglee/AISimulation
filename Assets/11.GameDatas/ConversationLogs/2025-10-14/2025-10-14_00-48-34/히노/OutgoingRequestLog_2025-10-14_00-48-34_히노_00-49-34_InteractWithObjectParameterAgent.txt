@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: InteractWithObjectParameterAgent
+Real Time: 2025-10-14 00:49:34
+{"object_name":"협탁"}
+
