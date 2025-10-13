@@ -56,13 +56,7 @@ public abstract class LLMClient
     // 각 LLM 구현체에서 캐시 키 생성을 위해 필요한 객체를 반환합니다.
     protected virtual object GetHashKey()
     {
-        var lookable = actor.sensor.GetLookableEntities();
-        var str = "";
-        foreach (var kv in lookable)
-        {
-            str += $"{kv.Key} {kv.Value.Get()}\n";
-        }
-        str += actor.LoadCharacterInfo() + actor.LoadCharacterMemory();
+        var str = actor.LoadCharacterInfo() + actor.LoadCharacterMemory() + actor.LoadActorSituation();
         return str;
     }
     #region 메시지 관리
