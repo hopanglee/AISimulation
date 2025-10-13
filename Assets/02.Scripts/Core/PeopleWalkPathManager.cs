@@ -33,7 +33,7 @@ public class PeopleWalkPathManager : MonoBehaviour
         AutoRegisterPaths();
         
         isInitialized = true;
-        Debug.Log($"[PeopleWalkPathManager] Initialized with {managedPaths.Count} paths");
+        //Debug.Log($"[PeopleWalkPathManager] Initialized with {managedPaths.Count} paths");
     }
 
     /// <summary>

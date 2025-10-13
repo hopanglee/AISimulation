@@ -179,7 +179,8 @@ public class MemoryManager
             shortTermMemory.lastUpdated = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 0, 0);
             string json = JsonConvert.SerializeObject(shortTermMemory, Formatting.Indented);
             File.WriteAllText(shortTermMemoryPath, json);
-            Debug.Log($"[{logOwner}] Short Term Memory 저장 완료: {shortTermMemory.entries.Count}개");
+            if(shortTermMemory.entries.Count > 0)
+                Debug.Log($"[{logOwner}] Short Term Memory 저장 완료: {shortTermMemory.entries.Count}개");
         }
         catch (Exception ex)
         {
@@ -235,9 +236,11 @@ public class MemoryManager
     /// </summary>
     public void ClearShortTermMemory()
     {
+        var count = shortTermMemory.entries.Count;
         shortTermMemory.entries.Clear();
         SaveShortTermMemory();
-        Debug.Log($"[{owner.Name}] Short Term Memory 초기화됨");
+        if(count > 0)
+            Debug.Log($"[{owner.Name}] Short Term Memory 초기화됨: {count}개");
     }
 
     /// <summary>

@@ -538,7 +538,7 @@ public class TimeManager : ITimeService
 
     public void Initialize()
     {
-        Debug.Log("[TimeManager] Initializing...");
+        //Debug.Log("[TimeManager] Initializing...");
     }
 
     public void StartTimeFlow()

@@ -61,7 +61,7 @@ public class ExternalEventService : IExternalEventService
 
     public void Initialize()
     {
-        Debug.Log("[ExternalEventService] 초기화 완료");
+        //Debug.Log("[ExternalEventService] 초기화 완료");
         // 모든 Actor의 초기 상태 기록
         var allActors = GetAllActiveActors();
         foreach (var actor in allActors)

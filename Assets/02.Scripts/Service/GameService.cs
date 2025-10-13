@@ -188,7 +188,7 @@ public class GameService : MonoBehaviour, IGameService
 
     public void StopSimulation()
     {
-        Debug.Log("[GameService] Stopping simulation...");
+        //Debug.Log("[GameService] Stopping simulation...");
         isSimulationRunning = false;
         //thinkRoutineRunning = false; // Think 루틴 플래그 리셋
 
@@ -200,7 +200,7 @@ public class GameService : MonoBehaviour, IGameService
             timeService.TimeScale = 0f; // 시간 스케일도 0으로 설정
         }
         
-        Debug.Log("[GameService] Simulation stopped - time flow disabled");
+        //Debug.Log("[GameService] Simulation stopped - time flow disabled");
     }
 
     public bool IsSimulationRunning()

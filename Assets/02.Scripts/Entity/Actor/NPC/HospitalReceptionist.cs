@@ -79,7 +79,7 @@ public class HospitalReceptionist : NPC, IPaymentable
         RegisterActionHandler(ReceptionAction.NotifyDoctor, HandleNotifyDoctor);
         RegisterActionHandler(ReceptionAction.Payment, HandlePayment);
 
-        Debug.Log($"[{Name}] 병원 접수처 액션 핸들러 초기화 완료");
+        //Debug.Log($"[{Name}] 병원 접수처 액션 핸들러 초기화 완료");
     }
 
     /// <summary>

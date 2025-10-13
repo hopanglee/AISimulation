@@ -79,7 +79,7 @@ public class GPTApprovalService : IGPTApprovalService
     
     public void Initialize()
     {
-        Debug.Log("[GPTApprovalService] GPTApprovalService가 초기화되었습니다.");
+        //Debug.Log("[GPTApprovalService] GPTApprovalService가 초기화되었습니다.");
     }
     
     public async UniTask<bool> RequestApprovalAsync(string actorName, string agentType)

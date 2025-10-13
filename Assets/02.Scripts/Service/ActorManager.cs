@@ -53,7 +53,7 @@ public class ActorManager : IActorService
     {
         actorsByName = new Dictionary<string, Actor>();
         actorActResults = new Dictionary<string, ActSelectorAgent.ActSelectionResult>();
-        Debug.Log("[ActorManager] 초기화 완료");
+        //Debug.Log("[ActorManager] 초기화 완료");
     }
 
     // === Actor Registry ===
