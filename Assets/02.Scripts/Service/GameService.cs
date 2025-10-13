@@ -43,55 +43,17 @@ public class GameService : MonoBehaviour, IGameService
     [Header("GPT Approval Settings")]
     [SerializeField]
     [Tooltip("GPT API 호출 시 승인 팝업창을 사용할지 여부")]
-    private bool useGPTApprovalSystem = true;
+    private bool useGPTApprovalSystem = false;
 
-    // [Header("AI Think Settings")]
-    // [BoxGroup("AI Think Settings")]
-    // [Tooltip("AI가 판단을 내리는 주기 방식 (TimeBased: 초 단위, FrameBased: 프레임 단위)")]
-    // [SerializeField]
-    // private ThinkIntervalMode thinkIntervalMode = ThinkIntervalMode.TimeScaleBased; // Think 간격 모드
-
-    // [BoxGroup("AI Think Settings")]
-    // [ShowIf("thinkIntervalMode", ThinkIntervalMode.TimeScaleBased)]
-    // [Range(0.1f, 10f)]
-    // [Tooltip("TimeBased 모드일 때, AI가 몇 초마다 Think할지")]
-    // [SerializeField]
-    // private float thinkInterval = 3.0f; // Think 실행 간격 (초)
-
-    // [BoxGroup("AI Think Settings")]
-    // [ShowIf("thinkIntervalMode", ThinkIntervalMode.FrameBased)]
-    // [Range(1, 300)]
-    // [Tooltip("FrameBased 모드일 때, AI가 몇 프레임마다 Think할지")]
-    // [SerializeField]
-    // private int thinkIntervalFrames = 180; // 프레임 기반 Think 간격 (60 FPS 기준)
-
-    // public enum ThinkIntervalMode
-    // {
-    //     TimeScaleBased, // 실제 시간 스케일 기반 (기본값)
-    //     FrameBased,     // 프레임 기반
-    //     SimMinutesBased // 시뮬레이션 시간(분) 기반
-    // }
-
-    // [BoxGroup("AI Think Settings")]
-    // [ShowIf("thinkIntervalMode", ThinkIntervalMode.SimMinutesBased)]
-    // [Range(0.5f, 10f)]
-    // [Tooltip("SimMinutesBased 모드일 때, 시뮬레이션 몇 분마다 Think할지")]
-    // [SerializeField]
-    // private float thinkIntervalSimMinutes = 1.0f; // 시뮬레이션 분 단위 Think 간격
 
     [Header("Test Settings")]
-    // [SerializeField]
-    // private bool enableThinkRoutine = true; // Think 루틴 활성화 여부 (테스트용)
-    // Removed: global forceNewDayPlan. Use per-actor setting on MainActor instead.
+
     [SerializeField]
     private bool planOnly = false; // 첫 계획 생성까지만 실행하고 그 이후에는 멈춤 (테스트용)
     [SerializeField]
     private bool enableGPTLogging = true; // GPT 대화 로그 저장 활성화 여부
 
-    [SerializeField] private bool useDayPlanner = true;
-
-    // [SerializeField]
-    // private bool runThinkOnce = false; // 인스펙터에서 체크
+    [SerializeField] private bool useDayPlanner = false;
 
     [Header("Time Settings")]
     [SerializeField, Range(1f, 300f)]
@@ -100,9 +62,6 @@ public class GameService : MonoBehaviour, IGameService
 
     private bool isSimulationRunning = false;
     private List<Actor> allActors = new List<Actor>();
-    //private bool dayPlanExecutedToday = false;
-    //private bool firstDayPlanDone = false;
-    //private bool thinkRoutineRunning = false; // Think 루틴 실행 상태 추적
 
     private ITimeService timeService;
 
@@ -282,77 +241,6 @@ public class GameService : MonoBehaviour, IGameService
     }
 
     /// <summary>
-    /// DayPlan 실행 체크 및 실행
-    /// </summary>
-    // private async void CheckAndExecuteDayPlan(GameTime currentTime)
-    // {
-    //     // 기상 시간(6시)에 하루 계획 생성 (하루에 한 번만)
-    //     if (currentTime.hour == 6 && currentTime.minute == 0 && !dayPlanExecutedToday)
-    //     {
-    //         Debug.Log("[GameService] Starting day planning for all actors...");
-            
-    //         // 모든 Actor 기상 처리
-    //         foreach (var actor in allActors)
-    //         {
-    //             if (actor != null && actor.IsSleeping)
-    //             {
-    //                 actor.WakeUp();
-    //             }
-    //         }
-            
-    //                             // forceNewDayPlan 설정을 모든 Actor에 적용
-    //                 foreach (var actor in allActors)
-    //                 {
-    //                     if (actor != null && actor.brain != null)
-    //                     {
-    //                         actor.brain.SetForceNewDayPlan(forceNewDayPlan);
-    //                     }
-    //                 }
-
-    //                 var planningTasks = new List<UniTask>();
-    //                 foreach (var actor in allActors)
-    //                 {
-    //                     if (actor != null && !actor.IsSleeping) // 깨어있는 액터만 계획 생성
-    //                     {
-    //                         planningTasks.Add(actor.brain.PlanToday());
-    //                     }
-    //                 }
-            
-    //         await UniTask.WhenAll(planningTasks);
-            
-    //         Debug.Log("[GameService] Day planning completed for all actors");
-
-    //         // 오늘 DayPlan 실행 완료 표시
-    //         dayPlanExecutedToday = true;
-
-    //         if (enableThinkRoutine && !firstDayPlanDone && !thinkRoutineRunning)
-    //         {
-    //             firstDayPlanDone = true;
-    //             thinkRoutineRunning = true;
-    //             // 첫 DayPlan이 끝난 후에만 Think 루틴 시작
-    //             Debug.Log("[GameService] Starting Think routine after first day plan");
-    //             _ = RunThinkRoutine();
-    //         }
-    //         else if (!enableThinkRoutine && !firstDayPlanDone)
-    //         {
-    //             firstDayPlanDone = true;
-    //             Debug.Log("[GameService] Think routine is disabled - only DayPlan will run");
-    //         }
-    //         else if (thinkRoutineRunning)
-    //         {
-    //             Debug.Log("[GameService] Think routine is already running, skipping duplicate start");
-    //         }
-    //     }
-        
-    //     // 다음 날을 위해 dayPlanExecutedToday 리셋 (자정에)
-    //     if (currentTime.hour == 0 && currentTime.minute == 0)
-    //     {
-    //         dayPlanExecutedToday = false;
-    //         Debug.Log("[GameService] Day plan flag reset for new day");
-    //     }
-    // }
-
-    /// <summary>
     /// 모든 Actor 찾기
     /// </summary>
     private void FindAllActors()
@@ -385,148 +273,6 @@ public class GameService : MonoBehaviour, IGameService
         }
     }
 
-    /// <summary>
-    /// 주기적 Think 실행 루틴
-    /// </summary>
-    // private async UniTask RunThinkRoutine()
-    // {
-    //     Debug.Log($"[GameService] Starting think routine with mode: {thinkIntervalMode}");
-
-    //     await UniTask.Yield();
-
-    //     float simMinutesSinceLastThink = 0f;
-    //     int lastSimMinute = -1;
-    //     var timeService = Services.Get<ITimeService>();
-
-    //     while (isSimulationRunning)
-    //     {
-    //         if (!Application.isPlaying)
-    //         {
-    //             Debug.Log("[GameService] Application stopped - breaking think routine");
-    //             break;
-    //         }
-            
-    //         // 1. Think를 먼저 실행
-    //         await ExecuteAllActorThinks();
-    //         if (runThinkOnce)
-    //         {
-    //             Debug.Log("[GameService] Think executed once (test mode) - exiting routine.");
-    //             break;
-    //         }
-
-    //         // 2. Interval만큼 대기
-    //         if (thinkIntervalMode == ThinkIntervalMode.TimeScaleBased)
-    //         {
-    //             float waitTime = thinkInterval / timeScale;
-    //             float elapsedTime = 0f;
-    //             while (elapsedTime < waitTime && isSimulationRunning)
-    //             {
-    //                 await UniTask.Yield();
-    //                 if (!Application.isPlaying) return;
-    //                 if (timeService != null && timeService.IsTimeFlowing)
-    //                 {
-    //                     elapsedTime += Time.deltaTime;
-    //                 }
-    //             }
-    //             if (!isSimulationRunning) break;
-    //             Debug.Log($"[GameService] Think interval waited (TimeScale mode): {elapsedTime:F2}s");
-    //         }
-    //         else if (thinkIntervalMode == ThinkIntervalMode.FrameBased)
-    //         {
-    //             int frameCount = 0;
-    //             while (frameCount < thinkIntervalFrames && isSimulationRunning)
-    //             {
-    //                 await UniTask.Yield();
-    //                 if (!Application.isPlaying) return;
-    //                 if (timeService != null && timeService.IsTimeFlowing)
-    //                 {
-    //                     frameCount++;
-    //                 }
-    //             }
-    //             if (!isSimulationRunning) break;
-    //             Debug.Log($"[GameService] Think interval waited (Frame mode): {frameCount} frames");
-    //         }
-    //         else if (thinkIntervalMode == ThinkIntervalMode.SimMinutesBased)
-    //         {
-    //             bool waited = false;
-    //             while (!waited && isSimulationRunning)
-    //             {
-    //                 await UniTask.Yield();
-    //                 var currentTime = timeService.CurrentTime;
-    //                 if (lastSimMinute < 0)
-    //                     lastSimMinute = currentTime.minute;
-    //                 int minuteDelta = (currentTime.minute - lastSimMinute + 60) % 60;
-    //                 if (minuteDelta > 0)
-    //                 {
-    //                     simMinutesSinceLastThink += minuteDelta;
-    //                     lastSimMinute = currentTime.minute;
-    //                 }
-    //                 if (simMinutesSinceLastThink >= thinkIntervalSimMinutes)
-    //                 {
-    //                     simMinutesSinceLastThink = 0f;
-    //                     waited = true;
-    //                     Debug.Log($"[GameService] Think interval waited (SimMinutes mode): {thinkIntervalSimMinutes} sim minutes");
-    //     }
-    //             }
-    //         }
-    //     }
-    //     Debug.Log("[GameService] Think routine ended");
-    // }
-
-    /// <summary>
-    /// 모든 Actor의 Think 실행 (각 Actor의 수면 상태를 확인하여 수면 중이 아닌 Actor만 실행)
-    /// </summary>
-    // private async UniTask ExecuteAllActorThinks()
-    // {
-    //     var tasks = new List<UniTask>();
-
-    //     foreach (var actor in allActors)
-    //     {
-    //         if (actor != null && actor.brain != null && !actor.IsSleeping)
-    //         {
-    //             tasks.Add(ExecuteActorThink(actor));
-    //         }
-    //         else if (actor != null && actor.IsSleeping)
-    //         {
-    //             Debug.Log($"[GameService] {actor.Name} is sleeping - skipping Think execution");
-    //         }
-    //     }
-
-    //     // 모든 Actor의 Think를 병렬로 실행
-    //     if (tasks.Count > 0)
-    //     {
-    //         await UniTask.WhenAll(tasks);
-    //     }
-    //     else
-    //     {
-    //         Debug.Log("[GameService] No actors available for Think execution (all sleeping or no actors found)");
-    //     }
-    // }
-
-    /// <summary>
-    /// 개별 Actor의 Think 실행
-    /// </summary>
-    // private async UniTask ExecuteActorThink(Actor actor)
-    // {
-    //     try
-    //     {
-    //         if (thinkOnly)
-    //         {
-    //             // Think only (for testing/debugging)
-    //             var (selection, paramResult) = await actor.brain.Think();
-    //             Debug.Log($"[GameService] {actor.Name} Think result: {paramResult?.ActType} -> {string.Join(", ", paramResult?.Parameters != null ? paramResult.Parameters.Values : new List<object>())}");
-    //         }
-    //         else
-    //         {
-    //             // Think and Act in sequence
-    //             await actor.brain.ThinkAndAct();
-    //         }
-    //     }
-    //     catch (System.Exception ex)
-    //     {
-    //         Debug.LogError($"[GameService] Error in Think for {actor.Name}: {ex.Message}");
-    //     }
-    // }
 
     // Inspector에서 수동으로 시뮬레이션 제어할 수 있는 버튼들
     [Button("Start Simulation")]
