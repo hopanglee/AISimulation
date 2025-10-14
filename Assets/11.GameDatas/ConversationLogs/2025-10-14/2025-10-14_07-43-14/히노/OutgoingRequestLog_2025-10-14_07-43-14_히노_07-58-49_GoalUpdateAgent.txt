@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: GoalUpdateAgent
+Real Time: 2025-10-14 07:58:49
+{"should_change":false,"reasoning":"기록에 사고 후 혼란·기억 불일치와 의사·가족의 반응 같은 단서는 있으나, 히노가 스스로 ‘밤에 자고 나면 그날을 전부 잊는(선행성) 기억상실증’을 가지고 있다는 것을 인지하고 이해했다는 명시적 진술이나 자각적 표현이 없다. 결정 조건인 ‘본인이 인지·이해함’이 충족되었다는 근거가 없어 변경하지 않아야 한다."}
+

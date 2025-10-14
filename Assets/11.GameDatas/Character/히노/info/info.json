@@ -39,6 +39,14 @@
   "emotions": [
     {
       "name": "혼란",
+      "intensity": 0.9
+    },
+    {
+      "name": "호기심",
+      "intensity": 0.9
+    },
+    {
+      "name": "초조함",
       "intensity": 0.8
     },
     {
@@ -46,17 +54,9 @@
       "intensity": 0.7
     },
     {
-      "name": "호기심",
-      "intensity": 0.6
-    },
-    {
       "name": "낙관",
       "intensity": 0.6
-    },
-    {
-      "name": "허기",
-      "intensity": 0.7
     }
   ],
-  "last_updated": "2025-10-13T20:06:34.7914312+09:00"
+  "last_updated": "2025-10-14T09:01:55.6685558+09:00"
 }

@@ -11603,10 +11603,10 @@ MonoBehaviour:
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
   hungerEffect:
-    enabled: 0
+    enabled: 1
     minValue: 0
     maxValue: 100
-    deltaPerTick: 0
+    deltaPerTick: 15
   thirstEffect:
     enabled: 0
     minValue: 0
@@ -12905,15 +12905,15 @@ MonoBehaviour:
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
   hungerEffect:
-    enabled: 0
+    enabled: 1
     minValue: 0
     maxValue: 100
-    deltaPerTick: 0
+    deltaPerTick: 5
   thirstEffect:
-    enabled: 0
+    enabled: 1
     minValue: 0
     maxValue: 100
-    deltaPerTick: 0
+    deltaPerTick: 30
   staminaEffect:
     enabled: 0
     minValue: 0
@@ -13453,10 +13453,10 @@ MonoBehaviour:
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
   hungerEffect:
-    enabled: 0
+    enabled: 1
     minValue: 0
     maxValue: 100
-    deltaPerTick: 0
+    deltaPerTick: 15
   thirstEffect:
     enabled: 0
     minValue: 0
@@ -22680,10 +22680,10 @@ MonoBehaviour:
   _currentStatusDescription: 
   _currentStatusDescriptionKr: 
   hungerEffect:
-    enabled: 0
+    enabled: 1
     minValue: 0
     maxValue: 100
-    deltaPerTick: 0
+    deltaPerTick: 15
   thirstEffect:
     enabled: 0
     minValue: 0

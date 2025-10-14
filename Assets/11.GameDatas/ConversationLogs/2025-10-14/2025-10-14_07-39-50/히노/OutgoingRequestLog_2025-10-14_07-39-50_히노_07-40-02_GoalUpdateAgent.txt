@@ -1,0 +1,9 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: GoalUpdateAgent
+Real Time: 2025-10-14 07:40:02
+{
+  "should_change": false,
+  "reasoning": "기억 목록에 병명(선행성 기억상실증) 또는 '내가 밤에 자고 나면 그날 일을 잊는다'는 본인의 인지·이해를 직접적으로 나타내는 항목이 없습니다. 병원 대화나 의사 발언은 '???'로 가려져 있어 진단을 본인이 이해했다는 명확한 근거로 판단할 수 없으므로 불확실할 때는 변경하지 않아야 합니다."
+}
+

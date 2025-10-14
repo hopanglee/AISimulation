@@ -21,4 +21,17 @@ public class Knife : Item
     {
         return $"칼로 {item.Name}을(를) 자릅니다.";
     }
+
+    public override bool InteractWithInteractable(Actor actor, IInteractable interactable)
+    {
+        if (interactable is Actor target)
+        {
+            Kill(actor, interactable as Actor);
+            
+            actor?.ShowSpeech($"칼로 {target.Name}을(를) 찌른다.", 2f);
+            
+            return true;
+        }
+        return base.InteractWithInteractable(actor, interactable);
+    }
 }

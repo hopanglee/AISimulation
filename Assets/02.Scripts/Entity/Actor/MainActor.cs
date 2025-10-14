@@ -725,6 +725,12 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 				return false;
 			}
 			int minutes = Mathf.Clamp(recipe.cookSimMinutes, 0, 120);
+
+			// 칼을 손에 든 경우 조리시간 절반으로 줄임
+			if(HandItem != null && HandItem is Knife)
+			{
+				minutes /= 2;
+			}
 			await SimDelay.DelaySimMinutes(minutes, token);
 		}
 		finally
