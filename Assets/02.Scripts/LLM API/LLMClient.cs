@@ -127,7 +127,7 @@ public abstract class LLMClient
                 else
                 {
                     // 정확 매치가 없으면 선 저장, 후 정리 전략으로 전환 (여기서는 삭제하지 않음)
-                    Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 정확 매치 없음(hash={msgHash}). 새 캐시 저장 후 동일 count 기존 캐시 정리 예정");
+                    Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 정확 매치 없음(actor Cache Count = {actor.CacheCount})({matchPath}). 새 캐시 저장 후 동일 count 기존 캐시 정리 예정");
                 }
 
                 if (!string.IsNullOrEmpty(matchPath))
@@ -213,7 +213,7 @@ public abstract class LLMClient
                                 var cachedPayload = JsonConvert.DeserializeObject<T>(payloadJson, EnumAsStringJsonSettings);
                                 if (cachedPayload != null)
                                 {
-                                    Debug.Log($"<b><color=Yellow>[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 로그 히트(리플레이 포함): {matchPath}</color></b>");
+                                    Debug.Log($"<b><color=Yellow>[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 로그 히트(리플레이 포함): (actor Cache Count = {actor.CacheCount}) {matchPath}</color></b>");
                                     actor.CacheCount++; // 히트 시 증가
                                     return cachedPayload;
                                 }
