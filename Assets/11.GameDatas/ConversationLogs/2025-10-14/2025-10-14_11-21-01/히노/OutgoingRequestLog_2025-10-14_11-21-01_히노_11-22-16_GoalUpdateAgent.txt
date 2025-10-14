@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: GoalUpdateAgent
+Real Time: 2025-10-14 11:22:16
+{"should_change": false, "reasoning": "기억들에는 교통사고로 기억이 흐릿하고 아침에 일기부터 읽어 과거를 정리하려는 습관과 혼란이 반복되는 정황은 있으나, ‘밤에 자고 나면 그날 일을 전부 잊어버리는(선행성 기억상실증)’라는 진단이나 본인이 그것을 인지·이해했다는 명시적 진술이 없습니다. 불확실한 경우 변경하지 않아야 하므로 이번 판단은 false입니다."}
+

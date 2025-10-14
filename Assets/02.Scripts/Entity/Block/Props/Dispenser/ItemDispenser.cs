@@ -150,9 +150,15 @@ public class ItemDispenser : InteractableProp
                         {
                             if (bubble != null) bubble.Show($"{selectedItemKey} 꺼내는 중", 0);
                             await SimDelay.DelaySimMinutes(1, cancellationToken);
-                            if (actor.PickUp(item))
+
+                            var pick = actor.PickUp(item);
+                            if (pick.Item1)
                             {
                                 //await SimDelay.DelaySimMinutes(1, cancellationToken);
+                                if (actor is MainActor main)
+                                {
+                                    try { main.brain?.memoryManager?.AddShortTermMemory($"'{selectedItemKey}'을(를) {pick.Item2}", "", main?.curLocation?.GetSimpleKey()); } catch { }
+                                }
                                 return $"{selectedItemKey}을(를) 생성하여 {actor.Name}에게 제공했습니다.";
                             }
                             else
@@ -176,8 +182,13 @@ public class ItemDispenser : InteractableProp
             var fallbackItem = GetItem(fallbackItemKey);
             if (fallbackItem != null && fallbackItem is Item fallbackItemAsItem)
             {
-                if (actor.PickUp(fallbackItemAsItem))
+                var pick = actor.PickUp(fallbackItemAsItem);
+                if (pick.Item1)
                 {
+                    if (actor is MainActor main)
+                    {
+                        try { main.brain?.memoryManager?.AddShortTermMemory($"'{fallbackItemKey}'을(를) {pick.Item2}", "", main?.curLocation?.GetSimpleKey()); } catch { }
+                    }
                     return $"{fallbackItemKey}을(를) 생성하여 {actor.Name}에게 제공했습니다. (기본 선택)";
                 }
                 else

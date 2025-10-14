@@ -28,6 +28,7 @@ public class Claude : LLMClient
     private string firstSystemMessageText = null;
     private int maxToolCallRounds = 3;
     private bool enableLogging = true; // 로깅 활성화 여부
+    private bool enableOutgoingLogs = false; // Outgoing Request/Raw logs 저장 여부
     private static string sessionDirectoryName = null;
     // API 재시도 설정 (과부하/일시 오류 대비)
     private int maxApiRetries = 3;
@@ -277,7 +278,10 @@ public class Claude : LLMClient
             requiresAction = false;
             // 요청 로그 저장 (각 라운드 호출 직전)
             string agentTypeForLog = agentTypeOverride;
-            await SaveRequestLogAsync(messages, parameters, agentTypeForLog);
+            if (enableOutgoingLogs)
+            {
+                await SaveRequestLogAsync(messages, parameters, agentTypeForLog);
+            }
             Debug.Log($"Claude Request: SaveRequestLogAsync 완료");
             MessageResponse res;
             // 과부하/일시적 네트워크 오류에 대한 재시도 로직
@@ -384,7 +388,10 @@ public class Claude : LLMClient
                 Debug.Log($"Claude Request: Stop");
                 finalResponse = res.FirstMessage;
                 // 파싱 전에 생 텍스트를 OutgoingRequestLog에 저장
-                try { await SaveRawResponseLogAsync(finalResponse, agentTypeOverride); } catch { }
+                if (enableOutgoingLogs)
+                {
+                    try { await SaveRawResponseLogAsync(finalResponse, agentTypeOverride); } catch { }
+                }
                 Debug.Log($"<color=orange>Claude Response: {finalResponse}</color>");
 
                 if (typeof(T) == typeof(string))

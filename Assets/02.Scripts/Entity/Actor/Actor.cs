@@ -227,7 +227,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
     // Update Function들은 ThinkingActor로 이동
 
-    public bool PickUp(ICollectible collectible)
+    public (bool, string) PickUp(ICollectible collectible)
     {
         // 현재 인벤토리 시스템은 Item만 저장 가능
         if (collectible is Item item)
@@ -238,7 +238,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             if (HandItem == null)
             {
                 AttachToHand(item);
-                return true;
+                return (true, "손에 들었다.");
             }
 
             // 2) 인벤토리에서 빈 슬롯 찾기 (반복문으로 변경)
@@ -248,14 +248,14 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 {
                     // 새 아이템을 인벤토리 빈 슬롯에 넣는다 (손에 넣지 않음)
                     InvenItemSet(i, item);
-                    return true;
+                    return (true, "인벤토리에 넣었다.");
                 }
             }
-            return false;
+            return (false, "인벤토리가 가득 차서 넣지 못했다.");
         }
         // ICollectible이지만 Item이 아닌 경우(예: FoodBlock)는 현재 인벤토리 구조상 보관 불가
         Debug.LogWarning($"[{Name}] PickUp: 현재 시스템에서는 Item만 손/인벤토리에 보관할 수 있습니다. ({collectible?.GetType().Name})");
-        return false;
+        return (false, "현재 시스템에서는 Item만 손/인벤토리에 보관할 수 있습니다");
     }
 
     private void AttachToHand(Item item)
@@ -286,7 +286,12 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     public virtual bool Receive(Actor from, Item item)
     {
         Debug.Log($"[{Name}] {from.Name}로부터 아이템 받음: {item.Name}");
-        return PickUp(item);
+        var result = PickUp(item);
+        if (this is MainActor main)
+        {
+            try { main.brain?.memoryManager?.AddShortTermMemory($"'{item?.Name}'을(를) 받아서 {result.Item2}", "", main?.curLocation?.GetSimpleKey()); } catch { }
+        }
+        return result.Item1;
     }
 
     private void InvenItemSet(int index, Item item)

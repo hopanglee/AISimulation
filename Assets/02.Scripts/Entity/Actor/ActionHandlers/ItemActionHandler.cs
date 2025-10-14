@@ -58,12 +58,13 @@ namespace Agent.ActionHandlers
                             bubble.Show($"{itemName}을(를) 집는 중", 0);
                         }
                         await SimDelay.DelaySimMinutes(2, token);
-                        if (actor.PickUp(item))
+                        var actResult = actor.PickUp(item);
+                        if (actResult.Item1)
                         {
                             Debug.Log($"[{actor.Name}] 아이템을 성공적으로 집었습니다: {itemName}");
                             if (actor is MainActor main)
                             {
-                                main.brain.memoryManager.AddShortTermMemory($"'{itemName}'을(를) 손에 들었다.", "", main?.curLocation?.GetSimpleKey());
+                                main.brain.memoryManager.AddShortTermMemory($"'{itemName}'을(를) {actResult.Item2}", "", main?.curLocation?.GetSimpleKey());
                             }
                             return true;
                         }
@@ -111,12 +112,13 @@ namespace Agent.ActionHandlers
                                             bubble.Show($"{itemName}을(를) 집는 중", 0);
                                         }
                                         await SimDelay.DelaySimMinutes(2, token);
-                                        if (actor.PickUp(itemAfterMove))
+                                        var actResult = actor.PickUp(itemAfterMove);
+                                        if (actResult.Item1)
                                         {
                                             Debug.Log($"[{actor.Name}] 아이템을 성공적으로 집었습니다: {itemName}");
                                             if (actor is MainActor main)
                                             {
-                                                main.brain.memoryManager.AddShortTermMemory($"'{itemName}'을(를) 소지했다.", "", main?.curLocation?.GetSimpleKey());
+                                                main.brain.memoryManager.AddShortTermMemory($"'{itemName}'을(를) {actResult.Item2}", "", main?.curLocation?.GetSimpleKey());
                                             }
                                             return true;
                                         }

@@ -120,34 +120,34 @@ public class Thinker
                     if (selection != null)
                     {
                         // Think 액션은 한 번 실행 후 루프 종료
-                        if (selection.ActType == ActionType.Think || selection.ActType == ActionType.Sleep || selection.ActType == ActionType.PerformActivity)
+                        if (selection.ActType == ActionType.Think || selection.ActType == ActionType.Sleep || selection.ActType == ActionType.PerformActivity || selection.ActType == ActionType.UseObject)
                         {
                             breakAfterAct = true;
                         }
 
-                        // UseObject인 경우 iPhone/Note의 read/continue를 감지
-                        if (selection.ActType == ActionType.UseObject && paramResult != null && paramResult.Parameters != null)
-                        {
-                            // iPhone: recent_read / continue_read
-                            if (paramResult.Parameters.TryGetValue("command", out var cmdObj))
-                            {
-                                var cmd = cmdObj?.ToString();
-                                if (string.Equals(cmd, "recent_read", System.StringComparison.OrdinalIgnoreCase) ||
-                                    string.Equals(cmd, "continue_read", System.StringComparison.OrdinalIgnoreCase))
-                                {
-                                    breakAfterAct = true;
-                                }
-                            }
-                            // Note: read
-                            if (paramResult.Parameters.TryGetValue("action", out var actionObj))
-                            {
-                                var actionStr = actionObj?.ToString();
-                                if (string.Equals(actionStr, "read", System.StringComparison.OrdinalIgnoreCase))
-                                {
-                                    breakAfterAct = true;
-                                }
-                            }
-                        }
+                        // // UseObject인 경우 iPhone/Note의 read/continue를 감지
+                        // if (selection.ActType == ActionType.UseObject && paramResult != null && paramResult.Parameters != null)
+                        // {
+                        //     // iPhone: recent_read / continue_read
+                        //     if (paramResult.Parameters.TryGetValue("command", out var cmdObj))
+                        //     {
+                        //         var cmd = cmdObj?.ToString();
+                        //         if (string.Equals(cmd, "recent_read", System.StringComparison.OrdinalIgnoreCase) ||
+                        //             string.Equals(cmd, "continue_read", System.StringComparison.OrdinalIgnoreCase))
+                        //         {
+                        //             breakAfterAct = true;
+                        //         }
+                        //     }
+                        //     // Note: read
+                        //     if (paramResult.Parameters.TryGetValue("action", out var actionObj))
+                        //     {
+                        //         var actionStr = actionObj?.ToString();
+                        //         if (string.Equals(actionStr, "read", System.StringComparison.OrdinalIgnoreCase))
+                        //         {
+                        //             breakAfterAct = true;
+                        //         }
+                        //     }
+                        // }
                     }
 
                     // 4. Act - 선택한 행동 실행

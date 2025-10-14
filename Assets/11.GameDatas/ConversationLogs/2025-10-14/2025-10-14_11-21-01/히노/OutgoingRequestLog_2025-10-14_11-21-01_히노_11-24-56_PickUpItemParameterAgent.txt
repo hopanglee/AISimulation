@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: PickUpItemParameterAgent
+Real Time: 2025-10-14 11:24:56
+{"item_name":"협탁:아이폰"}
+

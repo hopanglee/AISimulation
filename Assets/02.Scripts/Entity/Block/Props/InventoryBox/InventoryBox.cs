@@ -405,7 +405,12 @@ public abstract class InventoryBox : InteractableProp
         
         // 아이템을 제거하고 actor의 PickUp 함수 사용
         RemoveItem(itemToRemove);
-        bool pickupSuccess = actor.PickUp(itemToRemove as ICollectible);
+        var pick = actor.PickUp(itemToRemove as ICollectible);
+        bool pickupSuccess = pick.Item1;
+        if (pickupSuccess && actor is MainActor main)
+        {
+            try { main.brain?.memoryManager?.AddShortTermMemory($"'{itemName}'을(를) {pick.Item2}", "", main?.curLocation?.GetSimpleKey()); } catch { }
+        }
         
         if (pickupSuccess)
         {

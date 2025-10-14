@@ -15,6 +15,7 @@ public class GPT : LLMClient
     private ChatCompletionOptions options = new();
     private List<ChatMessage> messages = new();
     private bool enableLogging = true; // 로깅 활성화 여부
+    private bool enableOutgoingLogs = false; // Outgoing Request/Raw logs 저장 여부
     private static string sessionDirectoryName = null;
     // 명시적 에이전트 타입 지정(승인/로그 표시에 사용). 설정되지 않으면 스택 트레이스로 추정
     //private string agentTypeOverride = "UNKNOWN";
@@ -467,7 +468,10 @@ public class GPT : LLMClient
             requiresAction = false;
             // 요청 로그 저장 (각 라운드 호출 직전)
             string agentTypeForLog = agentTypeOverride;
-            await SaveRequestLogAsync(messages, options, agentTypeForLog);
+            if (enableOutgoingLogs)
+            {
+                await SaveRequestLogAsync(messages, options, agentTypeForLog);
+            }
             Debug.Log($"GPT Request: SaveRequestLogAsync 완료");
             ChatCompletion completion;
             // 과부하/일시적 네트워크 오류에 대한 재시도 로직
@@ -550,7 +554,10 @@ public class GPT : LLMClient
                         messages.Add(new AssistantChatMessage(completion));
                         string responseText = completion.Content[0].Text;
                         // 파싱 전에 생 텍스트를 OutgoingRequestLog에 저장
-                        try { await SaveRawResponseLogAsync(responseText, agentTypeOverride); } catch { }
+                        if (enableOutgoingLogs)
+                        {
+                            try { await SaveRawResponseLogAsync(responseText, agentTypeOverride); } catch { }
+                        }
                         finalResponse = responseText;
                         Debug.Log($"<color=orange>GPT Response: {responseText}</color>");
 

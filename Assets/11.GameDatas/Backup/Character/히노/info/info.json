@@ -39,7 +39,7 @@
   "emotions": [
     {
       "name": "혼란",
-      "intensity": 0.9
+      "intensity": 0.85
     },
     {
       "name": "호기심",
@@ -47,16 +47,16 @@
     },
     {
       "name": "초조함",
-      "intensity": 0.8
+      "intensity": 0.75
     },
     {
-      "name": "불안",
-      "intensity": 0.7
+      "name": "배고픔",
+      "intensity": 0.9
     },
     {
       "name": "낙관",
-      "intensity": 0.6
+      "intensity": 0.65
     }
   ],
-  "last_updated": "2025-10-14T09:01:55.6685558+09:00"
+  "last_updated": "2025-10-14T11:16:04.5989509+09:00"
 }

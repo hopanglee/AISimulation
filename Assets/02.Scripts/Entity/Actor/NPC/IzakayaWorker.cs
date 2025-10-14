@@ -180,7 +180,8 @@ public class IzakayaWorker : NPC, IPaymentable
                     bubble2.SetFollowTarget(transform);
                     bubble2.Show($"{dishKey} 담는 중", 0);
                 }
-                picked = PickUp(cookedFood);
+                var pick = PickUp(cookedFood);
+                picked = pick.Item1;
             }
             finally
             {

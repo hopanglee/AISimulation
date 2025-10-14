@@ -216,7 +216,7 @@ public class Brain
 
             memoryManager.AddShortTermMemory(
                 $"{perceptionResult.situation_interpretation}",
-                "혼자 생각하는 중",
+                $"{string.Join(" -> ", perceptionResult.thought_chain)}",
                 locName,
                 perceptionResult.emotions
             );
@@ -314,10 +314,10 @@ public class Brain
                 //     $"의도: {selection.Intention}"
                 // , actor?.curLocation?.GetSimpleKey());
 
-                memoryManager.AddShortTermMemory(
-                    $"{selection.Intention}",
-                    $"{selection.Reasoning}"
-                , actor?.curLocation?.GetSimpleKey());
+                // memoryManager.AddShortTermMemory(
+                //     $"{selection.Intention}",
+                //     $"{selection.Reasoning}"
+                // , actor?.curLocation?.GetSimpleKey());
             }
 
             // ActSelectResult를 ActorManager에 저장

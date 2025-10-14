@@ -20,6 +20,7 @@ public class Gemini : LLMClient
     private GenerateContentRequest request = new();
 
     private bool enableLogging = true; // GPT와 동일한 플래그
+    private bool enableOutgoingLogs = false; // Outgoing Request/Raw logs 저장 여부
     private static string sessionDirectoryName = null;
     private string modelName = "gemini-2.5-flash";
     const int maxToolCallRounds = 3;
@@ -468,7 +469,10 @@ public class Gemini : LLMClient
             requiresAction = false;
 
             // 2. API 호출 전 로깅 (요청)
-            try { await SaveRequestLogAsync(string.Join("\n\n", chatHistory.Select(c => (c.Parts?.FirstOrDefault(p => p is TextData) as TextData)?.Text ?? string.Empty))); } catch { }
+            if (enableOutgoingLogs)
+            {
+                try { await SaveRequestLogAsync(string.Join("\n\n", chatHistory.Select(c => (c.Parts?.FirstOrDefault(p => p is TextData) as TextData)?.Text ?? string.Empty))); } catch { }
+            }
 
             // 2. API 호출
             request.Contents = chatHistory;
@@ -567,7 +571,10 @@ public class Gemini : LLMClient
                 var responseText = response.Text;
                 finalResponse = responseText;
                 // 응답 로깅
-                try { await SaveRawResponseLogAsync(responseText); } catch { }
+                if (enableOutgoingLogs)
+                {
+                    try { await SaveRawResponseLogAsync(responseText); } catch { }
+                }
                 Debug.Log($"<color=orange>Gemini Response: {responseText}</color>");
 
                 // 최종 Assistant 응답을 원본 chatHistory에 추가

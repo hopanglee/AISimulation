@@ -203,9 +203,13 @@ public class DrinkDispenser : ItemDispenser
                         {
                             if (bubble != null) bubble.Show($"{selectedDrinkKey} 받는 중", 0);
                             await SimDelay.DelaySimMinutes(1, cancellationToken);
-                            if (actor.PickUp(item))
+                            var pick = actor.PickUp(item);
+                            if (pick.Item1)
                             {
-                                //await SimDelay.DelaySimMinutes(1, cancellationToken);
+                                if (actor is MainActor main)
+                                {
+                                    try { main.brain?.memoryManager?.AddShortTermMemory($"'{selectedDrinkKey}'을(를) {pick.Item2}", "", main?.curLocation?.GetSimpleKey()); } catch { }
+                                }
                                 string drinkType = IsCoffeeType(selectedDrinkKey) ? "커피" : "음료";
                                 return $"{selectedDrinkKey} {drinkType}을(를) 생성하여 {actor.Name}에게 제공했습니다. (원두: {beanLevel:F0}%)";
                             }
@@ -240,8 +244,13 @@ public class DrinkDispenser : ItemDispenser
             
             if (fallbackDrink != null && fallbackDrink is Item fallbackDrinkAsItem)
             {
-                if (actor.PickUp(fallbackDrinkAsItem))
+                var pick = actor.PickUp(fallbackDrinkAsItem);
+                if (pick.Item1)
                 {
+                    if (actor is MainActor main)
+                    {
+                        try { main.brain?.memoryManager?.AddShortTermMemory($"'{fallbackDrinkKey}'을(를) {pick.Item2}", "", main?.curLocation?.GetSimpleKey()); } catch { }
+                    }
                     string drinkType = IsCoffeeType(fallbackDrinkKey) ? "커피" : "음료";
                     return $"{fallbackDrinkKey} {drinkType}을(를) 생성하여 {actor.Name}에게 제공했습니다. (기본 선택, 원두: {beanLevel:F0}%)";
                 }

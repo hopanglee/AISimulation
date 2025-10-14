@@ -752,14 +752,24 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 		cookedGo.SetActive(true);
 		Destroy(tempParent);
 
-		bool picked = false;
+        bool picked = false;
 		if (foodComponent is FoodBlock fb)
 		{
-			picked = PickUp(fb);
+            var pick = PickUp(fb);
+            picked = pick.Item1;
+            if (picked)
+            {
+                try { brain?.memoryManager?.AddShortTermMemory($"'{fb?.Name}'을(를) {pick.Item2}", "", curLocation?.GetSimpleKey()); } catch { }
+            }
 		}
 		else if (foodComponent is FoodItem fi)
 		{
-			picked = PickUp(fi);
+            var pick = PickUp(fi);
+            picked = pick.Item1;
+            if (picked)
+            {
+                try { brain?.memoryManager?.AddShortTermMemory($"'{fi?.Name}'을(를) {pick.Item2}", "", curLocation?.GetSimpleKey()); } catch { }
+            }
 		}
 		await SimDelay.DelaySimMinutes(1, token);
 		return picked;
