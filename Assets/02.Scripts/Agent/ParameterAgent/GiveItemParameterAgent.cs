@@ -45,6 +45,12 @@ namespace Agent
                         }}";
             var schema = new LLMClientSchema { name = "give_item_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
             SetResponseFormat(schema);
+
+            if(actor?.InventoryItems != null && actor.InventoryItems.Length > 0)
+            {
+                AddTools(ToolManager.NeutralToolDefinitions.SwapInventoryToHand);
+            }
+            //AddTools(ToolManager.NeutralToolDefinitions.SwapInventoryToHand);
             
         }
 

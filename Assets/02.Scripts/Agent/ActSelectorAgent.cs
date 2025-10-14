@@ -37,6 +37,7 @@ namespace Agent
             if (hasHandItem || hasInventoryItem)
             {
                 AddTools(ToolManager.NeutralToolSets.ItemManagement);
+                AddTools(ToolManager.NeutralToolDefinitions.SwapInventoryToHand);
             }
             if (Services.Get<IGameService>().IsDayPlannerEnabled())
             {
