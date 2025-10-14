@@ -73,6 +73,8 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # Sample Assets and Third-party Assets
+Assets/11.GameDatas/Backup/
+
 Assets/14.Sample Assets/
 Assets/Citizens PRO/
 Assets/Cozy cafe - confectionery and bakery/
