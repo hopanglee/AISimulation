@@ -841,10 +841,16 @@ namespace Agent.Tools
                 if (string.IsNullOrWhiteSpace(targetKey))
                     return "Error: targetAreaKey is empty";
 
+                if (actor == null)
+                    return "Error: No actor bound to executor";
+
                 var locationService = Services.Get<ILocationService>();
                 var pathService = Services.Get<IPathfindingService>();
                 if (locationService == null || pathService == null)
                     return "Error: Required services not available";
+
+                if (actor.curLocation == null)
+                    return "Error: Actor has no current location";
 
                 var startArea = locationService.GetArea(actor.curLocation);
                 if (startArea == null)

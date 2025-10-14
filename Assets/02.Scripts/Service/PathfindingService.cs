@@ -108,7 +108,7 @@ public class PathfindingService : IPathfindingService
 
     public List<string> FindPathToLocation(Area startArea, string targetLocationKey)
     {
-        if (string.IsNullOrEmpty(startArea.LocationToString()) || string.IsNullOrEmpty(targetLocationKey))
+        if (startArea == null || string.IsNullOrEmpty(targetLocationKey) || string.IsNullOrEmpty(startArea.LocationToString()))
             return new List<string>();
 
         // BFS로 최단 경로 찾기
@@ -141,9 +141,13 @@ public class PathfindingService : IPathfindingService
             {
                 isTargetFound = true;
             }
-            else if(locationManager.GetBuilding(current).locationName == targetLocationKey)
+            else if (locationManager != null)
             {
-                isTargetFound = true;
+                var building = locationManager.GetBuilding(current);
+                if (building != null && building.locationName == targetLocationKey)
+                {
+                    isTargetFound = true;
+                }
             }
 
             if (isTargetFound)
@@ -152,13 +156,17 @@ public class PathfindingService : IPathfindingService
                 return ReconstructPath(parent, startArea, current);
             }
 
-            foreach (var connected in current.connectedAreas)
+            if (current.toMovePos.Keys != null)
             {
-                if (!visited.Contains(connected))
+                foreach (var connected in current.toMovePos.Keys)
                 {
-                    visited.Add(connected);
-                    parent[connected] = current;
-                    queue.Enqueue(connected);
+                    if (connected == null) continue;
+                    if (!visited.Contains(connected))
+                    {
+                        visited.Add(connected);
+                        parent[connected] = current;
+                        queue.Enqueue(connected);
+                    }
                 }
             }
 

@@ -177,6 +177,7 @@ MonoBehaviour:
   _locationName: 
   _locationNameKr: 
   _curLocation: {fileID: 3164435457798945682}
+  isBuilding: 0
   _preposition: 
   _prepositionKr: 
   _isHideChild: 0
@@ -1532,6 +1533,7 @@ MonoBehaviour:
   _locationName: 
   _locationNameKr: 
   _curLocation: {fileID: 3164435457798945682}
+  isBuilding: 0
   _preposition: 
   _prepositionKr: 
   _isHideChild: 0
@@ -1826,6 +1828,7 @@ MonoBehaviour:
   _locationName: 
   _locationNameKr: 
   _curLocation: {fileID: 3164435457798945682}
+  isBuilding: 0
   _preposition: 
   _prepositionKr: 
   _isHideChild: 0
@@ -2368,6 +2371,7 @@ MonoBehaviour:
   _locationName: 
   _locationNameKr: 
   _curLocation: {fileID: 3164435457798945682}
+  isBuilding: 0
   _preposition: 
   _prepositionKr: 
   _isHideChild: 0
@@ -2660,7 +2664,6 @@ MonoBehaviour:
   maxItems: 4
   items:
   - {fileID: 8054054284120388659}
-  - {fileID: 428310412322239984}
   itemPlacementPositions:
   - {fileID: 3193547599023577796}
   - {fileID: 4511404841028963297}
@@ -4614,6 +4617,7 @@ MonoBehaviour:
   _locationName: 
   _locationNameKr: 
   _curLocation: {fileID: 3164435457798945682}
+  isBuilding: 0
   _preposition: 
   _prepositionKr: 
   _isHideChild: 0
@@ -5058,6 +5062,7 @@ MonoBehaviour:
   _locationName: 
   _locationNameKr: 
   _curLocation: {fileID: 3164435457798945682}
+  isBuilding: 0
   _preposition: 
   _prepositionKr: 
   _isHideChild: 0
@@ -7951,7 +7956,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8895198636111758098
 Transform:
   m_ObjectHideFlags: 0
@@ -9924,6 +9929,7 @@ MonoBehaviour:
   _locationName: 
   _locationNameKr: 
   _curLocation: {fileID: 0}
+  isBuilding: 0
   _preposition: 
   _prepositionKr: 
   _isHideChild: 0
@@ -12944,6 +12950,9 @@ MonoBehaviour:
     minValue: 0
     maxValue: 100
     deltaPerTick: 0
+  amount: 100
+  maxAmount: 100
+  consumePerUse: 25
 --- !u!1001 &1188113145887536669
 PrefabInstance:
   m_ObjectHideFlags: 0

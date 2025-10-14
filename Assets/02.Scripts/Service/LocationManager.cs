@@ -199,22 +199,47 @@ public class LocationService : ILocationService
 
     public Area GetArea(ILocation location)
     {
+        if (location == null)
+        {
+            return null;
+        }
+
         if (location is Area area)
         {
             return area;
         }
 
-        return GetArea(location.curLocation);
+        var parent = location.curLocation;
+        if (parent == null)
+        {
+            return location as Area;
+        }
+
+        return GetArea(parent);
     }
 
     public Area GetBuilding(ILocation location)
     {
-        if (location is Area area && area.isBuilding)
+        if (location == null)
         {
-            return area;
+            return null;
         }
 
-        return GetBuilding(location.curLocation);
+        if (location is Area area)
+        {
+            if (area.isBuilding)
+            {
+                return area;
+            }
+        }
+
+        var parent = location.curLocation;
+        if (parent == null)
+        {
+            return null;
+        }
+
+        return GetBuilding(parent);
     }
 
     public void Remove(ILocation key, Entity value)

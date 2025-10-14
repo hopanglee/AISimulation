@@ -87,14 +87,14 @@ public class ActionPerformer
             else
             {
                 Debug.LogWarning($"[{actor.Name}] 액션 실패: {action.ActionType} - {result.Message}");
-                if (!string.IsNullOrEmpty(result.Feedback))
-                {
-                    Debug.LogWarning($"[{actor.Name}] 실패 피드백: {result.Feedback}");
-                }
-                if (result.ShouldRetry)
-                {
-                    Debug.LogWarning($"[{actor.Name}] 재시도 권장됨");
-                }
+                // if (!string.IsNullOrEmpty(result.Feedback))
+                // {
+                //     //Debug.LogWarning($"[{actor.Name}] 실패 피드백: {result.Feedback}");
+                // }
+                // if (result.ShouldRetry)
+                // {
+                //     Debug.LogWarning($"[{actor.Name}] 재시도 권장됨");
+                // }
                 return false;
             }
         }

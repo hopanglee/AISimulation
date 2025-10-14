@@ -1,0 +1,11 @@
+﻿{
+  "payload": {
+    "target_key": "라면"
+  },
+  "tools": [
+    {
+      "name": "GetCookableRecipes",
+      "argsJson": "{}"
+    }
+  ]
+}
