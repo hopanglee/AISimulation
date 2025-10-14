@@ -111,7 +111,7 @@ public class Thinker
                     if (selection != null && selection.ActType == ActionType.ObserveEnvironment)
                     {
                         Debug.Log($"[{actor.Name}] ObserveEnvironment 선택됨 - 반복 루프 종료 후 다음 사이클로");
-                        currentCycleBudget = BaseCycleCount;
+                        currentCycleBudget = BaseCycleCount - 1;
                         break;
                     }
 
@@ -120,7 +120,7 @@ public class Thinker
                     if (selection != null)
                     {
                         // Think 액션은 한 번 실행 후 루프 종료
-                        if (selection.ActType == ActionType.Think)
+                        if (selection.ActType == ActionType.Think || selection.ActType == ActionType.Sleep || selection.ActType == ActionType.PerformActivity)
                         {
                             breakAfterAct = true;
                         }
