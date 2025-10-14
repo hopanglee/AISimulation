@@ -37,6 +37,7 @@ public class Claude : LLMClient
     private PromptCacheType promptCachingMode = PromptCacheType.AutomaticToolsAndSystem;
 
     private string jsonSystemMessage = null;
+    private List<ToolInvocationRecord> executedTools = new List<ToolInvocationRecord>();
     public Claude(Actor actor, string model = null) : base(new LLMClientProps() { model = model, provider = LLMClientProvider.Anthropic })
     {
         var apiKey = "CLAUDE_API_KEY";
@@ -210,6 +211,17 @@ public class Claude : LLMClient
         {
             string result = toolExecutor.ExecuteTool(name, param);
             AddToolMessage(id, name, result);
+            // 도구 실행 기록 저장 (캐시 리플레이용)
+            try
+            {
+                var rec = new ToolInvocationRecord
+                {
+                    name = name,
+                    argsJson = param?.ToJsonString() ?? "{}"
+                };
+                executedTools.Add(rec);
+            }
+            catch { }
         }
         else
         {
@@ -272,6 +284,8 @@ public class Claude : LLMClient
         string finalResponse;
         int toolRounds = 0; // Limit tool-call rounds
         bool forcedFinalAfterToolLimit = false; // Ensure we force exactly one final pass without tools
+        // 이 호출에서 실행된 도구 기록 초기화
+        executedTools = new List<ToolInvocationRecord>();
 
         do
         {
@@ -396,7 +410,7 @@ public class Claude : LLMClient
 
                 if (typeof(T) == typeof(string))
                 {
-                    try { SaveCachedResponse(finalResponse); } catch { }
+                    try { SaveCachedResponse(new LLMCacheEnvelope<string> { payload = finalResponse, tools = executedTools }); } catch { }
                     await SaveConversationLogAsync(messages, finalResponse);
                     return (T)(object)finalResponse;
                 }
@@ -405,7 +419,7 @@ public class Claude : LLMClient
                 {
                     Debug.Log($"<b>[Claude][PARSE] Raw response before parse: {finalResponse}</b>");
                     var result = JsonConvert.DeserializeObject<T>(finalResponse);
-                    try { SaveCachedResponse(result); } catch { }
+                    try { SaveCachedResponse(new LLMCacheEnvelope<T> { payload = result, tools = executedTools }); } catch { }
                     await SaveConversationLogAsync(messages, finalResponse);
                     return result;
                 }
@@ -416,7 +430,7 @@ public class Claude : LLMClient
                     try
                     {
                         var result = JsonConvert.DeserializeObject<T>(outer);
-                        try { SaveCachedResponse(result); } catch { }
+                        try { SaveCachedResponse(new LLMCacheEnvelope<T> { payload = result, tools = executedTools }); } catch { }
                         await SaveConversationLogAsync(messages, finalResponse);
                         Debug.Log("<b>[Claude][PARSE] Parsed successfully after outermost-object sanitization.</b>");
                         return result;
@@ -428,7 +442,7 @@ public class Claude : LLMClient
                         try
                         {
                             var result = JsonConvert.DeserializeObject<T>(sanitized);
-                            try { SaveCachedResponse(result); } catch { }
+                            try { SaveCachedResponse(new LLMCacheEnvelope<T> { payload = result, tools = executedTools }); } catch { }
                             await SaveConversationLogAsync(messages, finalResponse);
                             Debug.Log("<b>[Claude][PARSE] Parsed successfully after trailing-comma sanitization.</b>");
                             return result;

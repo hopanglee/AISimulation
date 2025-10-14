@@ -626,12 +626,14 @@ namespace Agent.Tools
                 if (currentHandItem != null)
                 {
                     currentHandItem.curLocation = actor.Inven;
+                    try { currentHandItem.gameObject.SetActive(false); } catch { }
                 }
 
                 // 핸드 아이템 설정
                 actor.HandItem = inventoryItem;
                 inventoryItem.curLocation = actor.Hand;
                 inventoryItem.transform.localPosition = new Vector3(0, 0, 0);
+                try { inventoryItem.gameObject.SetActive(true); } catch { }
 
                 string result = $"Successfully swapped inventory slot {targetSlot} ({inventoryItem.Name}) to hand";
                 if (currentHandItem != null)

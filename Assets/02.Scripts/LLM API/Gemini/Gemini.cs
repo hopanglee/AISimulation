@@ -28,6 +28,7 @@ public class Gemini : LLMClient
     // API 재시도 설정 (과부하/일시 오류 대비)
     private int maxApiRetries = 3;
     private int apiRetryBaseDelayMs = 3000;
+    private List<ToolInvocationRecord> executedTools = new List<ToolInvocationRecord>();
     public static void SetSessionDirectoryName(string sessionName)
     {
         sessionDirectoryName = sessionName;
@@ -464,6 +465,9 @@ public class Gemini : LLMClient
         int toolRounds = 0; // Limit tool-call rounds
         bool forcedFinalAfterToolLimit = false; // Ensure we force exactly one final pass without tools
 
+        // 이 호출에서 실행된 도구 기록 초기화
+        executedTools = new List<ToolInvocationRecord>();
+
         do
         {
             requiresAction = false;
@@ -582,7 +586,7 @@ public class Gemini : LLMClient
 
                 if (typeof(T) == typeof(string))
                 {
-                    try { SaveCachedResponse(responseText); } catch { }
+                    try { SaveCachedResponse(new LLMCacheEnvelope<string> { payload = responseText, tools = executedTools }); } catch { }
                     try { await SaveConversationLogAsync(responseText); } catch { }
                     return (T)(object)responseText;
                 }
@@ -591,7 +595,7 @@ public class Gemini : LLMClient
                 try
                 {
                     var result = JsonConvert.DeserializeObject<T>(responseText);
-                    try { SaveCachedResponse(result); } catch { }
+                    try { SaveCachedResponse(new LLMCacheEnvelope<T> { payload = result, tools = executedTools }); } catch { }
                     try { await SaveConversationLogAsync(responseText); } catch { }
                     return result;
                 }
@@ -602,7 +606,7 @@ public class Gemini : LLMClient
                     try
                     {
                         var result = JsonConvert.DeserializeObject<T>(outer);
-                        try { SaveCachedResponse(result); } catch { }
+                        try { SaveCachedResponse(new LLMCacheEnvelope<T> { payload = result, tools = executedTools }); } catch { }
                         try { await SaveConversationLogAsync(responseText); } catch { }
                         Debug.Log("<b>[Gemini][PARSE] Parsed successfully after outermost-object sanitization.</b>");
                         return result;
@@ -615,7 +619,7 @@ public class Gemini : LLMClient
                         try
                         {
                             var result = JsonConvert.DeserializeObject<T>(sanitized);
-                            try { SaveCachedResponse(result); } catch { }
+                            try { SaveCachedResponse(new LLMCacheEnvelope<T> { payload = result, tools = executedTools }); } catch { }
                             try { await SaveConversationLogAsync(responseText); } catch { }
                             Debug.Log("<b>[Gemini][PARSE] Parsed successfully after trailing-comma sanitization.</b>");
                             return result;
@@ -684,6 +688,17 @@ public class Gemini : LLMClient
         if (toolExecutor != null)
         {
             toolResult = toolExecutor.ExecuteTool(functionCall);
+            // 도구 실행 기록 저장 (캐시 리플레이용)
+            try
+            {
+                var rec = new ToolInvocationRecord
+                {
+                    name = functionCall.Name,
+                    argsJson = functionCall.Args?.ToString() ?? "{}"
+                };
+                executedTools.Add(rec);
+            }
+            catch { }
         }
         else
         {

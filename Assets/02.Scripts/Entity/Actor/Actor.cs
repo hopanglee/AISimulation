@@ -262,7 +262,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     {
         if (item.curLocation is InventoryBox inventoryBox)
         {
-            inventoryBox.RemoveItem(HandItem);
+            inventoryBox.RemoveItem(item);
         }
 
         HandItem = item;
@@ -296,6 +296,11 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
     private void InvenItemSet(int index, Item item)
     {
+        if (item.curLocation is InventoryBox inventoryBox)
+        {
+            inventoryBox.RemoveItem(item);
+        }
+
         _inventoryItems[index] = item;
         // 인벤토리에 있는 아이템은 보이지 않게 처리
         SetItemVisibility(item, false);
@@ -1291,11 +1296,11 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         else sleepinessText += "매우 또렷하고 상쾌함";
 
         var judgmentText = "판단력: ";
-        if(Judgment >= 90) judgmentText += "괜찮은 상태";
-        else if(Judgment > 80) judgmentText += "일반적인 상태";
-        else if(Judgment >= 60) judgmentText += "조금 흐려진 상태";
-        else if(Judgment >= 40) judgmentText += "조금 헤롱헤롱 거리는 상태";
-        else if(Judgment >= 20) judgmentText += "술에 많이 취한 듯한 상태";
+        if (Judgment >= 90) judgmentText += "괜찮은 상태";
+        else if (Judgment > 80) judgmentText += "일반적인 상태";
+        else if (Judgment >= 60) judgmentText += "조금 흐려진 상태";
+        else if (Judgment >= 40) judgmentText += "조금 헤롱헤롱 거리는 상태";
+        else if (Judgment >= 20) judgmentText += "술에 많이 취한 듯한 상태";
         else judgmentText += "스스로 판단할 수 없는 상태";
 
         var sleepStatus = "";
@@ -1504,7 +1509,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             if (!string.IsNullOrEmpty(info.SkinColor)) parts.Add($"피부색: {info.SkinColor}");
             if (!string.IsNullOrEmpty(info.HairStyle)) parts.Add($"헤어스타일: {info.HairStyle}");
             if (!string.IsNullOrEmpty(info.BodyType)) parts.Add($"체형: {info.BodyType}");
-            
+
             // 착용 중인 옷 정보 추가
             if (_currentOutfit != null)
             {
@@ -1653,25 +1658,36 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                         {
                             timestamp = $"오늘 {memory.timestamp.hour:D2}:{memory.timestamp.minute:D2}";
                         }
-                        else
+                        else if (memory.timestamp.IsYesterday())
                         {
                             timestamp = $"어제";
-
+                        }
+                        else
+                        {
+                            var daysSince = -memory.timestamp.GetDaysSince(Services.Get<ITimeService>().CurrentTime);
+                            if (daysSince <= 31)
+                            {
+                                timestamp = $"{memory.timestamp.ToKoreanString()}({daysSince}일 전)";
+                            }
+                            else
+                            {
+                                timestamp = $"{memory.timestamp.ToKoreanString()}";
+                            }
                         }
                     }
                     else
                     {
                         timestamp = "날짜&시간 모름";
                     }
-                        var location = !string.IsNullOrEmpty(memory.locationName)
-                            ? $" <장소: {memory.locationName}>"
-                            : "";
+                    var location = !string.IsNullOrEmpty(memory.locationName)
+                        ? $" <장소: {memory.locationName}>"
+                        : "";
                     var emotions = memory.emotions != null && memory.emotions.Count > 0
                         ? $", 감정: {string.Join(", ", memory.emotions.OrderByDescending(e => e.intensity).Take(2).Select(e => $"{e.name}"))}"
                         : "";
                     var details = !string.IsNullOrEmpty(memory.details) ? $" ({memory.details})" : "";
 
-                        memoryText += $"[{timestamp}]{location} {memory.content}{details}{emotions}\n";
+                    memoryText += $"[{timestamp}]{location} {memory.content}{details}{emotions}\n";
                 }
             }
 
@@ -1699,7 +1715,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                         var daysSince = -memory.timestamp.GetDaysSince(Services.Get<ITimeService>().CurrentTime);
                         if (daysSince <= 31)
                         {
-                            timestamp = $"{memory.timestamp.ToKoreanString()}({-daysSince}일 전)";
+                            timestamp = $"{memory.timestamp.ToKoreanString()}({daysSince}일 전)";
                         }
                         else
                         {
@@ -2017,19 +2033,33 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 }
                 else
                 {
-                    relationshipText += $"- {relationshipName}: 기억나지 않는다..";
+                    relationshipText += $"- {relationshipName}: 들어본 적 같은데 모르는 것이 많다...";
                 }
             }
         }
-        else
+
+        if (string.IsNullOrEmpty(relationshipText))
         {
-            relationshipText = $"- {targetName}: 모르는 사람인 것 같다..";
+            if (this is HinoMaori)
+            {
+                bool isMatch = false;
+                var relationshipName = "카미야 토루";
+                if (!string.IsNullOrEmpty(relationshipName) && !string.IsNullOrEmpty(targetName))
+                {
+                    isMatch =
+                        string.Equals(relationshipName, targetName, System.StringComparison.OrdinalIgnoreCase) ||
+                        targetName.IndexOf(relationshipName, System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        relationshipName.IndexOf(targetName, System.StringComparison.OrdinalIgnoreCase) >= 0;
+                }
+                if (!isMatch) relationshipText = $"- {targetName}: 모르는 사람인 것 같다..";
+                else relationshipText = $"- {targetName}: 익숙한 이름인데.. 기억이 흐릿하다.. 기억이 잘 나지 않는다...";
+            }
+            else
+            {
+                relationshipText = $"- {targetName}: 모르는 사람인 것 같다..";
+            }
         }
 
-        if(string.IsNullOrEmpty(relationshipText))
-        {
-            relationshipText = $"- {targetName}: 모르는 사람인 것 같다..";
-        }
         return relationshipText.Trim();
     }
 

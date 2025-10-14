@@ -62,13 +62,13 @@ public class GameService : MonoBehaviour, IGameService
     [Header("Cache Settings")]
     [SerializeField]
     [Tooltip("기본적으로 캐시 조회 시 msgHash를 무시하고 느슨한 패턴으로 조회할지 여부.")]
-    private bool useLooseCacheMatchByDefault = false;
+    private bool useLooseCacheMatchByDefault = true;
 
     [System.Serializable]
     public class ActorCacheMatchSetting
     {
         public ActorId actor;
-        public bool useLooseMatch = false;
+        public bool useLooseMatch = true;
     }
 
     [SerializeField]
@@ -82,6 +82,8 @@ public class GameService : MonoBehaviour, IGameService
 
     private bool isSimulationRunning = false;
     private List<Actor> allActors = new List<Actor>();
+    private bool wasRunningBeforePause = false;
+    private bool skipNextDeltaAfterResume = false;
 
     private ITimeService timeService;
 
@@ -91,13 +93,23 @@ public class GameService : MonoBehaviour, IGameService
 
     private void Update()
     {
-        // 시간 업데이트 (시뮬레이션이 실행 중일 때만)
-        if (isSimulationRunning && timeService != null && timeService.IsTimeFlowing)
+        // 시간 업데이트 (시뮬레이션이 실행 중이고 포커스를 잃지 않았을 때만)
+        if (isSimulationRunning && timeService != null && timeService.IsTimeFlowing && Application.isFocused)
         {
-            //Debug.Log($"[GameService] UpdateTime: {Time.deltaTime}");
-            timeService.UpdateTime(Time.deltaTime);
+            // 재개 직후 첫 프레임의 큰 deltaTime으로 인한 시간 점프 방지
+            if (skipNextDeltaAfterResume)
+            {
+                skipNextDeltaAfterResume = false;
+            }
+            else
+            {
+                // deltaTime 상한을 두어 예외적 스파이크 방지 (예: 0.25초)
+                var dt = Mathf.Min(Time.deltaTime, 0.25f);
+                //Debug.Log($"[GameService] UpdateTime: {dt}");
+                timeService.UpdateTime(dt);
+            }
         }
-        
+
         // ExternalEventService 업데이트 (지역 변화 확인)
         if (isSimulationRunning)
         {
@@ -202,10 +214,10 @@ public class GameService : MonoBehaviour, IGameService
                 mainActor.brain.SetPlanOnly(planOnly);
             }
         }
-        
+
         Debug.Log($"[GameService] Simulation started with {allActors.Count} actors");
         Debug.Log($"[GameService] Plan only: {planOnly}");
-        
+
         return UniTask.CompletedTask;
     }
 
@@ -233,6 +245,7 @@ public class GameService : MonoBehaviour, IGameService
         Debug.Log("[GameService] Resuming simulation...");
         isSimulationRunning = true;
         timeService?.StartTimeFlow();
+        skipNextDeltaAfterResume = true; // 큰 delta 방지
 
         // 루틴 재시작 제거 - 이미 실행 중인 루틴이 있으므로 중복 시작 방지
         // _ = RunDayPlanningRoutine(true); // 이 줄 제거
@@ -251,7 +264,7 @@ public class GameService : MonoBehaviour, IGameService
             timeService.UnsubscribeFromTimeEvent(OnTimeChanged);
             timeService.TimeScale = 0f; // 시간 스케일도 0으로 설정
         }
-        
+
         //Debug.Log("[GameService] Simulation stopped - time flow disabled");
     }
 
@@ -276,10 +289,49 @@ public class GameService : MonoBehaviour, IGameService
     {
         if (pauseStatus)
         {
-            Debug.Log("[GameService] Application paused - stopping simulation");
-            StopSimulation();
+            // Remember state and pause
+            wasRunningBeforePause = isSimulationRunning;
+            if (isSimulationRunning)
+            {
+                Debug.Log("[GameService] Application paused - stopping simulation");
+                PauseSimulation();
+            }
+        }
+        else
+        {
+            // App resumed from pause (e.g., mobile or editor play pause off)
+            if (wasRunningBeforePause && !isSimulationRunning)
+            {
+                Debug.Log("[GameService] Application resumed - resuming simulation");
+                ResumeSimulation();
+            }
         }
     }
+
+    /// <summary>
+    /// 앱 포커스 복귀 시 자동 재개(에디터/데스크톱 대응)
+    /// </summary>
+    // private void OnApplicationFocus(bool hasFocus)
+    // {
+    // 	if (hasFocus)
+    // 	{
+    // 		if (wasRunningBeforePause && !isSimulationRunning)
+    // 		{
+    // 			Debug.Log("[GameService] Application focus gained - resuming simulation");
+    // 			ResumeSimulation();
+    // 		}
+    // 	}
+    // 	else
+    // 	{
+    // 		// 에디터/데스크톱에서 포커스 잃을 때도 일시정지 처리
+    // 		wasRunningBeforePause = isSimulationRunning;
+    // 		if (isSimulationRunning)
+    // 		{
+    // 			Debug.Log("[GameService] Application focus lost - pausing simulation");
+    // 			PauseSimulation();
+    // 		}
+    // 	}
+    // }
 
     /// <summary>
     /// 시간 변경 이벤트 핸들러
@@ -310,12 +362,12 @@ public class GameService : MonoBehaviour, IGameService
     private async UniTask RunDayPlanningRoutine(bool startThinkAfter = false)
     {
         Debug.Log("[GameService] Day planning routine initialized (now handled by time events)");
-        
+
         // 이제 OnTimeChanged에서 DayPlan을 처리하므로 여기서는 대기만
         while (isSimulationRunning)
         {
             await UniTask.Yield();
-            
+
             // Unity 에디터가 중지되었는지 확인
             if (!Application.isPlaying)
             {
@@ -353,13 +405,13 @@ public class GameService : MonoBehaviour, IGameService
 
 
     // Removed: ToggleForceNewDayPlan (use per-actor toggle in MainActor)
-    
+
     [Button("Toggle Plan Only")]
     private void TogglePlanOnly()
     {
         planOnly = !planOnly;
         Debug.Log($"[GameService] Plan only mode {(planOnly ? "enabled" : "disabled")}");
-        
+
         // 모든 Actor의 planOnly 설정 업데이트
         foreach (var actor in allActors)
         {
@@ -375,7 +427,7 @@ public class GameService : MonoBehaviour, IGameService
     {
         enableGPTLogging = !enableGPTLogging;
         Debug.Log($"[GameService] GPT logging {(enableGPTLogging ? "enabled" : "disabled")}");
-        
+
         // 모든 Actor의 로깅 설정 업데이트
         foreach (var actor in allActors)
         {
@@ -400,4 +452,4 @@ public class GameService : MonoBehaviour, IGameService
     /// GPT 승인 시스템 사용 여부 설정
     /// </summary>
     #endregion
-} 
+}

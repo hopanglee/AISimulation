@@ -29,13 +29,14 @@ namespace Agent
         public InventoryBoxParameterAgent(Actor actor, InventoryBox inventoryBox) : base(actor)
         {
             this.inventoryBox = inventoryBox;
-            var availableItems = GetCurrentAvailableItems();
-            availableItems.Add("");
-            var boxItems = GetCurrentBoxItems();
-            boxItems.Add("");
+			var availableItems = GetCurrentAvailableItems();
+			// 'null' 옵션을 항상 추가하여 아무 것도 하지 않음을 선택 가능하게 함
+			availableItems.Add("null");
+			var boxItems = GetCurrentBoxItems();
+			boxItems.Add("null");
             // 초기 enum 설정 - 각각 분리
-            var availableItemNames = availableItems.Count > 0 ? availableItems : new List<string> {""};
-            var boxItemNames = boxItems.Count > 0 ? boxItems : new List<string> {""};
+			var availableItemNames = availableItems.Count > 0 ? availableItems : new List<string> {"null"};
+			var boxItemNames = boxItems.Count > 0 ? boxItems : new List<string> {"null"};
             
             SetAgentType(nameof(InventoryBoxParameterAgent));
             systemPrompt = PromptLoader.LoadPrompt("InventoryBoxParameterAgentPrompt.txt", "You are an InventoryBox parameter generator.");
@@ -55,6 +56,8 @@ namespace Agent
 
         public async UniTask<InventoryBoxParameter> GenerateParametersAsync(CommonContext context)
         {
+			// 현재 박스의 아이템 목록을 단기기억에 추가
+			TryRecordBoxContentsToShortTermMemory();
             ClearMessages();
             AddSystemMessage(systemPrompt);
             AddUserMessage(BuildUserMessage(context));
@@ -64,23 +67,53 @@ namespace Agent
 
         public async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {           
-            var param = await GenerateParametersAsync(new CommonContext
+			var param = await GenerateParametersAsync(new CommonContext
             {
                 Reasoning = request.Reasoning,
                 Intention = request.Intention,
                 PreviousFeedback = request.PreviousFeedback
             });
-            
+			// 'null'은 실제 실행 단계에서는 무시되도록 빈 문자열로 변환
+			string Normalize(string s)
+			{
+				if (string.IsNullOrEmpty(s)) return "";
+				var t = s.Trim();
+				return string.Equals(t, "null", StringComparison.OrdinalIgnoreCase) ? "" : t;
+			}
+			var addName = Normalize(param?.AddItemName);
+			var removeName = Normalize(param?.RemoveItemName);
+			
             return new ActParameterResult
             {
                 ActType = request.ActType,
                 Parameters = new Dictionary<string, object>
                 {
-                    { "add_item_name", param.AddItemName },
-                    { "remove_item_name", param.RemoveItemName }
+					{ "add_item_name", addName },
+					{ "remove_item_name", removeName }
                 }
             };
         }
+
+		private void TryRecordBoxContentsToShortTermMemory()
+		{
+			try
+			{
+				var items = GetCurrentBoxItems();
+				var listText = (items != null && items.Count > 0) ? string.Join(", ", items) : "없음";
+				if (actor is MainActor main)
+				{
+					try
+					{
+						main.brain?.memoryManager?.AddShortTermMemory($"'{inventoryBox?.Name ?? inventoryBox?.GetType().Name}'에 있는 물건: {listText}", "", main?.curLocation?.GetSimpleKey());
+					}
+					catch { }
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.LogWarning($"[InventoryBoxParameterAgent] 단기기억 기록 실패: {ex.Message}");
+			}
+		}
 
         private List<string> GetCurrentAvailableItems()
         {

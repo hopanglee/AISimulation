@@ -12,6 +12,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Text.Json.Nodes;
 
 public abstract class LLMClient
 {
@@ -170,22 +171,69 @@ public abstract class LLMClient
                         catch { }
                     }
                     var cachedJson = File.ReadAllText(matchPath);
-                    T cached;
                     try
                     {
-                        cached = JsonConvert.DeserializeObject<T>(cachedJson, EnumAsStringJsonSettings);
-
-                        if (cached != null)
+                        // 1) 우선 캐시 엔벨로프 형식인지 점검: { payload: ..., tools: [...] }
+                        var token = JToken.Parse(cachedJson);
+                        if (token is JObject obj && obj["payload"] != null)
                         {
-                            Debug.Log($"<b><color=Yellow>[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 로그 히트: {matchPath}</color></b>");
-                            actor.CacheCount++; // 히트 시 증가
-                            return cached;
+                            // 1-1) 도구 리플레이
+                            try
+                            {
+                                var toolsToken = obj["tools"] as JArray;
+                                if (toolsToken != null && toolsToken.Count > 0 && toolExecutor != null)
+                                {
+                                    foreach (var tkn in toolsToken)
+                                    {
+                                        try
+                                        {
+                                            var name = tkn["name"]?.ToString();
+                                            var argsJson = tkn["argsJson"]?.ToString();
+                                            if (!string.IsNullOrWhiteSpace(name))
+                                            {
+                                            JsonNode argsNode = null;
+                                            try { if (!string.IsNullOrWhiteSpace(argsJson)) argsNode = JsonNode.Parse(argsJson); } catch { argsNode = null; }
+                                            argsNode ??= JsonNode.Parse("{}");
+                                            toolExecutor.ExecuteTool(name, argsNode);
+                                            }
+                                        }
+                                        catch (Exception toolEx)
+                                        {
+                                            Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 도구 리플레이 실패: {toolEx.Message}");
+                                        }
+                                    }
+                                }
+                            }
+                            catch { }
+
+                            // 1-2) payload를 T로 역직렬화하여 반환
+                            var payloadJson = obj["payload"]?.ToString();
+                            if (payloadJson != null)
+                            {
+                                var cachedPayload = JsonConvert.DeserializeObject<T>(payloadJson, EnumAsStringJsonSettings);
+                                if (cachedPayload != null)
+                                {
+                                    Debug.Log($"<b><color=Yellow>[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 로그 히트(리플레이 포함): {matchPath}</color></b>");
+                                    actor.CacheCount++; // 히트 시 증가
+                                    return cachedPayload;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // 2) 구버전(엔벨로프 미사용) 캐시 호환: 직접 T로 역직렬화
+                            var cached = JsonConvert.DeserializeObject<T>(cachedJson, EnumAsStringJsonSettings);
+                            if (cached != null)
+                            {
+                                Debug.Log($"<b><color=Yellow>[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 로그 히트: {matchPath}</color></b>");
+                                actor.CacheCount++; // 히트 시 증가
+                                return cached;
+                            }
                         }
                     }
                     catch (Newtonsoft.Json.JsonException ex)
                     {
                         Debug.LogError($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 타입 불일치 - JSON 역직렬화 실패: {ex.Message}");
-                        // T 불일치인 경우 삭제하지 않고 에러 로그만 출력
                     }
                 }
             }
@@ -512,4 +560,16 @@ public class LLMClientToolResponse<T>
 {
     public string name = "";
     public T args;
+}
+
+public class ToolInvocationRecord
+{
+    public string name = "";
+    public string argsJson = "{}";
+}
+
+public class LLMCacheEnvelope<T>
+{
+    public T payload;
+    public List<ToolInvocationRecord> tools = new List<ToolInvocationRecord>();
 }

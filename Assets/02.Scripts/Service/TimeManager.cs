@@ -411,6 +411,13 @@ public struct GameTime : IComparable<GameTime>, IComparable
     {
         return ToDateTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
     }
+
+    public bool IsYesterday()
+    {
+        return year == Services.Get<ITimeService>().CurrentTime.year &&
+            month == Services.Get<ITimeService>().CurrentTime.month &&
+            day == Services.Get<ITimeService>().CurrentTime.day - 1;
+    }
 }
 
 /// <summary>

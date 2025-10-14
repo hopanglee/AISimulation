@@ -26,7 +26,7 @@ public class Thinker
     private CancellationTokenSource thinkActCts;
 
     // Dynamic cycle budget: starts at 5, increases by 5 (max 20) after each uninterrupted batch
-    private const int BaseCycleCount = 2;
+    private const int BaseCycleCount = 3;
     private const int MaxCycleCount = 4;
 
     private const int relationshipUpdateCycleCount = 3;
@@ -120,7 +120,7 @@ public class Thinker
                     if (selection != null)
                     {
                         // Think 액션은 한 번 실행 후 루프 종료
-                        if (selection.ActType == ActionType.Think || selection.ActType == ActionType.Sleep || selection.ActType == ActionType.PerformActivity || selection.ActType == ActionType.UseObject)
+                        if (selection.ActType == ActionType.Think || selection.ActType == ActionType.Sleep || selection.ActType == ActionType.PerformActivity || selection.ActType == ActionType.UseObject || selection.ActType == ActionType.MoveToArea)
                         {
                             breakAfterAct = true;
                         }
