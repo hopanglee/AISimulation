@@ -26,7 +26,7 @@ public enum ActionType
 	Wait,
 	Think,
 	Sleep,
-	ObserveEnvironment, // 주변을 둘러보고 상황 파악
+	End, // 주변을 둘러보고 상황 파악
 	Cook
 }
 
@@ -63,7 +63,7 @@ public static class ActionTypeExtensions
 			case ActionType.Wait: return "대기";
 			case ActionType.Think: return "생각";
 			case ActionType.Sleep: return "수면";
-			case ActionType.ObserveEnvironment: return "주변 살피기";
+			case ActionType.End: return "종료";
 			case ActionType.Cook: return "요리";
 			default: return actionType.ToString();
 		}

@@ -205,7 +205,7 @@ public class ActionPerformer
 
         // ObserveEnvironment: 간단 처리(즉시 완료로 간주). Perception에 맡겨 다음 사이클로
         actionExecutor.RegisterHandler(
-            ActionType.ObserveEnvironment,
+            ActionType.End,
             async (parameters) =>
             {
                 // 짧은 멈춤으로 관찰 제스처

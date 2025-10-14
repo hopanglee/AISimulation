@@ -58,8 +58,7 @@ public class DetailedPlannerAgent : GPT
         if (Services.Get<IGameService>().IsDayPlannerEnabled())
         {
             AddTools(ToolManager.NeutralToolDefinitions.GetCurrentPlan);            
-        }     
-        AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemories);       
+        }        
         AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);       
         AddTools(ToolManager.NeutralToolDefinitions.GetWorldAreaInfo);             
     }

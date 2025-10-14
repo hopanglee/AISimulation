@@ -64,7 +64,7 @@ namespace Agent.Tools
 
             public static readonly ChatTool GetWorldAreaInfo = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetWorldAreaInfo),
-                functionDescription: "월드의 모든 에리어와 이들 간 연결 정보를 반환합니다"
+                functionDescription: "월드의 모든 지역과 지역 간 연결 정보를 반환합니다"
             );
 
             public static readonly ChatTool GetUserMemory = ChatTool.CreateFunctionTool(
@@ -834,7 +834,7 @@ namespace Agent.Tools
         {
             try
             {
-                using var args = System.Text.Json.JsonDocument.Parse(arguments.ToString());
+                using var args = JsonDocument.Parse(arguments.ToString());
                 if (!args.RootElement.TryGetProperty("targetAreaKey", out var keyEl))
                     return "Error: targetAreaKey parameter is required";
                 var targetKey = keyEl.GetString();
@@ -850,7 +850,7 @@ namespace Agent.Tools
                 if (startArea == null)
                     return "Error: Actor's current area could not be determined";
 
-                var path = pathService.FindPathToLocation(startArea, targetKey) ?? new System.Collections.Generic.List<string>();
+                var path = pathService.FindPathToLocation(startArea, targetKey) ?? new List<string>();
                 if (path.Count == 0)
                     return $"No path found from {startArea.locationName} to {targetKey}";
 

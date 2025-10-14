@@ -39,6 +39,8 @@ public class Area : MonoBehaviour, ILocation
     [SerializeField]
     private MonoBehaviour _curLocation; // Inspector에서는 ILocation을 구현한 MonoBehaviour만 선택
 
+    public bool isBuilding = false;
+
     public ILocation curLocation
     {
         get => _curLocation as ILocation;

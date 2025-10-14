@@ -17,39 +17,10 @@ namespace Agent
     {
         private DayPlanner dayPlanner; // DayPlanner 참조 추가
         private int cycle;
-        public ActSelectorAgent(Actor actor, int cycle) : base(actor)
+        public int Cycle { get => cycle; set => cycle = value; }
+        public ActSelectorAgent(Actor actor) : base(actor)
         {
             SetAgentType(nameof(ActSelectorAgent));
-            this.cycle = cycle;
-
-            // 모든 도구 추가 (액션 정보 + 아이템 관리)
-            // 제한된 도구만 추가: 손/인벤토리 스왑 + 월드 정보 + 관계 메모리 조회
-            // ItemManagement: SwapInventoryToHand (only if hand or inventory has any item)
-            bool hasHandItem = actor?.HandItem != null;
-            bool hasInventoryItem = false;
-            if (actor?.InventoryItems != null)
-            {
-                for (int i = 0; i < actor.InventoryItems.Length; i++)
-                {
-                    if (actor.InventoryItems[i] != null) { hasInventoryItem = true; break; }
-                }
-            }
-            if (hasHandItem || hasInventoryItem)
-            {
-                AddTools(ToolManager.NeutralToolSets.ItemManagement);
-                AddTools(ToolManager.NeutralToolDefinitions.SwapInventoryToHand);
-                //Debug.Log("<color=green>[ActSelectorAgent] Add Tools: ItemManagement, SwapInventoryToHand</color>");
-            }
-            if (Services.Get<IGameService>().IsDayPlannerEnabled())
-            {
-                AddTools(ToolManager.NeutralToolSets.Plan);
-            }
-            AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemories);
-            AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
-            AddTools(ToolManager.NeutralToolDefinitions.LoadRelationshipByName);
-            AddTools(ToolManager.NeutralToolDefinitions.GetWorldAreaInfo);
-            // 요리 레시피 조회 도구 추가
-            AddTools(ToolManager.NeutralToolDefinitions.GetCookableRecipes);
         }
 
         /// <summary>
@@ -97,7 +68,7 @@ namespace Agent
 
             // GPT에 물어보기 전에 responseformat 동적 갱신
             UpdateResponseFormatSchema();
-
+            UpdateTools();
             //string userMessage = $"{actor.Name}이 인식한 상황\n" + situation;
 
             // 서비스 조회
@@ -215,6 +186,35 @@ namespace Agent
             return validated;
         }
 
+        private void UpdateTools()
+        {
+            ClearTools();
+            bool hasHandItem = actor?.HandItem != null;
+            bool hasInventoryItem = false;
+            if (actor?.InventoryItems != null)
+            {
+                for (int i = 0; i < actor.InventoryItems.Length; i++)
+                {
+                    if (actor.InventoryItems[i] != null) { hasInventoryItem = true; break; }
+                }
+            }
+            if (hasHandItem || hasInventoryItem)
+            {
+                AddTools(ToolManager.NeutralToolDefinitions.SwapInventoryToHand);
+                //Debug.Log("<color=green>[ActSelectorAgent] Add Tools: ItemManagement, SwapInventoryToHand</color>");
+            }
+            if (Services.Get<IGameService>().IsDayPlannerEnabled())
+            {
+                AddTools(ToolManager.NeutralToolSets.Plan);
+            }
+            AddTools(ToolManager.NeutralToolDefinitions.GetWorldAreaStructureText);
+            AddTools(ToolManager.NeutralToolDefinitions.FindShortestAreaPathFromActor);
+            AddTools(ToolManager.NeutralToolDefinitions.FindBuildingAreaPath);
+            AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
+            AddTools(ToolManager.NeutralToolDefinitions.LoadRelationshipByName);
+            // 요리 레시피 조회 도구 추가
+            AddTools(ToolManager.NeutralToolDefinitions.GetCookableRecipes);
+        }
         /// <summary>
         /// 최신 주변 상황을 반영해 ResponseFormat을 동적으로 갱신합니다.
         /// </summary>
@@ -348,7 +348,7 @@ namespace Agent
 
                 if (cycle > 0)
                 {
-                    availableActions.Add(ActionType.ObserveEnvironment);
+                    availableActions.Add(ActionType.End);
                 }
 
                 // 상황 기반 필터링
@@ -450,7 +450,7 @@ namespace Agent
                         Debug.LogError($"[ActSelectorAgent] Error getting interactable entities: {ex.Message}");
                     }
 
-                     try
+                    try
                     {
                         var collectible = thinkingActor.sensor?.GetCollectibleEntities();
                         if (collectible == null || collectible.Count == 0)
@@ -458,7 +458,7 @@ namespace Agent
                             availableActions.Remove(ActionType.PickUpItem);
                         }
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Debug.LogError($"[ActSelectorAgent] Error getting interactable entities: {ex.Message}");
                     }

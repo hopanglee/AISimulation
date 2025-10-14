@@ -23,7 +23,7 @@ public class Gemini : LLMClient
     private bool enableOutgoingLogs = false; // Outgoing Request/Raw logs 저장 여부
     private static string sessionDirectoryName = null;
     private string modelName = "gemini-2.5-flash";
-    const int maxToolCallRounds = 3;
+    const int maxToolCallRounds = 5;
     private string jsonSystemMessage = null;
     // API 재시도 설정 (과부하/일시 오류 대비)
     private int maxApiRetries = 3;
@@ -59,6 +59,8 @@ public class Gemini : LLMClient
 
         this.request.Model = modelName;
         this.request.GenerationConfig = generationConfig;
+        // Ensure sufficient output tokens to avoid truncation
+        try { this.generationConfig.MaxOutputTokens = 3072; } catch { }
         // Ensure Tools collection is initialized to avoid null reference during AddTools
         this.request.Tools = new Tools();
         this.SetActor(actor);
@@ -679,6 +681,11 @@ public class Gemini : LLMClient
             request.Tools.AddFunction(schema.name, schema.description);
         }
       //  Debug.Log($"[Gemini] AddTools done");
+    }
+
+    public override void ClearTools()
+    {
+        this.request.Tools = new Tools();
     }
 
     // TODO: 이 함수를 직접 구현해야 합니다.

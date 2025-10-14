@@ -57,13 +57,13 @@ namespace Agent
 	""properties"": {{
 		""target_key"": {{
 			""type"": ""string"",
-            ""enum"": [{string.Join(", ", cookables)}],
+            ""enum"": {JsonConvert.SerializeObject(cookables)},
 			""description"": ""만들 요리 이름 (음식 이름)""
 		}}
 	}},
 	""required"": [""target_key""]
 }}";
-
+            
             var schema = new LLMClientSchema
             {
                 name = "cook_parameter",

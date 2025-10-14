@@ -435,6 +435,7 @@ public abstract class LLMClient
     /// 공급자-중립 툴 스키마를 등록합니다. 구현체(GPT, Gemini 등)에서 각 공급자 형식으로 변환/저장합니다.
     /// </summary>
     public abstract void AddTools(params LLMToolSchema[] tools);
+    public abstract void ClearTools();
     #endregion
 
     #region 설정

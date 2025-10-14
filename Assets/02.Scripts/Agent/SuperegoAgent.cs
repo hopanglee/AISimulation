@@ -97,7 +97,7 @@ public class SuperegoAgent : GPT
                                 },
                                 ""situation_interpretation"": {
                                     ""type"": ""string"",
-                                    ""description"": ""이성적 관점의 상황 인식, 50자 이상 100자 이내로 서술하세요.""
+                                    ""description"": ""이성적 관점의 상황 인식, 150자 이상 300자 이내로 서술하세요.""
                                 },
                                 ""emotions"": {
                                     ""type"": ""array"",
@@ -121,7 +121,12 @@ public class SuperegoAgent : GPT
         SetResponseFormat(schema);
 
         // 월드 정보와 계획 조회, 메모리/관계 도구 추가
-        AddTools(ToolManager.NeutralToolSets.WorldInfo);
+        //AddTools(ToolManager.NeutralToolSets.WorldInfo);
+        AddTools(ToolManager.NeutralToolDefinitions.GetWorldAreaStructureText);
+        AddTools(ToolManager.NeutralToolDefinitions.FindShortestAreaPathFromActor);
+        AddTools(ToolManager.NeutralToolDefinitions.FindBuildingAreaPath);
+        AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
+
         AddTools(ToolManager.NeutralToolDefinitions.LoadRelationshipByName);
     }
 

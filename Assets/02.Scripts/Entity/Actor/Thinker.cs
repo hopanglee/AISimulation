@@ -79,7 +79,7 @@ public class Thinker
 
                 await SimDelay.DelaySimSeconds(1, token);
                 token.ThrowIfCancellationRequested();
-            
+
                 // 2. DayPlanner 실행
                 await brain.DayPlan();
                 token.ThrowIfCancellationRequested();
@@ -99,16 +99,17 @@ public class Thinker
 
                 // 4. Think - 행동 선택
                 // Think → Act를 currentCycleBudget 회 번갈아 실행
+                var actSelectorAgent = new ActSelectorAgent(actor);
                 for (int i = 0; i < currentCycleBudget; i++)
                 {
                     // 외부 이벤트/취소 확인
                     token.ThrowIfCancellationRequested();
-
-                    var (selection, paramResult) = await brain.Think(perceptionResult, i);
+                    actSelectorAgent.Cycle = i;
+                    var (selection, paramResult) = await brain.Think(perceptionResult, actSelectorAgent);
                     token.ThrowIfCancellationRequested();
 
                     // 관찰 액션은 루프를 빠져나가 다음 Perception/사이클로 넘어가도록 처리
-                    if (selection != null && selection.ActType == ActionType.ObserveEnvironment)
+                    if (selection != null && selection.ActType == ActionType.End)
                     {
                         Debug.Log($"[{actor.Name}] ObserveEnvironment 선택됨 - 반복 루프 종료 후 다음 사이클로");
                         currentCycleBudget = BaseCycleCount - 1;
@@ -124,30 +125,6 @@ public class Thinker
                         {
                             breakAfterAct = true;
                         }
-
-                        // // UseObject인 경우 iPhone/Note의 read/continue를 감지
-                        // if (selection.ActType == ActionType.UseObject && paramResult != null && paramResult.Parameters != null)
-                        // {
-                        //     // iPhone: recent_read / continue_read
-                        //     if (paramResult.Parameters.TryGetValue("command", out var cmdObj))
-                        //     {
-                        //         var cmd = cmdObj?.ToString();
-                        //         if (string.Equals(cmd, "recent_read", System.StringComparison.OrdinalIgnoreCase) ||
-                        //             string.Equals(cmd, "continue_read", System.StringComparison.OrdinalIgnoreCase))
-                        //         {
-                        //             breakAfterAct = true;
-                        //         }
-                        //     }
-                        //     // Note: read
-                        //     if (paramResult.Parameters.TryGetValue("action", out var actionObj))
-                        //     {
-                        //         var actionStr = actionObj?.ToString();
-                        //         if (string.Equals(actionStr, "read", System.StringComparison.OrdinalIgnoreCase))
-                        //         {
-                        //             breakAfterAct = true;
-                        //         }
-                        //     }
-                        // }
                     }
 
                     // 4. Act - 선택한 행동 실행
@@ -162,6 +139,8 @@ public class Thinker
                         break;
                     }
 
+                    var userMessage = paramResult.StartMemoryContent ?? "...";
+                    actSelectorAgent.AddUserMessage(userMessage);
                     await SimDelay.DelaySimSeconds(1, token);
                 }
 

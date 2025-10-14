@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 /// 자아 에이전트 - 이성과 본능의 타협을 담당
 /// 두 에이전트의 결과를 적절히 조합하여 최종 결정을 내립니다.
 /// </summary>
-public class EgoAgent : Gemini
+public class EgoAgent : Claude
 {
     public EgoAgent(Actor actor) : base(actor)
     {
@@ -80,7 +80,7 @@ public class EgoAgent : Gemini
                                 },  
                                 ""situation_interpretation"": {
                                     ""type"": ""string"",
-                                    ""description"": ""최종 상황 인식 (타협된 결과), 50자 이상 100자 이내로 서술하세요.""
+                                    ""description"": ""최종 상황 인식 (타협된 결과), 150자 이상 300자 이내로 서술하세요.""
                                 },
                                 
                                 ""emotions"": {
@@ -105,7 +105,10 @@ public class EgoAgent : Gemini
         SetResponseFormat(schema);
 
         // 월드 정보 도구 추가
-        AddTools(ToolManager.NeutralToolSets.WorldInfo);
+        AddTools(ToolManager.NeutralToolDefinitions.GetWorldAreaStructureText);
+        AddTools(ToolManager.NeutralToolDefinitions.FindShortestAreaPathFromActor);
+        AddTools(ToolManager.NeutralToolDefinitions.FindBuildingAreaPath);
+        AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
 
     }
 

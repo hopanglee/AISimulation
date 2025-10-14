@@ -698,6 +698,7 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 		if (!isInKitchen)
 		{
 			Debug.LogWarning($"[{Name}] 부엌이 아니어서 요리할 수 없습니다.");
+			brain?.memoryManager?.AddShortTermMemory($"부엌이 아니어서 요리할 수 없습니다.", "", curLocation?.GetSimpleKey());
 			return false;
 		}
 
@@ -705,6 +706,7 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 		if (cookRecipes == null || !cookRecipes.ContainsKey(dishKey) || cookRecipes[dishKey] == null || cookRecipes[dishKey].prefab == null)
 		{
 			Debug.LogWarning($"[{Name}] {dishKey}는(은) 요리 레시피에 없습니다.");
+			brain?.memoryManager?.AddShortTermMemory($"{dishKey}는(은) 요리 레시피에 없습니다.", "", curLocation?.GetSimpleKey());
 			return false;
 		}
 		var recipe = cookRecipes[dishKey];
@@ -722,6 +724,7 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 			if (!TryGatherAndConsumeIngredients(recipe, out var consumed))
 			{
 				Debug.LogWarning($"[{Name}] 재료가 부족하여 {dishKey}를 조리할 수 없습니다.");
+				brain?.memoryManager?.AddShortTermMemory($"재료가 부족하여 {dishKey}를 조리할 수 없습니다.", "", curLocation?.GetSimpleKey());
 				return false;
 			}
 			int minutes = Mathf.Clamp(recipe.cookSimMinutes, 0, 120);
@@ -759,7 +762,7 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
             picked = pick.Item1;
             if (picked)
             {
-                try { brain?.memoryManager?.AddShortTermMemory($"'{fb?.Name}'을(를) {pick.Item2}", "", curLocation?.GetSimpleKey()); } catch { }
+                try { brain?.memoryManager?.AddShortTermMemory($"{fb?.Name}을(를) 요리해서 {pick.Item2}", "", curLocation?.GetSimpleKey()); } catch { }
             }
 		}
 		else if (foodComponent is FoodItem fi)
@@ -768,7 +771,7 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
             picked = pick.Item1;
             if (picked)
             {
-                try { brain?.memoryManager?.AddShortTermMemory($"'{fi?.Name}'을(를) {pick.Item2}", "", curLocation?.GetSimpleKey()); } catch { }
+                try { brain?.memoryManager?.AddShortTermMemory($"{fi?.Name}을(를) 요리해서 {pick.Item2}", "", curLocation?.GetSimpleKey()); } catch { }
             }
 		}
 		await SimDelay.DelaySimMinutes(1, token);

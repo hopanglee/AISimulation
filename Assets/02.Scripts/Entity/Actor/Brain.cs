@@ -178,7 +178,7 @@ public class Brain
                 catch { }
             }
             thinker.OnExternalEventAsync();
-        
+
         }
         catch (Exception ex)
         {
@@ -280,7 +280,7 @@ public class Brain
     /// Think 프로세스를 실행합니다.
     /// 현재 상황을 분석하고 다음 행동을 결정합니다.
     /// </summary>
-    public async UniTask<(ActSelectorAgent.ActSelectionResult, ActParameterResult)> Think(PerceptionResult perceptionResult, int cycle)
+    public async UniTask<(ActSelectorAgent.ActSelectionResult, ActParameterResult)> Think(PerceptionResult perceptionResult, ActSelectorAgent actSelectorAgent)
     {
         try
         {
@@ -289,7 +289,7 @@ public class Brain
 
             // ActSelectorAgent를 통해 행동 선택 (Tool을 통해 동적으로 액션 정보 제공)
             // AI Agent 초기화
-            var actSelectorAgent = new ActSelectorAgent(actor, cycle);
+            
             actSelectorAgent.SetDayPlanner(dayPlanner); // DayPlanner 설정
             var selection = await actSelectorAgent.SelectActAsync(perceptionResult);
 
@@ -343,14 +343,17 @@ public class Brain
         try
         {
             // Enhanced Memory System: 행동 시작을 Short Term Memory에 직접 기록
-            var startContent = !string.IsNullOrEmpty(paramResult.StartMemoryContent)
-                ? paramResult.StartMemoryContent
-                : $"{paramResult.ActType.ToKorean()}을(를) 시작했다.";
-            memoryManager.AddShortTermMemory(
-                startContent,
-                "",
-                actor?.curLocation?.GetSimpleKey()
-            );
+            if (paramResult.ActType != ActionType.End)
+            {
+                var startContent = !string.IsNullOrEmpty(paramResult.StartMemoryContent)
+                    ? paramResult.StartMemoryContent
+                    : $"{paramResult.ActType.ToKorean()}을(를) 시작했다.";
+                memoryManager.AddShortTermMemory(
+                    startContent,
+                    "",
+                    actor?.curLocation?.GetSimpleKey()
+                );
+            }
 
             // AgentAction으로 변환
             var action = new AgentAction
@@ -424,13 +427,24 @@ public class Brain
             return useResult;
         }
 
-        // 매개변수가 필요 없는 액션들은 바로 반환
-        if (selection.ActType == ActionType.Wait || selection.ActType == ActionType.ObserveEnvironment || selection.ActType == ActionType.RemoveClothing)
+        if (selection.ActType == ActionType.RemoveClothing)
         {
             return new ActParameterResult
             {
                 ActType = selection.ActType,
-                Parameters = new Dictionary<string, object>()
+                Parameters = new Dictionary<string, object>(),
+                StartMemoryContent = BuildStartMemoryContent(selection.ActType, null)
+            };
+        }
+
+        // 매개변수가 필요 없는 액션들은 바로 반환
+        if (selection.ActType == ActionType.Wait || selection.ActType == ActionType.End)
+        {
+            return new ActParameterResult
+            {
+                ActType = selection.ActType,
+                Parameters = new Dictionary<string, object>(),
+                StartMemoryContent = BuildStartMemoryContent(selection.ActType, null)
             };
         }
 
@@ -601,8 +615,8 @@ public class Brain
                 case ActionType.RemoveClothing:
                     return "입은 옷을 벗기로 했다.";
 
-                case ActionType.ObserveEnvironment:
-                    return "주변을 살펴보기로 했다.";
+                case ActionType.End:
+                    return "...";
 
                 case ActionType.Sleep:
                     return "잠자리에 들기로 했다.";

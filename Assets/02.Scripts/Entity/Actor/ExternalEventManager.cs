@@ -275,7 +275,7 @@ public class ExternalEventService : IExternalEventService
     {
         return actionType == ActionType.Wait || 
                actionType == ActionType.Unknown ||
-               actionType == ActionType.ObserveEnvironment ||
+               actionType == ActionType.End ||
                actionType == ActionType.Think;
         // Tool이나 계획짜기 관련 액션들도 여기에 추가 가능
     }

@@ -16,9 +16,11 @@ public interface ILocationService : IService
 
     public List<Prop> GetProps(ILocation key);
 
-    public List<Building> GetBuilding(ILocation key);
+    public List<Building> GetBuildings(ILocation key);
 
     public Area GetArea(ILocation location);
+
+    public Area GetBuilding(ILocation location);
 
     public void Remove(ILocation key, Entity value);
 
@@ -114,7 +116,7 @@ public class LocationService : ILocationService
     public List<Entity> Get(ILocation key, Actor actor = null)
     {
         var _actors = GetActor(key, actor);
-        var _buildings = GetBuilding(key);
+        var _buildings = GetBuildings(key);
         var _props = GetProps(key);
         var _items = GetItem(key);
 
@@ -185,7 +187,7 @@ public class LocationService : ILocationService
         return new();
     }
 
-    public List<Building> GetBuilding(ILocation key)
+    public List<Building> GetBuildings(ILocation key)
     {
         if (buildings.ContainsKey(key) && buildings[key].Count > 0)
         {
@@ -203,6 +205,16 @@ public class LocationService : ILocationService
         }
 
         return GetArea(location.curLocation);
+    }
+
+    public Area GetBuilding(ILocation location)
+    {
+        if (location is Area area && area.isBuilding)
+        {
+            return area;
+        }
+
+        return GetBuilding(location.curLocation);
     }
 
     public void Remove(ILocation key, Entity value)

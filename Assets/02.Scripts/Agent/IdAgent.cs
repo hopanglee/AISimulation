@@ -97,7 +97,7 @@ public class IdAgent : Claude
                                 }},
                                 ""situation_interpretation"": {{
                                     ""type"": ""string"",
-                                    ""description"": ""본능적 관점에서 본 상황 인식, 50자 이상 100자 이내로 서술하세요.""
+                                    ""description"": ""본능적 관점에서 본 상황 인식, 150자 이상 300자 이내로 서술하세요.""
                                 }},
                                 ""emotions"": {{
                                     ""type"": ""array"",
@@ -121,7 +121,10 @@ public class IdAgent : Claude
         SetResponseFormat(schema);
 
         // 월드 정보와 계획 조회, 메모리/관계 도구 추가
-        AddTools(ToolManager.NeutralToolSets.WorldInfo);
+        AddTools(ToolManager.NeutralToolDefinitions.GetWorldAreaStructureText);
+        AddTools(ToolManager.NeutralToolDefinitions.FindShortestAreaPathFromActor);
+        AddTools(ToolManager.NeutralToolDefinitions.FindBuildingAreaPath);
+        AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
         AddTools(ToolManager.NeutralToolDefinitions.LoadRelationshipByName);
     }
 

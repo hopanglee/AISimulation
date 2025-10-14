@@ -103,35 +103,45 @@ public class PathfindingService : IPathfindingService
         }
 
         //Debug.Log($"PathfindingService: Loaded {allAreas.Count} areas");
-       // Debug.Log($"PathfindingService: Available full paths: {string.Join(", ", allAreasByFullPath.Keys)}");
+        // Debug.Log($"PathfindingService: Available full paths: {string.Join(", ", allAreasByFullPath.Keys)}");
     }
 
     public List<string> FindPathToLocation(Area startArea, string targetLocationKey)
     {
-        if (string.IsNullOrEmpty(startArea.locationName) || string.IsNullOrEmpty(targetLocationKey))
+        if (string.IsNullOrEmpty(startArea.LocationToString()) || string.IsNullOrEmpty(targetLocationKey))
             return new List<string>();
 
         // BFS로 최단 경로 찾기
-        var queue = new Queue<string>();
-        var visited = new HashSet<string>();
-        var parent = new Dictionary<string, string>();
+        var queue = new Queue<Area>();
+        var visited = new HashSet<Area>();
+        var parent = new Dictionary<Area, Area>();
 
-        var startLocationName = startArea.locationName;
-        queue.Enqueue(startLocationName);
-        visited.Add(startLocationName);
+        queue.Enqueue(startArea);
+        visited.Add(startArea);
+
+        var locationManager = Services.Get<ILocationService>();
 
         while (queue.Count > 0)
         {
             var current = queue.Dequeue();
 
-            // targetLocationKey가 전체 경로인지 locationName인지 확인
+            // targetLocationKey가 전체 경로인지, 부분경로인지, 또는 지역 이름인지 확인
             bool isTargetFound = false;
-            if (current == targetLocationKey)
+            var currentFullPath = current.LocationToString();
+            if (!string.IsNullOrEmpty(currentFullPath) && currentFullPath == targetLocationKey)
             {
                 isTargetFound = true;
             }
-            else if (allAreasByFullPath.ContainsKey(targetLocationKey) && 
-                     allAreasByFullPath[targetLocationKey].locationName == current)
+            // current의 전체 경로가 targetLocationKey를 포함(부분 일치)하면 매칭으로 처리
+            else if (!string.IsNullOrEmpty(currentFullPath) && currentFullPath.IndexOf(targetLocationKey, System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                isTargetFound = true;
+            }
+            else if (current.locationName == targetLocationKey)
+            {
+                isTargetFound = true;
+            }
+            else if(locationManager.GetBuilding(current).locationName == targetLocationKey)
             {
                 isTargetFound = true;
             }
@@ -139,21 +149,19 @@ public class PathfindingService : IPathfindingService
             if (isTargetFound)
             {
                 // 경로 재구성
-                return ReconstructPath(parent, startLocationName, current);
+                return ReconstructPath(parent, startArea, current);
             }
 
-            if (allAreas.TryGetValue(current, out var currentAreaInfo))
+            foreach (var connected in current.connectedAreas)
             {
-                foreach (var connected in currentAreaInfo.connectedAreas)
+                if (!visited.Contains(connected))
                 {
-                    if (!visited.Contains(connected))
-                    {
-                        visited.Add(connected);
-                        parent[connected] = current;
-                        queue.Enqueue(connected);
-                    }
+                    visited.Add(connected);
+                    parent[connected] = current;
+                    queue.Enqueue(connected);
                 }
             }
+
         }
 
         Debug.LogWarning($"No path found from {startArea.locationName} to {targetLocationKey}");
@@ -190,12 +198,12 @@ public class PathfindingService : IPathfindingService
     }
 
     private List<string> ReconstructPath(
-        Dictionary<string, string> parent,
-        string start,
-        string end
+        Dictionary<Area, Area> parent,
+        Area start,
+        Area end
     )
     {
-        var path = new List<string>();
+        var path = new List<Area>();
         var current = end;
 
         while (current != start)
@@ -207,7 +215,7 @@ public class PathfindingService : IPathfindingService
 
         path.Add(start);
         path.Reverse();
-        return path;
+        return path.Select(area => area.locationName).ToList();
     }
 
     public string FindNearestArea(Vector3 position)

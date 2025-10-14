@@ -20,7 +20,7 @@ public class GPT : LLMClient
     // 명시적 에이전트 타입 지정(승인/로그 표시에 사용). 설정되지 않으면 스택 트레이스로 추정
     //private string agentTypeOverride = "UNKNOWN";
     // 도구 호출 라운드 최대 횟수 (기본 2)
-    private int maxToolCallRounds = 3;
+    private int maxToolCallRounds = 5;
     // API 재시도 설정 (과부하/일시 오류 대비)
     private int maxApiRetries = 3;
     private int apiRetryBaseDelayMs = 3000;
@@ -50,6 +50,8 @@ public class GPT : LLMClient
             Debug.LogWarning($"No API key in file path : {authPath}");
 
         client = new(model: modelName, apiKey: apiKey);
+        // Ensure sufficient output tokens to avoid truncation
+        try { this.options.MaxOutputTokenCount = 3072; } catch { }
         this.toolExecutor = new ToolExecutor(actor);
         this.SetActor(actor);
     }
@@ -695,6 +697,11 @@ public class GPT : LLMClient
                 try { options.Tools.Add(tool); } catch { }
             }
         }
+    }
+
+    public override void ClearTools()
+    {
+        options.Tools.Clear();
     }
 
     protected void ExecuteToolCall(ChatToolCall toolCall)
