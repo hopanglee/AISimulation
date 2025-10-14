@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: NoteUseAgent
+Real Time: 2025-10-14 10:18:30
+{"action":"read","page_number":49,"line_number":null,"text":null}
+

@@ -1451,18 +1451,18 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
         if (relationships != null && relationships.Count > 0)
         {
-            infoText += $"기억에 있는 인물: {string.Join(", ", relationships)}.";
+            infoText += $"기억에 있는 인물: {string.Join(", ", relationships)}. ";
         }
 
         // 추가설정 정보 추가
         if (!string.IsNullOrEmpty(additionalInfo))
         {
-            infoText += $"중요한 정보: {additionalInfo} ";
+            infoText += $"중요한 정보: {additionalInfo}. ";
         }
 
         if (!string.IsNullOrEmpty(dailySchedule))
         {
-            infoText += $"하루 스케줄은 다음과 같다: {dailySchedule}";
+            infoText += $"하루 스케줄은 다음과 같다: {dailySchedule}. ";
         }
 
         if (characterInfo.Emotions != null && characterInfo.Emotions.Count > 0)
@@ -1898,7 +1898,12 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         {
             foreach (var relationshipName in relationships)
             {
-                if (relationshipName != targetName) continue;
+                // targetName이 relationshipName과 같거나 포함되어 있으면 매칭 (대소문자 무시)
+                bool isMatch =
+                    string.Equals(relationshipName, targetName, System.StringComparison.OrdinalIgnoreCase) ||
+                    (!string.IsNullOrEmpty(targetName) &&
+                     targetName.IndexOf(relationshipName, System.StringComparison.OrdinalIgnoreCase) >= 0);
+                if (!isMatch) continue;
                 var relationshipMemory = relationshipMemoryManager.GetRelationship(relationshipName);
                 if (relationshipMemory != null)
                 {

@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: GoalUpdateAgent
+Real Time: 2025-10-14 10:22:46
+{"should_change":false,"reasoning":"기억들에는 어제 기억이 흐릿하다고 느끼고 일기로 단서를 확인하는 등의 행동이 반복되지만, 본인이 ‘선행성 기억상실증’이라는 진단을 인지·이해했다는 명시적 진술이나 확실한 진단 수용 기록이 없어 조건을 충족한다고 보기 어렵습니다. 따라서 목표를 변경해야 한다고 단정할 근거가 부족합니다."}
+

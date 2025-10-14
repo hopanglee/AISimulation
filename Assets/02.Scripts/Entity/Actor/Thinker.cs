@@ -27,7 +27,7 @@ public class Thinker
 
     // Dynamic cycle budget: starts at 5, increases by 5 (max 20) after each uninterrupted batch
     private const int BaseCycleCount = 2;
-    private const int MaxCycleCount = 2;
+    private const int MaxCycleCount = 4;
 
     private const int relationshipUpdateCycleCount = 3;
     private int currentCycleBudget = BaseCycleCount;
@@ -115,9 +115,52 @@ public class Thinker
                         break;
                     }
 
+                    // Note/iPhone 읽기/이어읽기 및 Think 액션은 실행 후 다음 Perception으로 넘어가도록 플래그 설정
+                    bool breakAfterAct = false;
+                    if (selection != null)
+                    {
+                        // Think 액션은 한 번 실행 후 루프 종료
+                        if (selection.ActType == ActionType.Think)
+                        {
+                            breakAfterAct = true;
+                        }
+
+                        // UseObject인 경우 iPhone/Note의 read/continue를 감지
+                        if (selection.ActType == ActionType.UseObject && paramResult != null && paramResult.Parameters != null)
+                        {
+                            // iPhone: recent_read / continue_read
+                            if (paramResult.Parameters.TryGetValue("command", out var cmdObj))
+                            {
+                                var cmd = cmdObj?.ToString();
+                                if (string.Equals(cmd, "recent_read", System.StringComparison.OrdinalIgnoreCase) ||
+                                    string.Equals(cmd, "continue_read", System.StringComparison.OrdinalIgnoreCase))
+                                {
+                                    breakAfterAct = true;
+                                }
+                            }
+                            // Note: read
+                            if (paramResult.Parameters.TryGetValue("action", out var actionObj))
+                            {
+                                var actionStr = actionObj?.ToString();
+                                if (string.Equals(actionStr, "read", System.StringComparison.OrdinalIgnoreCase))
+                                {
+                                    breakAfterAct = true;
+                                }
+                            }
+                        }
+                    }
+
                     // 4. Act - 선택한 행동 실행
                     await brain.Act(paramResult, token);
                     token.ThrowIfCancellationRequested();
+
+                    // Act 이후 처리: 특정 액션이면 루프 종료하여 다음 Perception으로
+                    if (breakAfterAct)
+                    {
+                        Debug.Log($"[{actor.Name}] 읽기/이어읽기/생각 액션 후 루프 종료 - 다음 Perception으로");
+                        currentCycleBudget = BaseCycleCount - 1;
+                        break;
+                    }
 
                     await SimDelay.DelaySimSeconds(1, token);
                 }
@@ -126,7 +169,7 @@ public class Thinker
                 // 취소 없이 배치를 마쳤다면 다음 배치 예산을 +1 (최대 20)
                 if (currentCycleBudget < MaxCycleCount)
                 {
-                    currentCycleBudget = Math.Min(MaxCycleCount, currentCycleBudget + 1);
+                    currentCycleBudget = Math.Clamp(currentCycleBudget + 1, BaseCycleCount, MaxCycleCount);
                 }
                 // 5. Act가 끝나면 다시 Think (루프로 계속)
                 // 외부 이벤트가 발생하면 OnExternalEvent()에서 이 루프를 취소하고 새로 시작
