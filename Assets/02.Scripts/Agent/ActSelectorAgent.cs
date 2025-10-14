@@ -38,6 +38,7 @@ namespace Agent
             {
                 AddTools(ToolManager.NeutralToolSets.ItemManagement);
                 AddTools(ToolManager.NeutralToolDefinitions.SwapInventoryToHand);
+                Debug.Log("<color=green>[ActSelectorAgent] Add Tools: ItemManagement, SwapInventoryToHand</color>");
             }
             if (Services.Get<IGameService>().IsDayPlannerEnabled())
             {
