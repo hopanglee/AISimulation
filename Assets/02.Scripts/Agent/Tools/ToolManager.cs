@@ -511,6 +511,7 @@ namespace Agent.Tools
 
         public string ExecuteTool(string toolName, System.BinaryData arguments)
         {
+            Debug.Log($"<color=green>[ToolExecutor] {actor.Name} ExecuteTool: {toolName}, {arguments}</color>");
             switch (toolName)
             {
                 case nameof(SwapInventoryToHand):
