@@ -131,6 +131,44 @@ public abstract class LLMClient
 
                 if (!string.IsNullOrEmpty(matchPath))
                 {
+                    // 느슨한 매칭 모드일 때, 발견된 파일의 파일명 해시를 현재 msgHash로 동기화
+                    if (useLoose)
+                    {
+                        try
+                        {
+                            var dir = Path.GetDirectoryName(matchPath);
+                            var fileName = Path.GetFileName(matchPath);
+                            if (!string.IsNullOrEmpty(fileName))
+                            {
+                                int lastUnderscore = fileName.LastIndexOf('_');
+                                int dot = fileName.LastIndexOf('.')
+;                                if (lastUnderscore > 0 && dot > lastUnderscore)
+                                {
+                                    var currentSuffixHash = fileName.Substring(lastUnderscore + 1, dot - (lastUnderscore + 1));
+                                    if (!string.Equals(currentSuffixHash, msgHash, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        var baseWithoutHash = fileName.Substring(0, lastUnderscore);
+                                        var newFileName = baseWithoutHash + "_" + msgHash + ".json";
+                                        var newPath = Path.Combine(dir ?? string.Empty, newFileName);
+                                        if (!string.Equals(newPath, matchPath, StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            if (!File.Exists(newPath))
+                                            {
+                                                File.Move(matchPath, newPath);
+                                                matchPath = newPath;
+                                            }
+                                            else
+                                            {
+                                                // 대상 파일이 이미 존재하면, 기존 파일을 유지(이중 파일 방지)
+                                                matchPath = newPath; // 새 경로를 우선 사용
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        catch { }
+                    }
                     var cachedJson = File.ReadAllText(matchPath);
                     T cached;
                     try
