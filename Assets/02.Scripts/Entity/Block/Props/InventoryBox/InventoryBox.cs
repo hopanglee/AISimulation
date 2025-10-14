@@ -20,6 +20,12 @@ public abstract class InventoryBox : InteractableProp
     protected override void OnEnable()
     {
         base.OnEnable();
+
+        foreach (var item in items)
+        {
+            item.RegisterToLocationService();
+        }
+
         // useSimplePlacement이 아니면 placement 위치 수를 maxItems로 자동 설정
         if (!useSimplePlacement && itemPlacementPositions != null)
         {

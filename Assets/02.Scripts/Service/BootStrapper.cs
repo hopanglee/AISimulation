@@ -52,5 +52,22 @@ public class BootStrapper : MonoBehaviour
         //Debug.Log("[BootStrapper] LocalizationService가 성공적으로 초기화되었습니다");
 
        // Debug.Log("[BootStrapper] 모든 서비스가 성공적으로 초기화되었습니다");
+
+        // // 모든 Entity(비활성 포함) LocationService 등록
+        // try
+        // {
+        //     var locationSvc = Services.Get<ILocationService>();
+        //     if (locationSvc != null)
+        //     {
+        //         var entities = Object.FindObjectsByType<Entity>(FindObjectsSortMode.None);
+        //         for (int i = 0; i < entities.Length; i++)
+        //         {
+        //             var e = entities[i];
+        //             if (e == null) continue;
+        //             e.RegisterToLocationService();
+        //         }
+        //     }
+        // }
+        // catch { }
     }
 }
