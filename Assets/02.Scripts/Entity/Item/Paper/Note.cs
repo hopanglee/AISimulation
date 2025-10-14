@@ -82,7 +82,7 @@ public class Note : Item, IUsable
 
             // 2페이지 이후: 2025-06-05 ~ 2025-07-22까지 모든 날짜 기록
             var start = new System.DateTime(2025, 6, 5, 0, 0, 0, System.DateTimeKind.Utc);
-            var end = new System.DateTime(2025, 7, 22, 0, 0, 0, System.DateTimeKind.Utc);
+            var end = new System.DateTime(2025, 7, 23, 0, 0, 0, System.DateTimeKind.Utc);
             int page = 2;
             for (var day = start; day <= end; day = day.AddDays(1))
             {
@@ -272,7 +272,7 @@ public class Note : Item, IUsable
                         lines.Add("- **내일은 또 처음처럼 시작.** 놀라지 말고 **신중하게** 대하자.");
                         break;
                     case "2025-07-23":
-                        lines.Add("- **카미야**와 **히노** 집 거실에서 데이트했다. **따뜻한 시간**이었다. 오늘은 여기까지.");
+                        lines.Add("- **카미야**와 우리 집 거실에서 데이트했다. **따뜻한 시간**이었다. 오늘은 여기까지.");
                         lines.Add("- **내일은 16:00에 모카하우스에서 보기로했다. 내일의 나! 약속에 늦지마!");
                         break;
                 }
