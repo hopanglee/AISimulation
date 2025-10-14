@@ -1898,11 +1898,15 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         {
             foreach (var relationshipName in relationships)
             {
-                // targetName이 relationshipName과 같거나 포함되어 있으면 매칭 (대소문자 무시)
-                bool isMatch =
-                    string.Equals(relationshipName, targetName, System.StringComparison.OrdinalIgnoreCase) ||
-                    (!string.IsNullOrEmpty(targetName) &&
-                     targetName.IndexOf(relationshipName, System.StringComparison.OrdinalIgnoreCase) >= 0);
+                // targetName과 relationshipName이 같거나, 어느 한쪽이 다른 한쪽을 포함하면 매칭 (대소문자 무시)
+                bool isMatch = false;
+                if (!string.IsNullOrEmpty(relationshipName) && !string.IsNullOrEmpty(targetName))
+                {
+                    isMatch =
+                        string.Equals(relationshipName, targetName, System.StringComparison.OrdinalIgnoreCase) ||
+                        targetName.IndexOf(relationshipName, System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        relationshipName.IndexOf(targetName, System.StringComparison.OrdinalIgnoreCase) >= 0;
+                }
                 if (!isMatch) continue;
                 var relationshipMemory = relationshipMemoryManager.GetRelationship(relationshipName);
                 if (relationshipMemory != null)
