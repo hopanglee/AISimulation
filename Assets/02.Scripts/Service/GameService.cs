@@ -36,6 +36,10 @@ public interface IGameService : IService
     bool IsGPTApprovalEnabled();
 
     bool IsDayPlannerEnabled();
+
+    // Cache Matching Controls
+    bool ShouldUseLooseCacheMatchFor(Actor actor);
+    bool ShouldUseLooseCacheMatchForId(ActorId actorId);
 }
 
 public class GameService : MonoBehaviour, IGameService
@@ -54,6 +58,22 @@ public class GameService : MonoBehaviour, IGameService
     private bool enableGPTLogging = true; // GPT 대화 로그 저장 활성화 여부
 
     [SerializeField] private bool useDayPlanner = false;
+
+    [Header("Cache Settings")]
+    [SerializeField]
+    [Tooltip("기본적으로 캐시 조회 시 msgHash를 무시하고 느슨한 패턴으로 조회할지 여부.")]
+    private bool useLooseCacheMatchByDefault = false;
+
+    [System.Serializable]
+    public class ActorCacheMatchSetting
+    {
+        public ActorId actor;
+        public bool useLooseMatch = false;
+    }
+
+    [SerializeField]
+    [Tooltip("Actor별 캐시 조회 모드를 설정합니다.")]
+    private List<ActorCacheMatchSetting> cacheMatchSettings = new List<ActorCacheMatchSetting>();
 
     [Header("Time Settings")]
     [SerializeField, Range(1f, 300f)]
@@ -88,6 +108,38 @@ public class GameService : MonoBehaviour, IGameService
     public bool IsDayPlannerEnabled()
     {
         return useDayPlanner;
+    }
+
+    public bool ShouldUseLooseCacheMatchFor(Actor actor)
+    {
+        if (actor == null) return useLooseCacheMatchByDefault;
+        // Actor.GetEnglishName()을 ActorId로 파싱하여 매칭
+        try
+        {
+            var english = actor.GetEnglishName();
+            if (!string.IsNullOrEmpty(english) && System.Enum.TryParse<ActorId>(english, out var id))
+            {
+                return ShouldUseLooseCacheMatchForId(id);
+            }
+        }
+        catch { }
+        return useLooseCacheMatchByDefault;
+    }
+
+    public bool ShouldUseLooseCacheMatchForId(ActorId actorId)
+    {
+        if (cacheMatchSettings != null)
+        {
+            for (int i = 0; i < cacheMatchSettings.Count; i++)
+            {
+                var s = cacheMatchSettings[i];
+                if (s != null && s.actor == actorId)
+                {
+                    return s.useLooseMatch;
+                }
+            }
+        }
+        return useLooseCacheMatchByDefault;
     }
 
     public UniTask StartSimulation()

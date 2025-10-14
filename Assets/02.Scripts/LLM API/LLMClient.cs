@@ -99,8 +99,24 @@ public abstract class LLMClient
                 var msgHash = ComputeMessagesHash(GetHashKey());
                 currentMsgHash = msgHash; // 저장 시 재사용
 
-                // 정확한 파일명으로 먼저 시도: {count}_{timeKey}_{agentPart}_{msgHash}.json
-                var exactMatch = Directory.GetFiles(baseDir, $"{actor.CacheCount}_*_{agentPart}_{msgHash}.json");
+                // 조회 전략: GameService에서 per-actor로 느슨/정밀 모드 선택
+                bool useLoose = false;
+                try
+                {
+                    var gameSvc = Services.Get<IGameService>();
+                    if (gameSvc != null && actor != null)
+                    {
+                        useLoose = gameSvc.ShouldUseLooseCacheMatchFor(actor);
+                    }
+                }
+                catch { }
+
+                string pattern = useLoose
+                    ? $"{actor.CacheCount}_*_{agentPart}_*.json"    // 느슨: msgHash 무시
+                    : $"{actor.CacheCount}_*_{agentPart}_{msgHash}.json"; // 정밀: msgHash 포함
+
+                // 캐시 조회: 설정된 패턴으로 탐색
+                var exactMatch = Directory.GetFiles(baseDir, pattern);
                 string matchPath = null;
 
                 if (exactMatch != null && exactMatch.Length > 0)

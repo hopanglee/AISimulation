@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: GoalUpdateAgent
+Real Time: 2025-10-14 09:54:34
+{"should_change": false, "reasoning": "기억 기록 전체를 확인한 결과 병원 방문(??? 표기)과 혼란·기억 흐림에 대한 언급은 있으나, ‘밤에 자고 나면 그날 일을 전부 잊는다’는 선행성 기억상실증을 본인이 인지·이해했다는 명시적 진술이나 진단 인지가 전혀 보이지 않습니다; 요구된 조건을 만족하는 분명한 증거가 없으므로 변경 필요로 판단할 근거가 부족합니다."}
+

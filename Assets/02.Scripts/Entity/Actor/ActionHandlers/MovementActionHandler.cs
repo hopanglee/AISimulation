@@ -288,6 +288,7 @@ namespace Agent.ActionHandlers
             // MoveController의 최종 성공 여부로 반환
             if (actor.MoveController != null && actor.MoveController.LastMoveSucceeded)
             {
+                TryAddMoveSuccessShortTermMemory(targetLocation);
                 return true;
             }
             else
@@ -316,6 +317,7 @@ namespace Agent.ActionHandlers
 
             if (actor.MoveController != null && actor.MoveController.LastMoveSucceeded)
             {
+                TryAddMoveSuccessShortTermMemory(targetName);
                 return true;
             }
             else
@@ -406,6 +408,26 @@ namespace Agent.ActionHandlers
             catch (System.Exception ex)
             {
                 Debug.LogWarning($"[MovementActionHandler] STM 추가 실패: {ex.Message}");
+            }
+        }
+
+        private void TryAddMoveSuccessShortTermMemory(string targetName)
+        {
+            try
+            {
+                var mainActor = actor as MainActor;
+                var memoryManager = mainActor?.brain?.memoryManager;
+                string locationKey = actor?.curLocation?.GetSimpleKey();
+                if (memoryManager != null)
+                {
+                    string content = $"{targetName}에 도착했다";
+                    string details = "이동 성공";
+                    memoryManager.AddShortTermMemory(content, details, locationKey);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogWarning($"[MovementActionHandler] STM 추가 실패(성공): {ex.Message}");
             }
         }
     }

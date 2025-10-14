@@ -309,9 +309,14 @@ public class Brain
             // Enhanced Memory System: ActSelector 결과를 Short Term Memory에 직접 추가
             if (selection != null)
             {
+                // memoryManager.AddShortTermMemory(
+                //     $"{selection.ActType.ToKorean()}을(를) 하기로 결정했다.",
+                //     $"의도: {selection.Intention}"
+                // , actor?.curLocation?.GetSimpleKey());
+
                 memoryManager.AddShortTermMemory(
-                    $"{selection.ActType.ToKorean()}을(를) 하기로 결정했다.",
-                    $"의도: {selection.Intention}"
+                    $"{selection.Intention}",
+                    $"{selection.Reasoning}"
                 , actor?.curLocation?.GetSimpleKey());
             }
 

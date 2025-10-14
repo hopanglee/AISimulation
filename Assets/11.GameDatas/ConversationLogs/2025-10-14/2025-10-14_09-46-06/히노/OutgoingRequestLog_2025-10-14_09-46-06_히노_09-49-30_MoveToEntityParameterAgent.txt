@@ -1,0 +1,6 @@
+﻿=== Raw Model Response (pre-parse) ===
+Actor: 히노
+Agent Type: MoveToEntityParameterAgent
+Real Time: 2025-10-14 09:49:30
+{"entity_name":"협탁:히노의 일기"}
+
