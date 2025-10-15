@@ -1,6 +1,0 @@
-{character_name}이 요리하기로 결정했습니다.
-
-추론: {reasoning}
-의도: {intention}
-
-위 내용이 잘 이루어지도록 선택하세요.
