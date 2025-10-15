@@ -103,7 +103,7 @@ namespace Pathfinding.Util {
 			return b1 << 56 | b2 << 48 | b3 << 40 | b4 << 32 | b5 << 24 | b6 << 16 | b7 << 8 | b8 << 0;
 		}
 
-		private static System.Random random = new System.Random();
+        private static System.Random random = new System.Random(20001114);
 
 		public static Guid NewGuid () {
 			var bytes = new byte[16];

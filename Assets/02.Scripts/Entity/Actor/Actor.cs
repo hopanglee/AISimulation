@@ -1155,17 +1155,29 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         var localizationService = Services.Get<ILocalizationService>();
 
         // 기본 정보 준비
-        var handItem = HandItem == null
-            ? "없음"
-            : (String.IsNullOrEmpty(HandItem.GetWhenOnHand())
-                ? $"{HandItem.Name}"
-                : $"{HandItem.Name} => {HandItem.GetWhenOnHand()}");
+        string handItem;
+        try
+        {
+            if (HandItem == null || HandItem.gameObject == null)
+            {
+                handItem = "없음";
+            }
+            else
+            {
+                var whenOnHand = string.Empty;
+                try { whenOnHand = HandItem.GetWhenOnHand(); } catch { whenOnHand = string.Empty; }
+                handItem = string.IsNullOrEmpty(whenOnHand) ? $"{HandItem.Name}" : $"{HandItem.Name} => {whenOnHand}";
+            }
+        }
+        catch { handItem = "없음"; }
         var inventoryItems = new List<string>();
         for (int i = 0; i < InventoryItems.Length; i++)
         {
-            if (InventoryItems[i] != null)
+            if (InventoryItems[i] != null && InventoryItems[i].gameObject != null)
             {
-                inventoryItems.Add(String.IsNullOrEmpty(InventoryItems[i].Get()) ? $"Slot {i + 1}: {InventoryItems[i].Name}" : $"Slot {i + 1}: {InventoryItems[i].Name} => {InventoryItems[i].Get()}");
+                string desc = string.Empty;
+                try { desc = InventoryItems[i].Get(); } catch { desc = string.Empty; }
+                inventoryItems.Add(string.IsNullOrEmpty(desc) ? $"Slot {i + 1}: {InventoryItems[i].Name}" : $"Slot {i + 1}: {InventoryItems[i].Name} => {desc}");
             }
             else
             {
@@ -1182,8 +1194,20 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         var lookableEntities = new List<string>();
         foreach (var entity in lookable)
         {
-            var text = String.IsNullOrEmpty(entity.Value.Get()) ? "" : "=> " + entity.Value.Get();
-            lookableEntities.Add($"- {entity.Key} {text}");
+            try
+            {
+                if (entity.Value == null || (entity.Value as MonoBehaviour)?.gameObject == null)
+                    continue;
+                string text = string.Empty;
+                try
+                {
+                    var got = entity.Value.Get();
+                    text = string.IsNullOrEmpty(got) ? string.Empty : "=> " + got;
+                }
+                catch { text = string.Empty; }
+                lookableEntities.Add($"- {entity.Key} {text}");
+            }
+            catch { /* skip destroyed */ }
         }
 
         var collectibleEntities = new List<string>();

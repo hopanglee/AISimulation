@@ -95,6 +95,9 @@ public class Sensor
     {
         foreach (Entity entity in entities)
         {
+            // 파괴되었거나 null인 엔티티는 무시
+            if (entity == null)
+                continue;
             string baseKey = GetEntityBaseKey(entity);
 
             // if(IsItemInActorPossession(entity as Item))

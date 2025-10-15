@@ -5,8 +5,15 @@ using UnityEngine.SceneManagement;
 //[DefaultExecutionOrder(-9999)]
 public class BootStrapper : MonoBehaviour
 {
+    [SerializeField]
+    private int randomSeed = 20001114; // 전역 랜덤 시드 (LLMClient 제외 전역 일관성용)
+
     void Awake()
     {
+        // 전역 RNG 시드 고정 (UnityEngine.Random 기반 호출 모두 결정적 동작)
+        UnityEngine.Random.InitState(randomSeed);
+        // System.Random 전역 결정성은 DeterministicRandom의 기본 시드(12345)로 초기화되어 있음
+
         // GameService를 MonoBehaviour로 생성
         var gameServiceGO = new GameObject("GameService");
         var gameService = gameServiceGO.AddComponent<GameService>();

@@ -387,4 +387,25 @@ public abstract class Entity : MonoBehaviour, ILocation
         if (curLocation != null)
             curLocation.ApplyStatus(actor);
     }
+
+    protected virtual void OnDestroy()
+    {
+        try
+        {
+            var locationService = Services.Get<ILocationService>();
+            // If we still have a curLocation reference, remove this entity from that location
+            if (locationService != null)
+            {
+                if (_curLocation != null)
+                {
+                    if(_curLocation is InventoryBox inventoryBox)
+                    {
+                        inventoryBox.RemoveItem(this);
+                    }
+                    locationService.Remove(_curLocation as ILocation, this);
+                }
+            }
+        }
+        catch { }
+    }
 }

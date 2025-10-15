@@ -1,5 +1,5 @@
 {
-  "name": "요리",
+  "name": "Cook",
   "description": "부엌에서 요리 레시피에 따라 음식을 조리합니다.",
   "parameters": [
     {

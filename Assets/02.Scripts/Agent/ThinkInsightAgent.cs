@@ -37,7 +37,7 @@ namespace Agent
                 if (string.IsNullOrEmpty(response))
                 {
                     Debug.LogError($"[ThinkInsightAgent] 통찰 생성 실패: 응답이 null임");
-                    return GetFallbackInsight();
+                    return "";
                 }
 
                 return response;
@@ -45,7 +45,7 @@ namespace Agent
             catch (Exception ex)
             {
                 Debug.LogError($"[ThinkInsightAgent] 통찰 추출 실패: {ex.Message}");
-                return GetFallbackInsight();
+                return "";
             }
         }
 
@@ -106,26 +106,6 @@ namespace Agent
         private string GetDefaultUserMessage(string recentThoughts)
         {
             return $"최근 생각들: {recentThoughts}\n\n이 생각들에서 얻을 수 있는 통찰이나 깨달음을 한 문장으로 요약해주세요.";
-        }
-
-        /// <summary>
-        /// 실패시 사용할 기본 통찰을 반환합니다
-        /// </summary>
-        private string GetFallbackInsight()
-        {
-            var fallbacks = new[]
-            {
-                "생각이 깊어지고 있다.",
-                "새로운 관점을 발견했다.",
-                "감정과 이성이 조화를 이루고 있다.",
-                "과거와 현재가 연결되고 있다.",
-                "내면의 목소리에 귀 기울이고 있다."
-            };
-
-            var random = new System.Random();
-            var insight = fallbacks[random.Next(fallbacks.Length)];
-            
-            return insight;
         }
     }
 }

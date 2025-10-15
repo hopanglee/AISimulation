@@ -1,6 +1,6 @@
 {
   "name": "End",
-  "description": "상황을 다시 인식해야할 때 사용합니다.",
+  "description": "상황 인식에서 이번에 하고자하는 행동이 완료되었을 때 사용합니다.",
   "parameters": [],
   "requirements": [],
   "whenToUse": [

@@ -82,7 +82,8 @@ namespace Pathfinding {
 		int nodesEvaluatedRep;
 
 		/// <summary>Random number generator</summary>
-		readonly System.Random rnd = new System.Random();
+        // Deterministic RNG for random path selection
+        readonly System.Random rnd = new System.Random(20001114);
 
 		protected override bool hasEndPoint => false;
 

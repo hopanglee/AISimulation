@@ -290,6 +290,7 @@ public class CafeWorker : NPC, IHasExtraSenseAreas, IPaymentable
         // 4) 원두 보충
         coffeeMachine.RefillBeans();
         // Coffee Bag을 즉시 삭제 (PickUp 후)
+        bagEntity.curLocation = null;
         Destroy(bagEntity.gameObject);
         Debug.Log("원두를 보충했습니다.");
         await SimDelay.DelaySimMinutes(2);

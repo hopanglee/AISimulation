@@ -24,7 +24,7 @@ public class SuperegoAgent : GPT
         SetAgentType(nameof(SuperegoAgent));
 
         InitializeOptions();
-            // 요리 레시피 조회 도구 추가
+        // 요리 레시피 조회 도구 추가
         AddTools(ToolManager.NeutralToolDefinitions.GetCookableRecipes);
     }
 
@@ -79,6 +79,169 @@ public class SuperegoAgent : GPT
         {
             Debug.LogError($"[SuperegoAgent {actor.Name}] 프롬프트 로드 실패: {ex.Message}");
             throw new System.IO.FileNotFoundException($"프롬프트 파일 로드 실패: {ex.Message}");
+        }
+    }
+
+    private HashSet<ActionType> GetCurrentAvailableActions()
+    {
+        try
+        {
+            var availableActions = new HashSet<ActionType>();
+
+            // 기본 후보군
+            availableActions.Add(ActionType.MoveToArea);
+            availableActions.Add(ActionType.MoveToEntity);
+            availableActions.Add(ActionType.Talk);
+            availableActions.Add(ActionType.UseObject);
+            availableActions.Add(ActionType.PickUpItem);
+            availableActions.Add(ActionType.InteractWithObject);
+            availableActions.Add(ActionType.PutDown);
+            availableActions.Add(ActionType.GiveMoney);
+            availableActions.Add(ActionType.GiveItem);
+            availableActions.Add(ActionType.RemoveClothing);
+            availableActions.Add(ActionType.PerformActivity);
+            availableActions.Add(ActionType.Wait);
+            availableActions.Add(ActionType.Think);
+
+            // 상황 기반 필터링
+            if (actor is MainActor thinkingActor)
+            {
+                // 수면 중이면 대기만 허용
+                if (thinkingActor.IsSleeping)
+                {
+                    availableActions.Clear();
+                    availableActions.Add(ActionType.Wait);
+                    return availableActions;
+                }
+
+                // Sleep 액션 추가 조건: Actor가 Bed 위에 있고, 잠자는 중이 아니어야 함
+                try
+                {
+                    bool onBed = thinkingActor.curLocation is Bed;
+                    if (onBed && !thinkingActor.IsSleeping)
+                    {
+                        availableActions.Add(ActionType.Sleep);
+                    }
+                    else
+                    {
+                        //availableActions.Remove(ActionType.Sleep);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"[ActSelectorAgent] Error getting movable areas: {ex.Message}");
+                }
+
+                // 부엌에 있을 때만 Cook 액션 추가
+                try
+                {
+                    var locationPath = thinkingActor.curLocation != null ? thinkingActor.curLocation.LocationToString() : "";
+                    bool isInKitchen = !string.IsNullOrEmpty(locationPath) && (locationPath.Contains("Kitchen") || locationPath.Contains("부엌"));
+                    if (isInKitchen)
+                    {
+                        availableActions.Add(ActionType.Cook);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"[ActSelectorAgent] Error getting movable areas: {ex.Message}");
+                }
+
+                // 이동 가능 위치/엔티티 확인
+                try
+                {
+                    var movableAreas = thinkingActor.sensor?.GetMovableAreas();
+                    if (movableAreas == null || movableAreas.Count == 0)
+                    {
+                        availableActions.Remove(ActionType.MoveToArea);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"[ActSelectorAgent] Error getting movable areas: {ex.Message}");
+                }
+
+                try
+                {
+                    var movableEntities = thinkingActor.sensor?.GetMovableEntities();
+                    if (movableEntities == null || movableEntities.Count == 0)
+                    {
+                        availableActions.Remove(ActionType.MoveToEntity);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"[ActSelectorAgent] Error getting movable entities: {ex.Message}");
+                }
+
+                try
+                {
+                    var interactable = thinkingActor.sensor?.GetInteractableEntities();
+                    int actorsCount = 0, propsCount = 0, itemsCount = 0;
+                    if (interactable != null)
+                    {
+                        actorsCount = interactable.actors?.Count ?? 0;
+                        propsCount = interactable.props?.Count ?? 0;
+                        itemsCount = interactable.items?.Count ?? 0;
+                    }
+
+                    if (actorsCount == 0)
+                    {
+                        availableActions.Remove(ActionType.GiveMoney);
+                        availableActions.Remove(ActionType.GiveItem);
+                    }
+
+                    // 상호작용 가능한 오브젝트/아이템 없으면 관련 액션 제한
+                    if (propsCount + itemsCount + actorsCount == 0)
+                    {
+                        availableActions.Remove(ActionType.InteractWithObject);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"[ActSelectorAgent] Error getting interactable entities: {ex.Message}");
+                }
+
+                try
+                {
+                    var collectible = thinkingActor.sensor?.GetCollectibleEntities();
+                    if (collectible == null || collectible.Count == 0)
+                    {
+                        availableActions.Remove(ActionType.PickUpItem);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"[ActSelectorAgent] Error getting interactable entities: {ex.Message}");
+                }
+
+                // 손/인벤토리 상태에 따른 제한
+                bool hasHandItem = thinkingActor.HandItem != null;
+                bool hasInventoryItem = false;
+                if (thinkingActor.InventoryItems != null)
+                {
+                    for (int i = 0; i < thinkingActor.InventoryItems.Length; i++)
+                    {
+                        if (thinkingActor.InventoryItems[i] != null) { hasInventoryItem = true; break; }
+                    }
+                }
+
+
+                // 손과 인벤 모두 비어 있으면 UseObject/GiveItem 제거
+                if (!hasHandItem && !hasInventoryItem)
+                {
+                    availableActions.Remove(ActionType.UseObject);
+                    availableActions.Remove(ActionType.GiveItem);
+                    availableActions.Remove(ActionType.PutDown);
+                }
+            }
+
+            return availableActions;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[ActSelectorAgent] Error getting current available actions: {ex.Message}");
+            throw new System.InvalidOperationException($"ActSelectorAgent 사용 가능한 액션 가져오기 실패: {ex.Message}");
         }
     }
 
@@ -266,7 +429,7 @@ public class SuperegoAgent : GPT
             AddUserMessage(userMessage);
 
             // GPT 호출
-            var response = await SendWithCacheLog<SuperegoResult>( );
+            var response = await SendWithCacheLog<SuperegoResult>();
 
             Debug.Log($"[PerceptionAgent {actor.Name}] 이성 에이전트 완료");
             if (

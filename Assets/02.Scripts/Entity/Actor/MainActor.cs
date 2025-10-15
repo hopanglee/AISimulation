@@ -879,6 +879,14 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 				if (item.gameObject != null) Destroy(item.gameObject);
 				continue;
 			}
+
+			// InventoryBox (container) 내부에 있는 경우, 컨테이너에서도 제거
+			if (item.curLocation is InventoryBox invBox)
+			{
+				try { invBox.RemoveItem(item); } catch { }
+				if (item.gameObject != null) Destroy(item.gameObject);
+				continue;
+			}
 			// World (주변)
 			if (item.gameObject != null) Destroy(item.gameObject);
 		}

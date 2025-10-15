@@ -152,7 +152,7 @@ public abstract class InventoryBox : InteractableProp
         
         // items 리스트에서 제거
         items.Remove(item);
-        
+        item.curLocation = null;
         // 위치에서도 제거
         RemoveItemFromPosition(item);
         
@@ -174,6 +174,7 @@ public abstract class InventoryBox : InteractableProp
             item.transform.SetParent(transform);
             item.transform.localPosition = Vector3.zero;
             item.transform.localRotation = Quaternion.identity;
+            item.curLocation = this;
             item.gameObject.SetActive(false);
             return true;
         }
@@ -188,7 +189,7 @@ public abstract class InventoryBox : InteractableProp
             }
             
             items.Add(item);
-            
+            item.curLocation = this;
             // 아이템을 위치에 배치
             PlaceItemAtPosition(item, emptyPosition);
             

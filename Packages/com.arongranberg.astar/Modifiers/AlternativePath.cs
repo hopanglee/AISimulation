@@ -37,7 +37,8 @@ namespace Pathfinding {
 		int prevPenalty;
 
 		/// <summary>A random object</summary>
-		readonly System.Random rnd = new System.Random();
+        // Deterministic RNG for modifier behavior
+        readonly System.Random rnd = new System.Random(20001114);
 
 		bool destroyed;
 

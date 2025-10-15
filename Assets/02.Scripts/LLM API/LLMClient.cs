@@ -25,8 +25,65 @@ public abstract class LLMClient
     // 전역 직렬화 게이트: 모든 LLM 요청을 한 번에 하나씩만 처리 (FIFO by semaphore)
     private static readonly SemaphoreSlim GlobalSendGate = new SemaphoreSlim(1, 1);
     private static volatile bool SerializeAllRequests = true;
-    // 현재 요청 컨텍스트의 메시지 해시를 보관하여 저장 시 재사용
+    // 현재 요청 컨텍스트의 메시지 해시/파일명을 보관하여 저장 시 재사용
     private string currentMsgHash;
+    private string currentCacheFilePath;
+
+    // baseDir을 제외한 캐시 파일명 생성 (요청 시작 시점 값 고정/내부 계산 포함)
+    private string GenerateCacheFileName()
+    {
+        if (actor == null)
+        {
+            Debug.LogError("Actor is null");
+            return "UNKNOWN.json";
+        }
+
+        // agent type
+        if (string.IsNullOrEmpty(agentTypeOverride))
+        {
+            Debug.LogError("Agent Type Override is null");
+            return "UNKNOWN.json";
+        }
+        // time key
+        var currentTimeKey = "";
+
+        try
+        {
+            var ts = Services.Get<ITimeService>();
+            if (ts != null)
+            {
+                var gt = ts.CurrentTime;
+                currentTimeKey = $"{gt.year:D4}-{gt.month:D2}-{gt.day:D2}-{gt.hour:D2}-{gt.minute:D2}";
+            }
+            else
+            {
+                Debug.LogError("TimeService is null");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("Error in Get Current Time Key: " + ex.Message);
+        }
+
+        // cache count
+        if (actor.CacheCount < 0)
+        {
+            Debug.LogError("Actor Cache Count < 0");
+            return "UNKNOWN.json";
+        }
+
+        // hash
+        try
+        {
+            currentMsgHash = ComputeMessagesHash(GetHashKey());
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("Error in currentMsgHash: " + ex.Message);
+        }
+
+        return $"{actor.CacheCount}_{currentTimeKey}_{agentTypeOverride}_{currentMsgHash}.json";
+    }
     public LLMClient(LLMClientProps options)
     {
         this.llmOptions = options;
@@ -55,7 +112,7 @@ public abstract class LLMClient
         actorName = actor.Name;
         //Debug.Log($"[LLMClient] Actor name set to: {actorName}");
     }
-    
+
     // 각 LLM 구현체에서 캐시 키 생성을 위해 필요한 객체를 반환합니다.
     protected virtual object GetHashKey()
     {
@@ -88,215 +145,199 @@ public abstract class LLMClient
         }
         try
         {
-        #region 캐시 가능한 로그 기록 있는지 체크
-        try
-        {
-            var cacheTimeService = Services.Get<ITimeService>();
-            var baseDir = Path.Combine(Application.dataPath, "11.GameDatas", "CachedLogs", actorName ?? "Unknown");
-            if (cacheTimeService != null && Directory.Exists(baseDir))
+            #region 캐시 가능한 로그 기록 있는지 체크
+            try
             {
-                //int count = actor.CacheCount;
-                var agentPart = string.IsNullOrEmpty(agentTypeOverride) ? "UNKNOWN" : agentTypeOverride;
-                var msgHash = ComputeMessagesHash(GetHashKey());
-                currentMsgHash = msgHash; // 저장 시 재사용
 
-                // 조회 전략: GameService에서 per-actor로 느슨/정밀 모드 선택
-                bool useLoose = false;
-                try
+                var baseDir = Path.Combine(Application.dataPath, "11.GameDatas", "CachedLogs", actorName ?? "Unknown");
+
+                // 요청 시작 시점에 파일 경로를 고정 생성 (Directory 유무와 무관)
+                var fileName = GenerateCacheFileName();
+                currentCacheFilePath = Path.Combine(baseDir, fileName);
+
+                if (Directory.Exists(baseDir))
                 {
-                    var gameSvc = Services.Get<IGameService>();
-                    if (gameSvc != null && actor != null)
+                    var agentPart = string.IsNullOrEmpty(agentTypeOverride) ? "UNKNOWN" : agentTypeOverride;
+
+                    // 조회 전략: GameService에서 per-actor로 느슨/정밀 모드 선택
+                    bool useLoose = false;
+                    try
                     {
-                        useLoose = gameSvc.ShouldUseLooseCacheMatchFor(actor);
+                        var gameSvc = Services.Get<IGameService>();
+                        if (gameSvc != null && actor != null)
+                        {
+                            useLoose = gameSvc.ShouldUseLooseCacheMatchFor(actor);
+                        }
                     }
-                }
-                catch { }
+                    catch { }
 
-                string pattern = useLoose
-                    ? $"{actor.CacheCount}_*_{agentPart}_*.json"    // 느슨: msgHash 무시
-                    : $"{actor.CacheCount}_*_{agentPart}_{msgHash}.json"; // 정밀: msgHash 포함
+                    string pattern = useLoose
+                        ? $"{actor.CacheCount}_*_{agentPart}_*.json"    // 느슨: msgHash 무시
+                        : $"{actor.CacheCount}_*_{agentPart}_{currentMsgHash}.json"; // 정밀: msgHash 포함
 
-                // 캐시 조회: 설정된 패턴으로 탐색
-                var exactMatch = Directory.GetFiles(baseDir, pattern);
-                string matchPath = null;
+                    // 캐시 조회: 설정된 패턴으로 탐색
+                    var exactMatch = Directory.GetFiles(baseDir, pattern);
+                    string matchPath = null;
 
-                if (exactMatch != null && exactMatch.Length > 0)
-                {
-                    matchPath = exactMatch[0];
-                }
-                else
-                {
-                    // 정확 매치가 없으면 선 저장, 후 정리 전략으로 전환 (여기서는 삭제하지 않음)
-                    Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 정확 매치 없음(actor Cache Count = {actor.CacheCount})({matchPath}). 새 캐시 저장 후 동일 count 기존 캐시 정리 예정");
-                }
-
-                if (!string.IsNullOrEmpty(matchPath))
-                {
-                    // 느슨한 매칭 모드일 때, 발견된 파일의 파일명 해시를 현재 msgHash로 동기화
-                    if (useLoose)
+                    if (exactMatch != null && exactMatch.Length > 0)
                     {
+                        if (exactMatch.Length == 1)
+                        {
+                            matchPath = exactMatch[0];
+                        }
+                        else
+                        {
+                            Debug.LogError($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 정확 매치 여러 개 발견: {exactMatch.Length}");
+                        }
+                    }
+                    else
+                    {
+                        // 정확 매치가 없으면 선 저장, 후 정리 전략으로 전환 (여기서는 삭제하지 않음)
+                        Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 정확 매치 없음({currentCacheFilePath}). 새 캐시 저장 후 동일 count 기존 캐시 정리 예정");
+                    }
+
+                    if (!string.IsNullOrEmpty(matchPath))
+                    {
+
                         try
                         {
-                            var dir = Path.GetDirectoryName(matchPath);
-                            var fileName = Path.GetFileName(matchPath);
-                            if (!string.IsNullOrEmpty(fileName))
+                            if (!string.IsNullOrEmpty(currentCacheFilePath))
                             {
-                                int lastUnderscore = fileName.LastIndexOf('_');
-                                int dot = fileName.LastIndexOf('.')
-;                                if (lastUnderscore > 0 && dot > lastUnderscore)
+
+                                var newFileName = currentCacheFilePath;
+
+                                if (!string.Equals(matchPath, currentCacheFilePath, StringComparison.OrdinalIgnoreCase))
                                 {
-                                    var currentSuffixHash = fileName.Substring(lastUnderscore + 1, dot - (lastUnderscore + 1));
-                                    if (!string.Equals(currentSuffixHash, msgHash, StringComparison.OrdinalIgnoreCase))
+                                    if (!File.Exists(currentCacheFilePath))
                                     {
-                                        var baseWithoutHash = fileName.Substring(0, lastUnderscore);
-                                        var newFileName = baseWithoutHash + "_" + msgHash + ".json";
-                                        var newPath = Path.Combine(dir ?? string.Empty, newFileName);
-                                        if (!string.Equals(newPath, matchPath, StringComparison.OrdinalIgnoreCase))
-                                        {
-                                            if (!File.Exists(newPath))
-                                            {
-                                                File.Move(matchPath, newPath);
-                                                matchPath = newPath;
-                                            }
-                                            else
-                                            {
-                                                // 대상 파일이 이미 존재하면, 기존 파일을 유지(이중 파일 방지)
-                                                matchPath = newPath; // 새 경로를 우선 사용
-                                            }
-                                        }
+                                        File.Move(matchPath, currentCacheFilePath);
+                                        matchPath = currentCacheFilePath;
+                                    }
+                                    else
+                                    {
+                                        Debug.LogError($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 이미 존재하는데 다른 거를 매칭해서 가져옴.. {currentCacheFilePath}");
                                     }
                                 }
                             }
                         }
                         catch { }
-                    }
-                    var cachedJson = File.ReadAllText(matchPath);
-                    try
-                    {
-                        // 1) 우선 캐시 엔벨로프 형식인지 점검: { payload: ..., tools: [...] }
-                        var token = JToken.Parse(cachedJson);
-                        if (token is JObject obj && obj["payload"] != null)
+
+                        var cachedJson = File.ReadAllText(matchPath);
+                        try
                         {
-                            // 1-1) 도구 리플레이
-                            try
+                            // 1) 우선 캐시 엔벨로프 형식인지 점검: { payload: ..., tools: [...] }
+                            var token = JToken.Parse(cachedJson);
+                            if (token is JObject obj && obj["payload"] != null)
                             {
-                                var toolsToken = obj["tools"] as JArray;
-                                if (toolsToken != null && toolsToken.Count > 0 && toolExecutor != null)
+                                // 1-1) 도구 리플레이
+                                try
                                 {
-                                    foreach (var tkn in toolsToken)
+                                    var toolsToken = obj["tools"] as JArray;
+                                    if (toolsToken != null && toolsToken.Count > 0 && toolExecutor != null)
                                     {
-                                        try
+                                        foreach (var tkn in toolsToken)
                                         {
-                                            var name = tkn["name"]?.ToString();
-                                            var argsJson = tkn["argsJson"]?.ToString();
-                                            if (!string.IsNullOrWhiteSpace(name))
+                                            try
                                             {
-                                            JsonNode argsNode = null;
-                                            try { if (!string.IsNullOrWhiteSpace(argsJson)) argsNode = JsonNode.Parse(argsJson); } catch { argsNode = null; }
-                                            argsNode ??= JsonNode.Parse("{}");
-                                            toolExecutor.ExecuteTool(name, argsNode);
+                                                var name = tkn["name"]?.ToString();
+                                                var argsJson = tkn["argsJson"]?.ToString();
+                                                if (!string.IsNullOrWhiteSpace(name))
+                                                {
+                                                    JsonNode argsNode = null;
+                                                    try { if (!string.IsNullOrWhiteSpace(argsJson)) argsNode = JsonNode.Parse(argsJson); } catch { argsNode = null; }
+                                                    argsNode ??= JsonNode.Parse("{}");
+                                                    toolExecutor.ExecuteTool(name, argsNode);
+                                                }
                                             }
-                                        }
-                                        catch (Exception toolEx)
-                                        {
-                                            Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 도구 리플레이 실패: {toolEx.Message}");
+                                            catch (Exception toolEx)
+                                            {
+                                                Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 도구 리플레이 실패: {toolEx.Message}");
+                                            }
                                         }
                                     }
                                 }
-                            }
-                            catch { }
+                                catch { }
 
-                            // 1-2) payload를 T로 역직렬화하여 반환
-                            var payloadJson = obj["payload"]?.ToString();
-                            if (payloadJson != null)
-                            {
-                                var cachedPayload = JsonConvert.DeserializeObject<T>(payloadJson, EnumAsStringJsonSettings);
-                                if (cachedPayload != null)
+                                // 1-2) payload를 T로 역직렬화하여 반환
+                                var payloadJson = obj["payload"]?.ToString();
+                                if (payloadJson != null)
                                 {
-                                    Debug.Log($"<b><color=Yellow>[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 로그 히트(리플레이 포함): (actor Cache Count = {actor.CacheCount}) {matchPath}</color></b>");
-                                    actor.CacheCount++; // 히트 시 증가
-                                    return cachedPayload;
+                                    var cachedPayload = JsonConvert.DeserializeObject<T>(payloadJson, EnumAsStringJsonSettings);
+                                    if (cachedPayload != null)
+                                    {
+                                        Debug.Log($"<b><color=Yellow>[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 로그 히트(리플레이 포함): (actor Cache Count = {actor.CacheCount}) {matchPath}</color></b>");
+                                        actor.CacheCount++; // 히트 시 증가
+                                        return cachedPayload;
+                                    }
                                 }
                             }
                         }
-                        else
+                        catch (Newtonsoft.Json.JsonException ex)
                         {
-                            // 2) 구버전(엔벨로프 미사용) 캐시 호환: 직접 T로 역직렬화
-                            var cached = JsonConvert.DeserializeObject<T>(cachedJson, EnumAsStringJsonSettings);
-                            if (cached != null)
-                            {
-                                Debug.Log($"<b><color=Yellow>[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 로그 히트: {matchPath}</color></b>");
-                                actor.CacheCount++; // 히트 시 증가
-                                return cached;
-                            }
+                            Debug.LogError($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 타입 불일치 - JSON 역직렬화 실패: {ex.Message}");
                         }
-                    }
-                    catch (Newtonsoft.Json.JsonException ex)
-                    {
-                        Debug.LogError($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 타입 불일치 - JSON 역직렬화 실패: {ex.Message}");
                     }
                 }
             }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 로그 확인 중 오류: {ex.Message}");
-        }
-        #endregion
-
-        #region GPT API 호출 전 승인 요청
-        // GPT API 호출 전 승인 요청
-        var gameService = Services.Get<IGameService>();
-        var approvalService = Services.Get<IGPTApprovalService>();
-
-        if (gameService != null && gameService.IsGPTApprovalEnabled() && approvalService != null)
-        {
-            string agentType = agentTypeOverride;
-
-            bool approved = await approvalService.RequestApprovalAsync(actorName, agentType);
-
-            if (!approved)
+            catch (Exception ex)
             {
-                Debug.LogError($"[{agentTypeOverride ?? "Unknown"}][{actorName}] GPT API 호출이 거부되었습니다: {agentType}");
-                throw new OperationCanceledException($"GPT API 호출이 거부되었습니다: {actorName} - {agentType}");
-            }
-
-            Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] GPT API 호출이 승인되었습니다: {agentType}");
-        }
-        else if (gameService != null && !gameService.IsGPTApprovalEnabled())
-        {
-            Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] GPT 승인 시스템이 비활성화되어 자동으로 진행합니다: {agentTypeOverride}");
-        }
-        #endregion
-
-        #region GPT API 호출 시 시간 정지
-        // 승인 사용 중이면 시간 정지는 ApprovalService에서, 여기서는 느린 진행만 적용
-        var timeService = Services.Get<ITimeService>();
-        if (timeService != null)
-        {
-            // 모델 대기 동안 시뮬레이션 시간 완전 정지
-            timeService.StartAPICall();
-            Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] API 호출 시작 - 시뮬레이션 시간 정지됨");
-        }
-        #endregion
-
-        #region GPT API 호출
-        try
-        {
-            return await Send<T>();
-
-        }
-        #endregion
-        finally
-        {
-            #region GPT API 호출 종료시 시간 재개
-            if (timeService != null)
-            {
-                timeService.EndAPICall();
-                Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] API 호출 종료 - 시뮬레이션 시간 재개됨");
+                Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 로그 확인 중 오류: {ex.Message}");
             }
             #endregion
-        }
+
+            #region GPT API 호출 전 승인 요청
+            // GPT API 호출 전 승인 요청
+            var gameService = Services.Get<IGameService>();
+            var approvalService = Services.Get<IGPTApprovalService>();
+
+            if (gameService != null && gameService.IsGPTApprovalEnabled() && approvalService != null)
+            {
+                string agentType = agentTypeOverride;
+
+                bool approved = await approvalService.RequestApprovalAsync(actorName, agentType);
+
+                if (!approved)
+                {
+                    Debug.LogError($"[{agentTypeOverride ?? "Unknown"}][{actorName}] GPT API 호출이 거부되었습니다: {agentType}");
+                    throw new OperationCanceledException($"GPT API 호출이 거부되었습니다: {actorName} - {agentType}");
+                }
+
+                Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] GPT API 호출이 승인되었습니다: {agentType}");
+            }
+            else if (gameService != null && !gameService.IsGPTApprovalEnabled())
+            {
+                Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] GPT 승인 시스템이 비활성화되어 자동으로 진행합니다: {agentTypeOverride}");
+            }
+            #endregion
+
+            #region GPT API 호출 시 시간 정지
+            // 승인 사용 중이면 시간 정지는 ApprovalService에서, 여기서는 느린 진행만 적용
+            var timeService = Services.Get<ITimeService>();
+            if (timeService != null)
+            {
+                // 모델 대기 동안 시뮬레이션 시간 완전 정지
+                timeService.StartAPICall();
+                Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] API 호출 시작 - 시뮬레이션 시간 정지됨");
+            }
+            #endregion
+
+            #region GPT API 호출
+            try
+            {
+                return await Send<T>();
+
+            }
+            #endregion
+            finally
+            {
+                #region GPT API 호출 종료시 시간 재개
+                if (timeService != null)
+                {
+                    timeService.EndAPICall();
+                    Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] API 호출 종료 - 시뮬레이션 시간 재개됨");
+                }
+                #endregion
+            }
         }
         finally
         {
@@ -307,30 +348,7 @@ public abstract class LLMClient
         }
     }
 
-    /// <summary>
-    /// 지정된 count에 해당하는 현재 에이전트의 캐시 파일만 삭제합니다.
-    /// </summary>
-    private void DeleteCacheFilesFromCount(string baseDir, int startCount)
-    {
-        try
-        {
-            int deletedCount = 0;
-            var files = Directory.GetFiles(baseDir, $"{startCount}_*.json");
-            foreach (var file in files)
-            {
-                var content = File.ReadAllText(file);
-                File.Delete(file);
-                deletedCount++;
-                Debug.LogWarning($"<b>[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 삭제: {file}</b> \n{content}");
-            }
-            if (deletedCount > 0)
-                Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 총 {deletedCount}개의 캐시 파일이 삭제되었습니다 (count {startCount})");
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 삭제 중 오류: {ex.Message}");
-        }
-    }
+    // (legacy) DeleteCacheFilesFromCount 제거됨
 
     /// <summary>
     /// 현재 분 단위 시간과 에이전트 타입을 기준으로 캐시 파일에 응답을 저장합니다.
@@ -342,34 +360,30 @@ public abstract class LLMClient
 
         try
         {
-            var timeService = Services.Get<ITimeService>();
-            if (timeService == null) return;
-
-            var gt = timeService.CurrentTime; // 분 단위 키 구성
-            var timeKey = $"{gt.year:D4}-{gt.month:D2}-{gt.day:D2}_{gt.hour:D2}-{gt.minute:D2}";
-            var agentPart = string.IsNullOrEmpty(agentTypeOverride) ? "UNKNOWN" : agentTypeOverride;
-
             var baseDir = Path.Combine(Application.dataPath, "11.GameDatas", "CachedLogs", actorName ?? "Unknown");
             if (!Directory.Exists(baseDir)) Directory.CreateDirectory(baseDir);
 
             var lockObj = ActorCacheLocks.GetOrAdd(actorName ?? "Unknown", _ => new object());
             lock (lockObj)
             {
-                // 현재 요청 컨텍스트 해시 재사용(없으면 안전하게 재계산)
-                var msgHash = currentMsgHash ?? ComputeMessagesHash(GetHashKey());
-                int countForThisSave = actor.CacheCount; // 저장 전 count 캡처
-                var filePath = Path.Combine(baseDir, $"{countForThisSave}_{timeKey}_{agentPart}_{msgHash}.json");
+                // 요청 시작 시점에 만든 파일 경로를 그대로 사용
+                if(string.IsNullOrEmpty(currentCacheFilePath))
+                {
+                    Debug.LogError($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 미리 저장된 캐시 파일 경로가 없습니다. 파일 저장 불가");
+                    return;
+                }
+
                 var json = JsonConvert.SerializeObject(data, Formatting.Indented, EnumAsStringJsonSettings);
-                File.WriteAllText(filePath, json, System.Text.Encoding.UTF8);
-                Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 저장: {filePath}");
+                File.WriteAllText(currentCacheFilePath, json, System.Text.Encoding.UTF8);
+                Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 저장: {currentCacheFilePath}");
                 // 동일 count의 기존 파일 정리 (방금 저장한 파일은 제외)
-                DeleteCacheFilesFromCountExcept(baseDir, countForThisSave, filePath);
+                DeleteCacheFilesFromCountExcept(baseDir, actor.CacheCount, currentCacheFilePath);
                 actor.CacheCount++; // 저장 후 증가
             }
         }
         catch (Exception ex)
         {
-            Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 저장 실패: {ex.Message}");
+            Debug.LogError($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 저장 실패: {ex.Message}");
         }
     }
 
@@ -384,7 +398,7 @@ public abstract class LLMClient
             var files = Directory.GetFiles(baseDir, $"{startCount}_*.json");
             foreach (var file in files)
             {
-                if (string.Equals(Path.GetFullPath(file), Path.GetFullPath(keepFilePath), StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(file, keepFilePath, StringComparison.OrdinalIgnoreCase))
                     continue;
                 var content = File.ReadAllText(file);
                 File.Delete(file);

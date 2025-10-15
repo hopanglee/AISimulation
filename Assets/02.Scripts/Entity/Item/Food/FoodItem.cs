@@ -28,21 +28,23 @@ public abstract class FoodItem : Item, IUsable
         Entity.ApplyIfInRange(ref actor.Sleepiness, sleepinessEffect);
         Entity.ApplyIfInRange(ref actor.Judgment, judgmentEffect);
 
-
-        // 음료를 마셨으면 오브젝트 삭제
-        if (gameObject != null)
-        {
-            Destroy(gameObject);
-        }
-
-
-        // 손에 든 것이 이 음식이라면 먼저 손에서 비워둠 (파괴 전 참조 정리)
+        // 손/인벤토리에서 이 아이템 참조를 먼저 정리 (파괴 전에)
         if (actor.HandItem == this)
         {
             actor.HandItem = null;
         }
+        if (actor.InventoryItems != null)
+        {
+            for (int i = 0; i < actor.InventoryItems.Length; i++)
+            {
+                if (actor.InventoryItems[i] == this)
+                {
+                    actor.InventoryItems[i] = null;
+                }
+            }
+        }
 
-        // 오브젝트 삭제는 마지막에
+        // 오브젝트 삭제는 마지막에 한 번만 수행
         if (go != null)
         {
             Destroy(go);
