@@ -24,10 +24,7 @@ public abstract class Drink : Item, IUsable
 
 
         // 음료를 마셨으면 오브젝트 삭제
-        if (gameObject != null)
-        {
-            Destroy(gameObject);
-        }
+        SafetyDestroy();
 
         return $"{actor.Name}가 {this.Name}을(를) 마셨습니다.";
     }

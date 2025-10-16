@@ -24,6 +24,8 @@ public interface ILocationService : IService
 
     public void Remove(ILocation key, Entity value);
 
+    public bool Contains(ILocation key, Entity value);
+
     /// <summary>
     /// 지정한 Area를 curLocation으로 갖는 하위 Area 목록을 반환합니다.
     /// </summary>
@@ -67,7 +69,11 @@ public class LocationService : ILocationService
         {
             if (actors.ContainsKey(key))
             {
-                actors[key].Add(actor);
+                if(!actors[key].Contains(actor))
+                {
+                    actors[key].Add(actor);
+                }
+                
             }
             else
             {
@@ -79,7 +85,10 @@ public class LocationService : ILocationService
         {
             if (items.ContainsKey(key))
             {
-                items[key].Add(item);
+                if(!items[key].Contains(item))
+                {
+                    items[key].Add(item);
+                }
             }
             else
             {
@@ -91,7 +100,10 @@ public class LocationService : ILocationService
         {
             if (props.ContainsKey(key))
             {
-                props[key].Add(prop);
+                if(!props[key].Contains(prop))
+                {
+                    props[key].Add(prop);
+                }
             }
             else
             {
@@ -103,7 +115,10 @@ public class LocationService : ILocationService
         {
             if (buildings.ContainsKey(key))
             {
-                buildings[key].Add(building);
+                if(!buildings[key].Contains(building))
+                {
+                    buildings[key].Add(building);
+                }
             }
             else
             {
@@ -240,6 +255,27 @@ public class LocationService : ILocationService
         }
 
         return GetBuilding(parent);
+    }
+
+    public bool Contains(ILocation key, Entity value)
+    {
+        if (value is Actor actor)
+        {
+            return actors.ContainsKey(key) && actors[key].Contains(actor);
+        }
+        else if (value is Item item)
+        {
+            return items.ContainsKey(key) && items[key].Contains(item);
+        }
+        else if (value is Prop prop)
+        {
+            return props.ContainsKey(key) && props[key].Contains(prop);
+        }
+        else if (value is Building building)
+        {
+            return buildings.ContainsKey(key) && buildings[key].Contains(building);
+        }
+        return false;
     }
 
     public void Remove(ILocation key, Entity value)

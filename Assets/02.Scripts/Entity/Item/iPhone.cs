@@ -134,7 +134,7 @@ public class iPhone : Item, IUsable
             iPhone targetIPhone = thinkingTarget.iPhone;
             if (targetIPhone == null)
             {
-                return "아이폰이 없다.";
+                return $"{targetName}은 아이폰을 가지고 있지 않다..";
             }
 
             string time = GetTime();
@@ -173,7 +173,7 @@ public class iPhone : Item, IUsable
         }
         else
         {
-            return "아이폰이 없다.";
+            return $"{targetName}은 아이폰을 가지고 있지 않다..";
         }
     }
 
@@ -727,17 +727,18 @@ public class iPhone : Item, IUsable
                 else
                 {
                     var sbKr = new StringBuilder();
+                    sbKr.Append("알림: ");
                     foreach (var kv in senderCounts)
                     {
                         int cnt = kv.Value;
                         var snippet = senderLatestSnippet.TryGetValue(kv.Key, out var s) ? s : string.Empty;
-                        sbKr.Append("알림: ")
+                        sbKr.Append("[")
                             .Append(kv.Key)
                             .Append("로부터 메세지가 +")
                             .Append(cnt)
                             .Append("개 왔습니다.")
                             .Append(!string.IsNullOrEmpty(snippet) ? $": '{snippet}'" : "")
-                            .AppendLine();
+                            .Append("]");
                     }
                     return sbKr.ToString().TrimEnd();
                 }

@@ -216,7 +216,7 @@ public class DrinkDispenser : ItemDispenser
                             else
                             {
                                 // PickUp 실패 시 아이템 제거
-                                Destroy(item.gameObject);
+                                item.SafetyDestroy();
                                 //await SimDelay.DelaySimMinutes(1, cancellationToken);
                                 return $"{selectedDrinkKey}을(를) 생성했지만, {actor.Name}의 손과 인벤토리가 모두 가득 착니다. 아이템을 내려놓고 다시 시도해주세요.";
                             }
@@ -257,7 +257,8 @@ public class DrinkDispenser : ItemDispenser
                 else
                 {
                     // PickUp 실패 시 아이템 제거
-                    Destroy(fallbackDrinkAsItem.gameObject);
+                    //Destroy(fallbackDrinkAsItem.gameObject);
+                    fallbackDrinkAsItem.SafetyDestroy();
                     return $"{fallbackDrinkKey}을(를) 생성했지만, {actor.Name}의 손과 인벤토리가 모두 가득 착니다. (기본 선택)";
                 }
             }

@@ -23,7 +23,10 @@ public abstract class InventoryBox : InteractableProp
 
         foreach (var item in items)
         {
-            item.RegisterToLocationService();
+            if(!item.gameObject.activeSelf)
+            {
+                item.RegisterToLocationService();
+            }
         }
 
         // useSimplePlacement이 아니면 placement 위치 수를 maxItems로 자동 설정
@@ -136,7 +139,7 @@ public abstract class InventoryBox : InteractableProp
             }
             
             // 부모-자식 관계 해제
-            item.transform.SetParent(null);
+            //item.transform.SetParent(null);
         }
     }
     
@@ -152,7 +155,7 @@ public abstract class InventoryBox : InteractableProp
         
         // items 리스트에서 제거
         items.Remove(item);
-        item.curLocation = null;
+        //item.curLocation = null;
         // 위치에서도 제거
         RemoveItemFromPosition(item);
         

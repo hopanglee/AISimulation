@@ -1,0 +1,9 @@
+﻿{
+  "payload": {
+    "action": "read",
+    "page_number": 12,
+    "line_number": null,
+    "text": null
+  },
+  "tools": []
+}

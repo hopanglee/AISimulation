@@ -125,15 +125,15 @@ public class Clothing : Item, IUsable
         return (true, result);
     }
     
-    public override string Get()
-    {
-        string status = $"{targetGender}용 {clothingType}옷";
-        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
-        {
-            return $"{GetLocalizedStatusDescription()} {status}";
-        }
-        return $"{status}";
-    }
+    // public override string Get()
+    // {
+    //     string status = $"{targetGender}용 {clothingType}옷";
+    //     if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+    //     {
+    //         return $"{GetLocalizedStatusDescription()} {status}";
+    //     }
+    //     return $"{status}";
+    // }
 }
 
 /// <summary>

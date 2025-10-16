@@ -134,11 +134,11 @@ public abstract class Entity : MonoBehaviour, ILocation
         set { _name = value; }
     }
 
-	public string GetEnglishName()
-	{
-		// Returns the non-localized internal name used for data comparisons
-		return string.IsNullOrEmpty(_name) ? (gameObject != null ? gameObject.name : "") : _name;
-	}
+    public string GetEnglishName()
+    {
+        // Returns the non-localized internal name used for data comparisons
+        return string.IsNullOrEmpty(_name) ? (gameObject != null ? gameObject.name : "") : _name;
+    }
 
     [FoldoutGroup("Localization")]
     [SerializeField]
@@ -237,7 +237,7 @@ public abstract class Entity : MonoBehaviour, ILocation
         string selfName = GetLocalizedName();
         return parent + ":" + selfName;
     }
-    
+
     /// <summary>
     /// 간단하고 일관된 키 생성 (모든 Entity에 동일한 규칙 적용)
     /// 예: "Apartment:Living Room:Choco Donut", "Apartment:Kitchen:iPhone"
@@ -245,10 +245,10 @@ public abstract class Entity : MonoBehaviour, ILocation
     public virtual string GetSimpleKey()
     {
         if (curLocation == null) return Name;
-        
+
         // 단순히 :로 구분하여 표시 (전체 경로)
         return curLocation.LocationToString() + ":" + GetLocalizedName();
-        
+
     }
 
     /// <summary>
@@ -276,7 +276,7 @@ public abstract class Entity : MonoBehaviour, ILocation
         {
             actorLocation = sitable.curLocation;
         }
-        
+
         // Actor의 location까지 올라가면서 중복되는 부분 찾기
         while (currentLocation != null && currentLocation != actorLocation)
         {
@@ -291,7 +291,7 @@ public abstract class Entity : MonoBehaviour, ILocation
             //var locService = Services.Get<ILocalizationService>();
             //bool isKr = locService != null && locService.CurrentLanguage == Language.KR;
             string subjectName = GetLocalizedName();
-            
+
             // Build chained location with : separator
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
             // Collect chain from outermost to relativeLocation
@@ -304,19 +304,19 @@ public abstract class Entity : MonoBehaviour, ILocation
             }
             // Reverse to get outer to inner order
             chain.Reverse();
-            
+
             // Build location chain with : separator
             for (int i = 0; i < chain.Count; i++)
             {
                 if (i > 0) sb.Append(":");
                 sb.Append(chain[i].GetLocalizedName());
             }
-            if(chain.Count > 0)
+            if (chain.Count > 0)
             {
                 sb.Append(":");
             }
             sb.Append(subjectName);
-            
+
             return sb.ToString();
         }
 
@@ -339,7 +339,16 @@ public abstract class Entity : MonoBehaviour, ILocation
     {
         if (curLocation != null)
         {
-            Services.Get<ILocationService>().Add(this.curLocation, this);
+            var locationService = Services.Get<ILocationService>();
+            if (locationService != null)
+            {
+                if (locationService.Contains(this.curLocation, this))
+                {
+                    // 이미 등록됨
+                    return;
+                }
+                locationService.Add(this.curLocation, this);
+            }
         }
         else
         {
@@ -388,24 +397,29 @@ public abstract class Entity : MonoBehaviour, ILocation
             curLocation.ApplyStatus(actor);
     }
 
-    protected virtual void OnDestroy()
+    public void SafetyDestroy()
     {
-        try
+        var locationService = Services.Get<ILocationService>();
+        // If we still have a curLocation reference, remove this entity from that location
+        if (locationService != null)
         {
-            var locationService = Services.Get<ILocationService>();
-            // If we still have a curLocation reference, remove this entity from that location
-            if (locationService != null)
+            if (_curLocation != null)
             {
-                if (_curLocation != null)
+                locationService.Remove(_curLocation as ILocation, this);
+
+                if (_curLocation is InventoryBox inventoryBox)
                 {
-                    if(_curLocation is InventoryBox inventoryBox)
-                    {
-                        inventoryBox.RemoveItem(this);
-                    }
-                    locationService.Remove(_curLocation as ILocation, this);
+                    inventoryBox.RemoveItem(this);
                 }
+                _curLocation = null;
             }
         }
-        catch { }
+
+        Destroy(this.gameObject);
+    }
+
+    protected virtual void OnDestroy()
+    {
+
     }
 }

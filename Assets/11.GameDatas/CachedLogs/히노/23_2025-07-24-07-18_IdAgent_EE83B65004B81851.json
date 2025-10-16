@@ -1,0 +1,58 @@
+﻿{
+  "payload": {
+    "situation_interpretation": "으아아~ 휴대폰이 손에 있는데 카미야한테서 메시지가 와 있어! 근데 카미야가 누군지 기억이 안 나? 그냥 이름만 들으면 심장이 두근두근하는걸... 일기장에 그 사람 뒤태 스케치까지 있는 거 보면 뭔가 특별한 사이인 것 같은데! 아, 배도 너무 고파. 도넛 먹고 싶어 죽겠어. 어쨌든 메시지부터 확인해볼까? 모카하우스라니... 카페에서 데이트? 내가 교통사고로 기억을 잃었나 봐. 꺅, 너무 궁금해! 얼른 메시지 확인하고 도넛도 먹어야겠다!",
+    "thought_chain": [
+      "방금 휴대폰을 손에 들었고, 카미야랑 와타야의 메시지가 있다고 한다.",
+      "와타야는 내 절친이고 그녀에 대한 기억은 선명하지만, 카미야는 기억이 모호하다.",
+      "내 일기장에는 카미야의 뒤태 스케치가 있고, 기억 중 '??루 군'이라고 불렀던 사람과 연관된 것 같다.",
+      "배가 고프다는 신호가 강하게 오고, 식탁에 도넛이 보인다.",
+      "교통사고 후 기억 상실이 있는 것 같고, 그 공백을 채우고 싶은 궁금증이 크다.",
+      "메시지 확인하고 뭐라도 먹는 게 지금 가장 우선순위로 느껴진다.",
+      "카미야가 모카하우스에서 만나자고 했다는 것과 내 일기장에 그의 스케치가 있는 것으로 봐서 특별한 관계일 가능성이 있다."
+    ],
+    "emotions": [
+      {
+        "name": "호기심",
+        "intensity": 0.9
+      },
+      {
+        "name": "설렘",
+        "intensity": 0.7
+      },
+      {
+        "name": "배고픔",
+        "intensity": 0.8
+      },
+      {
+        "name": "혼란",
+        "intensity": 0.6
+      },
+      {
+        "name": "흥분",
+        "intensity": 0.5
+      }
+    ]
+  },
+  "tools": [
+    {
+      "name": "LoadRelationshipByName",
+      "argsJson": "{\"targetName\":\"\\uC640\\uD0C0\\uC57C \\uC774\\uC988\\uBBF8\"}"
+    },
+    {
+      "name": "LoadRelationshipByName",
+      "argsJson": "{\"targetName\":\"\\uCE74\\uBBF8\\uC57C\"}"
+    },
+    {
+      "name": "FindBuildingAreaPath",
+      "argsJson": "{\"buildingName\":\"\\uCE74\\uD398 \\uBAA8\\uCE74\\uD558\\uC6B0\\uC2A4\"}"
+    },
+    {
+      "name": "GetActorLocationMemoriesFiltered",
+      "argsJson": "{\"areaKey\":\"\\uCE74\\uBD80\\uD0A4\\uCD78:1-chome-6\"}"
+    },
+    {
+      "name": "GetActorLocationMemoriesFiltered",
+      "argsJson": "{\"areaKey\":\"1-chome-6\"}"
+    }
+  ]
+}

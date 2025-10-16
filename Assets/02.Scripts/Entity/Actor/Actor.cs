@@ -209,7 +209,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         }
     }
 
-    protected virtual void OnDestroy()
+    protected override void OnDestroy()
     {
         // ActorManager에서 해제
         try

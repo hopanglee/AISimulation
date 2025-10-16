@@ -65,10 +65,7 @@ public abstract class FoodBlock : Item, IInteractable
             {
                 result += " 이제 그릇이 비어있습니다.";
                 // 음식을 다 먹었으면 오브젝트 삭제
-                if (gameObject != null)
-                {
-                    Destroy(gameObject);
-                }
+                SafetyDestroy();
             }
             else
             {

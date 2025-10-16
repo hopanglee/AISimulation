@@ -138,30 +138,30 @@ public abstract class MainActor : Actor
 		return cookRecipes.Keys.ToArray();
 	}
 
-public class CookRecipeSummary
-{
-    public string name;
-    public int minutes;
-    public string[] ingredients; // Entity의 GetSimpleKey() 결과를 저장
-}
+	public class CookRecipeSummary
+	{
+		public string name;
+		public int minutes;
+		public string[] ingredients; // Entity의 GetSimpleKey() 결과를 저장
+	}
 
-public CookRecipeSummary[] GetCookRecipeSummaries()
-{
-    if (cookRecipes == null || cookRecipes.Count == 0) return System.Array.Empty<CookRecipeSummary>();
-    var list = new List<CookRecipeSummary>();
-    foreach (var kv in cookRecipes)
-    {
-        var rec = kv.Value;
-        if (rec == null) continue;
-        list.Add(new CookRecipeSummary
-        {
-            name = kv.Key,
-            minutes = Mathf.Clamp(rec.cookSimMinutes, 0, 120),
-            ingredients = rec.ingredients != null ? rec.ingredients.Where(e => e != null).Select(e => e.Name).ToArray() : System.Array.Empty<string>()
-        });
-    }
-    return list.ToArray();
-}
+	public CookRecipeSummary[] GetCookRecipeSummaries()
+	{
+		if (cookRecipes == null || cookRecipes.Count == 0) return System.Array.Empty<CookRecipeSummary>();
+		var list = new List<CookRecipeSummary>();
+		foreach (var kv in cookRecipes)
+		{
+			var rec = kv.Value;
+			if (rec == null) continue;
+			list.Add(new CookRecipeSummary
+			{
+				name = kv.Key,
+				minutes = Mathf.Clamp(rec.cookSimMinutes, 0, 120),
+				ingredients = rec.ingredients != null ? rec.ingredients.Where(e => e != null).Select(e => e.Name).ToArray() : System.Array.Empty<string>()
+			});
+		}
+		return list.ToArray();
+	}
 
 	[System.Serializable]
 	public class CookRecipe
@@ -186,7 +186,7 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 	[SerializeField] protected GameTime yesterdaySleepTime;
 	[SerializeField] protected string yesterdaySleepLocation;
 
-	
+
 
 	protected override void Awake()
 	{
@@ -441,16 +441,16 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 	public override string GetStatusDescription()
 	{
 		var status = new System.Text.StringBuilder();
-		
+
 		// 현재 활동 정보
 		if (!string.IsNullOrEmpty(CurrentActivity) && CurrentActivity != "Idle")
 		{
 			status.AppendLine($"현재: {CurrentActivity}");
 		}
-		
+
 		// 기본 상태 정보
 		status.AppendLine(base.GetStatusDescription());
-		
+
 		// 착용 중인 옷 정보 추가
 		if (CurrentOutfit != null)
 		{
@@ -460,7 +460,7 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 		{
 			status.AppendLine(", 옷을 전부 벗은 상태이다");
 		}
-		
+
 		return status.ToString().TrimEnd('\n', '\r');
 	}
 
@@ -503,7 +503,7 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 		// 설정된 간격만큼 시간이 지났으면 청결도 감소
 		if (minutesDiff >= statusUpdateIntervalMinutes)
 		{
-			
+
 			lastStatusUpdateTime = currentTime;
 		}
 		curLocation.ApplyStatus(this);
@@ -687,7 +687,7 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 		}
 	}
 
-#region Cooking
+	#region Cooking
 	public async UniTask<bool> Cook(string dishKey, CancellationToken token)
 	{
 		if (string.IsNullOrEmpty(dishKey)) return false;
@@ -730,7 +730,7 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 			int minutes = Mathf.Clamp(recipe.cookSimMinutes, 0, 120);
 
 			// 칼을 손에 든 경우 조리시간 절반으로 줄임
-			if(HandItem != null && HandItem is Knife)
+			if (HandItem != null && HandItem is Knife)
 			{
 				minutes /= 2;
 			}
@@ -755,29 +755,29 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 		cookedGo.SetActive(true);
 		Destroy(tempParent);
 
-        bool picked = false;
+		bool picked = false;
 		if (foodComponent is FoodBlock fb)
 		{
-            var pick = PickUp(fb);
-            picked = pick.Item1;
-            if (picked)
-            {
-                try { brain?.memoryManager?.AddShortTermMemory($"{fb?.Name}을(를) 요리해서 {pick.Item2}", "", curLocation?.GetSimpleKey()); } catch { }
-            }
+			var pick = PickUp(fb);
+			picked = pick.Item1;
+			if (picked)
+			{
+				try { brain?.memoryManager?.AddShortTermMemory($"{fb?.Name}을(를) 요리해서 {pick.Item2}", "", curLocation?.GetSimpleKey()); } catch { }
+			}
 		}
 		else if (foodComponent is FoodItem fi)
 		{
-            var pick = PickUp(fi);
-            picked = pick.Item1;
-            if (picked)
-            {
-                try { brain?.memoryManager?.AddShortTermMemory($"{fi?.Name}을(를) 요리해서 {pick.Item2}", "", curLocation?.GetSimpleKey()); } catch { }
-            }
+			var pick = PickUp(fi);
+			picked = pick.Item1;
+			if (picked)
+			{
+				try { brain?.memoryManager?.AddShortTermMemory($"{fi?.Name}을(를) 요리해서 {pick.Item2}", "", curLocation?.GetSimpleKey()); } catch { }
+			}
 		}
 		await SimDelay.DelaySimMinutes(1, token);
 		return picked;
 	}
-#endregion
+	#endregion
 
 	#region Cooking Helpers
 	private static Dictionary<string, int> BuildIngredientCounts(List<Entity> ingredients)
@@ -857,7 +857,10 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 			if (HandItem == item)
 			{
 				HandItem = null;
-				if (item.gameObject != null) Destroy(item.gameObject);
+				if (item.gameObject != null)
+				{
+					item.SafetyDestroy();
+				}
 				continue;
 			}
 			// Inventory
@@ -876,7 +879,10 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 			}
 			if (removedFromInven)
 			{
-				if (item.gameObject != null) Destroy(item.gameObject);
+				if (item.gameObject != null)
+				{
+					item.SafetyDestroy();
+				}
 				continue;
 			}
 
@@ -884,16 +890,23 @@ public CookRecipeSummary[] GetCookRecipeSummaries()
 			if (item.curLocation is InventoryBox invBox)
 			{
 				try { invBox.RemoveItem(item); } catch { }
-				if (item.gameObject != null) Destroy(item.gameObject);
+				if (item.gameObject != null)
+				{
+					item.SafetyDestroy();
+				}
 				continue;
 			}
 			// World (주변)
-			if (item.gameObject != null) Destroy(item.gameObject);
+			if (item.gameObject != null)
+			{
+				item.SafetyDestroy();
+			}
+
 		}
 
 		return true;
 	}
-#endregion
+	#endregion
 
 #if UNITY_EDITOR
 	[FoldoutGroup("Debug"), Button("Toggle Force New DayPlan (Per-Actor)")]

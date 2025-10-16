@@ -16,7 +16,6 @@ public abstract class FoodItem : Item, IUsable
 
         // 이름/참조 스냅샷 (파괴 전 안전하게 기록)
         string foodName = this != null ? this.Name : "음식";
-        var go = this != null ? this.gameObject : null;
 
         // 모든 Status Effects 적용
         Entity.ApplyIfInRange(ref actor.Hunger, hungerEffect);
@@ -45,10 +44,8 @@ public abstract class FoodItem : Item, IUsable
         }
 
         // 오브젝트 삭제는 마지막에 한 번만 수행
-        if (go != null)
-        {
-            Destroy(go);
-        }
+
+        SafetyDestroy();
 
         return $"{actor.Name}가 {foodName}을(를) 먹었습니다.";
 

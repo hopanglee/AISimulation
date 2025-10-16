@@ -56,7 +56,8 @@ public class TrashBin : InventoryBox
         {
             if (item != null)
             {
-                Destroy(item.gameObject);
+                //Destroy(item.gameObject);
+                item.SafetyDestroy();
             }
         }
 
