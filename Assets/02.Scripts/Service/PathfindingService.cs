@@ -156,17 +156,31 @@ public class PathfindingService : IPathfindingService
                 return ReconstructPath(parent, startArea, current);
             }
 
-            if (current.toMovePos.Keys != null)
+            // 이웃 탐색: connectedAreas와 toMovePos 키 모두를 사용하되, 중복은 제거
+            var neighbors = new HashSet<Area>();
+            if (current.connectedAreas != null && current.connectedAreas.Count > 0)
             {
-                foreach (var connected in current.toMovePos.Keys)
+                foreach (var a in current.connectedAreas)
                 {
-                    if (connected == null) continue;
-                    if (!visited.Contains(connected))
-                    {
-                        visited.Add(connected);
-                        parent[connected] = current;
-                        queue.Enqueue(connected);
-                    }
+                    if (a != null) neighbors.Add(a);
+                }
+            }
+            if (current.toMovePos != null && current.toMovePos.Keys != null)
+            {
+                foreach (var a in current.toMovePos.Keys)
+                {
+                    if (a != null) neighbors.Add(a);
+                }
+            }
+
+            foreach (var connected in neighbors)
+            {
+                if (connected == null) continue;
+                if (!visited.Contains(connected))
+                {
+                    visited.Add(connected);
+                    parent[connected] = current;
+                    queue.Enqueue(connected);
                 }
             }
 

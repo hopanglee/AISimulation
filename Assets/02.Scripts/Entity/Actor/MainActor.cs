@@ -80,16 +80,9 @@ public abstract class MainActor : Actor
 	public int SleepHour => sleepHour;
 	public int SleepinessThreshold => sleepinessThreshold;
 
-	[Header("Cleanliness Decay System")]
-	[SerializeField, Tooltip("청결도가 감소하는 간격 (분)")]
-	private int cleanlinessDecayIntervalMinutes = 10; // 10분마다
-	[SerializeField, Tooltip("한 번에 감소하는 청결도")]
-	private int cleanlinessDecayAmount = 1;
-
 	[Header("Status Update System")]
 	[SerializeField, Tooltip("스텟 업데이트하는 간격 (분)")]
 	private int statusUpdateIntervalMinutes = 5; // 5분마다
-	private GameTime lastCleanlinessDecayTime;
 	private GameTime lastStatusUpdateTime;
 
 	[Header("Activity System")]
@@ -473,10 +466,6 @@ public abstract class MainActor : Actor
 	{
 		// 생일 체크 및 나이 증가 처리
 		CheckBirthdayAndAgeUp(currentTime); // async 함수를 백그라운드로 호출
-
-		// 청결도 감소 처리 (시뮬레이션 시간 기준)
-		UpdateCleanlinessDecay(currentTime);
-
 		UpdateStatus(currentTime);
 
 		if (!useGPT) return;
@@ -500,13 +489,25 @@ public abstract class MainActor : Actor
 		// 현재 시간과 마지막 감소 시간의 차이를 분 단위로 계산
 		int minutesDiff = currentTime.GetMinutesSince(lastStatusUpdateTime);
 
-		// 설정된 간격만큼 시간이 지났으면 청결도 감소
+		// 설정된 간격만큼 시간이 지났으면 상태 효과를 '틱' 단위로 적용 (Entity.StatusModifier 사용)
 		if (minutesDiff >= statusUpdateIntervalMinutes)
 		{
-
 			lastStatusUpdateTime = currentTime;
+			if (curLocation != null)
+			{
+				curLocation.ApplyStatus(this); // 위치 체인(Entity)의 hunger/thirst/cleanlinessEffect 등 적용
+			}
+			// 추가: MainActor 자신의 Status Effects도 본인에게 적용
+			Entity.ApplyIfInRange(ref Hunger, hungerEffect);
+			Entity.ApplyIfInRange(ref Thirst, thirstEffect);
+			Entity.ApplyIfInRange(ref Stamina, staminaEffect);
+			Entity.ApplyIfInRange(ref Cleanliness, cleanlinessEffect);
+			Entity.ApplyIfInRange(ref MentalPleasure, mentalPleasureEffect);
+			Entity.ApplyIfInRange(ref Stress, stressEffect);
+			Entity.ApplyIfInRange(ref Sleepiness, sleepinessEffect);
+			Entity.ApplyIfInRange(ref Judgment, judgmentEffect);
 		}
-		curLocation.ApplyStatus(this);
+
 	}
 
 	/// <summary>
@@ -550,32 +551,7 @@ public abstract class MainActor : Actor
 		}
 	}
 
-	/// <summary>
-	/// 시뮬레이션 시간 기준으로 청결도 감소 처리
-	/// </summary>
-	private void UpdateCleanlinessDecay(GameTime currentTime)
-	{
-		// lastCleanlinessDecayTime이 초기화되지 않았으면 현재 시간으로 설정
-		if (lastCleanlinessDecayTime == null)
-		{
-			lastCleanlinessDecayTime = currentTime;
-			return;
-		}
 
-		// 현재 시간과 마지막 감소 시간의 차이를 분 단위로 계산
-		int minutesDiff = currentTime.GetMinutesSince(lastCleanlinessDecayTime);
-
-		// 설정된 간격만큼 시간이 지났으면 청결도 감소
-		if (minutesDiff >= cleanlinessDecayIntervalMinutes)
-		{
-			if (Cleanliness > 0)
-			{
-				Cleanliness = Mathf.Max(0, Cleanliness - cleanlinessDecayAmount);
-				Debug.Log($"[{Name}] 청결도 감소: {Cleanliness + cleanlinessDecayAmount} → {Cleanliness} (감소량: {cleanlinessDecayAmount})");
-			}
-			lastCleanlinessDecayTime = currentTime;
-		}
-	}
 
 
 

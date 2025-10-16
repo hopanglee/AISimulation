@@ -522,11 +522,11 @@ public abstract class LLMClient
             var line = target?.GetFileLineNumber() ?? 0;
             var methodName = method != null ? $"{method.DeclaringType?.FullName}.{method.Name}" : "[unknown method]";
 
-            Debug.LogError($"[GPT][{context}] {ex.GetType().Name}: {ex.Message}\n at {fileName}:{line}\n in {methodName}\nStackTrace:\n{ex}");
+            Debug.LogError($"[LLMClient][{context}] {ex.GetType().Name}: {ex.Message}\n at {fileName}:{line}\n in {methodName}\nStackTrace:\n{ex}");
         }
         catch (Exception logEx)
         {
-            Debug.LogError($"[GPT] Failed to log exception details: {logEx.Message}. Original error: {ex.Message}\nOriginal stack:\n{ex}");
+            Debug.LogError($"[LLMClient] Failed to log exception details: {logEx.Message}. Original error: {ex.Message}\nOriginal stack:\n{ex}");
         }
     }
     #endregion

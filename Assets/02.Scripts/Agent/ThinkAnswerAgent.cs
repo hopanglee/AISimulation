@@ -29,7 +29,6 @@ namespace Agent
             AddTools(ToolManager.NeutralToolDefinitions.LoadRelationshipByName);
 
             AddTools(ToolManager.NeutralToolDefinitions.GetWorldAreaInfo);
-            AddTools(ToolManager.NeutralToolSets.Memory);
         }
 
         /// <summary>
