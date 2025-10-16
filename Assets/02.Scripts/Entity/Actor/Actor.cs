@@ -630,6 +630,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                     // 빈 슬롯을 찾았으면 거기에 넣기
                     _inventoryItems[i] = clothing;
                     clothing.curLocation = Inven;
+                    clothing.gameObject.SetActive(false);
                     Debug.Log($"[{Name}] {clothing.Name}을(를) 벗어서 인벤토리 슬롯 {i + 1}에 넣었습니다.");
                     inventoryFull = false;
                     break;
