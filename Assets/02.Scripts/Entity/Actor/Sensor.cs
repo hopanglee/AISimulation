@@ -8,7 +8,7 @@ using UnityEngine;
 public class Sensor
 {
     private Actor owner;
-    private float interactionRange = 1f; // 상호작용 가능한 거리
+    private float interactionRange = 0.85f; // 상호작용 가능한 거리
 
     [System.Serializable]
     public class EntityDictionary
