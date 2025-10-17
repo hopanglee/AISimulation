@@ -82,7 +82,7 @@ public abstract class MainActor : Actor
 
 	[Header("Status Update System")]
 	[SerializeField, Tooltip("스텟 업데이트하는 간격 (분)")]
-	private int statusUpdateIntervalMinutes = 5; // 5분마다
+	private int statusUpdateIntervalMinutes = 10; // 10분마다
 	private GameTime lastStatusUpdateTime;
 
 	[Header("Activity System")]

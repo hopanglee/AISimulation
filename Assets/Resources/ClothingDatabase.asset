@@ -121,3 +121,7 @@ MonoBehaviour:
     clothingType: 11
     gender: 1
     fbxPrefab: {fileID: 100062, guid: 8f39849b90fa5584b845afe7482c2a2e, type: 3}
+  - actorId: 2
+    clothingType: 7
+    gender: 0
+    fbxPrefab: {fileID: 8241731701272768511, guid: 41bcb7b42f55dbd4ea9a2005da1eef08, type: 3}
