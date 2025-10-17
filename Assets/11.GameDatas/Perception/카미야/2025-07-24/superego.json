@@ -13,6 +13,10 @@
       "intensity": 0.8
     },
     {
+      "name": "차분",
+      "intensity": 0.8
+    },
+    {
       "name": "책임감",
       "intensity": 0.9
     },
@@ -23,8 +27,11 @@
     {
       "name": "불안",
       "intensity": 0.6
+      "name": "불안",
+      "intensity": 0.6
     },
     {
+      "name": "희망",
       "name": "희망",
       "intensity": 0.6
     }
