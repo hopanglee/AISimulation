@@ -494,6 +494,13 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 clothing.transform.localRotation = Quaternion.identity;
                 clothing.transform.localScale = Vector3.one;
             }
+            
+            // 손에 들고 있던 의상을 입은 경우 손 비우기
+            if (HandItem == clothing)
+            {
+                HandItem = null;
+            }
+
 
             // 기존 의상이 있었다면 손으로 이동
             if (oldClothing != null)

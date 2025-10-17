@@ -1,9 +1,0 @@
-﻿{
-  "payload": "지금 소화가 너무 안 좋은데, 이 상태로 히노를 만나러 갔을 때 그녀 앞에서 내가 괴로워하면 그녀는 어떤 기분이 들까?",
-  "tools": [
-    {
-      "name": "LoadRelationshipByName",
-      "argsJson": "{\"targetName\":\"\\uD788\\uB178 \\uB9C8\\uC624\\uB9AC\"}"
-    }
-  ]
-}

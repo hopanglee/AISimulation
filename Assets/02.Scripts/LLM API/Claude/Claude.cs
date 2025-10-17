@@ -216,6 +216,7 @@ public class Claude : LLMClient
         {
             string result = toolExecutor.ExecuteTool(name, param);
             AddToolMessage(id, name, result);
+            Debug.Log($"<color=yellow>[ToolResult][{name}] {result}</color>");
             // 도구 실행 기록 저장 (캐시 리플레이용)
             try
             {
@@ -349,7 +350,7 @@ public class Claude : LLMClient
                                 || message.IndexOf("rate limited", StringComparison.OrdinalIgnoreCase) >= 0
                                 || message.IndexOf("exceed the rate limit", StringComparison.OrdinalIgnoreCase) >= 0)
                             {
-                                delay = 70_000; // 70초
+                                delay = 100_000; // 100초
                                 Debug.Log("[Claude] Rate limit detected. Waiting 70s before retry.");
                             }
                             // 서버 과부하(overloaded)인 경우 5분 대기 (실제 시간)

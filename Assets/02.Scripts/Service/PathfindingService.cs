@@ -237,7 +237,33 @@ public class PathfindingService : IPathfindingService
 
         path.Add(start);
         path.Reverse();
-        return path.Select(area => area.locationName).ToList();
+        var locationService = Services.Get<ILocationService>();
+        return path.Select(area =>
+        {
+            if (locationService != null)
+            {
+                var building = locationService.GetBuilding(area);
+                if (building != null && !string.IsNullOrEmpty(building.locationName))
+                {
+                    // Show from building level onward: e.g., "카페 모카하우스:홀"
+                    var full = area.LocationToString();
+                    if (!string.IsNullOrEmpty(full))
+                    {
+                        var tokens = full.Split(':');
+                        for (int i = 0; i < tokens.Length; i++)
+                        {
+                            if (string.Equals(tokens[i], building.locationName, System.StringComparison.Ordinal))
+                            {
+                                return string.Join(":", tokens, i, tokens.Length - i);
+                            }
+                        }
+
+                        Debug.LogWarning($"Failed to parse full path: {full} for area: {area.locationName}, building: {building.locationName}");
+                    }
+                }
+            }
+            return area.locationName; // default: area name
+        }).ToList();
     }
 
     public string FindNearestArea(Vector3 position)

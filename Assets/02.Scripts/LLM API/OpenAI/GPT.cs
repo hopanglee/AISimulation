@@ -710,6 +710,7 @@ public class GPT : LLMClient
         {
             string result = toolExecutor.ExecuteTool(toolCall);
             AddToolMessage(toolCall.FunctionName, toolCall.Id, result);
+            Debug.Log($"<color=yellow>[ToolResult][{toolCall.FunctionName}] {result}</color>");
             // 도구 실행 기록 저장 (캐시 리플레이용)
             try
             {
