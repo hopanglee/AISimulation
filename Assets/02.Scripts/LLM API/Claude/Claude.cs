@@ -388,7 +388,7 @@ public class Claude : LLMClient
                     if (readIn > 0)
                         Debug.Log($"<b>[Claude][Cache HIT] read_in={readIn}</b>");
                     else
-                        Debug.Log($"[Claude][Cache] creation_in={creationIn}, read_in={readIn}");
+                        Debug.Log($"<b>[Claude][Cache] creation_in={creationIn}, read_in={readIn}</b>");
                 }
             }
             catch { }

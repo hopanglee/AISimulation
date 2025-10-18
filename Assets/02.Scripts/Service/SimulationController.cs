@@ -47,6 +47,14 @@ public class SimulationController : MonoBehaviour
     public TextMeshProUGUI hinoActivityText;
     public TextMeshProUGUI watayaActivityText;
 
+    [Header("Actor Bubble UI References")]
+    [SerializeField] private ActivityBubbleUI hinoActivityBubbleUI;
+    [SerializeField] private ActivityBubbleUI kamiyaActivityBubbleUI;
+    [SerializeField] private ActivityBubbleUI watayaActivityBubbleUI;
+    [SerializeField] private SpeechBubbleUI hinoSpeechBubbleUI;
+    [SerializeField] private SpeechBubbleUI kamiyaSpeechBubbleUI;
+    [SerializeField] private SpeechBubbleUI watayaSpeechBubbleUI;
+
     [Header("Split View Cameras")]
     [SerializeField]
     private Camera hinoCamera;
@@ -526,6 +534,38 @@ public class SimulationController : MonoBehaviour
         if (focusWatayaButton != null && focusWatayaButton.gameObject.activeSelf != showFocusButtons)
             focusWatayaButton.gameObject.SetActive(showFocusButtons);
         //Debug.Log($"[SimulationController] 전용 카메라 3개 {(splitViewEnabled ? "활성화" : "비활성화")} (히노/카미야/이즈미)");
+
+        // Update ActivityBubbleUI / SpeechBubbleUI cameras based on split view state (using inspector references)
+        try
+        {
+            var main = Camera.main;
+            var hinoActivity = hinoActivityBubbleUI;
+            var kamiyaActivity = kamiyaActivityBubbleUI;
+            var watayaActivity = watayaActivityBubbleUI;
+            var hinoSpeech = hinoSpeechBubbleUI;
+            var kamiyaSpeech = kamiyaSpeechBubbleUI;
+            var watayaSpeech = watayaSpeechBubbleUI;
+
+            if (splitViewEnabled)
+            {
+                if (hinoActivity != null && hinoCamera != null) hinoActivity.SetMainCamera(hinoCamera);
+                if (kamiyaActivity != null && kamiyaCamera != null) kamiyaActivity.SetMainCamera(kamiyaCamera);
+                if (watayaActivity != null && watayaCamera != null) watayaActivity.SetMainCamera(watayaCamera);
+                if (hinoSpeech != null && hinoCamera != null) hinoSpeech.SetMainCamera(hinoCamera);
+                if (kamiyaSpeech != null && kamiyaCamera != null) kamiyaSpeech.SetMainCamera(kamiyaCamera);
+                if (watayaSpeech != null && watayaCamera != null) watayaSpeech.SetMainCamera(watayaCamera);
+            }
+            else
+            {
+                if (hinoActivity != null) hinoActivity.SetMainCamera(main);
+                if (kamiyaActivity != null) kamiyaActivity.SetMainCamera(main);
+                if (watayaActivity != null) watayaActivity.SetMainCamera(main);
+                if (hinoSpeech != null) hinoSpeech.SetMainCamera(main);
+                if (kamiyaSpeech != null) kamiyaSpeech.SetMainCamera(main);
+                if (watayaSpeech != null) watayaSpeech.SetMainCamera(main);
+            }
+        }
+        catch { }
     }
 
     

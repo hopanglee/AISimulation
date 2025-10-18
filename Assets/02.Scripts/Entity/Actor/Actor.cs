@@ -419,15 +419,24 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 // location이 InventoryBox인 경우 AddItem 호출
                 if (location is InventoryBox inventoryBox)
                 {
-                    if (inventoryBox.AddItem(HandItem))
+                    var addResult = inventoryBox.AddItem(HandItem);
+                    if (addResult.Item1)
                     {
                         // AddItem 성공 시 HandItem 초기화
                         HandItem = null;
-                        Debug.Log($"[{Name}] {itemName}을(를) {inventoryBox.name}에 성공적으로 추가했습니다.");
+                        if (this is MainActor mainActor)
+                        {
+                            mainActor.brain?.memoryManager?.AddShortTermMemory(addResult.Item2, "", mainActor?.curLocation?.GetSimpleKey());
+                        }
+                        Debug.Log($"[{Name}] {addResult.Item2}");
                     }
                     else
                     {
-                        Debug.LogWarning($"[{Name}] {itemName}을(를) {inventoryBox.name}에 추가하는데 실패했습니다.");
+                        if (this is MainActor mainActor)
+                        {
+                            mainActor.brain?.memoryManager?.AddShortTermMemory(addResult.Item2, "", mainActor?.curLocation?.GetSimpleKey());
+                        }
+                        Debug.LogWarning($"[{Name}] {addResult.Item2}");
                     }
                 }
                 else
@@ -494,7 +503,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 clothing.transform.localRotation = Quaternion.identity;
                 clothing.transform.localScale = Vector3.one;
             }
-            
+
             // 손에 들고 있던 의상을 입은 경우 손 비우기
             if (HandItem == clothing)
             {
@@ -2000,14 +2009,14 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                     relationshipText += $"  친밀도: {relationshipMemory.Closeness:F1}, 신뢰도: {relationshipMemory.Trust:F1}\n";
 
                     // 마지막 상호작용
-                    if (relationshipMemory.LastInteraction != default(GameTime))
-                    {
-                        relationshipText += $"  마지막 상호작용: {relationshipMemory.LastInteraction}\n";
-                    }
-                    else
-                    {
-                        relationshipText += $"  마지막 상호작용: 없음\n";
-                    }
+                    // if (relationshipMemory.LastInteraction != default(GameTime))
+                    // {
+                    //     relationshipText += $"  마지막 상호작용: {relationshipMemory.LastInteraction}\n";
+                    // }
+                    // else
+                    // {
+                    //     relationshipText += $"  마지막 상호작용: 없음\n";
+                    // }
 
                     // 성격 특성
                     if (relationshipMemory.PersonalityTraits != null && relationshipMemory.PersonalityTraits.Count > 0)
@@ -2020,34 +2029,34 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                     }
 
                     // 공통 관심사
-                    if (relationshipMemory.SharedInterests != null && relationshipMemory.SharedInterests.Count > 0)
-                    {
-                        relationshipText += $"  공통 관심사: {string.Join(", ", relationshipMemory.SharedInterests)}\n";
-                    }
-                    else
-                    {
-                        relationshipText += $"  공통 관심사: 아직 모름\n";
-                    }
+                    // if (relationshipMemory.SharedInterests != null && relationshipMemory.SharedInterests.Count > 0)
+                    // {
+                    //     relationshipText += $"  공통 관심사: {string.Join(", ", relationshipMemory.SharedInterests)}\n";
+                    // }
+                    // else
+                    // {
+                    //     relationshipText += $"  공통 관심사: 아직 모름\n";
+                    // }
 
                     // 공유 기억
-                    if (relationshipMemory.SharedMemories != null && relationshipMemory.SharedMemories.Count > 0)
-                    {
-                        relationshipText += $"  공유 기억: {string.Join(", ", relationshipMemory.SharedMemories)}\n";
-                    }
-                    else
-                    {
-                        relationshipText += $"  공유 기억: 없음\n";
-                    }
+                    // if (relationshipMemory.SharedMemories != null && relationshipMemory.SharedMemories.Count > 0)
+                    // {
+                    //     relationshipText += $"  공유 기억: {string.Join(", ", relationshipMemory.SharedMemories)}\n";
+                    // }
+                    // else
+                    // {
+                    //     relationshipText += $"  공유 기억: 없음\n";
+                    // }
 
                     // 상호작용 이력
-                    if (relationshipMemory.InteractionHistory != null && relationshipMemory.InteractionHistory.Count > 0)
-                    {
-                        relationshipText += $"  상호작용 이력: {string.Join(", ", relationshipMemory.InteractionHistory)}\n";
-                    }
-                    else
-                    {
-                        relationshipText += $"  상호작용 이력: 없음\n";
-                    }
+                    // if (relationshipMemory.InteractionHistory != null && relationshipMemory.InteractionHistory.Count > 0)
+                    // {
+                    //     relationshipText += $"  상호작용 이력: {string.Join(", ", relationshipMemory.InteractionHistory)}\n";
+                    // }
+                    // else
+                    // {
+                    //     relationshipText += $"  상호작용 이력: 없음\n";
+                    // }
 
                     // 메모
                     if (relationshipMemory.Notes != null && relationshipMemory.Notes.Count > 0)

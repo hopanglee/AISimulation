@@ -14,9 +14,9 @@ using Anthropic.SDK.Constants;
 /// 자아 에이전트 - 이성과 본능의 타협을 담당
 /// 두 에이전트의 결과를 적절히 조합하여 최종 결정을 내립니다.
 /// </summary>
-public class EgoAgent : Claude
+public class EgoAgent : GPT
 {
-    public EgoAgent(Actor actor) : base(actor, AnthropicModels.Claude45Sonnet)
+    public EgoAgent(Actor actor) : base(actor, "gpt-5")
     {
         SetAgentType(nameof(EgoAgent));
 
@@ -41,9 +41,9 @@ public class EgoAgent : Claude
             {
                 { "character_name", actor.Name },
                 { "personality", actor.LoadPersonality() },
-                { "info", ""},//$"- 정보: {characterInfo}\n" },
+                { "info", $"- 정보: {characterInfo}\n" }, 
                 { "memory", $"{characterMemory}\n" },
-                { "character_situation", ""},// $"{actor.Name}의 현재 상태: \n{actor.LoadActorSituation()}\n" },
+                { "character_situation", $"{actor.Name}의 현재 상태: \n{actor.LoadActorSituation()}\n" },
                // { "goal", actor.LoadGoal() }
             };
 
@@ -298,9 +298,9 @@ public class EgoAgent : Claude
                 { "superego_result",superegoResult.situation_interpretation },
                 { "id_result", idResult.situation_interpretation },
                 { "superego_emotion", superegoEmotions },
-                { "id_emotion", idEmotions }
-                //{ "superego_thought_chain", string.Join(" -> ", superegoResult.thought_chain) },
-                //{ "id_thought_chain", string.Join(" -> ", idResult.thought_chain) }
+                { "id_emotion", idEmotions },
+                { "superego_thought_chain", string.Join(" -> ", superegoResult.thought_chain) },
+                { "id_thought_chain", string.Join(" -> ", idResult.thought_chain) }
             };
             var userMessage = localizationService.GetLocalizedText("ego_agent_results", replacements);
             AddUserMessage(userMessage);

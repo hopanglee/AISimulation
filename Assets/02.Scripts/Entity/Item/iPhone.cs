@@ -134,7 +134,7 @@ public class iPhone : Item, IUsable
             iPhone targetIPhone = thinkingTarget.iPhone;
             if (targetIPhone == null)
             {
-                return $"{targetName}은 아이폰을 가지고 있지 않다..";
+                return $"{targetName}은(는) 아이폰을 가지고 있지 않다..";
             }
 
             string time = GetTime();
@@ -173,7 +173,7 @@ public class iPhone : Item, IUsable
         }
         else
         {
-            return $"{targetName}은 아이폰을 가지고 있지 않다..";
+            return $"{targetName}은(는) 아이폰을 가지고 있지 않다..";
         }
     }
 

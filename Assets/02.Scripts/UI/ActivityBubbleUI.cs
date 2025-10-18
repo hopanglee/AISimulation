@@ -100,6 +100,11 @@ public class ActivityBubbleUI : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    public void SetMainCamera(Camera cam)
+    {
+        mainCamera = cam;
+    }
+
     public void SetFollowTarget(Transform target)
     {
         followTarget = target;

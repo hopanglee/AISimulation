@@ -156,7 +156,7 @@ public class ExternalEventService : IExternalEventService
             };
 
             SendExternalEvent(externalEvent);
-            Debug.Log($"[ExternalEventService] {targetActor.Name}에게 iPhone 알림 이벤트 발생: {notificationContent}");
+            Debug.Log($"<color=yellow>[ExternalEventService]</color> {targetActor.Name}에게 iPhone 알림 이벤트 발생: {notificationContent}");
         }
     }
 
@@ -240,7 +240,7 @@ public class ExternalEventService : IExternalEventService
             // MainActor만 Brain을 가지고 있으므로 체크
             if (targetActor is MainActor mainActor && mainActor.brain != null)
             {
-                Debug.Log($"[ExternalEventService] {targetActor.Name}에게 외부 이벤트 전송: {externalEvent.EventType} - {externalEvent.AdditionalInfo}");
+                Debug.Log($"<color=yellow>[ExternalEventService]</color> {targetActor.Name}에게 외부 이벤트 전송: {externalEvent.EventType} - {externalEvent.AdditionalInfo}");
                 
                 // 이벤트 전송 시간 기록 (중복 방지용)
                 lastEventTimes[targetActor] = DateTime.Now;

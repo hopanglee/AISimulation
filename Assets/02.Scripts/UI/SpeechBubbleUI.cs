@@ -380,6 +380,11 @@ public class SpeechBubbleUI : MonoBehaviour
         StartCoroutine(ResetProcessingFlag(messages.Count * spacingBetweenBubbles + 0.1f));
     }
 
+    public void SetMainCamera(Camera cam)
+    {
+        mainCamera = cam;
+    }
+
     private IEnumerator ShowSpeechWithDelay(string message, float duration, float delay, Color? bgColor = null, Color? textColor = null)
     {
         yield return new WaitForSeconds(delay);

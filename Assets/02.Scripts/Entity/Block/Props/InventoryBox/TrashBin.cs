@@ -17,11 +17,11 @@ public class TrashBin : InventoryBox
     }
 
     // maxItems와 itemPlacementPosition 제한을 우회하여 무제한으로 아이템 추가
-    public override bool AddItem(Entity item)
+    public override (bool, string) AddItem(Entity item)
     {
         if (isFull)
         {
-            return false;
+            return (false, $"{Name}에 이미 물건이 많아서  {item.Name}을(를) 놓을 공간이 부족합니다.");
         }
 
         // 부모 클래스의 제한을 우회하고 직접 아이템 추가
@@ -36,7 +36,7 @@ public class TrashBin : InventoryBox
         item.gameObject.SetActive(false);
 
         UpdateTrashStatus();
-        return true;
+        return (true, $"{Name}에 {item.Name}을(를) 버렸습니다.");
     }
 
     public override Entity GetItem(string itemKey)

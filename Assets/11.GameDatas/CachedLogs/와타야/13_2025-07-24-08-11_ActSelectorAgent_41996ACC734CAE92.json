@@ -1,0 +1,13 @@
+﻿{
+  "payload": {
+    "act_type": "UseObject",
+    "reasoning": "(마셔야지, 목이 탔어… 지금 화난 얼굴로 바로 연락하면 망가뜨릴 테니까. 물 한 모금으로 숨 고르고, 도넛도 한입 물고 정신 집중해야 해. 빨리 진정하고 핸드폰으로 둘한테 메시지 보내는 게 우선이야.)",
+    "intention": "물을 마셔서 진정하고 당장 휴대폰 확인·문자 보낼 준비를 한다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"물컵\"}"
+    }
+  ]
+}

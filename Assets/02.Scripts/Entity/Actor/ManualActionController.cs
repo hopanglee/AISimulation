@@ -419,7 +419,7 @@ public class ManualActionController
                 if (mainActor.HandItem != null)
                 {
                     var addResult = inventoryBox.AddItem(mainActor.HandItem);
-                    if (addResult)
+                    if (addResult.Item1)
                     {
                         Debug.Log($"[ManualActionController] InventoryBox Add 성공: {mainActor.HandItem.Name}을(를) 추가했습니다.");
                         mainActor.HandItem = null; // 손에서 제거

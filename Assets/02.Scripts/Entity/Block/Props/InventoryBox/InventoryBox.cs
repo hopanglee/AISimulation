@@ -163,11 +163,11 @@ public abstract class InventoryBox : InteractableProp
     }
     
     // 기본 구현을 제공하는 virtual 메서드들
-    public virtual bool AddItem(Entity item)
+    public virtual (bool, string) AddItem(Entity item)
     {
         if (items.Count >= maxItems)
         {
-            return false;
+            return (false, $"{Name}에 이미 물건이 많아서 {item.Name}을(를) 놓을 공간이 부족합니다.");
         }
         
         if (useSimplePlacement)
@@ -179,7 +179,7 @@ public abstract class InventoryBox : InteractableProp
             item.transform.localRotation = Quaternion.identity;
             item.curLocation = this;
             item.gameObject.SetActive(false);
-            return true;
+            return (true, $"{Name}에 {item.Name}을(를) 놓았습니다.");
         }
         else
         {
@@ -188,7 +188,7 @@ public abstract class InventoryBox : InteractableProp
             int emptyPosition = FindEmptyPosition();
             if (emptyPosition == -1)
             {
-                return false;
+                return (false, "ERROR: 빈 위치를 찾을 수 없습니다.");
             }
             
             items.Add(item);
@@ -196,7 +196,7 @@ public abstract class InventoryBox : InteractableProp
             // 아이템을 위치에 배치
             PlaceItemAtPosition(item, emptyPosition);
             
-            return true;
+            return (true, $"{Name}에 {item.Name}을(를) 놓았습니다.");
         }
     }
     
@@ -502,18 +502,19 @@ public abstract class InventoryBox : InteractableProp
             // 인벤토리에 아이템 추가 (AddItem 사용)
             if (bubble != null) bubble.Show($"{handItem.Name}을(를) {Name}에 놓는 중", 0);
             await SimDelay.DelaySimMinutes(1, cancellationToken);
-            if (AddItem(handItem))
+            var addResult = AddItem(handItem);
+            if (addResult.Item1)
             {
                 if (bubble != null) bubble.Hide();
                 //await SimDelay.DelaySimMinutes(1, cancellationToken);
-                return $"{handItem.Name}을(를) {Name}에 보관했습니다.";
+                return addResult.Item2;
             }
             else
             {
                 // 실패한 경우 아이템을 다시 손에 돌려줌
                 if (bubble != null) bubble.Hide();
                 actor.HandItem = handItem;
-                return $"{Name}이(가) 가득 차서 {handItem.Name}을(를) 보관할 수 없습니다.";
+                return addResult.Item2;
             }
         }
         else
