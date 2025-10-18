@@ -38,6 +38,12 @@ public class MoveController : MonoBehaviour
 
     public void SetTarget(Vector3 vector)
     {
+        if (followerEntity != null)
+        {
+            // Ensure movement can resume after a forced stop
+            followerEntity.canMove = true;
+            followerEntity.isStopped = false;
+        }
         followerEntity?.SetDestination(vector);
         lastTargetPosition = vector;
         lastTargetTransform = null;
@@ -52,6 +58,13 @@ public class MoveController : MonoBehaviour
     {
         if (transform == null)
             Debug.LogError("Target Transform is NULL");
+
+        if (followerEntity != null)
+        {
+            // Ensure movement can resume after a forced stop
+            followerEntity.canMove = true;
+            followerEntity.isStopped = false;
+        }
 
         if (aIDestinationSetter != null)
         {
@@ -196,7 +209,15 @@ public class MoveController : MonoBehaviour
             aIDestinationSetter.target = null;
         else
         {
-            followerEntity?.SetDestination(followerEntity.transform.position);
+            // Clear any active destination/path
+            followerEntity?.SetDestination(Vector3.positiveInfinity);
+        }
+
+        if (followerEntity != null)
+        {
+            // Hard-stop movement
+            followerEntity.isStopped = true;
+            followerEntity.canMove = false;
         }
 
         if (isMoving)
@@ -204,6 +225,9 @@ public class MoveController : MonoBehaviour
             StopCoroutine(CheckArrival());
             isMoving = false;
         }
+
+        lastTargetTransform = null;
+        lastTargetPosition = null;
 
         OnReached = null;
     }

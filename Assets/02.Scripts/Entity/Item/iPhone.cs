@@ -287,7 +287,14 @@ public class iPhone : Item, IUsable
     /// </summary>
     private string GetTime()
     {
-        return System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+        var timeService = Services.Get<ITimeService>();
+        if (timeService != null)
+        {
+            var t = timeService.CurrentTime;
+            return $"{t.year:D4}-{t.month:D2}-{t.day:D2} {t.hour:D2}:{t.minute:D2}:00";
+        }
+        throw new System.Exception("TimeService is not found");
     }
 
     private void AddRecentChatsToSTM(Actor actor, string partnerName)

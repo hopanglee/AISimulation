@@ -538,7 +538,7 @@ public abstract class MainActor : Actor
 					// CharacterInfo 저장
 					await characterMemoryManager.SaveCharacterInfoAsync();
 
-					Debug.Log($"[{Name}] 생일입니다! {characterInfo.Age}세가 되었습니다! 🎉");
+					Debug.Log($"<color=blue>[{Name}] 생일입니다! {characterInfo.Age}세가 되었습니다! 🎉</color>");
 
 					// 생일 이벤트를 메모리에 추가할 수도 있음
 					// TODO: 생일 이벤트를 단기/장기 메모리에 추가하는 로직

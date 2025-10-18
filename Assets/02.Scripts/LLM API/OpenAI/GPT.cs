@@ -53,7 +53,7 @@ public class GPT : LLMClient
 
         client = new(model: modelName, apiKey: apiKey);
         // Ensure sufficient output tokens to avoid truncation
-        try { this.options.MaxOutputTokenCount = 3072; } catch { }
+        try { this.options.MaxOutputTokenCount = 4096; } catch { }
         TryApplyLowOutputMode(this.options);
         this.toolExecutor = new ToolExecutor(actor);
         this.SetActor(actor);

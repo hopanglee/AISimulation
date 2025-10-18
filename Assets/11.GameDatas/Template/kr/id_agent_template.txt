@@ -1,8 +1,5 @@
 오늘 날짜와 시간: {current_time}
 
-{character_name}의 가장 최근 기억
-{short_term_memory}
-
 {current_plan}
 
 오늘의 기억을 분석해서, 지금 시점의 상황해석과 생각을 만들어내세요.

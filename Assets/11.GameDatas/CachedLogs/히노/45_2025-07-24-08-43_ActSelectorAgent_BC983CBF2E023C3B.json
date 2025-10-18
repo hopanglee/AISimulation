@@ -1,0 +1,13 @@
+﻿{
+  "payload": {
+    "act_type": "UseObject",
+    "reasoning": "아이폰이 손에 있으므로 지금 와타야에게 상황을 공유하고 동행을 부탁하는 메시지를 보내는 것이 가장 자연스럽다.",
+    "intention": "와타야에게 기억에 구멍이 있어 불안하니 오늘 16:00 모카하우스에 함께 가줄 수 있는지 부드럽고 사실 위주로 요청하는 메시지를 보낸다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"아이폰\"}"
+    }
+  ]
+}

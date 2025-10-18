@@ -21,7 +21,7 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public PerformActivityParameterAgent(Actor actor) : base(actor)
+        public PerformActivityParameterAgent(Actor actor) : base(actor, "gpt-5")
         {
             // 시스템 프롬프트를 동적으로 빌드: 현재 배우, 관계, 최근 계획 등 치환값 포함
             var characterInfo = actor.LoadCharacterInfo();
@@ -44,7 +44,7 @@ namespace Agent
                             ""additionalProperties"": false,
                             ""properties"": {{
                                 ""ActivityName"": {{ ""type"": ""string"", ""description"": ""수행할 활동 정보"" }},
-                                ""Duration"": {{ ""type"": ""integer"", ""minimum"": 5, ""maximum"": 300, ""description"": ""활동 소요 시간 (분 단위, 5-300분)"" }},
+                                ""Duration"": {{ ""type"": ""integer"", ""minimum"": 3, ""maximum"": 15, ""description"": ""활동 소요 시간 (분 단위, 3-15분)"" }},
                                 ""Result"": {{ ""type"": ""string"", ""description"": ""활동 완료 시 결과. 항상 성공/이상적 금지. 현재 상황에 자연스럽고 때때로 전혀 예상치 못한(작은 실패, 부수 효과, 우연한 발견 등) 현실적인 결과를 1문장으로 작성"" }}
                             }},
                             ""required"": [""ActivityName"", ""Duration"", ""Result""]

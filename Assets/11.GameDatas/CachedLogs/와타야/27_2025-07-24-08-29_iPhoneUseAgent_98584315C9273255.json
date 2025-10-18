@@ -1,0 +1,9 @@
+﻿{
+  "payload": {
+    "command": "chat",
+    "target_actor": "히노",
+    "message": "몇 시에 갈까? 내가 미리 뭘 챙겨가면 좋을까~?",
+    "message_count": null
+  },
+  "tools": []
+}

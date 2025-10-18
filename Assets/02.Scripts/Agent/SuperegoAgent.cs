@@ -19,7 +19,7 @@ public class SuperegoAgent : GPT
     private DayPlanner dayPlanner; // DayPlanner 참조 추가
 
     public SuperegoAgent(Actor actor)
-        : base(actor)
+        : base(actor, "gpt-5")
     {
         SetAgentType(nameof(SuperegoAgent));
 
@@ -319,7 +319,7 @@ public class SuperegoAgent : GPT
             {
                 { "character_name", actor.Name },
                 { "current_time", $"{year}년 {month}월 {day}일 {hour:D2}:{minute:D2}" },
-                { "short_term_memory", actor.LoadShortTermMemory() },
+                //{ "short_term_memory", actor.LoadShortTermMemory() },
             };
             MainActor mainActor = actor as MainActor;
             if (Services.Get<IGameService>().IsDayPlannerEnabled() && mainActor.brain.havePlan)

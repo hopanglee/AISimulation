@@ -16,6 +16,30 @@ using ClaudeTool = Anthropic.SDK.Common.Tool;
 
 public class Claude : LLMClient
 {
+    // Per-actor API key overrides (e.g., different keys for Kamiya vs Hino)
+    private static readonly System.Collections.Generic.Dictionary<string, string> PerActorApiKeys = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Sets an API key override for a specific actor name. Case-insensitive.
+    /// </summary>
+    public static void SetApiKeyForActor(string actorName, string apiKey)
+    {
+        if (!string.IsNullOrEmpty(actorName) && !string.IsNullOrEmpty(apiKey))
+        {
+            PerActorApiKeys[actorName] = apiKey;
+        }
+    }
+
+    /// <summary>
+    /// Removes a previously set API key override for an actor.
+    /// </summary>
+    public static void ClearApiKeyForActor(string actorName)
+    {
+        if (!string.IsNullOrEmpty(actorName))
+        {
+            try { PerActorApiKeys.Remove(actorName); } catch { }
+        }
+    }
 
     private readonly AnthropicClient client;
     private string modelName = AnthropicModels.Claude37Sonnet;
@@ -54,6 +78,18 @@ public class Claude : LLMClient
         }
         else
             Debug.LogError($"No API key in file path : {authPath}");
+
+        // Per-actor API key override (if provided via SetApiKeyForActor)
+        try
+        {
+            var actorName = actor != null ? actor.GetEnglishName() : null;
+            if (!string.IsNullOrEmpty(actorName) && PerActorApiKeys.TryGetValue(actorName, out var overridden))
+            {
+                apiKey = overridden;
+                Debug.Log($"[Claude] Using per-actor API key override for '{actorName}'");
+            }
+        }
+        catch { }
 
         client = new(apiKeys: new APIAuthentication(apiKey));
 
@@ -350,8 +386,10 @@ public class Claude : LLMClient
                                 || message.IndexOf("rate limited", StringComparison.OrdinalIgnoreCase) >= 0
                                 || message.IndexOf("exceed the rate limit", StringComparison.OrdinalIgnoreCase) >= 0)
                             {
-                                delay = 100_000; // 100초
-                                Debug.Log("[Claude] Rate limit detected. Waiting 70s before retry.");
+                                // Try to log current usage from response headers if available
+                                TryLogRateLimitHeaders(callEx);
+                                delay = 120_000; // 100초
+                                Debug.Log("[Claude] Rate limit detected. Waiting 120s before retry.");
                             }
                             // 서버 과부하(overloaded)인 경우 5분 대기 (실제 시간)
                             else if (message.IndexOf("overloaded_error", StringComparison.OrdinalIgnoreCase) >= 0
@@ -365,7 +403,7 @@ public class Claude : LLMClient
                                 delay = apiRetryBaseDelayMs * (int)Math.Pow(2, attempt);
                                 delay += UnityEngine.Random.Range(0, 250);
                             }
-                            Debug.LogWarning($"[Claude] Transient API error: {message}. Retrying in {delay}ms (attempt {attempt + 1}/{maxApiRetries})");
+                            Debug.LogWarning($"[Claude] [{actorName}] Transient API error: {message}. Retrying in {delay}ms (attempt {attempt + 1}/{maxApiRetries})");
                             await System.Threading.Tasks.Task.Delay(delay);
                             attempt++;
                             continue;
@@ -499,6 +537,82 @@ public class Claude : LLMClient
     #endregion
 
     #region 로깅
+    private void TryLogRateLimitHeaders(Exception ex)
+    {
+        try
+        {
+            // Attempt to extract HTTP response headers if the SDK exposes them on the exception
+            // Common patterns: ex.Data["ResponseHeaders"], inner exception types, or properties like 'Headers'
+            var headers = default(System.Collections.IDictionary);
+            if (ex != null)
+            {
+                // Try Data bag first
+                if (ex.Data != null && ex.Data.Count > 0)
+                {
+                    try { headers = ex.Data["ResponseHeaders"] as System.Collections.IDictionary; } catch { }
+                }
+
+                // Try reflection to find a Headers or ResponseHeaders property
+                if (headers == null)
+                {
+                    var prop = ex.GetType().GetProperty("ResponseHeaders") ?? ex.GetType().GetProperty("Headers");
+                    if (prop != null)
+                    {
+                        headers = prop.GetValue(ex) as System.Collections.IDictionary;
+                    }
+                }
+
+                // Try inner exception similarly
+                if (headers == null && ex.InnerException != null)
+                {
+                    var ie = ex.InnerException;
+                    var prop = ie.GetType().GetProperty("ResponseHeaders") ?? ie.GetType().GetProperty("Headers");
+                    if (prop != null)
+                    {
+                        headers = prop.GetValue(ie) as System.Collections.IDictionary;
+                    }
+                }
+            }
+
+            if (headers != null)
+            {
+                // Known Anthropic rate-limit headers (subject to change):
+                // x-ratelimit-requests-limit, x-ratelimit-requests-remaining, x-ratelimit-requests-reset
+                // x-ratelimit-tokens-limit, x-ratelimit-tokens-remaining, x-ratelimit-tokens-reset
+                string[] keys = new string[]
+                {
+                    "x-ratelimit-requests-limit",
+                    "x-ratelimit-requests-remaining",
+                    "x-ratelimit-requests-reset",
+                    "x-ratelimit-tokens-limit",
+                    "x-ratelimit-tokens-remaining",
+                    "x-ratelimit-tokens-reset"
+                };
+
+                var sb = new System.Text.StringBuilder();
+                sb.Append("[Claude][RateLimit Headers] ");
+                bool any = false;
+                foreach (var key in keys)
+                {
+                    try
+                    {
+                        if (headers.Contains(key))
+                        {
+                            var val = headers[key];
+                            sb.Append($"{key}={val}; ");
+                            any = true;
+                        }
+                    }
+                    catch { }
+                }
+                if (any)
+                {
+                    Debug.LogWarning(sb.ToString());
+                }
+            }
+        }
+        catch { }
+    }
     private UniTask SaveConversationLogAsync(List<Message> messages, string responseText, string agentType = "Claude")
     {
         if (!enableLogging)

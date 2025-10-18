@@ -16,7 +16,7 @@ using Anthropic.SDK.Constants;
 /// </summary>
 public class EgoAgent : GPT
 {
-    public EgoAgent(Actor actor) : base(actor, "gpt-5")
+    public EgoAgent(Actor actor) : base(actor, "gpt-4o-mini")
     {
         SetAgentType(nameof(EgoAgent));
 

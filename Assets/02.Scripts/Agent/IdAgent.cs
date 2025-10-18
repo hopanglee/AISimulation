@@ -319,7 +319,7 @@ public class IdAgent : Claude
             {
                 { "character_name", actor.Name },
                 { "current_time", $"{year}년 {month}월 {day}일 {hour:D2}:{minute:D2}" },
-                { "short_term_memory", actor.LoadShortTermMemory() },
+                //{ "short_term_memory", actor.LoadShortTermMemory() },
             };
 
             MainActor mainActor = actor as MainActor;

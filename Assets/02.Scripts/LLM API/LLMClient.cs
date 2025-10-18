@@ -367,7 +367,7 @@ public abstract class LLMClient
             lock (lockObj)
             {
                 // 요청 시작 시점에 만든 파일 경로를 그대로 사용
-                if(string.IsNullOrEmpty(currentCacheFilePath))
+                if (string.IsNullOrEmpty(currentCacheFilePath))
                 {
                     Debug.LogError($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 미리 저장된 캐시 파일 경로가 없습니다. 파일 저장 불가");
                     return;
@@ -538,6 +538,8 @@ public class Auth
     public string gpt_api_key;
     public string gemini_api_key;
     public string claude_api_key;
+    public string claude_api_key_sub;
+    public string claude_api_key_sub2;
     public string organization;
 }
 public enum LLMClientProvider

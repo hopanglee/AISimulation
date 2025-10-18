@@ -42,22 +42,31 @@ public class ExternalEventService : IExternalEventService
         public Actor TargetActor { get; set; }      // 이벤트를 받을 Actor
         public ActionType? CompletedActionType { get; set; }  // 완료된 액션 타입 (액션 완료 이벤트용)
         public string AdditionalInfo { get; set; }  // 추가 정보
-        public DateTime Timestamp { get; set; }     // 이벤트 발생 시간
+        [Newtonsoft.Json.JsonConverter(typeof(GameTimeConverter))]
+        public GameTime Timestamp { get; set; }     // 이벤트 발생 시간 (게임 시간)
 
         public ExternalEvent()
         {
-            Timestamp = DateTime.Now;
+            try
+            {
+                var timeService = Services.Get<ITimeService>();
+                if (timeService != null)
+                {
+                    Timestamp = timeService.CurrentTime;
+                }
+            }
+            catch { }
         }
     }
 
     // 각 Actor별 마지막 처리된 이벤트 시간 (중복 방지용)
-    private Dictionary<Actor, DateTime> lastEventTimes = new();
-    
+    private Dictionary<Actor, GameTime> lastEventTimes = new();
+
     // 각 Actor별 주변 Actor 목록 (이전 상태 추적용)
     private Dictionary<Actor, HashSet<string>> previousNearbyActors = new();
 
     // 이벤트 발생 시 중복 방지를 위한 최소 간격 (초)
-    private const float EVENT_COOLDOWN = 1.0f;
+    private const int EVENT_COOLDOWN_MINUTES = 1; // 최소 1분 쿨다운 (게임 시간 분 단위)
 
     public void Initialize()
     {
@@ -109,7 +118,7 @@ public class ExternalEventService : IExternalEventService
     public void CheckActorLocationChanges()
     {
         var allActors = GetAllActiveActors();
-        
+
         foreach (var actor in allActors)
         {
             var currentNearbyActors = GetNearbyActorNames(actor);
@@ -117,7 +126,7 @@ public class ExternalEventService : IExternalEventService
 
             // 이전에 있었지만 지금은 없는 Actor들 (떠난 Actor들)
             var leftActors = previousNearby.Except(currentNearbyActors).ToList();
-            
+
             foreach (var leftActorName in leftActors)
             {
                 if (CanSendEvent(actor) && !leftActors.Contains(actor.Name))
@@ -236,17 +245,33 @@ public class ExternalEventService : IExternalEventService
         try
         {
             var targetActor = externalEvent.TargetActor;
-            
+
             // MainActor만 Brain을 가지고 있으므로 체크
             if (targetActor is MainActor mainActor && mainActor.brain != null)
             {
-                Debug.Log($"<color=yellow>[ExternalEventService]</color> {targetActor.Name}에게 외부 이벤트 전송: {externalEvent.EventType} - {externalEvent.AdditionalInfo}");
-                
+                Debug.Log($"<color=yellow>[ExternalEventService] {targetActor.Name}</color> 에게 외부 이벤트 전송: {externalEvent.EventType} - {externalEvent.AdditionalInfo}");
+
                 // 이벤트 전송 시간 기록 (중복 방지용)
-                lastEventTimes[targetActor] = DateTime.Now;
-                
+                try
+                {
+                    var timeService = Services.Get<ITimeService>();
+                    if (timeService != null)
+                    {
+                        lastEventTimes[targetActor] = timeService.CurrentTime;
+                    }
+                }
+                catch { }
+
+                if (mainActor.MoveController.isMoving)
+                {
+                    mainActor.MoveController.Reset();
+                    Debug.LogWarning($"<color=yellow>[ExternalEventService] {mainActor.Name}</color>의 이동이 중단되었습니다.");
+                }
+
                 // Brain에 외부 이벤트 설명과 함께 전달
                 mainActor.brain.OnExternalEvent(externalEvent.AdditionalInfo);
+
+
             }
         }
         catch (Exception ex)
@@ -262,8 +287,18 @@ public class ExternalEventService : IExternalEventService
     {
         if (lastEventTimes.TryGetValue(targetActor, out var lastTime))
         {
-            var timeSinceLastEvent = (DateTime.Now - lastTime).TotalSeconds;
-            return timeSinceLastEvent >= EVENT_COOLDOWN;
+            try
+            {
+                var timeService = Services.Get<ITimeService>();
+                if (timeService != null)
+                {
+                    long currentMin = timeService.CurrentTime.ToMinutes();
+                    long lastMin = lastTime.ToMinutes();
+                    return (currentMin - lastMin) >= EVENT_COOLDOWN_MINUTES;
+                }
+            }
+            catch { }
+            return true;
         }
         return true;
     }
@@ -273,7 +308,7 @@ public class ExternalEventService : IExternalEventService
     /// </summary>
     private bool ShouldIgnoreActionType(ActionType actionType)
     {
-        return actionType == ActionType.Wait || 
+        return actionType == ActionType.Wait ||
                actionType == ActionType.Unknown ||
                actionType == ActionType.End ||
                actionType == ActionType.Think;
@@ -286,7 +321,7 @@ public class ExternalEventService : IExternalEventService
     private List<Actor> GetNearbyActors(Actor centerActor)
     {
         var nearbyActors = new List<Actor>();
-        
+
         if (centerActor.sensor != null)
         {
             var lookableEntities = centerActor.sensor.GetLookableEntities();
@@ -298,7 +333,7 @@ public class ExternalEventService : IExternalEventService
                 }
             }
         }
-        
+
         return nearbyActors;
     }
 
@@ -308,7 +343,7 @@ public class ExternalEventService : IExternalEventService
     private HashSet<string> GetNearbyActorNames(Actor centerActor)
     {
         var nearbyActorNames = new HashSet<string>();
-        
+
         if (centerActor.sensor != null)
         {
             var lookableEntities = centerActor.sensor.GetLookableEntities();
@@ -320,7 +355,7 @@ public class ExternalEventService : IExternalEventService
                 }
             }
         }
-        
+
         return nearbyActorNames;
     }
 
@@ -330,11 +365,11 @@ public class ExternalEventService : IExternalEventService
     private List<Actor> GetAllActiveActors()
     {
         var allActors = new List<Actor>();
-        
+
         // Unity에서 모든 Actor 컴포넌트를 찾아서 반환 (신규 API 사용)
         var actorComponents = UnityEngine.Object.FindObjectsByType<Actor>(FindObjectsSortMode.None);
         allActors.AddRange(actorComponents.Where(actor => actor.gameObject.activeInHierarchy));
-        
+
         return allActors;
     }
 

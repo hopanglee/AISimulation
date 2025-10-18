@@ -65,7 +65,8 @@ public class CharacterInfo
     public List<Emotions> Emotions { get; set; } = new List<Emotions>();
 
     [JsonProperty("last_updated")]
-    public DateTime LastUpdated { get; set; } = DateTime.Now;
+    [JsonConverter(typeof(GameTimeConverter))]
+    public GameTime LastUpdated { get; set; }
 
     /// <summary>
     /// 성격 특성을 추가합니다.
@@ -75,7 +76,7 @@ public class CharacterInfo
         if (!string.IsNullOrEmpty(trait) && !Personality.Contains(trait))
         {
             Personality.Add(trait);
-            LastUpdated = DateTime.Now;
+            StampLastUpdatedFromGameTime();
         }
     }
 
@@ -87,7 +88,7 @@ public class CharacterInfo
         var removed = Personality.Remove(trait);
         if (removed)
         {
-            LastUpdated = DateTime.Now;
+            StampLastUpdatedFromGameTime();
         }
         return removed;
     }
@@ -107,7 +108,7 @@ public class CharacterInfo
     public void SetEmotions(List<Emotions> emotions)
     {
         Emotions = emotions;
-        LastUpdated = DateTime.Now;
+        StampLastUpdatedFromGameTime();
     }
 
     public string LoadEmotions()
@@ -130,5 +131,20 @@ public class CharacterInfo
     public bool HasTrait(string trait)
     {
         return Temperament.Contains(trait) || Personality.Contains(trait);
+    }
+
+    private void StampLastUpdatedFromGameTime()
+    {
+        try
+        {
+            var timeService = Services.Get<ITimeService>();
+            if (timeService != null)
+            {
+                LastUpdated = timeService.CurrentTime;
+                return;
+            }
+        }
+        catch { }
+        // Fallback: keep existing LastUpdated if time service is unavailable
     }
 }

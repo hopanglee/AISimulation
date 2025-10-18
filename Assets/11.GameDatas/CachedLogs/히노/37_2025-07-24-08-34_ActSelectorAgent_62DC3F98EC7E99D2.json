@@ -1,0 +1,13 @@
+﻿{
+  "payload": {
+    "act_type": "UseObject",
+    "reasoning": "배고픔으로 머리가 복잡하고 결정력이 흐려져 있으니 우선 도넛을 먹어 컨디션을 회복하고 마음을 진정시키기 위해.",
+    "intention": "도넛을 먹어 허기를 달래고 집중력을 회복한 뒤 즉시 와타야의 새 메시지를 확인해 상황을 공유하고 동행을 부탁할 준비를 하겠다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"도넛\"}"
+    }
+  ]
+}
