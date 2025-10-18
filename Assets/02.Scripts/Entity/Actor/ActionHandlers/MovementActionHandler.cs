@@ -73,7 +73,7 @@ namespace Agent.ActionHandlers
                 if (bubble != null)
                 {
                     bubble.SetFollowTarget(actor.transform);
-                    bubble.Show($"{targetValue}로 이동 중", 0);
+                    bubble.Show($"{targetValue}(으)로 이동 중", 0);
                 }
                 if (bubble != null) bubble.Hide();
                 // Area로 이동 처리

@@ -289,7 +289,7 @@ public class Brain
 
             // ActSelectorAgent를 통해 행동 선택 (Tool을 통해 동적으로 액션 정보 제공)
             // AI Agent 초기화
-            
+
             actSelectorAgent.SetDayPlanner(dayPlanner); // DayPlanner 설정
             var selection = await actSelectorAgent.SelectActAsync(perceptionResult);
 
@@ -502,7 +502,7 @@ public class Brain
                     if (parameters != null && parameters.TryGetValue("area_name", out var areaObj))
                     {
                         var area = areaObj?.ToString();
-                        if (!string.IsNullOrEmpty(area)) return $"'{area}'으로 이동하기로 했다.";
+                        if (!string.IsNullOrEmpty(area)) return $"'{area}'(으)로 이동하기로 했다.";
                     }
                     return "다른 곳으로 이동하기로 했다.";
 
@@ -701,9 +701,11 @@ public class Brain
 
         Debug.LogError($"[{actor.Name}] MainActor가 아닌 Actor에서 시각정보 해석을 시도했습니다.");
         throw new System.InvalidOperationException($"{actor.Name}은 MainActor가 아니므로 시각정보 해석을 수행할 수 없습니다.");
-    }   /// <summary>
-        /// 로깅 활성화 여부를 설정합니다.
-        /// </summary>
+    }
+    
+    /// <summary>
+    /// 로깅 활성화 여부를 설정합니다.
+    /// </summary>
     public void SetLoggingEnabled(bool enabled)
     {
         // GPT 로깅 설정

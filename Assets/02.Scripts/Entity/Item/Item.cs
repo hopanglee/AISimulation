@@ -16,12 +16,24 @@ public abstract class Item : Entity, ICollectible
     public virtual bool InteractWithInteractable(Actor actor, IInteractable interactable)
     {
         // 기본 구현: 상호작용 계속 진행
+        if (interactable is Sink || interactable is ShowerHead)
+        {
+
+            if (actor is MainActor mainActor && mainActor.brain?.memoryManager != null)
+            {
+                mainActor.brain.memoryManager.AddShortTermMemory(
+                    $"{this.Name}을(를) 물로 깨끗이 씻었다.",
+                    "",
+                    mainActor?.curLocation?.GetSimpleKey()
+                );
+            }
+        }
         return true;
     }
 
     public override string Get()
     {
-        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        if (String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {
             return $"{GetLocalizedStatusDescription()}";
         }

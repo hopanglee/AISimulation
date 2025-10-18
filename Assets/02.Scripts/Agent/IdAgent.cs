@@ -20,7 +20,7 @@ public class IdAgent : Claude
     private DayPlanner dayPlanner; // DayPlanner 참조 추가
 
     public IdAgent(Actor actor)
-        : base(actor, AnthropicModels.Claude45Sonnet)
+        : base(actor)
     {
         SetAgentType(nameof(IdAgent));
 

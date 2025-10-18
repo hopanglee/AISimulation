@@ -56,9 +56,20 @@ public class WaterCup : Drink
     {
         if (interactable is Sink || interactable is ShowerHead)
         {
-            amount = maxAmount;
+
             // 간단한 안내 (선택적)
-            actor?.ShowSpeech("컵에 물을 가득 채웠다.", 2f);
+            amount = maxAmount;
+
+            // 단기 메모리에 추가
+            if (actor is MainActor mainActor && mainActor.brain?.memoryManager != null)
+            {
+                mainActor.brain.memoryManager.AddShortTermMemory(
+                    "컵에 물을 가득 채웠다.",
+                    "",
+                    mainActor?.curLocation?.GetSimpleKey()
+                );
+            }
+
             // 세면대/샤워기 상호작용은 계속 진행
             return true;
         }

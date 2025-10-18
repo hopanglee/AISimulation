@@ -165,10 +165,6 @@ public class Thinker
             // 외부 이벤트로 재시작되면 5회부터 다시 시작
             currentCycleBudget = BaseCycleCount;
         }
-        catch (Exception ex)
-        {
-            Debug.LogError($"[{actor.Name}] Think/Act 루프에서 예외 발생: {ex.Message}");
-        }
     }
 
     /// <summary>

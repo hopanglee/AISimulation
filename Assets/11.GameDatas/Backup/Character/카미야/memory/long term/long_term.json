@@ -30,19 +30,6 @@
     "location": "도쿄:신주쿠:카부키쵸:1-chome-7:세이메이 종합병원:진료실"
   },
   {
-    "timestamp": "2023-04-20T21:00:00Z",
-    "type": "experience",
-    "category": "personal",
-    "content": "집 거실에서 다리미질을 했다. 각 잡힌 셔츠 옷깃이 주는 위생감은 내겐 일종의 안도감이다. 내가 챙길 수 있는 유일한 '질서'다. \"내가 챙길 수 있는 건 이 완벽한 다리미질뿐인가.\"",
-    "emotions": {
-      "차분": 0.7,
-      "책임감": 0.6,
-      "고독": 0.5
-    },
-    "relatedActors": [],
-    "location": "도쿄:세타가와:미나미 카라스야마:5-chome-3:카미야의 집:거실"
-  },
-  {
     "timestamp": "2025-06-05T15:30:00Z",
     "type": "event",
     "category": "social",
