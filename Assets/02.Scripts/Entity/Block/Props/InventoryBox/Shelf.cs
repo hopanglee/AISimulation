@@ -22,7 +22,7 @@ public class Shelf : InventoryBox
         {
             status = "비어있습니다.";
         }
-        else status = $"{items.Count}개의 물건이 있습니다. 물건들은 다음과 같습니다: {string.Join(", ", items.ConvertAll(item => item.Name))}";
+        else status = $"{items.Count}개의 물건이 있습니다. ({string.Join(", ", items.ConvertAll(item => item.Name))})";
 
         if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {

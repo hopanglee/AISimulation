@@ -317,7 +317,7 @@ public class IdAgent : Claude
             var localizationService = Services.Get<ILocalizationService>();
             var replacements = new Dictionary<string, string>
             {
-                { "character_name", actor.Name },
+                //{ "character_name", actor.Name },
                 { "current_time", $"{year}년 {month}월 {day}일 {hour:D2}:{minute:D2}" },
                 //{ "short_term_memory", actor.LoadShortTermMemory() },
             };

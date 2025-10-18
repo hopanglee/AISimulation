@@ -13,7 +13,7 @@ public class Countertop : InventoryBox
         {
             status = "위에 아무것도 없습니다.";
         }
-        else status = $"위에 {items.Count}개의 물건이 있습니다. 물건들은 다음과 같습니다: {string.Join(", ", items.ConvertAll(item => item.Name))}";
+        else status = $"위에 {items.Count}개의 물건이 있습니다. ({string.Join(", ", items.ConvertAll(item => item.Name))})";
 
         if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {
