@@ -8,12 +8,13 @@ using OpenAI.Chat;
 using Agent.Tools;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
+using Anthropic.SDK.Constants;
 
 /// <summary>
 /// 자아 에이전트 - 이성과 본능의 타협을 담당
 /// 두 에이전트의 결과를 적절히 조합하여 최종 결정을 내립니다.
 /// </summary>
-public class EgoAgent : Claude
+public class EgoAgent : Gemini
 {
     public EgoAgent(Actor actor) : base(actor)
     {
@@ -42,8 +43,8 @@ public class EgoAgent : Claude
                 { "character_name", actor.Name },
                 { "personality", actor.LoadPersonality() },
                 { "info", characterInfo },
-                { "memory", characterMemory },
-                { "character_situation", actor.LoadActorSituation() },
+                { "memory", ""},//characterMemory },
+                { "character_situation", ""},// $"{actor.Name}의 현재 상태: \n{actor.LoadActorSituation()}" },
                // { "goal", actor.LoadGoal() }
             };
 

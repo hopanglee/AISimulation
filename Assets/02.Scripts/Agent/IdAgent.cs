@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using OpenAI.Chat;
 using PlanStructures;
 using UnityEngine;
+using Anthropic.SDK.Constants;
 
 /// <summary>
 /// 본능 에이전트 - 악한 특성을 가진 즉각적 욕구 담당
@@ -19,7 +20,7 @@ public class IdAgent : Claude
     private DayPlanner dayPlanner; // DayPlanner 참조 추가
 
     public IdAgent(Actor actor)
-        : base(actor)
+        : base(actor, AnthropicModels.Claude45Sonnet)
     {
         SetAgentType(nameof(IdAgent));
 
