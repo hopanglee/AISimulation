@@ -14,14 +14,13 @@ using Anthropic.SDK.Constants;
 /// 자아 에이전트 - 이성과 본능의 타협을 담당
 /// 두 에이전트의 결과를 적절히 조합하여 최종 결정을 내립니다.
 /// </summary>
-public class EgoAgent : Claude
+public class EgoAgent : GPT
 {
-    public EgoAgent(Actor actor) : base(actor)
+    public EgoAgent(Actor actor) : base(actor, "gpt-5")
     {
         SetAgentType(nameof(EgoAgent));
 
         InitializeOptions();
-
     }
 
     /// <summary>
@@ -34,7 +33,7 @@ public class EgoAgent : Claude
         {
             // 캐릭터 정보와 기억을 동적으로 로드
             var characterInfo = actor.LoadCharacterInfo();
-            var characterMemory = actor.LoadCharacterMemory();
+            var characterMemory = actor.LoadShortTermMemory();
 
 
             // 플레이스홀더 교체를 위한 딕셔너리 생성
@@ -42,9 +41,9 @@ public class EgoAgent : Claude
             {
                 { "character_name", actor.Name },
                 { "personality", actor.LoadPersonality() },
-                { "info", characterInfo },
-                { "memory", ""},//characterMemory },
-                { "character_situation", ""},// $"{actor.Name}의 현재 상태: \n{actor.LoadActorSituation()}" },
+                { "info", ""},//$"- 정보: {characterInfo}\n" },
+                { "memory", $"{characterMemory}\n" },
+                { "character_situation", ""},// $"{actor.Name}의 현재 상태: \n{actor.LoadActorSituation()}\n" },
                // { "goal", actor.LoadGoal() }
             };
 

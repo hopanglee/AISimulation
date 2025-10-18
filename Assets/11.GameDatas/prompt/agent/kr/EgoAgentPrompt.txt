@@ -8,10 +8,8 @@
 
 {character_name} 정보
 - 성격: {personality} 
-- 정보: {info}
-
+{info}
 {memory}
-
 {character_situation}
 ---
 

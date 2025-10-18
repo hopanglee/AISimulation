@@ -14,6 +14,7 @@ public class GPT : LLMClient
     private readonly ChatClient client;
     private ChatCompletionOptions options = new();
     private List<ChatMessage> messages = new();
+    private bool useLowOutputMode = false;
     private bool enableLogging = true; // 로깅 활성화 여부
     private bool enableOutgoingLogs = false; // Outgoing Request/Raw logs 저장 여부
     private static string sessionDirectoryName = null;
@@ -33,11 +34,12 @@ public class GPT : LLMClient
         sessionDirectoryName = sessionName;
     }
 
-    public GPT(Actor actor, string model = null) : base(new LLMClientProps() { model = model, provider = LLMClientProvider.OpenAI })
+    public GPT(Actor actor, string model = null, bool useLowOutputMode = false) : base(new LLMClientProps() { model = model, provider = LLMClientProvider.OpenAI })
     {
         var apiKey = "OPENAI_API_KEY";
 
         modelName = model ?? "gpt-5-mini";
+        this.useLowOutputMode = useLowOutputMode;
         var userPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         var authPath = $"{userPath}/.openai/auth.json";
         if (File.Exists(authPath))
@@ -52,6 +54,7 @@ public class GPT : LLMClient
         client = new(model: modelName, apiKey: apiKey);
         // Ensure sufficient output tokens to avoid truncation
         try { this.options.MaxOutputTokenCount = 3072; } catch { }
+        TryApplyLowOutputMode(this.options);
         this.toolExecutor = new ToolExecutor(actor);
         this.SetActor(actor);
     }
@@ -278,7 +281,9 @@ public class GPT : LLMClient
             {
                 model = modelName,
                 response_format = options?.ResponseFormat?.GetType()?.Name ?? "null",
-                messages = BuildSerializableMessages(messages)
+                messages = BuildSerializableMessages(messages),
+                reasoning = useLowOutputMode ? GetReasoningForLog(options) : null,
+                text = useLowOutputMode ? GetTextForLog(options) : null
             };
 
             string json = JsonConvert.SerializeObject(requestPayload, Formatting.Indented);
@@ -460,11 +465,13 @@ public class GPT : LLMClient
     )
     {
         options ??= this.options;
+        TryApplyLowOutputMode(options);
 
         bool requiresAction;
         string finalResponse;
         int toolRounds = 0; // Limit tool-call rounds
         bool forcedFinalAfterToolLimit = false; // Ensure we force exactly one final pass without tools
+        int lengthRecoveryAttempts = 0; // Retry once on length truncation
         // 이 호출에서 실행된 도구 기록 초기화
         executedTools = new List<ToolInvocationRecord>();
 
@@ -637,7 +644,28 @@ public class GPT : LLMClient
 
                 case ChatFinishReason.Length:
                     Debug.Log($"GPT Request: Length");
-                    await SaveConversationLogAsync(messages, "ERROR: Response truncated due to length limit");
+                    // Attempt one recovery: increase output tokens if possible, clear tools, and request concise JSON
+                    if (lengthRecoveryAttempts < 1)
+                    {
+                        lengthRecoveryAttempts++;
+                        try
+                        {
+                            // Best-effort: bump output tokens if supported by SDK
+                            var current = this.options?.MaxOutputTokenCount ?? 0;
+                            var next = current > 0 ? Math.Min(current * 2, 8192) : 4096;
+                            try { this.options.MaxOutputTokenCount = next; } catch { }
+                            try { options.MaxOutputTokenCount = next; } catch { }
+                        }
+                        catch { }
+                        // Force a final, concise response without tools
+                        try { options.Tools.Clear(); } catch { }
+                        AddUserMessage("이전 응답이 길이 제한으로 잘렸습니다. 도구를 사용하지 말고, 매우 간결한 최종 결과만 JSON으로 응답하세요.");
+                        // Re-apply low-output tuning if enabled
+                        TryApplyLowOutputMode(options);
+                        requiresAction = true;
+                        break;
+                    }
+                    await SaveConversationLogAsync(messages, "ERROR: Response truncated due to length limit (after recovery)");
                     throw new NotImplementedException(
                         "Incomplete model output due to MaxTokens parameter or token limit exceeded."
                     );
@@ -730,6 +758,89 @@ public class GPT : LLMClient
     }
     #endregion
 
+    #region Low-output tuning helpers (reasoning/text)
+    private void TryApplyLowOutputMode(ChatCompletionOptions target)
+    {
+        if (!useLowOutputMode || target == null) return;
+        try
+        {
+            var reasoningProp = target.GetType().GetProperty("Reasoning");
+            if (reasoningProp != null && reasoningProp.CanWrite)
+            {
+                var reasoningType = reasoningProp.PropertyType;
+                var reasoningObj = Activator.CreateInstance(reasoningType);
+                var effortProp = reasoningType.GetProperty("Effort");
+                if (effortProp != null && effortProp.CanWrite)
+                {
+                    object lowValue = TryGetEnumValue(effortProp.PropertyType, "Low") ?? (object)"low";
+                    effortProp.SetValue(reasoningObj, lowValue);
+                }
+                reasoningProp.SetValue(target, reasoningObj);
+            }
+
+            var textProp = target.GetType().GetProperty("Text");
+            if (textProp != null && textProp.CanWrite)
+            {
+                var textType = textProp.PropertyType;
+                var textObj = Activator.CreateInstance(textType);
+                var verbosityProp = textType.GetProperty("Verbosity");
+                if (verbosityProp != null && verbosityProp.CanWrite)
+                {
+                    object lowValue = TryGetEnumValue(verbosityProp.PropertyType, "Low") ?? (object)"low";
+                    verbosityProp.SetValue(textObj, lowValue);
+                }
+                textProp.SetValue(target, textObj);
+            }
+        }
+        catch { }
+    }
+
+    private object TryGetEnumValue(Type enumType, string name)
+    {
+        try
+        {
+            if (enumType.IsEnum)
+            {
+                foreach (var v in Enum.GetValues(enumType))
+                {
+                    if (string.Equals(v.ToString(), name, StringComparison.OrdinalIgnoreCase))
+                        return v;
+                }
+            }
+        }
+        catch { }
+        return null;
+    }
+
+    private object GetReasoningForLog(ChatCompletionOptions target)
+    {
+        try
+        {
+            var reasoningProp = target?.GetType()?.GetProperty("Reasoning");
+            var reasoningObj = reasoningProp?.GetValue(target);
+            if (reasoningObj == null) return new { effort = "low" };
+            var effortProp = reasoningObj.GetType().GetProperty("Effort");
+            var effortVal = effortProp?.GetValue(reasoningObj)?.ToString()?.ToLowerInvariant() ?? "low";
+            return new { effort = effortVal };
+        }
+        catch { return new { effort = "low" }; }
+    }
+
+    private object GetTextForLog(ChatCompletionOptions target)
+    {
+        try
+        {
+            var textProp = target?.GetType()?.GetProperty("Text");
+            var textObj = textProp?.GetValue(target);
+            if (textObj == null) return new { verbosity = "low" };
+            var verbosityProp = textObj.GetType().GetProperty("Verbosity");
+            var vVal = verbosityProp?.GetValue(textObj)?.ToString()?.ToLowerInvariant() ?? "low";
+            return new { verbosity = vVal };
+        }
+        catch { return new { verbosity = "low" }; }
+    }
+    #endregion
+
     #region 예외 처리
     /// <summary>
     /// 예외에서 파일/라인/메서드 정보를 최대한 뽑아서 함께 로깅합니다.
@@ -738,4 +849,24 @@ public class GPT : LLMClient
 
     #endregion
 
+}
+
+public class GPT5Mini : GPT
+{
+    public GPT5Mini(Actor actor, bool useLowOutputMode = false) : base(actor, "gpt-5-mini", useLowOutputMode) {}
+}
+
+public class GPT5 : GPT
+{
+    public GPT5(Actor actor, bool useLowOutputMode = false) : base(actor, "gpt-5", useLowOutputMode) {}
+}
+
+public class GPT4o : GPT
+{
+    public GPT4o(Actor actor, bool useLowOutputMode = false) : base(actor, "gpt-4o", useLowOutputMode) {}
+}
+
+public class GPT4oMini : GPT
+{
+    public GPT4oMini(Actor actor, bool useLowOutputMode = false) : base(actor, "gpt-4o-mini", useLowOutputMode) {}
 }
