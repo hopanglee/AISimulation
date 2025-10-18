@@ -24,8 +24,7 @@ public class IdAgent : Claude
         SetAgentType(nameof(IdAgent));
 
         InitializeOptions();
-            // 요리 레시피 조회 도구 추가
-        AddTools(ToolManager.NeutralToolDefinitions.GetCookableRecipes);
+
     }
 
     /// <summary>
@@ -284,11 +283,16 @@ public class IdAgent : Claude
         SetResponseFormat(schema);
 
         // 월드 정보와 계획 조회, 메모리/관계 도구 추가
-        AddTools(ToolManager.NeutralToolDefinitions.GetWorldAreaStructureText);
+        AddTools(ToolManager.NeutralToolDefinitions.GetAreaHierarchy);
+        AddTools(ToolManager.NeutralToolDefinitions.GetAreaConnections);
+        //AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
+
         AddTools(ToolManager.NeutralToolDefinitions.FindShortestAreaPathFromActor);
         AddTools(ToolManager.NeutralToolDefinitions.FindBuildingAreaPath);
-        AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
+
         AddTools(ToolManager.NeutralToolDefinitions.LoadRelationshipByName);
+        // 요리 레시피 조회 도구 추가
+        AddTools(ToolManager.NeutralToolDefinitions.GetCookableRecipes);
     }
 
     /// <summary>

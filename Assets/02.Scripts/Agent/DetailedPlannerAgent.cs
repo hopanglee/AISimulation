@@ -59,7 +59,7 @@ public class DetailedPlannerAgent : GPT
         {
             AddTools(ToolManager.NeutralToolDefinitions.GetCurrentPlan);            
         }        
-        AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);       
+        //AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);       
         AddTools(ToolManager.NeutralToolDefinitions.GetWorldAreaInfo);             
     }
 

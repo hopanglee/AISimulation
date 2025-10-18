@@ -45,7 +45,7 @@
       "argsJson": "{\"targetName\":\"\\uCE74\\uBBF8\\uC57C\"}"
     },
     {
-      "name": "GetWorldAreaStructureText",
+      "name": "GetAreaHierarchy",
       "argsJson": "{}"
     }
   ]

@@ -35,7 +35,7 @@
   },
   "tools": [
     {
-      "name": "GetWorldAreaStructureText",
+      "name": "GetAreaHierarchy",
       "argsJson": "{}"
     },
     {

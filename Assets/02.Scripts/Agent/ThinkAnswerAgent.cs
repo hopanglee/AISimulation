@@ -22,7 +22,7 @@ namespace Agent
             {
                 AddTools(ToolManager.NeutralToolDefinitions.GetCurrentPlan);
             }
-            AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
+            //AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
             AddTools(ToolManager.NeutralToolDefinitions.FindShortestAreaPathFromActor);
             AddTools(ToolManager.NeutralToolDefinitions.FindBuildingAreaPath);
 

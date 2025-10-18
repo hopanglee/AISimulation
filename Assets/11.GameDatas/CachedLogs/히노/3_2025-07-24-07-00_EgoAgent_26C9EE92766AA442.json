@@ -35,10 +35,6 @@
   },
   "tools": [
     {
-      "name": "GetActorLocationMemoriesFiltered",
-      "argsJson": "{\"areaKey\":\"\\uB3C4\\uCFC4\"}"
-    },
-    {
       "name": "FindBuildingAreaPath",
       "argsJson": "{\"buildingName\":\"\\uCE74\\uD398 \\uBAA8\\uCE74\\uD558\\uC6B0\\uC2A4\"}"
     },
@@ -47,7 +43,7 @@
       "argsJson": "{}"
     },
     {
-      "name": "GetWorldAreaStructureText",
+      "name": "GetAreaHierarchy",
       "argsJson": "{}"
     },
     {

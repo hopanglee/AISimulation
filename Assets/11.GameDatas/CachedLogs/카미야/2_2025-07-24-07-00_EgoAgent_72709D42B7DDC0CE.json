@@ -43,7 +43,7 @@
       "argsJson": "{}"
     },
     {
-      "name": "GetWorldAreaStructureText",
+      "name": "GetAreaHierarchy",
       "argsJson": "{}"
     },
     {

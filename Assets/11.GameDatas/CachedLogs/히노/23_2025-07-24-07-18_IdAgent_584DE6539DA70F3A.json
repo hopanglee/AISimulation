@@ -45,14 +45,6 @@
     {
       "name": "FindBuildingAreaPath",
       "argsJson": "{\"buildingName\":\"\\uCE74\\uD398 \\uBAA8\\uCE74\\uD558\\uC6B0\\uC2A4\"}"
-    },
-    {
-      "name": "GetActorLocationMemoriesFiltered",
-      "argsJson": "{\"areaKey\":\"\\uCE74\\uBD80\\uD0A4\\uCD78:1-chome-6\"}"
-    },
-    {
-      "name": "GetActorLocationMemoriesFiltered",
-      "argsJson": "{\"areaKey\":\"1-chome-6\"}"
     }
   ]
 }

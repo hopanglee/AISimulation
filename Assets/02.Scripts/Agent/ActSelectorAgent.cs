@@ -203,17 +203,17 @@ namespace Agent
                 AddTools(ToolManager.NeutralToolDefinitions.SwapInventoryToHand);
                 //Debug.Log("<color=green>[ActSelectorAgent] Add Tools: ItemManagement, SwapInventoryToHand</color>");
             }
-            if (Services.Get<IGameService>().IsDayPlannerEnabled())
-            {
-                AddTools(ToolManager.NeutralToolSets.Plan);
-            }
-            AddTools(ToolManager.NeutralToolDefinitions.GetWorldAreaStructureText);
+
             AddTools(ToolManager.NeutralToolDefinitions.FindShortestAreaPathFromActor);
             AddTools(ToolManager.NeutralToolDefinitions.FindBuildingAreaPath);
-            AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
+
             AddTools(ToolManager.NeutralToolDefinitions.LoadRelationshipByName);
             // 요리 레시피 조회 도구 추가
             AddTools(ToolManager.NeutralToolDefinitions.GetCookableRecipes);
+
+            AddTools(ToolManager.NeutralToolDefinitions.GetAreaHierarchy);
+            AddTools(ToolManager.NeutralToolDefinitions.GetAreaConnections);
+            //AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
         }
         /// <summary>
         /// 최신 주변 상황을 반영해 ResponseFormat을 동적으로 갱신합니다.

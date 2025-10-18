@@ -128,9 +128,15 @@ namespace Agent.Tools
             );
 
             // 전체 월드 지역 위치 텍스트를 반환 (현재는 도쿄 기준 구조 텍스트 파일 반환)
-            public static readonly ChatTool GetWorldAreaStructureText = ChatTool.CreateFunctionTool(
-                functionName: nameof(GetWorldAreaStructureText),
-                functionDescription: "11.GameDatas 기반의 월드 에리어 구조 텍스트를 반환합니다(예: tokyo_area_structure.txt)."
+            public static readonly ChatTool GetAreaHierarchy = ChatTool.CreateFunctionTool(
+                functionName: nameof(GetAreaHierarchy),
+                functionDescription: "월드의 지역의 계층 구조를 반환합니다."
+            );
+
+            // 전체 월드 지역 연결 정보 텍스트를 반환 (현재는 도쿄 기준 연결 구조 텍스트 파일 반환)
+            public static readonly ChatTool GetAreaConnections = ChatTool.CreateFunctionTool(
+                functionName: nameof(GetAreaConnections),
+                functionDescription: "월드의 지역 간 연결 정보를 반환합니다."
             );
 
             // 현재 액터의 location_memories.json 전체 반환
@@ -273,10 +279,17 @@ namespace Agent.Tools
                 }"))
             };
 
-            public static readonly LLMToolSchema GetWorldAreaStructureText = new LLMToolSchema
+            public static readonly LLMToolSchema GetAreaHierarchy = new LLMToolSchema
             {
-                name = nameof(GetWorldAreaStructureText),
-                description = "11.GameDatas 기반의 월드 에리어 구조 텍스트를 반환합니다(예: tokyo_area_structure.txt).",
+                name = nameof(GetAreaHierarchy),
+                description = "월드의 지역의 계층 구조를 반환합니다.",
+                format = null
+            };
+
+            public static readonly LLMToolSchema GetAreaConnections = new LLMToolSchema
+            {
+                name = nameof(GetAreaConnections),
+                description = "월드의 지역 간 연결 정보를 반환합니다.",
                 format = null
             };
 
@@ -322,10 +335,10 @@ namespace Agent.Tools
             public static readonly LLMToolSchema[] ItemManagement = { NeutralToolDefinitions.SwapInventoryToHand };
             public static readonly LLMToolSchema[] Payment = { NeutralToolDefinitions.GetPaymentPriceList };
             public static readonly LLMToolSchema[] ActionInfo = { };
-            public static readonly LLMToolSchema[] WorldInfo = { NeutralToolDefinitions.GetWorldAreaInfo, NeutralToolDefinitions.GetCurrentTime, NeutralToolDefinitions.FindBuildingAreaPath, NeutralToolDefinitions.FindShortestAreaPathFromActor, NeutralToolDefinitions.GetWorldAreaStructureText };
+            public static readonly LLMToolSchema[] WorldInfo = { NeutralToolDefinitions.GetWorldAreaInfo, NeutralToolDefinitions.GetCurrentTime, NeutralToolDefinitions.FindBuildingAreaPath, NeutralToolDefinitions.FindShortestAreaPathFromActor, NeutralToolDefinitions.GetAreaHierarchy, NeutralToolDefinitions.GetAreaConnections };
             public static readonly LLMToolSchema[] Memory = { NeutralToolDefinitions.GetUserMemory, NeutralToolDefinitions.GetActorLocationMemories, NeutralToolDefinitions.GetActorLocationMemoriesFiltered, NeutralToolDefinitions.LoadRelationshipByName };
             public static readonly LLMToolSchema[] Plan = { NeutralToolDefinitions.GetCurrentPlan, NeutralToolDefinitions.GetCurrentSpecificAction };
-            public static readonly LLMToolSchema[] All = { NeutralToolDefinitions.GetCookableRecipes, NeutralToolDefinitions.SwapInventoryToHand, NeutralToolDefinitions.GetWorldAreaInfo, NeutralToolDefinitions.GetUserMemory, NeutralToolDefinitions.GetCurrentTime, NeutralToolDefinitions.GetCurrentPlan, NeutralToolDefinitions.GetCurrentSpecificAction, NeutralToolDefinitions.FindBuildingAreaPath, NeutralToolDefinitions.FindShortestAreaPathFromActor, NeutralToolDefinitions.LoadRelationshipByName };
+            public static readonly LLMToolSchema[] All = { NeutralToolDefinitions.GetCookableRecipes, NeutralToolDefinitions.SwapInventoryToHand, NeutralToolDefinitions.GetWorldAreaInfo, NeutralToolDefinitions.GetUserMemory, NeutralToolDefinitions.GetCurrentTime, NeutralToolDefinitions.GetCurrentPlan, NeutralToolDefinitions.GetCurrentSpecificAction, NeutralToolDefinitions.FindBuildingAreaPath, NeutralToolDefinitions.FindShortestAreaPathFromActor, NeutralToolDefinitions.GetAreaHierarchy, NeutralToolDefinitions.GetAreaConnections, NeutralToolDefinitions.LoadRelationshipByName };
         }
         #endregion
 
@@ -412,7 +425,7 @@ namespace Agent.Tools
             /// <summary>
             /// 월드 정보 관련 도구들
             /// </summary>
-            public static readonly ChatTool[] WorldInfo = { ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetCurrentTime, ToolDefinitions.FindBuildingAreaPath, ToolDefinitions.FindShortestAreaPathFromActor, ToolDefinitions.GetWorldAreaStructureText };
+            public static readonly ChatTool[] WorldInfo = { ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetCurrentTime, ToolDefinitions.FindBuildingAreaPath, ToolDefinitions.FindShortestAreaPathFromActor, ToolDefinitions.GetAreaHierarchy, ToolDefinitions.GetAreaConnections };
 
             /// <summary>
             /// 메모리 관련 도구들
@@ -427,7 +440,7 @@ namespace Agent.Tools
             /// <summary>
             /// 모든 도구들
             /// </summary>
-            public static readonly ChatTool[] All = { ToolDefinitions.SwapInventoryToHand, ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetUserMemory, ToolDefinitions.GetCurrentTime, ToolDefinitions.GetCurrentPlan, ToolDefinitions.GetCurrentSpecificAction, ToolDefinitions.FindBuildingAreaPath, ToolDefinitions.FindShortestAreaPathFromActor, ToolDefinitions.LoadRelationshipByName, ToolDefinitions.GetCookableRecipes };
+            public static readonly ChatTool[] All = { ToolDefinitions.SwapInventoryToHand, ToolDefinitions.GetWorldAreaInfo, ToolDefinitions.GetUserMemory, ToolDefinitions.GetCurrentTime, ToolDefinitions.GetCurrentPlan, ToolDefinitions.GetCurrentSpecificAction, ToolDefinitions.FindBuildingAreaPath, ToolDefinitions.FindShortestAreaPathFromActor, ToolDefinitions.GetAreaHierarchy, ToolDefinitions.GetAreaConnections, ToolDefinitions.LoadRelationshipByName, ToolDefinitions.GetCookableRecipes };
         }
 
         /// <summary>
@@ -526,8 +539,10 @@ namespace Agent.Tools
                     return FindBuildingAreaPath(arguments);
                 case nameof(FindShortestAreaPathFromActor):
                     return FindShortestAreaPathFromActor(arguments);
-                case nameof(GetWorldAreaStructureText):
-                    return GetWorldAreaStructureText();
+                case nameof(GetAreaHierarchy):
+                    return GetAreaHierarchy();
+                case nameof(GetAreaConnections):
+                    return GetAreaConnections();
                 case nameof(GetActorLocationMemories):
                     return GetActorLocationMemories();
                 case nameof(GetActorLocationMemoriesFiltered):
@@ -871,14 +886,14 @@ namespace Agent.Tools
             }
         }
 
-        private string GetWorldAreaStructureText()
+        private string GetAreaHierarchy()
         {
             try
             {
-                var relPath = "Assets/11.GameDatas/tokyo_area_structure.txt";
+                var relPath = "Assets/11.GameDatas/tokyo_area_structure_hierarchy.txt";
                 if (!System.IO.File.Exists(relPath))
                 {
-                    return "Error: tokyo_area_structure.txt not found. Please run the exporter first (Tools > Area > Export Tokyo Area Structure TXT).";
+                    return "Error: tokyo_area_structure_hierarchy.txt not found. Please run the exporter first (Tools > Area > Export Tokyo Area Structure TXT).";
                 }
                 var txt = System.IO.File.ReadAllText(relPath, System.Text.Encoding.UTF8);
                 return txt ?? string.Empty;
@@ -886,6 +901,24 @@ namespace Agent.Tools
             catch (Exception ex)
             {
                 return $"Error reading world area structure text: {ex.Message}";
+            }
+        }
+
+        private string GetAreaConnections()
+        {
+            try
+            {
+                var relPath = "Assets/11.GameDatas/tokyo_area_structure_connect.txt";
+                if (!System.IO.File.Exists(relPath))
+                {
+                    return "Error: tokyo_area_structure_connect.txt not found. Please run the exporter first (Tools > Area > Export Tokyo Area Structure TXT).";
+                }
+                var txt = System.IO.File.ReadAllText(relPath, System.Text.Encoding.UTF8);
+                return txt ?? string.Empty;
+            }
+            catch (Exception ex)
+            {
+                return $"Error reading world area connections text: {ex.Message}";
             }
         }
 

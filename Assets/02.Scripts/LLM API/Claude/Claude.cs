@@ -26,7 +26,7 @@ public class Claude : LLMClient
     private readonly List<SystemMessage> systemMessages = new();
     // Track the first system message text for helper methods/appends
     private string firstSystemMessageText = null;
-    private int maxToolCallRounds = 5;
+    private int maxToolCallRounds = 3;
     private bool enableLogging = true; // 로깅 활성화 여부
     private bool enableOutgoingLogs = false; // Outgoing Request/Raw logs 저장 여부
     private static string sessionDirectoryName = null;
@@ -537,6 +537,46 @@ public class Claude : LLMClient
             logContent.AppendLine($"=====================================");
             logContent.AppendLine();
 
+            // 시스템 메시지 먼저 추가
+            foreach (var systemMessage in systemMessages)
+            {
+                logContent.AppendLine($"--- System ---");
+                // SystemMessage의 내용을 추출하는 방법을 시도
+                string content = null;
+                try
+                {
+                    // SystemMessage의 속성을 시도해보기
+                    var contentProperty = systemMessage.GetType().GetProperty("Content");
+                    if (contentProperty != null)
+                    {
+                        content = contentProperty.GetValue(systemMessage)?.ToString();
+                    }
+                    else
+                    {
+                        // 다른 가능한 속성명들 시도
+                        var textProperty = systemMessage.GetType().GetProperty("Text");
+                        if (textProperty != null)
+                        {
+                            content = textProperty.GetValue(systemMessage)?.ToString();
+                        }
+                        else
+                        {
+                            var messageProperty = systemMessage.GetType().GetProperty("Message");
+                            if (messageProperty != null)
+                            {
+                                content = messageProperty.GetValue(systemMessage)?.ToString();
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    content = "[Failed to extract system message content]";
+                }
+                logContent.AppendLine(content ?? "[No content]");
+                logContent.AppendLine();
+            }
+
             // 대화 내용 추가
             foreach (var message in messages)
             {
@@ -615,6 +655,7 @@ public class Claude : LLMClient
             {
                 model = modelName,
                 //response_format = parameters?.ResponseFormat?.GetType()?.Name ?? "null",
+                system_messages = BuildSerializableSystemMessages(systemMessages),
                 messages = BuildSerializableMessages(messages)
             };
 
@@ -687,6 +728,55 @@ public class Claude : LLMClient
 
         return UniTask.CompletedTask;
     }
+    private List<object> BuildSerializableSystemMessages(List<SystemMessage> systemMessages)
+    {
+        var list = new List<object>();
+        foreach (var systemMessage in systemMessages)
+        {
+            try
+            {
+                // SystemMessage의 내용을 추출하는 방법을 시도
+                string content = null;
+                try
+                {
+                    // SystemMessage의 속성을 시도해보기
+                    var contentProperty = systemMessage.GetType().GetProperty("Content");
+                    if (contentProperty != null)
+                    {
+                        content = contentProperty.GetValue(systemMessage)?.ToString();
+                    }
+                    else
+                    {
+                        // 다른 가능한 속성명들 시도
+                        var textProperty = systemMessage.GetType().GetProperty("Text");
+                        if (textProperty != null)
+                        {
+                            content = textProperty.GetValue(systemMessage)?.ToString();
+                        }
+                        else
+                        {
+                            var messageProperty = systemMessage.GetType().GetProperty("Message");
+                            if (messageProperty != null)
+                            {
+                                content = messageProperty.GetValue(systemMessage)?.ToString();
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    content = "[Failed to extract system message content]";
+                }
+                list.Add(new { role = "system", content = content ?? "[No content]" });
+            }
+            catch
+            {
+                list.Add(new { role = "system", content = "[failed to serialize system message]" });
+            }
+        }
+        return list;
+    }
+
     private List<object> BuildSerializableMessages(List<Message> messages)
     {
         var list = new List<object>();

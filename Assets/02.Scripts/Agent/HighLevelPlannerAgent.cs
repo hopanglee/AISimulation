@@ -49,7 +49,7 @@ public class HighLevelPlannerAgent : GPT
         var schema = new LLMClientSchema { name = "hierarchical_plan", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
         SetResponseFormat(schema);
  
-        AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);       
+        //AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);       
         AddTools(ToolManager.NeutralToolDefinitions.GetWorldAreaInfo);     
     }
 

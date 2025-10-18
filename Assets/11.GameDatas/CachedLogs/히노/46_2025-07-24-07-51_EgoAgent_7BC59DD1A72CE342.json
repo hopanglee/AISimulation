@@ -35,16 +35,12 @@
   },
   "tools": [
     {
-      "name": "GetWorldAreaStructureText",
+      "name": "GetAreaHierarchy",
       "argsJson": "{}"
     },
     {
       "name": "FindShortestAreaPathFromActor",
       "argsJson": "{\"targetAreaKey\":\"\\uCE74\\uD398 \\uBAA8\\uCE74\\uD558\\uC6B0\\uC2A4:\\uD640\"}"
-    },
-    {
-      "name": "GetActorLocationMemoriesFiltered",
-      "argsJson": "{\"areaKey\":\"\\uCE74\\uBBF8\\uC57C\\uC758 \\uC9D1\"}"
     },
     {
       "name": "GetCookableRecipes",
