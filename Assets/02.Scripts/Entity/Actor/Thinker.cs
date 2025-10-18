@@ -27,7 +27,7 @@ public class Thinker
 
     // Dynamic cycle budget: starts at 5, increases by 5 (max 20) after each uninterrupted batch
     private const int BaseCycleCount = 3;
-    private const int MaxCycleCount = 4;
+    private const int MaxCycleCount = 5;
 
     private const int relationshipUpdateCycleCount = 3;
     private int currentCycleBudget = BaseCycleCount;

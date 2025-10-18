@@ -6,6 +6,8 @@ using Agent.Tools;
 using Cysharp.Threading.Tasks;
 using Mscc.GenerativeAI;
 using Mscc.GenerativeAI.Google;
+using System.Security.Cryptography;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -13,11 +15,19 @@ using UnityEngine;
 public class Gemini : LLMClient
 {
     private GenerativeModel generativeModel;
+    private GoogleAI googleAI;
     private string apiKey;
     private List<Content> chatHistory = new List<Content>();
     private GenerationConfig generationConfig = new();
     //private List<Tool> registeredTools = new List<Tool>();
     private GenerateContentRequest request = new();
+    // Context cache (Google CachedContent) state
+    private CachedContentModel cachedContentModel;
+    private string contextCacheName;
+    private string lastContextCacheKey;
+    private DateTime? contextCacheExpireAt;
+    private TimeSpan contextCacheTtl = TimeSpan.FromMinutes(5);
+    private bool enableContextCaching = true;
 
     private bool enableLogging = true; // GPT와 동일한 플래그
     private bool enableOutgoingLogs = false; // Outgoing Request/Raw logs 저장 여부
@@ -39,7 +49,7 @@ public class Gemini : LLMClient
     public Gemini(Actor actor, string model = null) : base(new LLMClientProps() { model = model, provider = LLMClientProvider.Gemini })
     {
         apiKey = "GEMINI_API_KEY";
-        modelName = model ?? "gemini-2.5-flash";
+        modelName = model ?? "gemini-2.5-pro";
 
         var userPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         var authPath = $"{userPath}/.openai/auth.json";
@@ -52,7 +62,7 @@ public class Gemini : LLMClient
         else
             Debug.LogWarning($"No API key in file path : {authPath}");
 
-        var googleAI = new GoogleAI(apiKey: apiKey);
+        googleAI = new GoogleAI(apiKey: apiKey);
         generativeModel = googleAI.GenerativeModel(model: modelName);
 
         this.toolExecutor = new ToolExecutor(actor);
@@ -481,7 +491,30 @@ public class Gemini : LLMClient
             }
 
             // 2. API 호출
-            request.Contents = chatHistory;
+            // Ensure/attach Google context cache built from the System prompt
+            await TryEnsureContextCacheAsync();
+            // When using context cache, avoid resending the System message to cut tokens
+            List<Content> contentsToSend = chatHistory;
+            try
+            {
+                var sysRole = AgentRole.System.ToGeminiRole();
+                if (!string.IsNullOrEmpty(contextCacheName))
+                {
+                    // Remove only the first system message; send everything else unchanged
+                    var temp = new List<Content>(chatHistory);
+                    int idx = temp.FindIndex(c => c.Role == sysRole);
+                    if (idx >= 0) temp.RemoveAt(idx);
+                    contentsToSend = temp;
+                    try { request.CachedContent = contextCacheName; } catch { }
+                }
+                else
+                {
+                    // No cache: ensure request doesn't reference a stale cache
+                    try { request.CachedContent = null; } catch { }
+                }
+            }
+            catch { contentsToSend = chatHistory; }
+            request.Contents = contentsToSend;
             if (request.Contents == null || request.Contents.Count == 0) Debug.LogError("request.Contents is null");
             // 재시도 로직 적용
             GenerateContentResponse response = null;
@@ -492,6 +525,17 @@ public class Gemini : LLMClient
                     try
                     {
                         response = await generativeModel.GenerateContent(request);
+                        // Log Gemini cache hit tokens if available (usage_metadata)
+                        try
+                        {
+                            long? cachedTokenCount = null;
+                            try { cachedTokenCount = response?.UsageMetadata?.CachedContentTokenCount; } catch { cachedTokenCount = null; }
+                            if (cachedTokenCount.HasValue && cachedTokenCount.Value > 0)
+                            {
+                                Debug.Log($"<b>[Gemini][Cache HIT] cached_content_tokens={cachedTokenCount.Value}</b>");
+                            }
+                        }
+                        catch { }
                         // 빈 응답(도구 호출 없음, 텍스트 비어있음) 재시도
                         bool noTools = response?.FunctionCalls == null || response.FunctionCalls.Count == 0;
                         bool emptyText = string.IsNullOrWhiteSpace(response?.Text);
@@ -723,6 +767,116 @@ public class Gemini : LLMClient
         var toolContent = new Content(part: functionResponse, role: AgentRole.Tool.ToGeminiRole());
         // 대화 기록에도 남겨 둠
         this.chatHistory.Add(toolContent);
+    }
+    #endregion
+
+    #region Context Cache Helpers
+    private async UniTask TryEnsureContextCacheAsync()
+    {
+        if (!enableContextCaching) return;
+        // Require a non-empty system message to build a stable cache
+        string systemMessage = null;
+        try { systemMessage = GetSystemMessage(); } catch { systemMessage = null; }
+        if (string.IsNullOrWhiteSpace(systemMessage)) return;
+
+        string key = ComputeStableHash(modelName + "\n" + systemMessage);
+
+        // Refresh or create if key changed or TTL expired/near expiry
+        bool needsCreate = string.IsNullOrEmpty(contextCacheName)
+                           || !string.Equals(lastContextCacheKey, key, StringComparison.Ordinal)
+                           || (contextCacheExpireAt.HasValue && (DateTime.UtcNow >= contextCacheExpireAt.Value.AddSeconds(-30)));
+
+        if (!needsCreate)
+            return;
+
+        // Pre-check token count to avoid 400 INVALID_ARGUMENT (min_total_token_count)
+        try
+        {
+            int threshold = GetMinCacheTokensThreshold(modelName);
+            int tokenCount = 0;
+            try
+            {
+                var ctObj = (object)generativeModel.CountTokens(systemMessage);
+                Mscc.GenerativeAI.CountTokensResponse ct = ctObj as Mscc.GenerativeAI.CountTokensResponse;
+                if (ct == null)
+                {
+                    var ctTask = ctObj as System.Threading.Tasks.Task<Mscc.GenerativeAI.CountTokensResponse>;
+                    if (ctTask != null) ct = await ctTask;
+                }
+                if (ct != null)
+                {
+                    try { tokenCount = (int)(ct.TotalTokens > 0 ? ct.TotalTokens : ct.TokenCount); } catch { tokenCount = 0; }
+                }
+            }
+            catch { tokenCount = 0; }
+
+            if (tokenCount > 0 && tokenCount < threshold)
+            {
+                Debug.LogWarning($"[Gemini][ContextCache] 캐시 생성 스킵 : token_count={tokenCount} < min_threshold={threshold}");
+                return;
+            }
+        }
+        catch { }
+
+        try
+        {
+            cachedContentModel ??= googleAI.CachedContent();
+
+            var sysRole = AgentRole.System.ToGeminiRole();
+            var cached = new CachedContent
+            {
+                Model = modelName,
+                SystemInstruction = new Content(systemMessage, sysRole),
+                Ttl = contextCacheTtl,
+            };
+
+            // Create(or update) cache entry
+            var createdObj = (object)cachedContentModel.Create(cached);
+            Mscc.GenerativeAI.CachedContent createdContent = createdObj as Mscc.GenerativeAI.CachedContent;
+            if (createdContent == null)
+            {
+                var task = createdObj as System.Threading.Tasks.Task<Mscc.GenerativeAI.CachedContent>;
+                if (task != null) createdContent = await task;
+            }
+            if (createdContent != null)
+            {
+                contextCacheName = createdContent.Name;
+                lastContextCacheKey = key;
+                var ttl = contextCacheTtl;
+                try { ttl = createdContent.Ttl; } catch { }
+                contextCacheExpireAt = DateTime.UtcNow + ttl;
+                Debug.Log($"[Gemini][ContextCache] Created/Refreshed: {contextCacheName}, ttl={ttl.TotalSeconds}s");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[Gemini][ContextCache] Failed to ensure cache: {ex.Message}");
+            // On failure, fall back to non-cached request in this round
+            contextCacheName = null;
+        }
+    }
+
+    private int GetMinCacheTokensThreshold(string model)
+    {
+        if (string.IsNullOrEmpty(model)) return 2048;
+        var m = model.ToLowerInvariant();
+        if (m.Contains("2.5") && m.Contains("flash")) return 1024;
+        if (m.Contains("2.5") && m.Contains("pro")) return 2048; // observed from API error; docs may differ
+        return 2048;
+    }
+
+    private static string ComputeStableHash(string input)
+    {
+        try
+        {
+            using (var sha = SHA256.Create())
+            {
+                var bytes = Encoding.UTF8.GetBytes(input ?? string.Empty);
+                var hash = sha.ComputeHash(bytes);
+                return BitConverter.ToString(hash).Replace("-", "").Substring(0, 16);
+            }
+        }
+        catch { return "NOHASH"; }
     }
     #endregion
 }

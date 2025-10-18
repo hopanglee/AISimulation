@@ -383,7 +383,12 @@ public class Claude : LLMClient
             {
                 if (res?.Usage != null)
                 {
-                    Debug.Log($"[Claude][Cache] creation_in={res.Usage.CacheCreationInputTokens}, read_in={res.Usage.CacheReadInputTokens}");
+                    var creationIn = res.Usage.CacheCreationInputTokens;
+                    var readIn = res.Usage.CacheReadInputTokens;
+                    if (readIn > 0)
+                        Debug.Log($"<b>[Claude][Cache HIT] read_in={readIn}</b>");
+                    else
+                        Debug.Log($"[Claude][Cache] creation_in={creationIn}, read_in={readIn}");
                 }
             }
             catch { }
