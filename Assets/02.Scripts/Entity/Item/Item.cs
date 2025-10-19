@@ -37,6 +37,6 @@ public abstract class Item : Entity, ICollectible
         {
             return $"{GetLocalizedStatusDescription()}";
         }
-        return $"{LocationToString()}이 있다.";
+        return $"{GetSimpleKey()}이 있다.";
     }
 }

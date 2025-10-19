@@ -400,7 +400,7 @@ public class DayPlanner
     public GameTime GetActivityStartTime(DetailedActivity targetActivity)
     {
         if (targetActivity == null || currentHierarchicalDayPlan?.HighLevelTasks == null)
-            return new GameTime { hour = 0, minute = 0 };
+            return null;
 
         var startMinutes = planStartTime.hour * 60 + planStartTime.minute;
         var activityStartMinutes = startMinutes;
@@ -419,9 +419,6 @@ public class DayPlanner
         }
         
         return new GameTime 
-        { 
-            hour = activityStartMinutes / 60, 
-            minute = activityStartMinutes % 60 
-        };
+        (planStartTime.year, planStartTime.month, planStartTime.day, activityStartMinutes / 60, activityStartMinutes % 60);
     }
 }

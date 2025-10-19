@@ -14,6 +14,6 @@ public abstract class Prop : Entity
         {
             return $"{GetLocalizedStatusDescription()}";
         }
-        return $"{LocationToString()}이 있다.";
+        return $"{GetSimpleKey()}이 있다.";
     }
 }

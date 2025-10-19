@@ -94,12 +94,24 @@ namespace Agent
             };
         }
 
+		private static string FormatItemsWithCounts(List<string> items)
+		{
+			if (items == null || items.Count == 0) return "없음";
+			var parts = items
+				.Where(s => !string.IsNullOrWhiteSpace(s))
+				.Select(s => s.Trim())
+				.GroupBy(s => s)
+				.Select(g => g.Count() > 1 ? $"{g.Key} {g.Count()}개" : g.Key)
+				.ToList();
+			return parts.Count > 0 ? string.Join(", ", parts) : "없음";
+		}
+
 		private void TryRecordBoxContentsToShortTermMemory()
 		{
 			try
 			{
 				var items = GetCurrentBoxItems();
-				var listText = (items != null && items.Count > 0) ? string.Join(", ", items) : "없음";
+				var listText = FormatItemsWithCounts(items);
 				if (actor is MainActor main)
 				{
 					try

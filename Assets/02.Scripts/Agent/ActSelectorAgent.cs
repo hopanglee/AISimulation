@@ -106,6 +106,7 @@ namespace Agent
                         {"interpretation", perceptionResult?.situation_interpretation ?? string.Empty},
                         {"thought_chain", string.Join(" -> ", perceptionResult?.thought_chain ?? new List<string>())},
                         {"short_term_memory", actor.LoadShortTermMemory()},
+                        {"item_name", actor.HandItem?.Name ?? "손에 아무것도 없음"},
                     };
 
             if (Services.Get<IGameService>().IsDayPlannerEnabled())

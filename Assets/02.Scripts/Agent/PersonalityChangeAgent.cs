@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using UnityEngine;
 using OpenAI.Chat;
 using Memory;
+using System.Linq;
 
 namespace Agent
 {
@@ -123,29 +124,25 @@ namespace Agent
                 {
                     var chunkReplacements = new Dictionary<string, string>
                     {
-                        ["chunk_number"] = (index).ToString(),
-                        // ["chunk_id"] = chunk.ChunkId,
-                        ["time_range"] = chunk.TimeRange,
-                        ["summary"] = chunk.Summary,
-                        ["main_events"] = string.Join(", ", chunk.MainEvents),
-                        ["people_involved"] = string.Join(", ", chunk.PeopleInvolved),
-                        ["emotions"] = FormatEmotions(chunk.Emotions)
+                        ["chunk_number"] = (index + 1).ToString(),
+                        ["chunk_id"] = chunk.ChunkId ?? "-",
+                        ["time_range"] = (chunk?.EndTime != null ? $"{chunk.StartTime} ~ {chunk.EndTime}" : $"{chunk?.StartTime}"),
+                        ["summary"] = chunk?.Summary ?? string.Empty,
+                        ["main_events"] = string.Join(", ", (chunk?.MainEvents ?? new List<string>())),
+                        ["people_involved"] = string.Join(", ", (chunk?.PeopleInvolved ?? new List<string>())),
+                        ["emotions"] = FormatEmotions(chunk?.Emotions)
                     };
-                    return default;
-                    //return localizationService.GetLocalizedText("memory_chunk_item_template", chunkReplacements);
+                    return localizationService.GetLocalizedText("memory_chunk_item_template", chunkReplacements);
                 });
 
-                var chunksText = string.Join("\n\n", chunkTexts);
+                var chunksText = string.Join("\n\n", chunkTexts.Where(s => !string.IsNullOrWhiteSpace(s)));
 
 
-                var year = timeService.CurrentTime.year;
-                var month = timeService.CurrentTime.month;
-                var day = timeService.CurrentTime.day;
-                var dayOfWeek = timeService.CurrentTime.GetDayOfWeek();
+    
                 var replacements = new Dictionary<string, string>
             {
-                { "current_time", $"{year}년 {month}월 {day}일 {dayOfWeek}" },
-                { "experience_data", JsonConvert.SerializeObject(chunksText, Formatting.Indented) },
+                { "current_time", $"{timeService.CurrentTime.ToKoreanString()}" },
+                { "experience_data", chunksText },
                 { "consolidation_reasoning", filteredResult.ConsolidationReasoning }
             };
                 localizationService = Services.Get<ILocalizationService>();

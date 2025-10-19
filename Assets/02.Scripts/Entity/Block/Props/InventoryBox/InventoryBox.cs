@@ -390,7 +390,7 @@ public abstract class InventoryBox : InteractableProp
         
         if (itemFound)
         {
-            return $"{actor.Name}이(가) {itemName}을(를) {GetType().Name}에 넣었습니다.";
+            return $"{actor.Name}이(가) {itemName}을(를) {this.Name}에 넣었습니다.";
         }
         
         return "";

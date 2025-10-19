@@ -41,7 +41,7 @@ namespace Agent
                             ""additionalProperties"": false,
                             ""properties"": {{
                                 ""character_name"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(characterList)}, ""description"": ""대화할_캐릭터_이름"" }},
-                                ""message"": {{ ""type"": ""string"", ""description"": ""대화할 캐릭터에게 말할 메시지"" }}
+                                ""message"": {{ ""type"": ""string"", ""description"": ""대화할 캐릭터에게 말할 내용"" }}
                             }},
                             ""required"": [""character_name"", ""message""]
                         }}";
@@ -117,18 +117,13 @@ namespace Agent
         {
             var localizationService = Services.Get<ILocalizationService>();
             var timeService = Services.Get<ITimeService>();
-            var year = timeService.CurrentTime.year;
-            var month = timeService.CurrentTime.month;
-            var day = timeService.CurrentTime.day;
-            var hour = timeService.CurrentTime.hour;
-            var minute = timeService.CurrentTime.minute;
-            var dayOfWeek = timeService.CurrentTime.GetDayOfWeek();
+
             var replacements = new Dictionary<string, string>
             {
                 { "reasoning", context.Reasoning },
                 { "intention", context.Intention },
                 { "characters", string.Join(", ", GetCurrentAvailableCharacters()) },
-                { "current_time", $"{year}년 {month}월 {day}일 {dayOfWeek} {hour:D2}:{minute:D2}" }
+                { "current_time", $"{timeService.CurrentTime.ToKoreanString()}" }
                 //{ "feedback", !string.IsNullOrEmpty(context.PreviousFeedback) ? context.PreviousFeedback : "" }
             };
             

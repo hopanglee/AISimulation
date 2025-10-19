@@ -5,6 +5,7 @@
 이성과 본능의 결과를 합친 최종 상황 인식 결과를 출력하는 것이 당신의 역할이다.
 
 ---
+===현재 시간 : {current_time}===
 
 {character_name} 정보
 - 성격: {personality} 

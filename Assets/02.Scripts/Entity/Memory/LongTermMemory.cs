@@ -18,6 +18,9 @@ namespace Memory
         public List<string> relatedActors { get; set; }
         public string location { get; set; }
 
+        public GameTime startTime { get; set; }
+        public GameTime endTime { get; set; }
+
         public LongTermMemory()
         {
             emotions = new List<Emotions>();

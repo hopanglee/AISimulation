@@ -1,4 +1,4 @@
-오늘 날짜와 시간: {current_time}
+현재 시간: {current_time}
 
 {current_plan}
 

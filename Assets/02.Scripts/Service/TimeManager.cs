@@ -4,6 +4,7 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Globalization;
+using Newtonsoft.Json.Linq;
 
 public interface ITimeService : IService
 {
@@ -79,7 +80,7 @@ public interface ITimeService : IService
 }
 
 [System.Serializable]
-public struct GameTime : IComparable<GameTime>, IComparable
+public class GameTime : IComparable<GameTime>, IComparable
 {
     public int year;
     public int month;
@@ -493,6 +494,24 @@ public class GameTimeConverter : JsonConverter<GameTime>
                 return hasExistingValue ? existingValue : new GameTime(2024, 1, 1, 0, 0);
             }
         }
+		if (reader.TokenType == JsonToken.StartObject)
+		{
+			try
+			{
+				var obj = JObject.Load(reader);
+				int year = (int?)obj["year"] ?? 2024;
+				int month = (int?)obj["month"] ?? 1;
+				int day = (int?)obj["day"] ?? 1;
+				int hour = (int?)obj["hour"] ?? 0;
+				int minute = (int?)obj["minute"] ?? 0;
+				return new GameTime(year, month, day, hour, minute);
+			}
+			catch (Exception ex)
+			{
+				Debug.LogError($"[GameTimeConverter] Failed to parse GameTime from object at '{reader?.Path}': {ex.Message}");
+				return hasExistingValue ? existingValue : new GameTime(2024, 1, 1, 0, 0);
+			}
+		}
         if (reader.TokenType == JsonToken.Date)
         {
             // Newtonsoft가 날짜 문자열을 자동으로 Date로 파싱한 경우 처리

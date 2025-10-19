@@ -139,7 +139,7 @@ public class LongTermMemoryFilterAgent : GPT
                 {
                     ["chunk_number"] = (index).ToString(),
                     ["chunk_id"] = chunk.ChunkId,
-                    ["time_range"] = chunk.TimeRange,
+                    ["time_range"] = chunk.EndTime != null ? $"{chunk.StartTime} ~ {chunk.EndTime}" : $"{chunk.StartTime}",
                     ["summary"] = chunk.Summary,
                     ["main_events"] = string.Join(", ", chunk.MainEvents),
                     ["people_involved"] = string.Join(", ", chunk.PeopleInvolved),

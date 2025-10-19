@@ -20,8 +20,13 @@ public class ConsolidatedMemoryChunk
     [JsonProperty("summary")]
     public string Summary { get; set; }
 
-    [JsonProperty("time_range")]
-    public string TimeRange { get; set; }
+    [JsonProperty("start_time")]
+    [JsonConverter(typeof(GameTimeConverter))]
+    public GameTime StartTime { get; set; }
+
+    [JsonProperty("end_time")]
+    [JsonConverter(typeof(GameTimeConverter))]
+    public GameTime EndTime { get; set; }
 
     [JsonProperty("main_events")]
     public List<string> MainEvents { get; set; } = new List<string>();
@@ -31,6 +36,9 @@ public class ConsolidatedMemoryChunk
 
     [JsonProperty("emotions")]
     public List<Emotions> Emotions { get; set; } = new List<Emotions>();
+
+    [JsonProperty("location")]
+    public string Location { get; set; }
 
     [JsonProperty("original_entries_count")]
     public int OriginalEntriesCount { get; set; }
@@ -62,7 +70,7 @@ public class MemoryConsolidationResult
 public class LongTermMemoryConsolidationAgent : GPT
 {
 
-    public LongTermMemoryConsolidationAgent(Actor actor) : base(actor)
+    public LongTermMemoryConsolidationAgent(Actor actor) : base(actor, "gpt-5")
     {
         SetAgentType(nameof(LongTermMemoryConsolidationAgent));
         var schemaJson = $@"{{
@@ -71,29 +79,32 @@ public class LongTermMemoryConsolidationAgent : GPT
                             ""properties"": {{
                                 ""consolidated_chunks"": {{
                                     ""type"": ""array"",
+                                    ""minItems"": 8,
                                     ""items"": {{
                                         ""type"": ""object"",
                                         ""additionalProperties"": false,
                                         ""properties"": {{
                                             ""chunk_id"": {{ ""type"": ""string"", ""description"": ""이 메모리 청크의 고유 식별자"" }},
                                             ""summary"": {{ ""type"": ""string"", ""description"": ""이 메모리 청크의 포괄적인 요약, 20자 이상 100자 이내로 서술하세요."" }},
-                                            ""time_range"": {{ ""type"": ""string"", ""description"": ""이 청크가 다루는 시간 범위"" }},
+                                            ""start_time"": {{ ""type"": ""object"", ""properties"": {{ ""year"": {{ ""type"": ""integer"" }}, ""month"": {{ ""type"": ""integer"" }}, ""day"": {{ ""type"": ""integer"" }}, ""hour"": {{ ""type"": ""integer"" }}, ""minute"": {{ ""type"": ""integer"" }}}}, ""description"": ""이 청크가 시작된 시간"" }},
+                                            ""end_time"": {{ ""type"": ""object"", ""properties"": {{ ""year"": {{ ""type"": ""integer"" }}, ""month"": {{ ""type"": ""integer"" }}, ""day"": {{ ""type"": ""integer"" }}, ""hour"": {{ ""type"": ""integer"" }}, ""minute"": {{ ""type"": ""integer"" }}}}, ""description"": ""이 청크가 종료된 시간"" }},
                                             ""main_events"": {{ ""type"": ""array"", ""items"": {{ ""type"": ""string"" }}, ""description"": ""이 청크의 주요 사건들, 최소 3개 이상의 사건을 작성하세요."" }},
                                             ""people_involved"": {{ ""type"": ""array"", ""items"": {{ ""type"": ""string"" }}, ""description"": ""이 청크에 관련된 사람들 (없으면 빈 배열)"" }},
                                             ""emotions"": {{
-                                    ""type"": ""array"",
-                                    ""minItems"": 3,
-                                    ""items"": {{
-                                        ""type"": ""object"",
-                                        ""properties"": {{
-                                            ""name"": {{ ""type"": ""string"" }},
-                                            ""intensity"": {{ ""type"": ""number"", ""minimum"": 0.0, ""maximum"": 1.0 }},
-                                        }},
-                                        ""required"": [""name"", ""intensity""],
-                                        ""additionalProperties"": false
-                                    }},
-                                    ""description"": ""감정과 강도 (0.0~1.0), 최소 3~5개 이상의 감정을 작성하세요.""
-                                }},
+                                                ""type"": ""array"",
+                                                ""minItems"": 3,
+                                                ""items"": {{
+                                                    ""type"": ""object"",
+                                                    ""properties"": {{
+                                                        ""name"": {{ ""type"": ""string"" }},
+                                                        ""intensity"": {{ ""type"": ""number"", ""minimum"": 0.0, ""maximum"": 1.0 }},
+                                                    }},
+                                                    ""required"": [""name"", ""intensity""],
+                                                    ""additionalProperties"": false
+                                                }},
+                                                ""description"": ""감정과 강도 (0.0~1.0), 최소 3~5개 이상의 감정을 작성하세요.""
+                                            }},
+                                            ""location"": {{ ""type"": ""string"", ""description"": ""이 청크가 발생한 장소"" }},
                                             ""original_entries_count"": {{ ""type"": ""integer"", ""description"": ""이 청크로 통합된 원본 항목의 수"" }}
                                         }},
                                         ""required"": [""chunk_id"", ""summary"", ""time_range"", ""main_events"", ""people_involved"", ""original_entries_count"", ""emotions""]
@@ -112,12 +123,12 @@ public class LongTermMemoryConsolidationAgent : GPT
     private string FormatEmotions(List<Emotions> emotions)
     {
         if (emotions == null || emotions.Count == 0)
-            return "감정 없음";
+            return "";
 
         var emotionList = new List<string>();
         foreach (var emotion in emotions)
         {
-            emotionList.Add($"{emotion.name}: {emotion.intensity:F1}");
+            emotionList.Add($"{emotion.name}: {emotion.intensity:F1 * 100}%");
         }
 
         return string.Join(", ", emotionList);
@@ -151,12 +162,12 @@ public class LongTermMemoryConsolidationAgent : GPT
             // 방어: null 엔트리 제거 및 유효 timestamp 보정
             shortTermEntries = shortTermEntries?.Where(e => e != null).ToList() ?? new List<ShortTermMemoryEntry>();
             // 일부 엔트리에 기본값/무효 값이 있을 수 있으므로 보정
-            var defaultTime = new GameTime(2024, 11, 14, 0, 0);
+            //var defaultTime = new GameTime(2024, 11, 14, 0, 0);
             foreach (var entry in shortTermEntries)
             {
                 if (entry.timestamp.year <= 0 || entry.timestamp.month <= 0 || entry.timestamp.day <= 0)
                 {
-                    entry.timestamp = defaultTime;
+                    entry.timestamp = null;
                 }
             }
 
@@ -169,11 +180,12 @@ public class LongTermMemoryConsolidationAgent : GPT
             {
                 var entry_number = index.ToString();
                 var timestamp = $"{entry.timestamp.year}-{entry.timestamp.month:D2}-{entry.timestamp.day:D2} {entry.timestamp.hour:D2}:{entry.timestamp.minute:D2}";
-                var emotions = FormatEmotions(entry.emotions);
-                var content = entry.content;
-                var details = entry.details;
+                var emotions = !string.IsNullOrEmpty(FormatEmotions(entry.emotions)) ? $" ({FormatEmotions(entry.emotions)})" : "";
+                var content = !string.IsNullOrEmpty(entry.content) ? $" {entry.content}" : "";
+                var details = !string.IsNullOrEmpty(entry.details) ? $" ({entry.details})" : "";
+                var location = !string.IsNullOrEmpty(entry.locationName) ? $" <{entry.locationName}>" : "";
 
-                return $"[{entry_number}] {timestamp} <{emotions}> {content} ({details})";
+                return $"[{entry_number}]{location}{timestamp}{emotions}{content}{details}";
             });
 
             var entriesText = string.Join("\n", entryTexts);
@@ -189,6 +201,11 @@ public class LongTermMemoryConsolidationAgent : GPT
 
             AddUserMessage(userMessage);
 
+            // Strong instruction to ensure minimum number of chunks
+            int requiredMinChunks = 8;
+            int targetMinChunks = Math.Min(requiredMinChunks, Math.Max(1, sortedEntries.Count));
+            AddUserMessage($"반드시 consolidated_chunks를 최소 {targetMinChunks}개 이상 생성하세요. 시간 구간, 위치, 감정 변화를 기준으로 더 잘게 분할하십시오. 각 청크의 original_entries_count 합은 총 {sortedEntries.Count}와 일치해야 합니다.");
+
             var response = await SendWithCacheLog<MemoryConsolidationResult>();
 
             // 통계 검증 및 보정
@@ -196,6 +213,17 @@ public class LongTermMemoryConsolidationAgent : GPT
             response.TotalConsolidatedChunks = response.ConsolidatedChunks.Count;
 
             Debug.Log($"[{actor.Name}] 메모리 통합 완료: {sortedEntries.Count}개 → {response.ConsolidatedChunks.Count}개 chunk");
+
+            // If not enough chunks, retry once with explicit correction instruction
+            if (response.ConsolidatedChunks.Count < targetMinChunks && sortedEntries.Count > 0)
+            {
+                AddUserMessage($"이전 응답은 {response.ConsolidatedChunks.Count}개의 청크만 생성했습니다. 최소 {targetMinChunks}개 이상의 청크로 다시 생성하세요. 위치/시간/감정 변화에 따라 더 세분화하십시오. 동일한 엔트리 목록을 기준으로 새로 작성하세요.");
+                AddUserMessage(entriesText);
+                response = await SendWithCacheLog<MemoryConsolidationResult>();
+                response.TotalOriginalEntries = sortedEntries.Count;
+                response.TotalConsolidatedChunks = response.ConsolidatedChunks.Count;
+                Debug.Log($"[{actor.Name}] 재시도 후 통합 결과: {response.ConsolidatedChunks.Count}개 chunk (요구 최소 {targetMinChunks})");
+            }
 
             return response;
         }
@@ -221,8 +249,7 @@ public class LongTermMemoryConsolidationAgent : GPT
     /// <param name="currentTime">현재 시간</param>
     /// <returns>Long Term Memory 엔트리들</returns>
     public List<LongTermMemory> ConvertToLongTermFormat(
-        MemoryConsolidationResult consolidationResult,
-        GameTime currentTime)
+        MemoryConsolidationResult consolidationResult)
     {
         var longTermEntries = new List<LongTermMemory>();
 
@@ -230,13 +257,14 @@ public class LongTermMemoryConsolidationAgent : GPT
         {
             var entry = new LongTermMemory
             {
-                timestamp = currentTime,
+                startTime = chunk.StartTime,
+                endTime = chunk.EndTime,
                 type = "consolidated",
                 category = "daily_summary",
                 content = chunk.Summary,
                 emotions = chunk.Emotions ?? new List<Emotions>(),
                 relatedActors = chunk.PeopleInvolved ?? new List<string>(),
-                location = "Multiple" // 여러 위치가 포함될 수 있음
+                location = chunk.Location
             };
 
             longTermEntries.Add(entry);
@@ -245,35 +273,25 @@ public class LongTermMemoryConsolidationAgent : GPT
         return longTermEntries;
     }
 
-    /// <summary>
-    /// 요약에서 제목을 생성합니다.
-    /// </summary>
-    private string GenerateTitle(string summary)
+    public List<ShortTermMemoryEntry> ConvertToShortTermFormat(
+       MemoryConsolidationResult consolidationResult)
     {
-        // 요약의 첫 번째 문장에서 핵심 키워드 추출
-        var firstSentence = summary.Split('.', '!', '?').FirstOrDefault() ?? summary;
-        var words = firstSentence.Split(' ').Take(5);
-        return string.Join(" ", words).Trim();
-    }
+        var shortTermEntries = new List<ShortTermMemoryEntry>();
 
-    /// <summary>
-    /// 주요 사건에서 메인 액션을 추출합니다.
-    /// </summary>
-    private string ExtractMainAction(List<string> mainEvents)
-    {
-        if (mainEvents == null || mainEvents.Count == 0)
-            return "various activities";
+        foreach (var chunk in consolidationResult.ConsolidatedChunks)
+        {
+            var entry = new ShortTermMemoryEntry(
+                chunk.StartTime,
+                chunk.Summary,
+                null,
+                chunk.Location,
+                chunk.Emotions
+            );
 
-        // 첫 번째 주요 사건을 메인 액션으로 사용
-        return mainEvents.First();
-    }
+            shortTermEntries.Add(entry);
+        }
 
-    /// <summary>
-    /// GameTime에서 요일을 문자열로 변환합니다.
-    /// </summary>
-    private string GetDayOfWeek(GameTime gameTime)
-    {
-        return GameTime.GetDayOfWeekString(gameTime.GetDayOfWeek());
+        return shortTermEntries;
     }
 
     /// <summary>

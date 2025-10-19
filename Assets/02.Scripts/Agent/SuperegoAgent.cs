@@ -46,7 +46,7 @@ public class SuperegoAgent : GPT
             // 캐릭터 정보와 기억을 동적으로 로드
             var characterInfo = actor.LoadCharacterInfo();
             var characterMemory = actor.LoadCharacterMemory();
-
+            var timeService = Services.Get<ITimeService>();
             var recentPerceptionInterpretation = mainActor
                 .brain
                 ?.recentPerceptionResult
@@ -55,6 +55,7 @@ public class SuperegoAgent : GPT
             // 플레이스홀더 교체를 위한 딕셔너리 생성
             var replacements = new Dictionary<string, string>
             {
+                {"current_time", $"{timeService.CurrentTime.ToKoreanString()}"},
                 { "character_name", actor.Name },
                 { "personality", actor.LoadPersonality() },
                 { "info", characterInfo },
@@ -308,17 +309,12 @@ public class SuperegoAgent : GPT
             LoadSystemPrompt();
 
             var timeService = Services.Get<ITimeService>();
-            var year = timeService.CurrentTime.year;
-            var month = timeService.CurrentTime.month;
-            var day = timeService.CurrentTime.day;
-            var hour = timeService.CurrentTime.hour;
-            var minute = timeService.CurrentTime.minute;
             // 사용자 메시지 구성
             var localizationService = Services.Get<ILocalizationService>();
             var replacements = new Dictionary<string, string>
             {
                 //{ "character_name", actor.Name },
-                { "current_time", $"{year}년 {month}월 {day}일 {hour:D2}:{minute:D2}" },
+                { "current_time", $"{timeService.CurrentTime.ToKoreanString()}" },
                 //{ "short_term_memory", actor.LoadShortTermMemory() },
             };
             MainActor mainActor = actor as MainActor;

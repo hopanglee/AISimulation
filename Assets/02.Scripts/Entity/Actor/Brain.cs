@@ -583,11 +583,11 @@ public class Brain
                             var cmd = parameters != null && parameters.TryGetValue("command", out var c) ? c?.ToString() : null;
                             var target = parameters != null && parameters.TryGetValue("target_actor", out var ta) ? ta?.ToString() : null;
                             if (cmd == "chat" && !string.IsNullOrEmpty(target) && parameters.TryGetValue("message", out var msg))
-                                return $"아이폰으로 '{target}'에게 메시지를 보내기로 했다.";
+                                return $"아이폰으로 '{target}'에게 채팅을 보내기로 했다.";
                             if (cmd == "recent_read" && !string.IsNullOrEmpty(target) && parameters.TryGetValue("message_count", out var mc))
-                                return $"아이폰에서 '{target}'와의 최근 대화를 {mc}개 읽어보기로 했다.";
+                                return $"아이폰에서 '{target}'와의 최근 채팅을 {mc}개 읽어보기로 했다.";
                             if (cmd == "continue_read" && !string.IsNullOrEmpty(target) && parameters.TryGetValue("message_count", out var cc))
-                                return $"아이폰에서 '{target}'와의 지난 대화를 더 읽어보기로 했다 ({cc}개).";
+                                return $"아이폰에서 '{target}'와의 지난 채팅을 더 읽어보기로 했다 ({cc}개).";
                             return "아이폰을 사용해 보기로 했다.";
                         }
                         if (hand is Note)

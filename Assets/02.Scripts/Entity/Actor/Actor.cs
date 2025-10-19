@@ -1760,7 +1760,15 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                     if (memory.timestamp != null)
                     {
                         var daysSince = -memory.timestamp.GetDaysSince(Services.Get<ITimeService>().CurrentTime);
-                        if (daysSince <= 31)
+                        if (memory.timestamp.IsToday())
+                        {
+                            timestamp = $"오늘 {memory.timestamp.hour:D2}:{memory.timestamp.minute:D2}";
+                        }
+                        else if (memory.timestamp.IsYesterday())
+                        {
+                            timestamp = $"어제";
+                        }
+                        else if (daysSince <= 31)
                         {
                             timestamp = $"{memory.timestamp.ToKoreanString()}({daysSince}일 전)";
                         }

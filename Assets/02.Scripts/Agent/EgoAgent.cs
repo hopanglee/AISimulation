@@ -34,11 +34,12 @@ public class EgoAgent : GPT
             // 캐릭터 정보와 기억을 동적으로 로드
             var characterInfo = actor.LoadCharacterInfo();
             var characterMemory = actor.LoadShortTermMemory();
-
+            var timeService = Services.Get<ITimeService>();
 
             // 플레이스홀더 교체를 위한 딕셔너리 생성
             var replacements = new Dictionary<string, string>
             {
+                { "current_time", $"{timeService.CurrentTime.ToKoreanString()}" },
                 { "character_name", actor.Name },
                 { "personality", actor.LoadPersonality() },
                 { "info", $"- 정보: {characterInfo}\n" }, 
@@ -289,12 +290,14 @@ public class EgoAgent : GPT
             LoadSystemPrompt();
             // 사용자 메시지 구성
             var localizationService = Services.Get<ILocalizationService>();
+            var timeService = Services.Get<ITimeService>();
             // 감정을 읽기 쉬운 형태로 변환
             var superegoEmotions = FormatEmotions(superegoResult.emotions);
             var idEmotions = FormatEmotions(idResult.emotions);
 
             var replacements = new Dictionary<string, string>
             {
+                { "current_time", $"{timeService.CurrentTime.ToKoreanString()}" },
                 { "superego_result",superegoResult.situation_interpretation },
                 { "id_result", idResult.situation_interpretation },
                 { "superego_emotion", superegoEmotions },

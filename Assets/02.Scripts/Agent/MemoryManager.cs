@@ -34,7 +34,7 @@ public class ShortTermMemoryEntry
         this.timestamp = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 0, 0);
         this.content = content;
         this.details = details;
-        this.locationName = locationName ?? "Unknown";
+        this.locationName = locationName ?? "";
         this.emotions = emotions ?? new List<Emotions>();
     }
 
@@ -43,7 +43,7 @@ public class ShortTermMemoryEntry
         this.timestamp = timestamp;
         this.content = content;
         this.details = details;
-        this.locationName = locationName ?? "Unknown";
+        this.locationName = locationName ?? "";
         this.emotions = emotions ?? new List<Emotions>();
     }
 }
@@ -98,7 +98,7 @@ public class MemoryManager
             //filterAgent = new LongTermMemoryFilterAgent(owner);
             //maintenanceAgent = new LongTermMemoryMaintenanceAgent(owner);
 
-           // Debug.Log($"[MemoryManager] All memory agents initialized for {owner.name}");
+            // Debug.Log($"[MemoryManager] All memory agents initialized for {owner.name}");
         }
         catch (Exception ex)
         {
@@ -179,7 +179,7 @@ public class MemoryManager
             shortTermMemory.lastUpdated = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 0, 0);
             string json = JsonConvert.SerializeObject(shortTermMemory, Formatting.Indented);
             File.WriteAllText(shortTermMemoryPath, json);
-            if(shortTermMemory.entries.Count > 0)
+            if (shortTermMemory.entries.Count > 0)
                 Debug.Log($"[{logOwner}] Short Term Memory 저장 완료: {shortTermMemory.entries.Count}개");
         }
         catch (Exception ex)
@@ -223,6 +223,34 @@ public class MemoryManager
         SaveShortTermMemory();
     }
 
+    public void AddShortTermMemories(List<ShortTermMemoryEntry> entries)
+    {
+        // 경로 보장
+        if (string.IsNullOrEmpty(shortTermMemoryPath))
+            InitializeMemoryPaths();
+
+        // 메모리가 비어 있으면 먼저 로드 시도
+        if (shortTermMemory == null || shortTermMemory.entries == null)
+            LoadShortTermMemory();
+
+        // 여전히 null이면 안전 초기화
+        if (shortTermMemory == null)
+            shortTermMemory = new ShortTermMemoryData();
+        if (shortTermMemory.entries == null)
+            shortTermMemory.entries = new List<ShortTermMemoryEntry>();
+
+        string logOwner = owner != null ? owner.Name : "Unknown";
+        Debug.Log($"[{logOwner}] Short Term Memory 추가: {entries.Count}개");
+
+
+        shortTermMemory.entries.AddRange(entries);
+
+        // timestamp 순으로 정렬
+        shortTermMemory.entries = shortTermMemory.entries.OrderBy(e => e.timestamp).ToList();
+
+        SaveShortTermMemory();
+    }
+
     /// <summary>
     /// Short Term Memory 목록을 반환합니다.
     /// </summary>
@@ -239,7 +267,7 @@ public class MemoryManager
         var count = shortTermMemory.entries.Count;
         shortTermMemory.entries.Clear();
         SaveShortTermMemory();
-        if(count > 0)
+        if (count > 0)
             Debug.Log($"[{owner.Name}] Short Term Memory 초기화됨: {count}개");
     }
 
@@ -402,7 +430,7 @@ public class MemoryManager
                 ConsolidationReasoning = consolidationResult.ConsolidationReasoning
             };
 
-            var newLongTermMemories = consolidationAgent.ConvertToLongTermFormat(filteredConsolidationResult, currentTime);
+            var newLongTermMemories = consolidationAgent.ConvertToLongTermFormat(filteredConsolidationResult);
 
             // 3.1. Long Term Memory 저장
             AddLongTermMemories(newLongTermMemories);
@@ -431,8 +459,8 @@ public class MemoryManager
 
             Debug.Log($"[MemoryManager] Starting circle-end memory processing at {currentTime.year}-{currentTime.month:D2}-{currentTime.day:D2} {currentTime.hour:D2}:{currentTime.minute:D2}");
 
-            // 0. 현재 STM 분리: 최신 15개는 유지, 그 외는 정리 대상으로 사용
-            var numberOfStmToKeep = 15;
+            // 0. 현재 STM 분리: 최신 12개는 유지, 그 외는 정리 대상으로 사용
+            var numberOfStmToKeep = 10;
 
             var allStm = GetShortTermMemory();
             var orderedDesc = allStm
@@ -477,15 +505,15 @@ public class MemoryManager
                 ConsolidationReasoning = consolidationResult.ConsolidationReasoning
             };
 
-            var newLongTermMemories = consolidationAgent.ConvertToLongTermFormat(filteredConsolidationResult, currentTime);
+            // var newLongTermMemories = consolidationAgent.ConvertToLongTermFormat(filteredConsolidationResult, currentTime);
 
-            // 4.1. Long Term Memory 저장
-            AddLongTermMemories(newLongTermMemories);
+            // // 4.1. Long Term Memory 저장
+            // AddLongTermMemories(newLongTermMemories);
 
             // 5. 성격 변화 처리 (STM 정리 전에 수행)
             await ProcessPersonalityChangeAsync(filteredConsolidationResult);
 
-            // 6. Short Term Memory 정리: 최신 20개만 남기고 나머지 제거
+            // 6. Short Term Memory 정리: 최신 10개만 남기고 나머지 제거
             if (shortTermMemory?.entries != null)
             {
                 var keepSet = new HashSet<ShortTermMemoryEntry>(latest);
@@ -494,7 +522,12 @@ public class MemoryManager
                 Debug.Log($"[MemoryManager] STM trimmed: kept {shortTermMemory.entries.Count} latest entries ({numberOfStmToKeep} target)");
             }
 
-            Debug.Log($"[MemoryManager] Circle-end processing completed. Saved {newLongTermMemories.Count} new long-term memories from older STM");
+            var newShortTermMemories = consolidationAgent.ConvertToShortTermFormat(filteredConsolidationResult);
+
+            // 4.1. Short Term Memory 저장
+            AddShortTermMemories(newShortTermMemories);
+
+            Debug.Log($"<color=yellow>[MemoryManager] Circle-end processing completed. Saved {newShortTermMemories.Count} new short-term memories from older STM</color>");
         }
         catch (Exception ex)
         {

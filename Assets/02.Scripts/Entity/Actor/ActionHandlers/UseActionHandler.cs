@@ -69,7 +69,7 @@ namespace Agent.ActionHandlers
                         }
                         else
                         {
-                            actor.brain.memoryManager.AddShortTermMemory($"{result}", $"{result}", actor?.curLocation?.GetSimpleKey());
+                            actor.brain.memoryManager.AddShortTermMemory($"{result}", $"", actor?.curLocation?.GetSimpleKey());
                             await SimDelay.DelaySimMinutes(2, token);
                             return false;
                         }
@@ -187,7 +187,7 @@ namespace Agent.ActionHandlers
                 // var target = EntityFinder.FindActorByName(actor, targetActorName);
                 // if (target != null)
                 // {
-                Debug.Log($"[{actor.Name}] iPhone으로 {targetActorName}에게 메시지 전송: {message}");
+                Debug.Log($"[{actor.Name}] iPhone으로 {targetActorName}에게 채팅을 전송: {message}");
                 // iPhone의 Use 메서드 호출 (Chat 명령)
                 var (isSuccess, result) = await iphone.Use(actor, parameters, token);
                 if (isSuccess)
@@ -223,7 +223,7 @@ namespace Agent.ActionHandlers
                 int count = countObj is int ? (int)countObj : 10;
 
 
-                Debug.Log($"[{actor.Name}] iPhone으로 {readTargetName}의 메시지 {count}개 읽기");
+                Debug.Log($"[{actor.Name}] iPhone으로 {readTargetName}의 채팅 {count}개 읽기");
                 // iPhone의 Use 메서드 호출 (Read 명령)
                 var (isSuccess, result) = await iphone.Use(actor, parameters, token);
                 if (isSuccess)
@@ -258,7 +258,7 @@ namespace Agent.ActionHandlers
                 // var continueTargetActor = EntityFinder.FindActorByName(actor, continueTargetName);
                 // if (continueTargetActor != null)
                 // {
-                Debug.Log($"[{actor.Name}] iPhone으로 {continueTargetName}의 메시지 {continueCount}개 계속 읽기");
+                Debug.Log($"[{actor.Name}] iPhone으로 {continueTargetName}의 채팅 {continueCount}개 계속 읽기");
                 // iPhone의 Use 메서드 호출 (Continue 명령)
                 var (isSuccess, result) = await iphone.Use(actor, parameters, token);
                 if (isSuccess)

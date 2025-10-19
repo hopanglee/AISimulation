@@ -72,7 +72,7 @@ namespace Agent.ActionHandlers
                                 thinkingActor.brain.memoryManager.AddShortTermMemory(
                                     $"나: '{message}'",
                                     "",
-                                    thinkingActor?.curLocation?.LocationToString()
+                                    thinkingActor?.curLocation?.GetSimpleKey()
                                 );
                                 await SimDelay.DelaySimMinutes(1, token);
                                 return true;
@@ -138,7 +138,7 @@ namespace Agent.ActionHandlers
                                 thinkingActor.brain.memoryManager.AddShortTermMemory(
                                     $"{result}",
                                     "",
-                                    thinkingActor?.curLocation?.LocationToString()
+                                    thinkingActor?.curLocation?.GetSimpleKey()
                                 );
                                 Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
                                 return true;
@@ -162,7 +162,7 @@ namespace Agent.ActionHandlers
                                 thinkingActor.brain.memoryManager.AddShortTermMemory(
                                     $"{result}",
                                     "",
-                                    thinkingActor?.curLocation?.LocationToString()
+                                    thinkingActor?.curLocation?.GetSimpleKey()
                                 );
 
                                 Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
@@ -187,7 +187,7 @@ namespace Agent.ActionHandlers
                                 thinkingActor.brain.memoryManager.AddShortTermMemory(
                                     $"{result}",
                                     "",
-                                    thinkingActor?.curLocation?.LocationToString()
+                                    thinkingActor?.curLocation?.GetSimpleKey()
                                 );
 
                                 Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
@@ -230,7 +230,7 @@ namespace Agent.ActionHandlers
                                     thinkingActor.brain.memoryManager.AddShortTermMemory(
                                         $"{result}",
                                         "",
-                                        thinkingActor?.curLocation?.LocationToString()
+                                        thinkingActor?.curLocation?.GetSimpleKey()
                                     );
                                     Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
                                     await SimDelay.DelaySimMinutes(1, token);
@@ -246,7 +246,7 @@ namespace Agent.ActionHandlers
                                     thinkingActor.brain.memoryManager.AddShortTermMemory(
                                         $"{result}",
                                         "",
-                                        thinkingActor?.curLocation?.LocationToString()
+                                        thinkingActor?.curLocation?.GetSimpleKey()
                                     );
                                     Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
                                     await SimDelay.DelaySimMinutes(1, token);
@@ -262,7 +262,7 @@ namespace Agent.ActionHandlers
                                     thinkingActor.brain.memoryManager.AddShortTermMemory(
                                         $"{result}",
                                         "",
-                                        thinkingActor?.curLocation?.LocationToString()
+                                        thinkingActor?.curLocation?.GetSimpleKey()
                                     );
                                     Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
                                     await SimDelay.DelaySimMinutes(1, token);
@@ -276,7 +276,7 @@ namespace Agent.ActionHandlers
                                 thinkingActor.brain.memoryManager.AddShortTermMemory(
                                     $"{objectName}에 다가갔지만 아직 상호작용하기엔 멀다.",
                                     "",
-                                    thinkingActor?.curLocation?.LocationToString()
+                                    thinkingActor?.curLocation?.GetSimpleKey()
                                 );
                             }
                             catch (OperationCanceledException)
@@ -298,7 +298,7 @@ namespace Agent.ActionHandlers
                             thinkingActor.brain.memoryManager.AddShortTermMemory(
                                 $"{objectName}을(를) 찾지 못했다.",
                                 "",
-                                thinkingActor?.curLocation?.LocationToString()
+                                thinkingActor?.curLocation?.GetSimpleKey()
                             );
                         }
                     }
@@ -386,7 +386,7 @@ namespace Agent.ActionHandlers
                     stmActor.brain.memoryManager.AddShortTermMemory(
                         $"활동 '{activityName}'을(를) 마쳤다.",
                         $"결과: {resultText}",
-                        stmActor?.curLocation?.LocationToString()
+                        stmActor?.curLocation?.GetSimpleKey()
                     );
                 }
                 catch
@@ -394,7 +394,7 @@ namespace Agent.ActionHandlers
                     stmActor.brain.memoryManager.AddShortTermMemory(
                         $"활동 '{activityName}'을(를) 마쳤다.",
                         null,
-                        stmActor?.curLocation?.LocationToString()
+                        stmActor?.curLocation?.GetSimpleKey()
                     );
                 }
             }

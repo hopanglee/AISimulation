@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Agent.ActionHandlers;
+using System;
 [System.Serializable]
 public class iPhone : Item, IUsable
 {
@@ -25,20 +26,56 @@ public class iPhone : Item, IUsable
     [System.Serializable]
     public class ChatMessage
     {
-        public string time;
+        public GameTime time;
         public string sender;
         public string message;
 
-        public ChatMessage(string time, string sender, string message)
+        public ChatMessage(GameTime time, string sender, string message)
         {
             this.time = time;
             this.sender = sender;
             this.message = message;
         }
 
+        public ChatMessage(string time, string sender, string message)
+        {
+            try
+            {
+                this.time = GameTime.FromIsoString(time);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[iPhone] ChatMessage 생성 실패: {ex.Message}");
+                this.time = null;
+            }
+            this.sender = sender;
+            this.message = message;
+        }
+
         public override string ToString()
         {
-            return $"[{time}] {sender}: {message}";
+            var timestamp = time.ToKoreanString();
+            if (time.IsToday())
+            {
+                timestamp = $"오늘 {time.hour:D2}:{time.minute:D2}";
+            }
+            else if (time.IsYesterday())
+            {
+                timestamp = $"어제";
+            }
+            // else
+            // {
+            //     var daysSince = - time.GetDaysSince(Services.Get<ITimeService>().CurrentTime);
+            //     if (daysSince <= 31)
+            //     {
+            //         timestamp = $"{time.ToKoreanString()}({daysSince}일 전)";
+            //     }
+            //     else
+            //     {
+            //         timestamp = $"{time.ToKoreanString()}";
+            //     }
+            // }
+            return $"[{timestamp}] {sender}: {message}";
         }
     }
 
@@ -160,7 +197,7 @@ public class iPhone : Item, IUsable
             targetIPhone.chatNotification = true;
             var localizationService = Services.Get<ILocalizationService>();
 
-            string notificationMessage = localizationService.CurrentLanguage == Language.KR ? $"[{time}] 새로운 메시지가 왔습니다. from {actor.Name}" : $"New message from {actor.Name} at {time}";
+            string notificationMessage = localizationService.CurrentLanguage == Language.KR ? $"[{time}] 새로운 채팅이 왔습니다. from {actor.Name}" : $"New chat from {actor.Name} at {time}";
             targetIPhone.notifications.Add(notificationMessage);
 
             // ExternalEventService에 iPhone 알림 발생을 알림
@@ -221,7 +258,7 @@ public class iPhone : Item, IUsable
         // Add recent chat snapshot (up to last 5) to reader's short-term memory
         AddRecentChatsToSTM(actor, key);
 
-        return "\n\n" + sb.ToString();
+        return "\n" + sb.ToString();
     }
 
     /// <summary>
@@ -267,7 +304,7 @@ public class iPhone : Item, IUsable
 
         if (endIndex < startIndex)
         {
-            return "메세지가 더 이상 없다.";
+            return "읽을 채팅이 더 이상 없다.";
         }
 
         int length = endIndex - startIndex + 1;
@@ -393,7 +430,7 @@ public class iPhone : Item, IUsable
             {
                 var localizationService = Services.Get<ILocalizationService>();
                 bool isKr = false; try { isKr = localizationService != null && localizationService.CurrentLanguage == Language.KR; } catch { }
-                string notificationMessage = isKr ? $"[{lastPartnerMsg.time}] 새로운 메시지가 왔습니다. from {partner}" : $"New message from {partner} at {lastPartnerMsg.time}";
+                string notificationMessage = isKr ? $"[{lastPartnerMsg.time}] 새로운 채팅이 왔습니다. from {partner}" : $"New chat from {partner} at {lastPartnerMsg.time}";
                 notifications.Add(notificationMessage);
                 chatNotification = notifications.Count > 0;
             }
@@ -418,7 +455,7 @@ public class iPhone : Item, IUsable
             {
                 var localizationService = Services.Get<ILocalizationService>();
                 bool isKr = false; try { isKr = localizationService != null && localizationService.CurrentLanguage == Language.KR; } catch { }
-                string notificationMessage = isKr ? $"[{lastPartnerMsg.time}] 새로운 메시지가 왔습니다. from {partner}" : $"New message from {partner} at {lastPartnerMsg.time}";
+                string notificationMessage = isKr ? $"[{lastPartnerMsg.time}] 새로운 채팅이 왔습니다. from {partner}" : $"New chat from {partner} at {lastPartnerMsg.time}";
                 notifications.Add(notificationMessage);
                 chatNotification = notifications.Count > 0;
             }
@@ -443,7 +480,7 @@ public class iPhone : Item, IUsable
             {
                 var localizationService = Services.Get<ILocalizationService>();
                 bool isKr = false; try { isKr = localizationService != null && localizationService.CurrentLanguage == Language.KR; } catch { }
-                string notificationMessage = isKr ? $"[{lastPartnerMsg.time}] 새로운 메시지가 왔습니다. from {partner}" : $"New message from {partner} at {lastPartnerMsg.time}";
+                string notificationMessage = isKr ? $"[{lastPartnerMsg.time}] 새로운 채팅이 왔습니다. from {partner}" : $"New chat from {partner} at {lastPartnerMsg.time}";
                 notifications.Add(notificationMessage);
                 chatNotification = notifications.Count > 0;
             }
@@ -498,7 +535,7 @@ public class iPhone : Item, IUsable
             {
                 var localizationService = Services.Get<ILocalizationService>();
                 bool isKr = false; try { isKr = localizationService != null && localizationService.CurrentLanguage == Language.KR; } catch { }
-                string notificationMessage = isKr ? $"[{lastPartnerMsg.time}] 새로운 메시지가 왔습니다. from {partner}" : $"New message from {partner} at {lastPartnerMsg.time}";
+                string notificationMessage = isKr ? $"[{lastPartnerMsg.time}] 새로운 채팅이 왔습니다. from {partner}" : $"New chat from {partner} at {lastPartnerMsg.time}";
                 notifications.Add(notificationMessage);
                 chatNotification = notifications.Count > 0;
             }
@@ -736,9 +773,9 @@ public class iPhone : Item, IUsable
                     int cnt = kv.Value;
                     var snippet = senderLatestSnippet.TryGetValue(kv.Key, out var s) ? s : string.Empty;
                     if (!string.IsNullOrEmpty(snippet))
-                        return $"알림: {kv.Key}로부터 메세지가 +{cnt}개 왔습니다:'{snippet}'";
+                        return $"알림: {kv.Key}로부터 새로운 채팅이 +{cnt}개 왔습니다:'{snippet}'";
                     else
-                        return $"알림: {kv.Key}로부터 메세지가 +{cnt}개 왔습니다.";
+                        return $"알림: {kv.Key}로부터 새로운 채팅이 +{cnt}개 왔습니다.";
                 }
                 else
                 {
@@ -750,7 +787,7 @@ public class iPhone : Item, IUsable
                         var snippet = senderLatestSnippet.TryGetValue(kv.Key, out var s) ? s : string.Empty;
                         sbKr.Append("[")
                             .Append(kv.Key)
-                            .Append("로부터 메세지가 +")
+                            .Append("로부터 새로운 채팅이 +")
                             .Append(cnt)
                             .Append("개 왔습니다.")
                             .Append(!string.IsNullOrEmpty(snippet) ? $": '{snippet}'" : "")

@@ -1,3 +1,5 @@
+현재 시간: {current_time}
+
 **이성**
 느낀 감정: {superego_emotion}
 생각 과정: {superego_thought_chain}
