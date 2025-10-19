@@ -46,7 +46,7 @@ public class iPhone : Item, IUsable
             catch (Exception ex)
             {
                 Debug.LogError($"[iPhone] ChatMessage 생성 실패: {ex.Message}");
-                this.time = null;
+                this.time = new GameTime(0, 0, 0, 0, 0);
             }
             this.sender = sender;
             this.message = message;

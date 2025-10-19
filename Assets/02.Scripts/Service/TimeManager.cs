@@ -80,7 +80,7 @@ public interface ITimeService : IService
 }
 
 [System.Serializable]
-public class GameTime : IComparable<GameTime>, IComparable
+public struct GameTime : IComparable<GameTime>, IComparable
 {
     public int year;
     public int month;
@@ -181,7 +181,6 @@ public class GameTime : IComparable<GameTime>, IComparable
     public static bool operator ==(GameTime a, GameTime b)
     {
         if (ReferenceEquals(a, b)) return true;
-        if (a is null || b is null) return false;
         return a.year == b.year
             && a.month == b.month
             && a.day == b.day
@@ -197,8 +196,6 @@ public class GameTime : IComparable<GameTime>, IComparable
     public static bool operator <(GameTime a, GameTime b)
     {
         if (ReferenceEquals(a, b)) return false;
-        if (a is null) return b is not null;
-        if (b is null) return false;
         if (a.year != b.year)
             return a.year < b.year;
         if (a.month != b.month)
@@ -213,24 +210,21 @@ public class GameTime : IComparable<GameTime>, IComparable
     public static bool operator >(GameTime a, GameTime b)
     {
         if (ReferenceEquals(a, b)) return false;
-        if (a is null) return false;
-        if (b is null) return true;
+
         return b < a;
     }
 
     public static bool operator <=(GameTime a, GameTime b)
     {
         if (ReferenceEquals(a, b)) return true;
-        if (a is null) return true;
-        if (b is null) return false;
+
         return a < b || a == b;
     }
 
     public static bool operator >=(GameTime a, GameTime b)
     {
         if (ReferenceEquals(a, b)) return true;
-        if (a is null) return false;
-        if (b is null) return true;
+
         return a > b || a == b;
     }
 

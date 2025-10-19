@@ -87,6 +87,10 @@ public class GameService : MonoBehaviour, IGameService
 
     private ITimeService timeService;
 
+    // Fixed-step simulation accumulator for deterministic timing
+    private const float fixedStep = 0.1f; // seconds per simulation step
+    private float simAccumulator = 0f;
+
     public void Initialize()
     {
     }
@@ -104,9 +108,15 @@ public class GameService : MonoBehaviour, IGameService
             else
             {
                 // deltaTime 상한을 두어 예외적 스파이크 방지 (예: 0.25초)
-                var dt = Mathf.Min(Time.deltaTime, 0.1f);
-                //Debug.Log($"[GameService] UpdateTime: {dt}");
-                timeService.UpdateTime(dt);
+                var dt = Mathf.Min(Time.deltaTime, 0.25f);
+                simAccumulator += dt;
+
+                // 누적 시간만큼 고정 스텝으로 여러 번 진행
+                while (simAccumulator >= fixedStep)
+                {
+                    timeService.UpdateTime(fixedStep);
+                    simAccumulator -= fixedStep;
+                }
             }
         }
 

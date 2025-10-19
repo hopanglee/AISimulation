@@ -119,7 +119,7 @@ public class LongTermMemoryConsolidationAgent : GPT
                                             ""location"": {{ ""type"": ""string"", ""description"": ""이 청크가 발생한 장소"" }},
                                             ""original_entries_count"": {{ ""type"": ""integer"", ""description"": ""이 청크로 통합된 원본 항목의 수"" }}
                                         }},
-                                        ""required"": [""chunk_id"", ""summary"", ""start_time"", ""end_time"", ""main_events"", ""people_involved"", ""original_entries_count"", ""emotions""]
+                                        ""required"": [""chunk_id"", ""summary"", ""start_time"", ""end_time"", ""main_events"", ""people_involved"", ""original_entries_count"", ""emotions"", ""location""]
                                     }}
                                 }},
                                 ""consolidation_reasoning"": {{ ""type"": ""string"", ""description"": ""통합 결정에 대한 추론"" }},
@@ -179,7 +179,7 @@ public class LongTermMemoryConsolidationAgent : GPT
             {
                 if (entry.timestamp.year <= 0 || entry.timestamp.month <= 0 || entry.timestamp.day <= 0)
                 {
-                    entry.timestamp = null;
+                    entry.timestamp = new GameTime(0, 0, 0, 0, 0);
                 }
             }
 

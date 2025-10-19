@@ -153,6 +153,7 @@ public class ExternalEventService : IExternalEventService
     /// </summary>
     public void NotifyiPhoneNotification(Actor targetActor, string notificationContent)
     {
+        Debug.Log($"<color=yellow>[ExternalEventService] {targetActor.Name}</color> 아이폰 알람 받음");
         // iPhone이 손(Hand)이나 인벤토리에 있을 때에만 외부 이벤트 전송
         if (CanSendEvent(targetActor) && IsIPhoneHeldOrInInventory(targetActor))
         {
@@ -178,6 +179,7 @@ public class ExternalEventService : IExternalEventService
         {
             if (actor is MainActor main)
             {
+
                 var phone = main.iPhone;
                 if (phone == null) return false;
 
@@ -258,6 +260,7 @@ public class ExternalEventService : IExternalEventService
                     if (timeService != null)
                     {
                         lastEventTimes[targetActor] = timeService.CurrentTime;
+                        Debug.Log($"<color=yellow>[ExternalEventService] {targetActor.Name}</color> 이벤트 시간 기록: {timeService.CurrentTime}");
                     }
                 }
                 catch { }
@@ -294,6 +297,7 @@ public class ExternalEventService : IExternalEventService
                 {
                     long currentMin = timeService.CurrentTime.ToMinutes();
                     long lastMin = lastTime.ToMinutes();
+                    Debug.Log($"<color=yellow>[ExternalEventService] {targetActor.Name}</color> 이벤트 중복 방지: {currentMin} - {lastMin} >= {EVENT_COOLDOWN_MINUTES}");
                     return (currentMin - lastMin) >= EVENT_COOLDOWN_MINUTES;
                 }
             }

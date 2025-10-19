@@ -1,5 +1,6 @@
 === Chunk {chunk_number}: [id: {chunk_id}] ===
 시간 범위: {time_range}
+장소: {location}
 요약: {summary}
 주요 사건: {main_events}
 관련 인물: {people_involved}

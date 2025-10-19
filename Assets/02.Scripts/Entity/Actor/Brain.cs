@@ -168,7 +168,7 @@ public class Brain
     {
         try
         {
-            Debug.Log($"[{actor.Name}] 외부 이벤트 발생 - 반응 여부 결정 시작");
+            Debug.Log($"[ExternalEventService] [{actor.Name}] 외부 이벤트 발생 - 반응 여부 결정 시작");
             if (!string.IsNullOrEmpty(description))
             {
                 try
