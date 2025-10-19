@@ -431,8 +431,8 @@ public class MemoryManager
 
             Debug.Log($"[MemoryManager] Starting circle-end memory processing at {currentTime.year}-{currentTime.month:D2}-{currentTime.day:D2} {currentTime.hour:D2}:{currentTime.minute:D2}");
 
-            // 0. 현재 STM 분리: 최신 20개는 유지, 그 외는 정리 대상으로 사용
-            var numberOfStmToKeep = 20;
+            // 0. 현재 STM 분리: 최신 15개는 유지, 그 외는 정리 대상으로 사용
+            var numberOfStmToKeep = 15;
 
             var allStm = GetShortTermMemory();
             var orderedDesc = allStm

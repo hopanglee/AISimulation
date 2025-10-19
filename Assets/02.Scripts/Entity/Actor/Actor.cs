@@ -97,7 +97,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     public Hand Hand;
 
     /// <summary>
-    /// Actor의 인벤토리 아이템들 (최대 2개까지 보관 가능)
+    /// Actor의 인벤토리 아이템들 (최대 3개까지 보관 가능)
     /// </summary>
     [SerializeField]
     private Item[] _inventoryItems;
@@ -141,10 +141,10 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         // 공통 센서 초기화 (MainActor/NPC 공용)
         sensor = new Sensor(this);
 
-        // 인벤토리 배열 보정 (null 또는 길이 0인 경우 기본 슬롯 2개 생성)
+        // 인벤토리 배열 보정 (null 또는 길이 0인 경우 기본 슬롯 3개 생성)
         if (_inventoryItems == null || _inventoryItems.Length == 0)
         {
-            _inventoryItems = new Item[2];
+            _inventoryItems = new Item[3];
         }
 
         // SpeechBubbleUI 초기화
@@ -1690,6 +1690,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             if (shortTermMemories.Count > 0)
             {
                 memoryText += "- 단기 기억들:\n";
+                string lastLocationHeader = null;
                 foreach (var memory in shortTermMemories)
                 {
                     var timestamp = "";
@@ -1720,15 +1721,20 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                     {
                         timestamp = "날짜&시간 모름";
                     }
-                    var location = !string.IsNullOrEmpty(memory.locationName)
-                        ? $" <장소: {memory.locationName}>"
-                        : "";
+
+                    var currentLocationName = !string.IsNullOrEmpty(memory.locationName) ? memory.locationName : "미상";
+                    if (lastLocationHeader == null || !string.Equals(lastLocationHeader, currentLocationName, StringComparison.Ordinal))
+                    {
+                        memoryText += $"<장소: {currentLocationName}>\n";
+                        lastLocationHeader = currentLocationName;
+                    }
+
                     var emotions = memory.emotions != null && memory.emotions.Count > 0
                         ? $", 감정: {string.Join(", ", memory.emotions.OrderByDescending(e => e.intensity).Take(2).Select(e => $"{e.name}"))}"
                         : "";
                     var details = !string.IsNullOrEmpty(memory.details) ? $" ({memory.details})" : "";
 
-                    memoryText += $"[{timestamp}]{location} {memory.content}{details}{emotions}\n";
+                    memoryText += $"[{timestamp}] {memory.content}{details}{emotions}\n";
                 }
             }
 
@@ -1774,7 +1780,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                         ? $" [관련인물: {string.Join(", ", memory.relatedActors)}]"
                         : "";
                     var location = !string.IsNullOrEmpty(memory.location)
-                        ? $" [장소: {GetLastTwoLocationSegments(memory.location)}]"
+                        ? $" <장소: {GetLastTwoLocationSegments(memory.location)}>"
                         : "";
 
                     memoryText += $"[{timestamp}] {location} {memory.content} {relatedActors}{emotions}\n";

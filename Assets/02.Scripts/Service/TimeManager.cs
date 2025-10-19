@@ -103,7 +103,21 @@ public struct GameTime : IComparable<GameTime>, IComparable
 
     public string ToKoreanString()
     {
-        return $"{year:D4}년 {month:D2}월 {day:D2}일 {GetDayOfWeek()} {hour:D2}:{minute:D2}";
+        return $"{year:D4}년 {month:D2}월 {day:D2}일 {GetDayOfWeekString(GetDayOfWeek())} {hour:D2}:{minute:D2}";
+    }
+    public static string GetDayOfWeekString(DayOfWeek dayOfWeek)
+    {
+        return dayOfWeek switch
+        {
+            DayOfWeek.Monday => "(월)",
+            DayOfWeek.Tuesday => "(화)",
+            DayOfWeek.Wednesday => "(수)",
+            DayOfWeek.Thursday => "(목)",
+            DayOfWeek.Friday => "(금)",
+            DayOfWeek.Saturday => "(토)",
+            DayOfWeek.Sunday => "(일)",
+            _ => "알 수 없음"
+        };
     }
 
     public bool IsToday()
@@ -258,7 +272,7 @@ public struct GameTime : IComparable<GameTime>, IComparable
         minutes += (year - 2025) * 365 * 24 * 60; // 평균 365일로 계산
         return minutes;
     }
-    
+
     /// <summary>
     /// 다른 GameTime과의 차이를 분 단위로 계산
     /// </summary>
@@ -304,7 +318,7 @@ public struct GameTime : IComparable<GameTime>, IComparable
 
         return new GameTime(year, month, day, hour, minute);
     }
-    
+
     /// <summary>
     /// 요일을 계산합니다 (Zeller의 공식 사용)
     /// </summary>
@@ -313,23 +327,23 @@ public struct GameTime : IComparable<GameTime>, IComparable
         int y = year;
         int m = month;
         int d = day;
-        
+
         // 1월과 2월은 전년도의 13월, 14월로 계산
         if (m == 1 || m == 2)
         {
             m += 12;
             y--;
         }
-        
+
         int k = y % 100;
         int j = y / 100;
-        
+
         int h = (d + (13 * (m + 1)) / 5 + k + k / 4 + j / 4 - 2 * j) % 7;
-        
+
         // Zeller 공식의 결과를 DayOfWeek enum으로 변환
         return (DayOfWeek)((h + 5) % 7);
     }
-    
+
     /// <summary>
     /// GameTime을 DateTime으로 변환합니다.
     /// </summary>
@@ -345,7 +359,7 @@ public struct GameTime : IComparable<GameTime>, IComparable
             return new DateTime(2024, 1, 1, 0, 0, 0);
         }
     }
-    
+
     /// <summary>
     /// DateTime을 GameTime으로 변환합니다.
     /// </summary>
@@ -353,7 +367,7 @@ public struct GameTime : IComparable<GameTime>, IComparable
     {
         return new GameTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute);
     }
-    
+
     /// <summary>
     /// ISO 8601 형식의 문자열을 GameTime으로 변환합니다.
     /// </summary>
@@ -403,7 +417,7 @@ public struct GameTime : IComparable<GameTime>, IComparable
         Debug.LogError($"[GameTime] Failed to parse ISO string '{isoString}'. Defaulting to 2024-01-01 00:00.");
         return new GameTime(2024, 1, 1, 0, 0);
     }
-    
+
     /// <summary>
     /// GameTime을 ISO 8601 형식의 문자열로 변환합니다.
     /// </summary>
@@ -608,7 +622,7 @@ public class TimeManager : ITimeService
     /// </summary>
     public void UpdateTime(float deltaTime)
     {
-       // Debug.Log($"[TimeManager] UpdateTime");
+        // Debug.Log($"[TimeManager] UpdateTime");
         if (!isTimeFlowing)
             return;
         //Debug.Log($"[TimeManager] UpdateTime: {currentTime}");

@@ -111,7 +111,7 @@ public class NPCActionAgent : GPT
             if (timeService != null)
             {
                 var currentTime = timeService.CurrentTime;
-                var dayOfWeek = GetDayOfWeekString(currentTime.GetDayOfWeek());
+                var dayOfWeek = GameTime.GetDayOfWeekString(currentTime.GetDayOfWeek());
                 return $"{currentTime.year}년 {currentTime.month}월 {currentTime.day}일 {dayOfWeek} {currentTime.hour:00}:{currentTime.minute:00}";
             }
         }
@@ -122,23 +122,6 @@ public class NPCActionAgent : GPT
         return null;
     }
 
-    /// <summary>
-    /// 요일을 한글로 반환합니다.
-    /// </summary>
-    private string GetDayOfWeekString(DayOfWeek dayOfWeek)
-    {
-        return dayOfWeek switch
-        {
-            DayOfWeek.Monday => "월요일",
-            DayOfWeek.Tuesday => "화요일",
-            DayOfWeek.Wednesday => "수요일",
-            DayOfWeek.Thursday => "목요일",
-            DayOfWeek.Friday => "금요일",
-            DayOfWeek.Saturday => "토요일",
-            DayOfWeek.Sunday => "일요일",
-            _ => "알 수 없음"
-        };
-    }
 
     /// <summary>
     /// 현재 위치 정보를 반환합니다.

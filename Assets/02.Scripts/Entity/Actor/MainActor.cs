@@ -564,10 +564,10 @@ public abstract class MainActor : Actor
 		SwapHandWithInvenSlot(0);
 	}
 
-	[FoldoutGroup("Debug Inventory"), Button("Swap Hand <-> Inven Slot 2")]
-	private void DebugSwapHandWithInvenSlot2()
+	[FoldoutGroup("Debug Inventory"), Button("Swap Hand <-> Inven Slot 3")]
+	private void DebugSwapHandWithInvenSlot3()
 	{
-		SwapHandWithInvenSlot(1);
+		SwapHandWithInvenSlot(2);
 	}
 
 	private void SwapHandWithInvenSlot(int index)

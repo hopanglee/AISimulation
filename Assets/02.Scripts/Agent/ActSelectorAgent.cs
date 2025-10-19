@@ -18,7 +18,7 @@ namespace Agent
         private DayPlanner dayPlanner; // DayPlanner 참조 추가
         private int cycle;
         public int Cycle { get => cycle; set => cycle = value; }
-        public ActSelectorAgent(Actor actor) : base(actor)
+        public ActSelectorAgent(Actor actor) : base(actor, "gpt-4o-mini")
         {
             SetAgentType(nameof(ActSelectorAgent));
         }
@@ -152,7 +152,7 @@ namespace Agent
                             {"activity_start_time", $"{activityStartTime.hour:D2}:{activityStartTime.minute:D2}"},
                             {"activity_duration_minutes", currentActivity.DurationMinutes.ToString()},
                             {"all_actions_in_activity", string.Join("\n", allActionsText)},
-                            {"all_actions_start_time", dayPlanner.GetPlanStartTime().ToString()},
+                            {"all_actions_start_time", dayPlanner.GetPlanStartTime().ToKoreanString()},
 
                         };
 

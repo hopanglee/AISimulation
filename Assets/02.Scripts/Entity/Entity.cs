@@ -246,9 +246,45 @@ public abstract class Entity : MonoBehaviour, ILocation
     {
         if (curLocation == null) return Name;
 
-        // 단순히 :로 구분하여 표시 (전체 경로)
-        return curLocation.LocationToString() + ":" + GetLocalizedName();
+        // 빌딩부터 현재 Area까지의 경로 + 엔티티 이름
+        // 빌딩부터 현재 Area까지의 경로만 반환 (PathfindingService와 동일한 로직)
+        try
+        {
+            var locationService = Services.Get<ILocationService>();
+            var building = locationService != null ? locationService.GetBuilding(this) : null;
 
+            var full = LocationToString();
+            if (!string.IsNullOrEmpty(full))
+            {
+                if (building != null && !string.IsNullOrEmpty(building.locationName))
+                {
+                    var tokens = full.Split(':');
+                    for (int i = 0; i < tokens.Length; i++)
+                    {
+                        if (string.Equals(tokens[i], building.locationName, System.StringComparison.Ordinal))
+                        {
+                            return string.Join(":", tokens, i, tokens.Length - i);
+                        }
+                    }
+                }
+                else
+                {
+                    var tokens = full.Split(':');
+                    for (int i = 0; i < tokens.Length; i++)
+                    {
+                        if (string.Equals(tokens[i], "미나미 카라스야마", System.StringComparison.Ordinal) || string.Equals(tokens[i], "카부키쵸", System.StringComparison.Ordinal))
+                        {
+                            return string.Join(":", tokens, i, tokens.Length - i);
+                        }
+                    }
+                }
+            }
+            return full;
+        }
+        catch
+        {
+            return LocationToString();
+        }
     }
 
     /// <summary>

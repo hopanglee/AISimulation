@@ -173,9 +173,13 @@ public class Brain
             {
                 try
                 {
-                    memoryManager.AddShortTermMemory("주변에서 변화가 감지되었다.", description, actor?.curLocation?.GetSimpleKey());
+                    memoryManager.AddShortTermMemory(description, "", actor?.curLocation?.GetSimpleKey());
                 }
-                catch { }
+                catch { }   
+            }
+            else
+            {
+                memoryManager.AddShortTermMemory("주변에서 변화가 감지되었다.", "", actor?.curLocation?.GetSimpleKey());
             }
             thinker.OnExternalEventAsync();
 
@@ -215,8 +219,8 @@ public class Brain
             string locName = actor.curLocation.GetSimpleKey();
 
             memoryManager.AddShortTermMemory(
-                $"{perceptionResult.situation_interpretation}",
-                $"{string.Join(" -> ", perceptionResult.thought_chain)}",
+                $"'{perceptionResult.situation_interpretation}'",
+                "나는 생각했다.",
                 locName,
                 perceptionResult.emotions
             );
@@ -579,11 +583,11 @@ public class Brain
                             var cmd = parameters != null && parameters.TryGetValue("command", out var c) ? c?.ToString() : null;
                             var target = parameters != null && parameters.TryGetValue("target_actor", out var ta) ? ta?.ToString() : null;
                             if (cmd == "chat" && !string.IsNullOrEmpty(target) && parameters.TryGetValue("message", out var msg))
-                                return $"아이폰으로 '{target}'에게 메시지를 보내기로 했다: '{msg}'.";
+                                return $"아이폰으로 '{target}'에게 메시지를 보내기로 했다.";
                             if (cmd == "recent_read" && !string.IsNullOrEmpty(target) && parameters.TryGetValue("message_count", out var mc))
                                 return $"아이폰에서 '{target}'와의 최근 대화를 {mc}개 읽어보기로 했다.";
                             if (cmd == "continue_read" && !string.IsNullOrEmpty(target) && parameters.TryGetValue("message_count", out var cc))
-                                return $"아이폰에서 '{target}'와의 지난 대화를 더 읽어보기로 했다 ({cc}).";
+                                return $"아이폰에서 '{target}'와의 지난 대화를 더 읽어보기로 했다 ({cc}개).";
                             return "아이폰을 사용해 보기로 했다.";
                         }
                         if (hand is Note)
@@ -766,7 +770,7 @@ public class Brain
 
             // LTM 개수 임계치 확인 후에만 정리 실행
             int ltmCount = memoryManager != null ? memoryManager.GetLongTermMemories().Count : 0;
-            const int LtmMaintenanceThreshold = 100; // 임계치. 필요시 조정 가능
+            const int LtmMaintenanceThreshold = 75; // 임계치. 필요시 조정 가능
             if (ltmCount <= LtmMaintenanceThreshold)
             {
                 Debug.Log($"[{actor.Name}] LTM {ltmCount}개 → 임계치 {LtmMaintenanceThreshold} 이하, 정기 정리 스킵");

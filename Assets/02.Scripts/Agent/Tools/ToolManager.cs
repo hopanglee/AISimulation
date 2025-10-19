@@ -598,13 +598,13 @@ namespace Agent.Tools
                 using var argumentsJson = System.Text.Json.JsonDocument.Parse(arguments.ToString());
                 if (!argumentsJson.RootElement.TryGetProperty("itemName", out var itemNameElement))
                 {
-                    return "Error: itemName parameter is required";
+                    return "에러 발생: itemName이라는 key가 필요합니다.";
                 }
 
                 string itemName = itemNameElement.GetString();
                 if (string.IsNullOrEmpty(itemName))
                 {
-                    return "Error: Item name is required";
+                    return "에러 발생: itemName이 비어있습니다.";
                 }
 
                 int targetSlot = -1;
@@ -631,7 +631,7 @@ namespace Agent.Tools
                             availableItems.Add($"Slot {i}: {actor.InventoryItems[i].Name}");
                         }
                     }
-                    return $"Error: Item '{itemName}' not found in inventory. Available items: {string.Join(", ", availableItems)}";
+                    return $"에러 발생: 인벤토리에 '{itemName}'이라는 아이템이 없습니다. 가능한 아이템: {string.Join(", ", availableItems)}";
                 }
 
                 var currentHandItem = actor.HandItem;
@@ -650,23 +650,27 @@ namespace Agent.Tools
                 inventoryItem.transform.localPosition = new Vector3(0, 0, 0);
                 try { inventoryItem.gameObject.SetActive(true); } catch { }
 
-                string result = $"Successfully swapped inventory slot {targetSlot} ({inventoryItem.Name}) to hand";
+                string result = "";
                 if (currentHandItem != null)
                 {
-                    result += $". Previous hand item ({currentHandItem.Name}) moved to inventory slot {targetSlot}";
+                    result += $"손에 있던 {currentHandItem.Name}과 인벤토리[{targetSlot+1}]의 {inventoryItem.Name}을 교체했습니다.";
                 }
                 else
                 {
-                    result += ". Hand was empty before";
+                    result += $"인벤토리[{targetSlot+1}]의 {inventoryItem.Name}을 손으로 옮겼습니다.";
+                }
+                if(actor is MainActor mainActor)
+                {
+                    try { mainActor.brain?.memoryManager?.AddShortTermMemory(result, "", mainActor.curLocation.GetSimpleKey()); } catch { }
                 }
 
-                Debug.Log($"[GPTToolExecutor] {result}");
-                return result;
+                Debug.Log($"<color=green>[ToolExecutor] {actor.Name} ExecuteTool: {result}</color>");
+                return "성공!: "+result;
             }
             catch (Exception ex)
             {
-                string error = $"Error swapping inventory to hand: {ex.Message}";
-                Debug.LogError($"[GPTToolExecutor] {error}");
+                string error = $"에러 발생: 인벤토리를 핸드로 이동하는 중 오류가 발생했습니다: {ex.Message}";
+                Debug.LogError($"<color=red>[ToolExecutor] {actor.Name} ExecuteTool: {error}</color>");
                 return error;
             }
         }
@@ -677,14 +681,14 @@ namespace Agent.Tools
             {
                 if (actor == null)
                 {
-                    return "Error: No actor bound to executor";
+                    return "에러 발생: 실행자에 바인딩된 액터가 없습니다.";
                 }
 
                 // priceList 노출 메서드 탐색 (GetPriceList)
                 var method = actor.GetType().GetMethod("GetPriceList", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
                 if (method == null)
                 {
-                    return "No price list available for this actor (payment not supported).";
+                    return "에러 발생: 이 액터에 대한 가격 목록을 사용할 수 없습니다. (결제 기능을 지원하지 않습니다.)";
                 }
 
                 var listObj = method.Invoke(actor, null) as System.Collections.IEnumerable;
@@ -737,8 +741,8 @@ namespace Agent.Tools
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"[GPTToolExecutor] GetPaymentPriceList error: {ex.Message}");
-                return $"Error getting price list: {ex.Message}";
+                Debug.LogError($"<color=red>[ToolExecutor] {actor.Name} ExecuteTool: {ex.Message}</color>");
+                return $"에러 발생: 가격 목록을 가져오는 중 오류가 발생했습니다: {ex.Message}";
             }
         }
 
@@ -756,7 +760,7 @@ namespace Agent.Tools
             }
             catch (Exception ex)
             {
-                return $"Error getting world area info: {ex.Message}";
+                return $"에러 발생: 월드 에리어 정보를 가져오는 중 오류가 발생했습니다: {ex.Message}";
             }
         }
 
@@ -792,7 +796,7 @@ namespace Agent.Tools
             }
             catch (Exception ex)
             {
-                return $"Error getting user memory: {ex.Message}";
+                return $"에러 발생: 사용자 메모리를 가져오는 중 오류가 발생했습니다: {ex.Message}";
             }
         }
 
@@ -802,14 +806,14 @@ namespace Agent.Tools
             {
                 using var args = System.Text.Json.JsonDocument.Parse(arguments.ToString());
                 if (!args.RootElement.TryGetProperty("buildingName", out var nameEl))
-                    return "Error: buildingName parameter is required";
+                    return "에러 발생: buildingName이라는 key가 필요합니다.";
                 var buildingName = nameEl.GetString();
                 if (string.IsNullOrWhiteSpace(buildingName))
-                    return "Error: buildingName is empty";
+                    return "에러 발생: buildingName이 비어있습니다.";
 
                 var buildings = UnityEngine.Object.FindObjectsByType<Building>(FindObjectsSortMode.None);
                 if (buildings == null || buildings.Length == 0)
-                    return "Error: No buildings found in scene";
+                    return "에러 발생: 씬에 건물이 없습니다.";
 
                 Building target = null;
                 // 1) exact match by localized name
@@ -830,18 +834,18 @@ namespace Agent.Tools
                     }
                 }
                 if (target == null)
-                    return $"Error: Building '{buildingName}' not found";
+                    return $"에러 발생: '{buildingName}'이라는 건물을 찾을 수 없습니다.";
 
                 // Return area path only (exclude building level)
                 var areaPath = target.curLocation != null ? target.curLocation.LocationToString() : null;
                 if (string.IsNullOrEmpty(areaPath))
-                    return "Error: Could not resolve building's area path";
+                    return "에러 발생: 건물의 에리어 경로를 결정할 수 없습니다.";
                 return $"'{buildingName}'의 에리어 경로: {areaPath}";
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[GPTToolExecutor] FindBuildingAreaPath error: {ex.Message}");
-                return $"Error: {ex.Message}";
+                Debug.LogError($"<color=red>[ToolExecutor] {actor.Name} ExecuteTool: {ex.Message}</color>");
+                return $"에러 발생: {ex.Message}";
             }
         }
 
@@ -851,29 +855,29 @@ namespace Agent.Tools
             {
                 using var args = JsonDocument.Parse(arguments.ToString());
                 if (!args.RootElement.TryGetProperty("targetAreaKey", out var keyEl))
-                    return "Error: targetAreaKey parameter is required";
+                    return "에러 발생: targetAreaKey이라는 key가 필요합니다.";
                 var targetKey = keyEl.GetString();
                 if (string.IsNullOrWhiteSpace(targetKey))
-                    return "Error: targetAreaKey is empty";
+                    return "에러 발생: targetAreaKey이 비어있습니다.";
 
                 if (actor == null)
-                    return "Error: No actor bound to executor";
+                    return "에러 발생: 실행자에 바인딩된 액터가 없습니다.";
 
                 var locationService = Services.Get<ILocationService>();
                 var pathService = Services.Get<IPathfindingService>();
                 if (locationService == null || pathService == null)
-                    return "Error: Required services not available";
+                    return "에러 발생: 필요한 서비스를 사용할 수 없습니다.";
 
                 if (actor.curLocation == null)
-                    return "Error: Actor has no current location";
+                    return "에러 발생: 액터가 현재 위치를 가지고 있지 않습니다.";
 
                 var startArea = locationService.GetArea(actor.curLocation);
                 if (startArea == null)
-                    return "Error: Actor's current area could not be determined";
+                    return "에러 발생: 액터의 현재 에리어를 결정할 수 없습니다.";
 
                 var path = pathService.FindPathToLocation(startArea, targetKey) ?? new List<string>();
                 if (path.Count == 0)
-                    return $"No path found from {startArea.locationName} to {targetKey}";
+                    return $"에러 발생: {startArea.locationName}에서 {targetKey}로의 경로를 찾을 수 없습니다.";
 
                 var pretty = string.Join(" -> ", path);
                 var fromName = startArea.locationName ?? "현재 위치";
@@ -881,8 +885,8 @@ namespace Agent.Tools
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[GPTToolExecutor] FindShortestAreaPathFromActor error: {ex.Message}");
-                return $"Error: {ex.Message}";
+                Debug.LogError($"<color=red>[ToolExecutor] {actor.Name} ExecuteTool: {ex.Message}</color>");
+                return $"에러 발생: {ex.Message}";
             }
         }
 
@@ -893,14 +897,14 @@ namespace Agent.Tools
                 var relPath = "Assets/11.GameDatas/tokyo_area_structure_hierarchy.txt";
                 if (!System.IO.File.Exists(relPath))
                 {
-                    return "Error: tokyo_area_structure_hierarchy.txt not found. Please run the exporter first (Tools > Area > Export Tokyo Area Structure TXT).";
+                    return "에러 발생: tokyo_area_structure_hierarchy.txt를 찾을 수 없습니다. 먼저 내보내기를 실행하세요 (Tools > Area > Export Tokyo Area Structure TXT).";
                 }
                 var txt = System.IO.File.ReadAllText(relPath, System.Text.Encoding.UTF8);
                 return txt ?? string.Empty;
             }
             catch (Exception ex)
             {
-                return $"Error reading world area structure text: {ex.Message}";
+                return $"에러 발생: 월드 에리어 구조 텍스트를 읽는 중 오류가 발생했습니다: {ex.Message}";
             }
         }
 
@@ -911,14 +915,14 @@ namespace Agent.Tools
                 var relPath = "Assets/11.GameDatas/tokyo_area_structure_connect.txt";
                 if (!System.IO.File.Exists(relPath))
                 {
-                    return "Error: tokyo_area_structure_connect.txt not found. Please run the exporter first (Tools > Area > Export Tokyo Area Structure TXT).";
+                    return "에러 발생: tokyo_area_structure_connect.txt를 찾을 수 없습니다. 먼저 내보내기를 실행하세요 (Tools > Area > Export Tokyo Area Structure TXT).";
                 }
                 var txt = System.IO.File.ReadAllText(relPath, System.Text.Encoding.UTF8);
                 return txt ?? string.Empty;
             }
             catch (Exception ex)
             {
-                return $"Error reading world area connections text: {ex.Message}";
+                return $"에러 발생: 월드 에리어 연결 텍스트를 읽는 중 오류가 발생했습니다: {ex.Message}";
             }
         }
 
@@ -926,14 +930,14 @@ namespace Agent.Tools
         {
             try
             {
-                if (actor == null) return "Error: No actor bound";
+                if (actor == null) return "에러 발생: 실행자에 바인딩된 액터가 없습니다.";
                 var path = System.IO.Path.Combine(Application.dataPath, "11.GameDatas", "Character", actor.Name, "memory", "location", "location_memories.json");
-                if (!System.IO.File.Exists(path)) return $"Error: location_memories.json not found for {actor.Name}";
+                if (!System.IO.File.Exists(path)) return $"에러 발생: {actor.Name}의 location_memories.json를 찾을 수 없습니다.";
                 return System.IO.File.ReadAllText(path, System.Text.Encoding.UTF8);
             }
             catch (Exception ex)
             {
-                return $"Error reading location memories: {ex.Message}";
+                return $"에러 발생: 위치 기억을 읽는 중 오류가 발생했습니다: {ex.Message}";
             }
         }
 
@@ -941,15 +945,15 @@ namespace Agent.Tools
         {
             try
             {
-                if (actor == null) return "Error: No actor bound";
+                if (actor == null) return "에러 발생: 실행자에 바인딩된 액터가 없습니다.";
                 using var args = System.Text.Json.JsonDocument.Parse(arguments.ToString());
                 if (!args.RootElement.TryGetProperty("areaKey", out var keyEl))
-                    return "Error: areaKey parameter is required";
+                    return "에러 발생: areaKey이라는 key가 필요합니다.";
                 var areaKey = keyEl.GetString();
-                if (string.IsNullOrWhiteSpace(areaKey)) return "Error: areaKey is empty";
+                if (string.IsNullOrWhiteSpace(areaKey)) return "에러 발생: areaKey이 비어있습니다.";
 
                 var filePath = System.IO.Path.Combine(Application.dataPath, "11.GameDatas", "Character", actor.Name, "memory", "location", "location_memories.json");
-                if (!System.IO.File.Exists(filePath)) return $"Error: location_memories.json not found for {actor.Name}";
+                if (!System.IO.File.Exists(filePath)) return $"에러 발생: {actor.Name}의 location_memories.json를 찾을 수 없습니다.";
                 var json = System.IO.File.ReadAllText(filePath, System.Text.Encoding.UTF8);
 
                 // Parse to dictionary
@@ -980,7 +984,7 @@ namespace Agent.Tools
             }
             catch (Exception ex)
             {
-                return $"Error filtering location memories: {ex.Message}";
+                return $"에러 발생: 위치 기억을 필터링하는 중 오류가 발생했습니다: {ex.Message}";
             }
         }
 
@@ -994,7 +998,7 @@ namespace Agent.Tools
             }
             catch (Exception ex)
             {
-                return $"Error getting current time: {ex.Message}";
+                return $"에러 발생: 현재 시간을 가져오는 중 오류가 발생했습니다: {ex.Message}";
             }
         }
 
@@ -1005,28 +1009,28 @@ namespace Agent.Tools
                 // MainActor인지 확인
                 if (!(actor is MainActor mainActor))
                 {
-                    return "No plan available (not MainActor)";
+                    return "에러 발생: 계획을 사용할 수 없습니다. (MainActor가 아닙니다.)";
                 }
 
                 // DayPlanner를 통해 현재 계획 정보 조회
                 var dayPlanner = mainActor.brain.dayPlanner;
                 if (dayPlanner == null)
                 {
-                    return "No plan available (DayPlanner not found)";
+                    return "에러 발생: 계획을 사용할 수 없습니다. (DayPlanner를 찾을 수 없습니다.)";
                 }
 
                 var currentPlan = dayPlanner.GetCurrentDayPlan();
                 if (currentPlan == null)
                 {
-                    return "No current plan available";
+                    return "에러 발생: 현재 계획을 사용할 수 없습니다.";
                 }
 
                 return currentPlan.ToString();
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[GPTToolExecutor] GetCurrentPlan error: {ex.Message}");
-                return $"Error: {ex.Message}";
+                Debug.LogError($"<color=red>[ToolExecutor] {actor.Name} ExecuteTool: {ex.Message}</color>");
+                return $"에러 발생: {ex.Message}";
             }
         }
 
@@ -1037,21 +1041,21 @@ namespace Agent.Tools
                 // MainActor인지 확인
                 if (!(actor is MainActor mainActor))
                 {
-                    return "No specific action available (not MainActor)";
+                    return "에러 발생: 특정 행동을 사용할 수 없습니다. (MainActor가 아닙니다.)";
                 }
 
                 // DayPlanner를 통해 현재 특정 행동 조회
                 var dayPlanner = mainActor.brain.dayPlanner;
                 if (dayPlanner == null)
                 {
-                    return "No specific action available (DayPlanner not found)";
+                    return "에러 발생: 특정 행동을 사용할 수 없습니다. (DayPlanner를 찾을 수 없습니다.)";
                 }
 
                 // 현재 특정 행동 가져오기 (동기적으로 처리)
                 var currentSpecificAction = dayPlanner.GetCurrentSpecificActionAsync().GetAwaiter().GetResult();
                 if (currentSpecificAction == null)
                 {
-                    return "No current specific action available";
+                    return "에러 발생: 현재 특정 행동을 사용할 수 없습니다.";
                 }
 
                 // 특정 행동 정보 포맷팅
@@ -1074,8 +1078,8 @@ namespace Agent.Tools
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[GPTToolExecutor] GetCurrentSpecificAction error: {ex.Message}");
-                return $"Error: {ex.Message}";
+                Debug.LogError($"<color=red>[ToolExecutor] {actor.Name} ExecuteTool: {ex.Message}</color>");
+                return $"에러 발생: {ex.Message}";
             }
         }
 
@@ -1083,21 +1087,21 @@ namespace Agent.Tools
         {
             try
             {
-                if (actor == null) return "Error: No actor bound";
+                if (actor == null) return "에러 발생: 실행자에 바인딩된 액터가 없습니다.";
                 using var args = System.Text.Json.JsonDocument.Parse(arguments.ToString());
                 if (!args.RootElement.TryGetProperty("targetName", out var nameEl))
-                    return "Error: targetName parameter is required";
+                    return "에러 발생: targetName이라는 key가 필요합니다.";
                 var targetName = nameEl.GetString();
                 if (string.IsNullOrWhiteSpace(targetName))
-                    return "Error: targetName is empty";
+                    return "에러 발생: targetName이 비어있습니다.";
 
                 // Actor의 LoadRelationships(targetName) 사용
                 return actor.LoadRelationships(targetName);
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[GPTToolExecutor] LoadRelationshipByName error: {ex.Message}");
-                return $"Error: {ex.Message}";
+                Debug.LogError($"<color=red>[ToolExecutor] {actor.Name} ExecuteTool: {ex.Message}</color>");
+                return $"에러 발생: {ex.Message}";
             }
         }
     }

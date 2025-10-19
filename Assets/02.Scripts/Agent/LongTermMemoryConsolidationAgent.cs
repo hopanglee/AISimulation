@@ -273,22 +273,7 @@ public class LongTermMemoryConsolidationAgent : GPT
     /// </summary>
     private string GetDayOfWeek(GameTime gameTime)
     {
-        return GetDayOfWeekString(gameTime.GetDayOfWeek());
-    }
-
-    private string GetDayOfWeekString(DayOfWeek dayOfWeek)
-    {
-        return dayOfWeek switch
-        {
-            DayOfWeek.Monday => "월요일",
-            DayOfWeek.Tuesday => "화요일",
-            DayOfWeek.Wednesday => "수요일",
-            DayOfWeek.Thursday => "목요일",
-            DayOfWeek.Friday => "금요일",
-            DayOfWeek.Saturday => "토요일",
-            DayOfWeek.Sunday => "일요일",
-            _ => "알 수 없음"
-        };
+        return GameTime.GetDayOfWeekString(gameTime.GetDayOfWeek());
     }
 
     /// <summary>

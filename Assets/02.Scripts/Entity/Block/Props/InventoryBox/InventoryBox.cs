@@ -424,7 +424,7 @@ public abstract class InventoryBox : InteractableProp
         
         if (pickupSuccess)
         {
-            return $"{actor.Name}이(가) {GetType().Name}에서 {itemName}을(를) 가져왔습니다.";
+            return $"{actor.Name}이(가) {this.Name}에서 {itemName}을(를) 가져왔습니다.";
         }
         else
         {

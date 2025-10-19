@@ -23,7 +23,7 @@ public abstract partial class NPC
 			if (timeService != null)
 			{
 				var currentTime = timeService.CurrentTime;
-				var dayOfWeek = GetDayOfWeekString(currentTime.GetDayOfWeek());
+				var dayOfWeek = GameTime.GetDayOfWeekString(currentTime.GetDayOfWeek());
 				Debug.Log($"  시간: {currentTime.year}년 {currentTime.month}월 {currentTime.day}일 {dayOfWeek} {currentTime.hour:00}:{currentTime.minute:00}");
 			}
 
@@ -56,21 +56,6 @@ public abstract partial class NPC
 		{
 			Debug.LogError($"[{Name}] 상황 정보 로그 출력 실패: {ex.Message}");
 		}
-	}
-
-	private string GetDayOfWeekString(DayOfWeek dayOfWeek)
-	{
-		return dayOfWeek switch
-		{
-			DayOfWeek.Monday => "월요일",
-			DayOfWeek.Tuesday => "화요일",
-			DayOfWeek.Wednesday => "수요일",
-			DayOfWeek.Thursday => "목요일",
-			DayOfWeek.Friday => "금요일",
-			DayOfWeek.Saturday => "토요일",
-			DayOfWeek.Sunday => "일요일",
-			_ => "알 수 없음"
-		};
 	}
 
 	private string GetActorBriefStatus(Actor actor)
