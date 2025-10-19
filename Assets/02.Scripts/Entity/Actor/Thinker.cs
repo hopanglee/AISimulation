@@ -152,10 +152,21 @@ public class Thinker
                 }
                 // 5. Act가 끝나면 다시 Think (루프로 계속)
                 // 외부 이벤트가 발생하면 OnExternalEvent()에서 이 루프를 취소하고 새로 시작
+                int stmCount = brain.memoryManager != null ? brain.memoryManager.GetShortTermMemoryCount() : 0;
 
-                await brain.ProcessCircleEndMemoryAsync();
+                Debug.Log($"[{actor.Name}] STM {stmCount}개");
 
-                await brain.PerformLongTermMemoryMaintenanceAsync();
+                // 메모리 처리 구간을 상호배타적으로 보호: 끝날 때까지 다음 사이클 대기
+                await brain.MemoryProcessingBarrier.WaitAsync(token);
+                try
+                {
+                    await brain.ProcessCircleEndMemoryAsync();
+                    await brain.PerformLongTermMemoryMaintenanceAsync();
+                }
+                finally
+                {
+                    brain.MemoryProcessingBarrier.Release();
+                }
             }
         }
         catch (OperationCanceledException)
