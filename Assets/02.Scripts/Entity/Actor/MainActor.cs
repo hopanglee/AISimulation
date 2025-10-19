@@ -519,6 +519,11 @@ public abstract class MainActor : Actor
 		{
 			var characterMemoryManager = new CharacterMemoryManager(this);
 			var characterInfo = characterMemoryManager.GetCharacterInfo();
+			if (characterInfo == null)
+			{
+				Debug.LogWarning($"[{Name}] 생일 체크: characterInfo가 null입니다.");
+				return;
+			}
 
 			// 생일이 설정되어 있는지 확인
 			if (characterInfo.Birthday == null)

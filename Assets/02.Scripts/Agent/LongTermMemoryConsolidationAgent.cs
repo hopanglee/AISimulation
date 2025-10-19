@@ -86,8 +86,18 @@ public class LongTermMemoryConsolidationAgent : GPT
                                         ""properties"": {{
                                             ""chunk_id"": {{ ""type"": ""string"", ""description"": ""이 메모리 청크의 고유 식별자"" }},
                                             ""summary"": {{ ""type"": ""string"", ""description"": ""이 메모리 청크의 포괄적인 요약, 20자 이상 100자 이내로 서술하세요."" }},
-                                            ""start_time"": {{ ""type"": ""object"", ""properties"": {{ ""year"": {{ ""type"": ""integer"" }}, ""month"": {{ ""type"": ""integer"" }}, ""day"": {{ ""type"": ""integer"" }}, ""hour"": {{ ""type"": ""integer"" }}, ""minute"": {{ ""type"": ""integer"" }}}}, ""description"": ""이 청크가 시작된 시간"" }},
-                                            ""end_time"": {{ ""type"": ""object"", ""properties"": {{ ""year"": {{ ""type"": ""integer"" }}, ""month"": {{ ""type"": ""integer"" }}, ""day"": {{ ""type"": ""integer"" }}, ""hour"": {{ ""type"": ""integer"" }}, ""minute"": {{ ""type"": ""integer"" }}}}, ""description"": ""이 청크가 종료된 시간"" }},
+                                            ""start_time"": {{
+                                                ""type"": ""object"",
+                                                ""properties"": {{ ""year"": {{ ""type"": ""integer"" }}, ""month"": {{ ""type"": ""integer"" }}, ""day"": {{ ""type"": ""integer"" }}, ""hour"": {{ ""type"": ""integer"" }}, ""minute"": {{ ""type"": ""integer"" }}}},
+                                                ""additionalProperties"": false,
+                                                ""description"": ""이 청크가 시작된 시간""
+                                            }},
+                                            ""end_time"": {{
+                                                ""type"": ""object"",
+                                                ""properties"": {{ ""year"": {{ ""type"": ""integer"" }}, ""month"": {{ ""type"": ""integer"" }}, ""day"": {{ ""type"": ""integer"" }}, ""hour"": {{ ""type"": ""integer"" }}, ""minute"": {{ ""type"": ""integer"" }}}},
+                                                ""additionalProperties"": false,
+                                                ""description"": ""이 청크가 종료된 시간""
+                                            }},
                                             ""main_events"": {{ ""type"": ""array"", ""items"": {{ ""type"": ""string"" }}, ""description"": ""이 청크의 주요 사건들, 최소 3개 이상의 사건을 작성하세요."" }},
                                             ""people_involved"": {{ ""type"": ""array"", ""items"": {{ ""type"": ""string"" }}, ""description"": ""이 청크에 관련된 사람들 (없으면 빈 배열)"" }},
                                             ""emotions"": {{
@@ -97,9 +107,9 @@ public class LongTermMemoryConsolidationAgent : GPT
                                                     ""type"": ""object"",
                                                     ""properties"": {{
                                                         ""name"": {{ ""type"": ""string"" }},
-                                                        ""intensity"": {{ ""type"": ""number"", ""minimum"": 0.0, ""maximum"": 1.0 }},
+                                                        ""intensity"": {{ ""type"": ""number"", ""minimum"": 0.0, ""maximum"": 1.0 }}
                                                     }},
-                                                    ""required"": [""name"", ""intensity""],
+                                                    ""required"": [""name"", ""intensity""] ,
                                                     ""additionalProperties"": false
                                                 }},
                                                 ""description"": ""감정과 강도 (0.0~1.0), 최소 3~5개 이상의 감정을 작성하세요.""
@@ -107,7 +117,7 @@ public class LongTermMemoryConsolidationAgent : GPT
                                             ""location"": {{ ""type"": ""string"", ""description"": ""이 청크가 발생한 장소"" }},
                                             ""original_entries_count"": {{ ""type"": ""integer"", ""description"": ""이 청크로 통합된 원본 항목의 수"" }}
                                         }},
-                                        ""required"": [""chunk_id"", ""summary"", ""time_range"", ""main_events"", ""people_involved"", ""original_entries_count"", ""emotions""]
+                                        ""required"": [""chunk_id"", ""summary"", ""start_time"", ""end_time"", ""main_events"", ""people_involved"", ""original_entries_count"", ""emotions""]
                                     }}
                                 }},
                                 ""consolidation_reasoning"": {{ ""type"": ""string"", ""description"": ""통합 결정에 대한 추론"" }},
