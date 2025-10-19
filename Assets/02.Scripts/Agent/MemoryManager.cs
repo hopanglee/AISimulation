@@ -397,7 +397,7 @@ public class MemoryManager
         try
         {
             var timeService = Services.Get<ITimeService>();
-            var currentTime = timeService?.CurrentTime ?? new GameTime(2025, 1, 1, 8, 0);
+            var currentTime = timeService?.CurrentTime ?? new GameTime(0, 0, 0, 0, 0);
 
             Debug.Log($"[MemoryManager] Starting day-end memory processing at {currentTime.year}-{currentTime.month:D2}-{currentTime.day:D2}");
 

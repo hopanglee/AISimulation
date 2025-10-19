@@ -322,17 +322,17 @@ public class SimulationController : MonoBehaviour
 
         if (isKamiya && kamiyaActivityText != null)
         {
-            kamiyaActivityText.text = "<카미야> " + (text ?? string.Empty);
+            kamiyaActivityText.text = "카미야> " + (text ?? string.Empty);
             ForceTextLayoutUpdate(kamiyaActivityText);
         }
         if (isHino && hinoActivityText != null)
         {
-            hinoActivityText.text = "<히노> " + (text ?? string.Empty);
+            hinoActivityText.text = "히노> " + (text ?? string.Empty);
             ForceTextLayoutUpdate(hinoActivityText);
         }
         if (isWataya && watayaActivityText != null)
         {
-            watayaActivityText.text = "<와타야> " + (text ?? string.Empty);
+            watayaActivityText.text = "와타야> " + (text ?? string.Empty);
             ForceTextLayoutUpdate(watayaActivityText);
         }
     }

@@ -1,0 +1,13 @@
+﻿{
+  "payload": {
+    "act_type": "UseObject",
+    "reasoning": "모카하우스로 가기 전에 도넛을 한 입 먹어 허기를 달래고 즉시 움직일 에너지를 보충하기 위해.",
+    "intention": "도넛을 한 입 먹어 배고픔을 일부 회복하고 곧 물을 마시고 옷으로 갈아입을 준비를 마친다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"도넛\"}"
+    }
+  ]
+}

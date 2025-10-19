@@ -50,7 +50,7 @@ public class Claude : LLMClient
     private readonly List<SystemMessage> systemMessages = new();
     // Track the first system message text for helper methods/appends
     private string firstSystemMessageText = null;
-    private int maxToolCallRounds = 3;
+    private int maxToolCallRounds = 5;
     private bool enableLogging = true; // 로깅 활성화 여부
     private bool enableOutgoingLogs = false; // Outgoing Request/Raw logs 저장 여부
     private static string sessionDirectoryName = null;

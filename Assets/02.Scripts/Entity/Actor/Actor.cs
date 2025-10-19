@@ -572,6 +572,11 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         if (clothing == null)
         {
             Debug.LogWarning($"[{Name}] RemoveClothing: 의상이 null입니다.");
+            // 이미 벗고 있다고 단기기억 추가 (MainActor만)
+            if (this is MainActor mainActorNull)
+            {
+                try { mainActorNull.brain?.memoryManager?.AddShortTermMemory("옷을 벗으려 했지만 이미 아무것도 입고 있지 않다.", "", mainActorNull?.curLocation?.GetSimpleKey()); } catch { }
+            }
             return false;
         }
 
@@ -589,11 +594,22 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 ApplyNakedFbx();
             }
 
+            // 성공 시 단기 기억 추가 (MainActor만)
+            if (this is MainActor mainActor)
+            {
+                try { mainActor.brain?.memoryManager?.AddShortTermMemory($"{clothing?.Name}을(를) 벗었다.", "", mainActor?.curLocation?.GetSimpleKey()); } catch { }
+            }
+
             return true;
         }
         else
         {
             Debug.LogWarning($"[{Name}] 착용하지 않은 의상입니다: {clothing.Name}");
+            // 이미 벗고 있다고 단기기억 추가 (MainActor만)
+            if (this is MainActor mainActorNotWearing)
+            {
+                try { mainActorNotWearing.brain?.memoryManager?.AddShortTermMemory("벗으려는 옷을 입고 있지 않다.", "", mainActorNotWearing?.curLocation?.GetSimpleKey()); } catch { }
+            }
             return false;
         }
     }
@@ -1277,7 +1293,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
         var hungerText = "배고픔: ";
         if (Hunger <= 10) hungerText += "위험! 기력이 끊기기 직전 (심각한 허기)";
-        else if (Hunger <= 30) hungerText += "심한 허기와 어지러움";
+        else if (Hunger <= 20) hungerText += "심한 허기와 어지러움";
         else if (Hunger <= 50) hungerText += "허기";
         else if (Hunger <= 70) hungerText += "무난한 포만감";
         else if (Hunger <= 90) hungerText += "충분한 포만과 만족";
@@ -1287,7 +1303,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
         var thirstText = "갈증: ";
         if (Thirst <= 10) thirstText += "위험! 탈수로 쓰러지기 직전";
-        else if (Thirst <= 30) thirstText += "심한 갈증과 입 마름";
+        else if (Thirst <= 20) thirstText += "심한 갈증과 입 마름";
         else if (Thirst <= 50) thirstText += "갈증";
         else if (Thirst <= 70) thirstText += "적당한 수분 상태";
         else if (Thirst <= 90) thirstText += "수분 충분, 상쾌함";
@@ -1329,10 +1345,10 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         else mentalPleasureText += "아주 작은 만족";
 
         var sleepinessText = "피곤도: ";
-        if (Sleepiness >= 90) sleepinessText += "위험! 졸려서 쓰러지기 직전";
-        else if (Sleepiness >= 70) sleepinessText += "매우 졸림";
-        else if (Sleepiness >= 50) sleepinessText += "졸림";
-        else if (Sleepiness >= 30) sleepinessText += "약간 졸림";
+        if (Sleepiness >= 95) sleepinessText += "위험! 졸려서 쓰러지기 직전";
+        else if (Sleepiness >= 90) sleepinessText += "매우 졸림";
+        else if (Sleepiness >= 80) sleepinessText += "졸림";
+        else if (Sleepiness >= 60) sleepinessText += "약간 졸림";
         else if (Sleepiness >= 10) sleepinessText += "또렷함";
         else sleepinessText += "매우 또렷하고 상쾌함";
 

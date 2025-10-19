@@ -335,7 +335,8 @@ namespace Agent.ActionHandlers
             var pathfindingService = Services.Get<IPathfindingService>();
             var locationService = Services.Get<ILocationService>();
             var currentArea = locationService.GetArea(actor.curLocation);
-            var path = pathfindingService.FindPathToLocation(currentArea, targetLocationKey);
+            var areaPath = pathfindingService.FindPathToLocation(currentArea, targetLocationKey);
+            var path = pathfindingService.AreaPathToLocationStringPath(areaPath);
 
             if (path != null && path.Count > 0)
             {

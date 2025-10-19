@@ -1,0 +1,29 @@
+﻿{
+  "payload": {
+    "act_type": "UseObject",
+    "reasoning": "도넛을 먹으면서 기분을 좋게 만들고 싶기 때문입니다.",
+    "intention": "오늘 카미야를 만나는 준비를 하면서 좋은 에너지를 채우고 싶습니다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"도넛\"}"
+    },
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"물컵\"}"
+    },
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"도넛_1\"}"
+    },
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"도넛_2\"}"
+    },
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"도넛\"}"
+    }
+  ]
+}

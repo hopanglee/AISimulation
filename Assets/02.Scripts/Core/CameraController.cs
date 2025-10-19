@@ -17,12 +17,25 @@ public class CameraController : MonoBehaviour
     [Header("Focus Settings")]
     [SerializeField] private float focusSpeed = 5f;
     
+    [Header("Orbit Settings")]
+    [SerializeField] private bool enableOrbit = true; // 우클릭 드래그로 타겟 중심 회전
+    [SerializeField] private int orbitMouseButton = 1; // 0: LMB, 1: RMB, 2: MMB
+    [SerializeField] private float orbitSensitivity = 1.0f;
+    [SerializeField] private float orbitYMin = -30f;
+    [SerializeField] private float orbitYMax = 80f;
+    
     private Camera mainCamera;
     private Vector3 targetPosition;
     private float targetZoom;
     private bool isFocusing = false;
     private Vector3 focusTarget;
     private Transform focusTargetTransform; // 포커스할 대상의 Transform
+    private float orbitYaw;
+    private float orbitPitch;
+    private float orbitDistance = 5f;
+    private bool isOrbiting = false;
+    private Vector3 orbitMouseStartPos;
+    private float orbitStartYaw;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -41,12 +54,14 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!isFocusing)
+        bool didOrbit = HandleOrbit();
+
+        if (!isFocusing && !didOrbit)
         {
             HandleMovement();
             HandleZoom();
         }
-        else
+        else if (isFocusing && !didOrbit)
         {
             // 포커스 중일 때도 줌은 가능하도록
             HandleZoom();
@@ -128,13 +143,13 @@ public class CameraController : MonoBehaviour
             // 포커스 중일 때는 대상이 계속 움직이므로 실시간으로 위치 업데이트
             if (focusTargetTransform != null)
             {
-                // 대상의 현재 위치를 기반으로 카메라 위치 계산
-                Vector3 newFocusTarget = CalculateFocusPosition(focusTargetTransform.position);
-                focusTarget = new Vector3(newFocusTarget.x, transform.position.y, newFocusTarget.z);
+                // 오빗 파라미터(거리/각도)를 유지하며 타겟 주위를 도는 위치 계산 (좌우만)
+                Quaternion rot = Quaternion.Euler(orbitPitch, orbitYaw, 0f);
+                Vector3 desired = focusTargetTransform.position + rot * new Vector3(0f, 0f, -orbitDistance);
+                transform.position = Vector3.Lerp(transform.position, desired, Time.deltaTime * focusSpeed);
+                // LookAt 사용 금지: 시작 시점의 pitch를 유지하고 yaw만 반영
+                transform.rotation = Quaternion.Lerp(transform.rotation, rot, Time.deltaTime * focusSpeed);
             }
-            
-            // 목표 위치로 부드럽게 이동
-            transform.position = Vector3.Lerp(transform.position, focusTarget, Time.deltaTime * focusSpeed);
         }
         else
         {
@@ -177,8 +192,15 @@ public class CameraController : MonoBehaviour
         {
             focusTargetTransform = targetTransform;
             // 초기 위치 계산
-            Vector3 initialFocusTarget = CalculateFocusPosition(targetTransform.position);
-            focusTarget = new Vector3(initialFocusTarget.x, transform.position.y, initialFocusTarget.z);
+            Vector3 dir = transform.position - focusTargetTransform.position;
+            orbitDistance = Mathf.Max(0.01f, dir.magnitude); // 현재 카메라-타겟 거리 고정
+            orbitYaw = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+            float sinArg = Mathf.Clamp(dir.y / orbitDistance, -1f, 1f);
+            orbitPitch = Mathf.Asin(sinArg) * Mathf.Rad2Deg;
+            orbitPitch = Mathf.Clamp(orbitPitch, orbitYMin, orbitYMax);
+            Quaternion rot = Quaternion.Euler(orbitPitch, orbitYaw, 0f);
+            Vector3 desired = focusTargetTransform.position + rot * new Vector3(0f, 0f, -orbitDistance);
+            focusTarget = new Vector3(desired.x, transform.position.y, desired.z);
             isFocusing = true;
         }
     }
@@ -247,5 +269,53 @@ public class CameraController : MonoBehaviour
         targetPosition.y = this.transform.position.y;
         
         return targetPosition;
+    }
+
+    private bool HandleOrbit()
+    {
+        if (!enableOrbit || focusTargetTransform == null)
+            return false;
+
+        // 마우스 버튼 Down 시점에 현재 거리/각도 재설정 (항상 현재 카메라-타겟 거리 사용)
+        if (Input.GetMouseButtonDown(orbitMouseButton))
+        {
+            Vector3 dirNow = transform.position - focusTargetTransform.position;
+            orbitDistance = Mathf.Max(0.01f, dirNow.magnitude);
+            orbitYaw = Mathf.Atan2(dirNow.x, dirNow.z) * Mathf.Rad2Deg;
+            float sinArgNow = Mathf.Clamp(dirNow.y / orbitDistance, -1f, 1f);
+            orbitPitch = Mathf.Asin(sinArgNow) * Mathf.Rad2Deg;
+            orbitPitch = Mathf.Clamp(orbitPitch, orbitYMin, orbitYMax);
+            isOrbiting = true;
+            orbitMouseStartPos = Input.mousePosition;
+            orbitStartYaw = orbitYaw; // 초기 yaw 보관 (좌우 드래그에 비례)
+        }
+
+        if (!Input.GetMouseButton(orbitMouseButton))
+        {
+            if (isOrbiting) isOrbiting = false; // 드래그 종료
+            return false;
+        }
+
+        // 좌우 드래그 거리(px)에 비례하여 yaw 변경
+        float deltaX = (Input.mousePosition.x - orbitMouseStartPos.x);
+        const float pixelDeadZone = 2f;
+        if (Mathf.Abs(deltaX) < pixelDeadZone)
+        {
+            // 드래그가 거의 없으면 회전/이동 없이 오빗 상태만 유지
+            return true;
+        }
+        orbitYaw = orbitStartYaw + deltaX * orbitSensitivity; // orbitSensitivity = deg per pixel
+
+        Quaternion rot = Quaternion.Euler(orbitPitch, orbitYaw, 0f);
+        Vector3 desired = focusTargetTransform.position + rot * new Vector3(0f, 0f, -orbitDistance);
+
+        // 즉시 적용 (오빗 중)
+        transform.position = Vector3.Lerp(transform.position, desired, Time.deltaTime * focusSpeed);
+        transform.rotation = Quaternion.Lerp(transform.rotation, rot, Time.deltaTime * focusSpeed);
+
+        // 포커스 타겟 갱신으로 마우스 해제 시 튐 현상 방지
+        focusTarget = transform.position;
+
+        return true;
     }
 }

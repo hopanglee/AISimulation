@@ -71,7 +71,7 @@ public class ActivityBubbleUI : MonoBehaviour
 
         // 즉시 텍스트 반영 (totalSeconds가 0이어도 텍스트가 보이도록)
         var displayText = activityName ?? string.Empty;
-        if (displayText.Length > 80) displayText = displayText.Substring(0, 80);
+        if (displayText.Length > 90) displayText = displayText.Substring(0, 90);
         activityText.text = remainingSeconds > 0
             ? $"{displayText}"
             : displayText;
@@ -119,7 +119,7 @@ public class ActivityBubbleUI : MonoBehaviour
                 if (activityText != null)
                 {
                     var displayText = activityName ?? string.Empty;
-                    if (displayText.Length > 80) displayText = displayText.Substring(0, 80);
+                    if (displayText.Length > 90) displayText = displayText.Substring(0, 90);
                     activityText.text = remainingSeconds > 0
                         ? $"{displayText}"
                         : displayText;

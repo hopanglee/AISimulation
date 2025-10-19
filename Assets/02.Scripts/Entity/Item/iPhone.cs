@@ -61,7 +61,7 @@ public class iPhone : Item, IUsable
             }
             else if (time.IsYesterday())
             {
-                timestamp = $"어제";
+                timestamp = $"어제 {time.hour:D2}:{time.minute:D2}";
             }
             // else
             // {
@@ -249,12 +249,14 @@ public class iPhone : Item, IUsable
         {
             chatNotification = false;
         }
-
+        
         StringBuilder sb = new StringBuilder();
+        sb.AppendLine("-------채팅 내용 시작--------");
         foreach (var msg in messagesToShow)
         {
             sb.AppendLine(msg.ToString());
         }
+        sb.AppendLine("-------채팅 내용 끝--------");
         // Add recent chat snapshot (up to last 5) to reader's short-term memory
         AddRecentChatsToSTM(actor, key);
 
@@ -319,11 +321,13 @@ public class iPhone : Item, IUsable
         chatNotification = notifications.Count > 0;
 
         StringBuilder sb = new StringBuilder();
+        sb.AppendLine("-------채팅 내용 시작--------");
         foreach (var msg in messagesToShow)
         {
-            sb.AppendLine(msg.ToString());
+            sb.AppendLine(msg.ToString());  
         }
-        return "\n\n" + sb.ToString();
+        sb.AppendLine("-------채팅 내용 끝--------");
+        return "\n" + sb.ToString();
     }
 
     /// <summary>

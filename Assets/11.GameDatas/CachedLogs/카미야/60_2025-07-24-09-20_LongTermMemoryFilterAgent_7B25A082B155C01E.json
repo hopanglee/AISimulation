@@ -1,0 +1,83 @@
+﻿{
+  "payload": {
+    "evaluations": [
+      {
+        "chunk_id": "A_sleep",
+        "importance_score": 0.1,
+        "surprise_score": 0.0,
+        "overall_score": 0.0,
+        "reasoning": "단순한 수면 기록으로 일상적 활동에 해당. 회복력·안정감이 약간 있지만 장기 기억으로 남길 만한 전환점이나 새로운 정보는 없음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "B_wake_and_reflect",
+        "importance_score": 0.95,
+        "surprise_score": 0.2,
+        "overall_score": 0.0,
+        "reasoning": "하루 시작 시 수술일(8/7)과 히노에게 비밀을 지키겠다는 결심을 재확인한 장면. 향후 행동·감정(책임감·애정)에 직접 영향을 주는 중요한 의사결정과 일상 루틴의 핵심이라 장기 보존 가치가 높음. 의외성은 낮음(이미 알고 있던 사실의 재확인).",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "C_breakfast_donut_sequence",
+        "importance_score": 0.2,
+        "surprise_score": 0.05,
+        "overall_score": 0.0,
+        "reasoning": "아침 식사(도넛 섭취)라는 일상적 사건. 심리적 상태(차분함, 일상 유지의 집중)는 드러나지만 사건 자체는 중요도가 낮음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "D_change_clothes_prepare",
+        "importance_score": 0.6,
+        "surprise_score": 0.2,
+        "overall_score": 0.0,
+        "reasoning": "하루 준비·정돈, 블레이저 착용 등 외형적·행동적 준비를 보여주는 기록. 히노와 수술 관련 불안 속에서 결의를 다지는 과정으로 의미는 중간 수준. 직접적인 전환점은 아니나 일상 루틴과 자기관리 측면에서 유용한 정보임.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "E_notebook_retrieval_and_read",
+        "importance_score": 0.9,
+        "surprise_score": 0.15,
+        "overall_score": 0.0,
+        "reasoning": "노트(수술일·대처 문장)를 꺼내 읽고 '지금-여기부터' 문장으로 마음을 다잡은 행위는 카미야의 내적 결의와 히노를 위한 일상적 의무를 명확히 보여줌. 노트는 관계 유지 전략의 핵심 자료라 장기 보존 가치가 큼.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "F_second_donut_and_reflection",
+        "importance_score": 0.75,
+        "surprise_score": 0.35,
+        "overall_score": 0.0,
+        "reasoning": "반복적 도넛 섭취와 함께 목마름·어지러움 인식이 기록됨. 신체 증상(어지러움)은 수술·스트레스 상황과 연계되어 중요도가 상승함. 또한 공간 정리·히노 준비를 재확인한 점도 의미 있음. 어지러움은 약간의 의외성 요소.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "G_drink_water_and_compose",
+        "importance_score": 0.65,
+        "surprise_score": 0.1,
+        "overall_score": 0.0,
+        "reasoning": "물 마시며 정돈 의무를 재확인한 것은 불안 완화·정돈욕구를 보여주는 자기조절 행동. 장기 기억으로서 중간 중요도—특히 반복되는 안정화 루틴의 증거로 가치는 있음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "H_table_tidy_sequence_and_thoughts",
+        "importance_score": 0.85,
+        "surprise_score": 0.2,
+        "overall_score": 0.0,
+        "reasoning": "식탁 정리 행동과 히노를 위한 준비를 되뇌는 장면으로, 정돈이 마음 안정의 출발이라는 인식이 명료하게 드러남. 카미야의 책임감·애정 표현과 일상적 루틴이 결합된 중요한 메모리임.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "I_final_plate_pickup",
+        "importance_score": 0.5,
+        "surprise_score": 0.05,
+        "overall_score": 0.0,
+        "reasoning": "정리 완료로 인한 완수감이 기록되어 있으나 사건 자체는 일상적. 감정적 안정·완수감은 의미 있으나 장기 저장 우선순위는 중하위.",
+        "should_keep": false
+      }
+    ],
+    "kept_chunks": [],
+    "filtered_chunks": [],
+    "filter_reasoning": "장기 보존 상위 약 70%(6개)는 하루의 전반적 흐름에서 카미야의 핵심 의사결정·루틴·정서적 동기(히노를 보호하려는 결심, 노트 사용, 정돈·안정 루틴)와 신체적 징후(어지러움)를 포함하도록 선정됨. 구체적으로 B_wake_and_reflect(수술·비밀 결의), E_notebook_retrieval_and_read(노트·대처 문장), H_table_tidy_sequence_and_thoughts(정돈과 책임 재확인), F_second_donut_and_reflection(신체 증상과 준비 재확인), G_drink_water_and_compose(안정화 루틴 증거), D_change_clothes_prepare(외형·준비 행동)는 향후 행동·정서·건강 추적에 유용하므로 선택함. 반면 A_sleep, C_breakfast_donut_sequence, I_final_plate_pickup는 반복적·사소적 일상으로 장기보존 우선순위에서 제외함.",
+    "retention_percentage": 0.0
+  },
+  "tools": []
+}

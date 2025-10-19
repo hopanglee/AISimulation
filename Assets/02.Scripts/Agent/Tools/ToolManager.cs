@@ -87,10 +87,10 @@ namespace Agent.Tools
                 functionDescription: "현재 시점에 수행해야 할 구체적인 행동을 조회합니다"
             );
 
-            // 건물 이름으로 해당 건물이 속한 에리어 경로(상위-하위)를 ":"로 연결해 반환합니다. 예: "도쿄:신주쿠:카부키쵸:1-chome-5"
+            // 건물 이름으로 해당 건물이 속한 지역 경로(상위-하위)를 ":"로 연결해 반환합니다. 예: "도쿄:신주쿠:카부키쵸:1-chome-5"
             public static readonly ChatTool FindBuildingAreaPath = ChatTool.CreateFunctionTool(
                 functionName: nameof(FindBuildingAreaPath),
-                functionDescription: "건물 이름을 받아 상위에서 말단까지 ':'로 연결된 에리어 경로를 반환합니다(예: '도쿄:신주쿠:카부키쵸:1-chome-5').",
+                functionDescription: "건물 이름을 받아 상위에서 말단까지 ':'로 연결된 지역 경로를 반환합니다(예: '도쿄:신주쿠:카부키쵸:1-chome-5').",
                 functionParameters: System.BinaryData.FromBytes(
                     System.Text.Encoding.UTF8.GetBytes(
                         @"{
@@ -107,10 +107,10 @@ namespace Agent.Tools
                 )
             );
 
-            // 현재 액터의 위치 Area에서 목표 Area 키(이름 또는 전체경로)까지의 최단 Area 경로를 찾아 "A -> B -> C" 형식으로 반환
+            // 현재 캐릭터의 위치 지역에서 목표 지역 키(이름 또는 전체경로)까지의 최단 지역 경로를 찾아 "A -> B -> C" 형식으로 반환
             public static readonly ChatTool FindShortestAreaPathFromActor = ChatTool.CreateFunctionTool(
                 functionName: nameof(FindShortestAreaPathFromActor),
-                functionDescription: "액터의 현재 에리어에서 목표 에리어 키(이름 또는 전체 경로)까지의 최단 연결 경로를 'A -> B -> C' 형식으로 반환합니다",
+                functionDescription: "캐릭터의 현재 위치에서 목표 위치까지의 최단 연결 경로를 'A -> B -> C' 형식으로 반환하고 예상 시간을 분 단위로 반환합니다",
                 functionParameters: System.BinaryData.FromBytes(
                     System.Text.Encoding.UTF8.GetBytes(
                         @"{
@@ -118,7 +118,7 @@ namespace Agent.Tools
                             ""properties"": {
                                 ""targetAreaKey"": {
                                     ""type"": ""string"",
-                                    ""description"": ""목표 에리어 키: locationName(예: '1-chome-5') 또는 전체 경로(예: '도쿄:신주쿠:카부키쵸:1-chome-5')""
+                                    ""description"": ""목표 위치 키: locationName(예: '1-chome-5') 또는 전체 경로(예: '도쿄:신주쿠:카부키쵸:1-chome-5')""
                                 }
                             },
                             ""required"": [""targetAreaKey""]
@@ -139,16 +139,16 @@ namespace Agent.Tools
                 functionDescription: "월드의 지역 간 연결 정보를 반환합니다."
             );
 
-            // 현재 액터의 location_memories.json 전체 반환
+            // 현재 캐릭터의 location_memories.json 전체 반환
             public static readonly ChatTool GetActorLocationMemories = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetActorLocationMemories),
-                functionDescription: "이 액터의 위치 기억(location_memories.json) 전체를 반환합니다"
+                functionDescription: "이 캐릭터의 위치 기억(location_memories.json) 전체를 반환합니다"
             );
 
-            // 현재 액터의 location_memories.json에서 주어진 범위/키로 필터링해 반환
+            // 현재 캐릭터의 location_memories.json에서 주어진 범위/키로 필터링해 반환
             public static readonly ChatTool GetActorLocationMemoriesFiltered = ChatTool.CreateFunctionTool(
                 functionName: nameof(GetActorLocationMemoriesFiltered),
-                functionDescription: "이 액터의 위치 기억을 범위/키로 필터링해 반환합니다",
+                functionDescription: "이 캐릭터의 위치 기억을 범위/키로 필터링해 반환합니다",
                 functionParameters: System.BinaryData.FromBytes(
                     System.Text.Encoding.UTF8.GetBytes(
                         @"{
@@ -165,7 +165,7 @@ namespace Agent.Tools
                 )
             );
 
-            // 특정 인물의 관계기억 요약을 불러옵니다 (actor.LoadRelationships(targetName) 사용)
+            // 특정 인물의 관계기억 요약을 불러옵니다 (캐릭터.LoadRelationships(targetName) 사용)
             public static readonly ChatTool LoadRelationshipByName = ChatTool.CreateFunctionTool(
                 functionName: nameof(LoadRelationshipByName),
                 functionDescription: "특정 인물 이름에 대한 관계 기억 요약을 불러옵니다(actor.LoadRelationships(targetName) 사용)",
@@ -220,7 +220,7 @@ namespace Agent.Tools
             public static readonly LLMToolSchema GetWorldAreaInfo = new LLMToolSchema
             {
                 name = nameof(GetWorldAreaInfo),
-                description = "월드의 모든 에리어와 이들 간 연결 정보를 반환합니다",
+                description = "월드의 모든 지역과 이들 간 연결 정보를 반환합니다",
                 format = null
             };
 
@@ -256,7 +256,7 @@ namespace Agent.Tools
             public static readonly LLMToolSchema FindBuildingAreaPath = new LLMToolSchema
             {
                 name = nameof(FindBuildingAreaPath),
-                description = "건물 이름을 받아 상위에서 말단까지 ':'로 연결된 에리어 경로를 반환합니다(예: '도쿄:신주쿠:카부키쵸:1-chome-5').",
+                description = "건물 이름을 받아 상위에서 말단까지 ':'로 연결된 지역 경로를 반환합니다(예: '도쿄:신주쿠:카부키쵸:1-chome-5').",
                 format = JsonFromUtf8Bytes(System.Text.Encoding.UTF8.GetBytes(@"{
                     ""type"": ""object"",
                     ""properties"": {
@@ -269,7 +269,7 @@ namespace Agent.Tools
             public static readonly LLMToolSchema FindShortestAreaPathFromActor = new LLMToolSchema
             {
                 name = nameof(FindShortestAreaPathFromActor),
-                description = "액터의 현재 에리어에서 목표 에리어 키(이름 또는 전체 경로)까지의 최단 연결 경로를 'A -> B -> C' 형식으로 반환합니다",
+                description = "캐릭터의 현재 위치에서 목표 위치까지의 최단 연결 경로를 'A -> B -> C' 형식으로 반환하고 예상 시간을 분 단위로 반환합니다",
                 format = JsonFromUtf8Bytes(System.Text.Encoding.UTF8.GetBytes(@"{
                     ""type"": ""object"",
                     ""properties"": {
@@ -296,14 +296,14 @@ namespace Agent.Tools
             public static readonly LLMToolSchema GetActorLocationMemories = new LLMToolSchema
             {
                 name = nameof(GetActorLocationMemories),
-                description = "이 액터의 위치 기억(location_memories.json) 전체를 반환합니다",
+                description = "이 캐릭터의 위치 기억(location_memories.json) 전체를 반환합니다",
                 format = null
             };
 
             public static readonly LLMToolSchema GetActorLocationMemoriesFiltered = new LLMToolSchema
             {
                 name = nameof(GetActorLocationMemoriesFiltered),
-                description = "이 액터의 위치 기억을 범위/키로 필터링해 반환합니다",
+                description = "이 캐릭터의 위치 기억을 범위/키로 필터링해 반환합니다",
                 format = JsonFromUtf8Bytes(System.Text.Encoding.UTF8.GetBytes(@"{
                     ""type"": ""object"",
                     ""properties"": {
@@ -681,14 +681,14 @@ namespace Agent.Tools
             {
                 if (actor == null)
                 {
-                    return "에러 발생: 실행자에 바인딩된 액터가 없습니다.";
+                    return "에러 발생: 실행자에 바인딩된 캐릭터가 없습니다.";
                 }
 
                 // priceList 노출 메서드 탐색 (GetPriceList)
                 var method = actor.GetType().GetMethod("GetPriceList", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
                 if (method == null)
                 {
-                    return "에러 발생: 이 액터에 대한 가격 목록을 사용할 수 없습니다. (결제 기능을 지원하지 않습니다.)";
+                    return "에러 발생: 이 캐릭터에 대한 가격 목록을 사용할 수 없습니다. (결제 기능을 지원하지 않습니다.)";
                 }
 
                 var listObj = method.Invoke(actor, null) as System.Collections.IEnumerable;
@@ -755,12 +755,12 @@ namespace Agent.Tools
             {
                 var locationService = Services.Get<ILocationService>();
                 var info = locationService.GetWorldAreaInfo();
-                if (string.IsNullOrEmpty(info)) return "월드 에리어 정보를 가져오지 못했습니다.";
-                return "월드 에리어 정보:\n" + info;
+                if (string.IsNullOrEmpty(info)) return "월드 지역 정보를 가져오지 못했습니다.";
+                return "월드 지역 정보:\n" + info;
             }
             catch (Exception ex)
             {
-                return $"에러 발생: 월드 에리어 정보를 가져오는 중 오류가 발생했습니다: {ex.Message}";
+                return $"에러 발생: 월드 지역 정보를 가져오는 중 오류가 발생했습니다: {ex.Message}";
             }
         }
 
@@ -839,8 +839,8 @@ namespace Agent.Tools
                 // Return area path only (exclude building level)
                 var areaPath = target.curLocation != null ? target.curLocation.LocationToString() : null;
                 if (string.IsNullOrEmpty(areaPath))
-                    return "에러 발생: 건물의 에리어 경로를 결정할 수 없습니다.";
-                return $"'{buildingName}'의 에리어 경로: {areaPath}";
+                    return "에러 발생: 건물의 지역 경로를 결정할 수 없습니다.";
+                return $"'{buildingName}'의 지역 경로: {areaPath}";
             }
             catch (Exception ex)
             {
@@ -861,7 +861,7 @@ namespace Agent.Tools
                     return "에러 발생: targetAreaKey이 비어있습니다.";
 
                 if (actor == null)
-                    return "에러 발생: 실행자에 바인딩된 액터가 없습니다.";
+                    return "에러 발생: 실행자에 바인딩된 캐릭터가 없습니다.";
 
                 var locationService = Services.Get<ILocationService>();
                 var pathService = Services.Get<IPathfindingService>();
@@ -869,19 +869,30 @@ namespace Agent.Tools
                     return "에러 발생: 필요한 서비스를 사용할 수 없습니다.";
 
                 if (actor.curLocation == null)
-                    return "에러 발생: 액터가 현재 위치를 가지고 있지 않습니다.";
+                    return "에러 발생: 캐릭터가 현재 위치를 가지고 있지 않습니다.";
 
                 var startArea = locationService.GetArea(actor.curLocation);
                 if (startArea == null)
-                    return "에러 발생: 액터의 현재 에리어를 결정할 수 없습니다.";
+                    return "에러 발생: 캐릭터의 현재 위치를 결정할 수 없습니다.";
 
-                var path = pathService.FindPathToLocation(startArea, targetKey) ?? new List<string>();
+                var path = pathService.FindPathToLocation(startArea, targetKey) ?? new List<Area>();
                 if (path.Count == 0)
                     return $"에러 발생: {startArea.locationName}에서 {targetKey}로의 경로를 찾을 수 없습니다.";
-
-                var pretty = string.Join(" -> ", path);
+                var locationStringPath = pathService.AreaPathToLocationStringPath(path);
+                var pretty = string.Join(" -> ", locationStringPath);
                 var fromName = startArea.locationName ?? "현재 위치";
-                return $"{actor?.Name ?? "Actor"}의 현재 위치 '{fromName}'에서 '{targetKey}'까지의 최단 경로:\n{pretty}";
+				int minutes = 2;
+				for (int i = 1; i < path.Count; i++)
+				{
+					var prev = path[i - 1];
+					var cur = path[i];
+					var prevBuilding = locationService?.GetBuilding(prev);
+					var curBuilding = locationService?.GetBuilding(cur);
+					bool sameBuilding = prevBuilding != null && curBuilding != null &&
+						string.Equals(prevBuilding.locationName, curBuilding.locationName, StringComparison.Ordinal);
+					minutes += sameBuilding ? 5 : 10;
+				}
+                return $"{actor?.Name ?? "캐릭터"}의 현재 위치 '{fromName}'에서 '{targetKey}'까지의 최단 경로:\n{pretty}, 예상 소요 시간: {minutes}분";
             }
             catch (Exception ex)
             {
@@ -904,7 +915,7 @@ namespace Agent.Tools
             }
             catch (Exception ex)
             {
-                return $"에러 발생: 월드 에리어 구조 텍스트를 읽는 중 오류가 발생했습니다: {ex.Message}";
+                return $"에러 발생: 월드 지역 구조 텍스트를 읽는 중 오류가 발생했습니다: {ex.Message}";
             }
         }
 
@@ -922,7 +933,7 @@ namespace Agent.Tools
             }
             catch (Exception ex)
             {
-                return $"에러 발생: 월드 에리어 연결 텍스트를 읽는 중 오류가 발생했습니다: {ex.Message}";
+                return $"에러 발생: 월드 지역 연결 텍스트를 읽는 중 오류가 발생했습니다: {ex.Message}";
             }
         }
 
@@ -930,7 +941,7 @@ namespace Agent.Tools
         {
             try
             {
-                if (actor == null) return "에러 발생: 실행자에 바인딩된 액터가 없습니다.";
+                if (actor == null) return "에러 발생: 실행자에 바인딩된 캐릭터가 없습니다.";
                 var path = System.IO.Path.Combine(Application.dataPath, "11.GameDatas", "Character", actor.Name, "memory", "location", "location_memories.json");
                 if (!System.IO.File.Exists(path)) return $"에러 발생: {actor.Name}의 location_memories.json를 찾을 수 없습니다.";
                 return System.IO.File.ReadAllText(path, System.Text.Encoding.UTF8);
@@ -945,7 +956,7 @@ namespace Agent.Tools
         {
             try
             {
-                if (actor == null) return "에러 발생: 실행자에 바인딩된 액터가 없습니다.";
+                if (actor == null) return "에러 발생: 실행자에 바인딩된 캐릭터가 없습니다.";
                 using var args = System.Text.Json.JsonDocument.Parse(arguments.ToString());
                 if (!args.RootElement.TryGetProperty("areaKey", out var keyEl))
                     return "에러 발생: areaKey이라는 key가 필요합니다.";
@@ -1087,7 +1098,7 @@ namespace Agent.Tools
         {
             try
             {
-                if (actor == null) return "에러 발생: 실행자에 바인딩된 액터가 없습니다.";
+                if (actor == null) return "에러 발생: 실행자에 바인딩된 캐릭터가 없습니다.";
                 using var args = System.Text.Json.JsonDocument.Parse(arguments.ToString());
                 if (!args.RootElement.TryGetProperty("targetName", out var nameEl))
                     return "에러 발생: targetName이라는 key가 필요합니다.";

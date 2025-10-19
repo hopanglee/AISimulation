@@ -11,7 +11,7 @@ public interface IPathfindingService : IService
     /// <param name="startArea">시작 Area</param>
     /// <param name="targetLocationKey">목표 위치 키 (locationName 또는 전체 경로)</param>
     /// <returns>경로 (Area들의 리스트)</returns>
-    List<string> FindPathToLocation(Area startArea, string targetLocationKey);
+    List<Area> FindPathToLocation(Area startArea, string targetLocationKey);
 
     /// <summary>
     /// Vector3 위치에서 가장 가까운 Area를 찾습니다
@@ -45,6 +45,8 @@ public interface IPathfindingService : IService
     /// </summary>
     /// <returns>전체 경로를 키로 하는 AreaInfo 딕셔너리</returns>
     Dictionary<string, AreaInfo> GetAllAreaInfoByFullPath();
+
+    List<string> AreaPathToLocationStringPath(List<Area> path);
 }
 
 [System.Serializable]
@@ -106,10 +108,10 @@ public class PathfindingService : IPathfindingService
         // Debug.Log($"PathfindingService: Available full paths: {string.Join(", ", allAreasByFullPath.Keys)}");
     }
 
-    public List<string> FindPathToLocation(Area startArea, string targetLocationKey)
+    public List<Area> FindPathToLocation(Area startArea, string targetLocationKey)
     {
         if (startArea == null || string.IsNullOrEmpty(targetLocationKey) || string.IsNullOrEmpty(startArea.LocationToString()))
-            return new List<string>();
+            return new List<Area>();
 
         // BFS로 최단 경로 찾기
         var queue = new Queue<Area>();
@@ -187,7 +189,7 @@ public class PathfindingService : IPathfindingService
         }
 
         Debug.LogWarning($"No path found from {startArea.locationName} to {targetLocationKey}");
-        return new List<string>();
+        return new List<Area>();
     }
 
     /// <summary>
@@ -219,7 +221,7 @@ public class PathfindingService : IPathfindingService
         return areaInfo;
     }
 
-    private List<string> ReconstructPath(
+    private List<Area> ReconstructPath(
         Dictionary<Area, Area> parent,
         Area start,
         Area end
@@ -237,33 +239,38 @@ public class PathfindingService : IPathfindingService
 
         path.Add(start);
         path.Reverse();
+        return path;
+    }
+
+    public List<string> AreaPathToLocationStringPath(List<Area> path)
+    {
         var locationService = Services.Get<ILocationService>();
         return path.Select(area =>
-        {
-            if (locationService != null)
-            {
-                var building = locationService.GetBuilding(area);
-                if (building != null && !string.IsNullOrEmpty(building.locationName))
-                {
-                    // Show from building level onward: e.g., "카페 모카하우스:홀"
-                    var full = area.LocationToString();
-                    if (!string.IsNullOrEmpty(full))
-                    {
-                        var tokens = full.Split(':');
-                        for (int i = 0; i < tokens.Length; i++)
-                        {
-                            if (string.Equals(tokens[i], building.locationName, System.StringComparison.Ordinal))
-                            {
-                                return string.Join(":", tokens, i, tokens.Length - i);
-                            }
-                        }
+         {
+             if (locationService != null)
+             {
+                 var building = locationService.GetBuilding(area);
+                 if (building != null && !string.IsNullOrEmpty(building.locationName))
+                 {
+                     // Show from building level onward: e.g., "카페 모카하우스:홀"
+                     var full = area.LocationToString();
+                     if (!string.IsNullOrEmpty(full))
+                     {
+                         var tokens = full.Split(':');
+                         for (int i = 0; i < tokens.Length; i++)
+                         {
+                             if (string.Equals(tokens[i], building.locationName, System.StringComparison.Ordinal))
+                             {
+                                 return string.Join(":", tokens, i, tokens.Length - i);
+                             }
+                         }
 
-                        Debug.LogWarning($"Failed to parse full path: {full} for area: {area.locationName}, building: {building.locationName}");
-                    }
-                }
-            }
-            return area.locationName; // default: area name
-        }).ToList();
+                         Debug.LogWarning($"Failed to parse full path: {full} for area: {area.locationName}, building: {building.locationName}");
+                     }
+                 }
+             }
+             return area.locationName; // default: area name
+         }).ToList();
     }
 
     public string FindNearestArea(Vector3 position)

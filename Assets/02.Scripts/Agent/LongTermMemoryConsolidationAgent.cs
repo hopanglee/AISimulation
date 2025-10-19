@@ -70,7 +70,7 @@ public class MemoryConsolidationResult
 public class LongTermMemoryConsolidationAgent : GPT
 {
 
-    public LongTermMemoryConsolidationAgent(Actor actor) : base(actor, "gpt-5")
+    public LongTermMemoryConsolidationAgent(Actor actor) : base(actor)
     {
         SetAgentType(nameof(LongTermMemoryConsolidationAgent));
         var schemaJson = $@"{{

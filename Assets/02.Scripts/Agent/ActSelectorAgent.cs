@@ -18,7 +18,7 @@ namespace Agent
         private DayPlanner dayPlanner; // DayPlanner 참조 추가
         private int cycle;
         public int Cycle { get => cycle; set => cycle = value; }
-        public ActSelectorAgent(Actor actor) : base(actor, "gpt-4o-mini")
+        public ActSelectorAgent(Actor actor) : base(actor)
         {
             SetAgentType(nameof(ActSelectorAgent));
         }

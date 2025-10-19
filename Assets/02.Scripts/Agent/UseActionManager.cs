@@ -110,7 +110,7 @@ namespace Agent
             if (itemTypeAgents.TryGetValue(itemType, out targetAgent))
             {
                 Debug.Log($"[{actor.Name}] {itemType.Name} 전용 Agent 사용");
-                LogItemUsageInstructions(actor.HandItem);
+                // LogItemUsageInstructions(actor.HandItem);
             }
             else
             {

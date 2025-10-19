@@ -617,7 +617,7 @@ public class Brain
                     return "잠시 생각을 정리하기로 했다.";
 
                 case ActionType.RemoveClothing:
-                    return "입은 옷을 벗기로 했다.";
+                    return "옷을 벗기로 했다.";
 
                 case ActionType.End:
                     return "...";

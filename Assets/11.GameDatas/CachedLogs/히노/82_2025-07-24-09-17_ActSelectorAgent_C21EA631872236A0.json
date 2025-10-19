@@ -1,0 +1,13 @@
+﻿{
+  "payload": {
+    "act_type": "UseObject",
+    "reasoning": "배고픔이 있고 곧 외출해야 하므로 손에 든 도넛을 먹어 허기를 달래고 기분을 안정시키기 위해.",
+    "intention": "도넛을 먹어 배고픔을 회복하고 차분하게 예쁜 옷으로 갈아입을 준비를 하겠다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"도넛\"}"
+    }
+  ]
+}
