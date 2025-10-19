@@ -89,12 +89,14 @@ public class LongTermMemoryConsolidationAgent : GPT
                                             ""start_time"": {{
                                                 ""type"": ""object"",
                                                 ""properties"": {{ ""year"": {{ ""type"": ""integer"" }}, ""month"": {{ ""type"": ""integer"" }}, ""day"": {{ ""type"": ""integer"" }}, ""hour"": {{ ""type"": ""integer"" }}, ""minute"": {{ ""type"": ""integer"" }}}},
+                                                ""required"": [""year"", ""month"", ""day"", ""hour"", ""minute""] ,
                                                 ""additionalProperties"": false,
                                                 ""description"": ""이 청크가 시작된 시간""
                                             }},
                                             ""end_time"": {{
                                                 ""type"": ""object"",
                                                 ""properties"": {{ ""year"": {{ ""type"": ""integer"" }}, ""month"": {{ ""type"": ""integer"" }}, ""day"": {{ ""type"": ""integer"" }}, ""hour"": {{ ""type"": ""integer"" }}, ""minute"": {{ ""type"": ""integer"" }}}},
+                                                ""required"": [""year"", ""month"", ""day"", ""hour"", ""minute""] ,
                                                 ""additionalProperties"": false,
                                                 ""description"": ""이 청크가 종료된 시간""
                                             }},
