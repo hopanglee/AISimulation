@@ -87,10 +87,10 @@ namespace Agent.Tools
                 functionDescription: "현재 시점에 수행해야 할 구체적인 행동을 조회합니다"
             );
 
-            // 건물 이름으로 해당 건물이 속한 지역 경로(상위-하위)를 ":"로 연결해 반환합니다. 예: "도쿄:신주쿠:카부키쵸:1-chome-5"
+            // 건물 이름으로 해당 건물이 속한 지역 경로(상위-하위)를 ":"로 연결해 반환합니다. 예: "도쿄:신주쿠:가부키초:1-chome-5"
             public static readonly ChatTool FindBuildingAreaPath = ChatTool.CreateFunctionTool(
                 functionName: nameof(FindBuildingAreaPath),
-                functionDescription: "건물 이름을 받아 상위에서 말단까지 ':'로 연결된 지역 경로를 반환합니다(예: '도쿄:신주쿠:카부키쵸:1-chome-5').",
+                functionDescription: "건물 이름을 받아 상위에서 말단까지 ':'로 연결된 지역 경로를 반환합니다(예: '도쿄:신주쿠:가부키초:1-chome-5').",
                 functionParameters: System.BinaryData.FromBytes(
                     System.Text.Encoding.UTF8.GetBytes(
                         @"{
@@ -118,7 +118,7 @@ namespace Agent.Tools
                             ""properties"": {
                                 ""targetAreaKey"": {
                                     ""type"": ""string"",
-                                    ""description"": ""목표 위치 키: locationName(예: '1-chome-5') 또는 전체 경로(예: '도쿄:신주쿠:카부키쵸:1-chome-5')""
+                                    ""description"": ""목표 위치 키: locationName(예: '1-chome-5') 또는 전체 경로(예: '도쿄:신주쿠:가부키초:1-chome-5')""
                                 }
                             },
                             ""required"": [""targetAreaKey""]
@@ -156,7 +156,7 @@ namespace Agent.Tools
                             ""properties"": {
                                 ""areaKey"": {
                                     ""type"": ""string"",
-                                    ""description"": ""범위 또는 정확한 키. 예: '도쿄', '도쿄:신주쿠', '신주쿠', '1-chome-1', '도쿄:신주쿠:카부키쵸:1-chome-1'""
+                                    ""description"": ""범위 또는 정확한 키. 예: '도쿄', '도쿄:신주쿠', '신주쿠', '1-chome-1', '도쿄:신주쿠:가부키초:1-chome-1'""
                                 }
                             },
                             ""required"": [""areaKey""]
@@ -256,7 +256,7 @@ namespace Agent.Tools
             public static readonly LLMToolSchema FindBuildingAreaPath = new LLMToolSchema
             {
                 name = nameof(FindBuildingAreaPath),
-                description = "건물 이름을 받아 상위에서 말단까지 ':'로 연결된 지역 경로를 반환합니다(예: '도쿄:신주쿠:카부키쵸:1-chome-5').",
+                description = "건물 이름을 받아 상위에서 말단까지 ':'로 연결된 지역 경로를 반환합니다(예: '도쿄:신주쿠:가부키초:1-chome-5').",
                 format = JsonFromUtf8Bytes(System.Text.Encoding.UTF8.GetBytes(@"{
                     ""type"": ""object"",
                     ""properties"": {
@@ -273,7 +273,7 @@ namespace Agent.Tools
                 format = JsonFromUtf8Bytes(System.Text.Encoding.UTF8.GetBytes(@"{
                     ""type"": ""object"",
                     ""properties"": {
-                        ""targetAreaKey"": { ""type"": ""string"", ""description"": ""Target area key: either locationName (e.g., '1-chome-5') or full path (e.g., '도쿄:신주쿠:카부키쵸:1-chome-5')"" }
+                        ""targetAreaKey"": { ""type"": ""string"", ""description"": ""Target area key: either locationName (e.g., '1-chome-5') or full path (e.g., '도쿄:신주쿠:가부키초:1-chome-5')"" }
                     },
                     ""required"": [""targetAreaKey""]
                 }"))
@@ -307,7 +307,7 @@ namespace Agent.Tools
                 format = JsonFromUtf8Bytes(System.Text.Encoding.UTF8.GetBytes(@"{
                     ""type"": ""object"",
                     ""properties"": {
-                        ""areaKey"": { ""type"": ""string"", ""description"": ""Scope or exact key. Examples: '도쿄', '도쿄:신주쿠', '신주쿠', '1-chome-1', '도쿄:신주쿠:카부키쵸:1-chome-1'"" }
+                        ""areaKey"": { ""type"": ""string"", ""description"": ""Scope or exact key. Examples: '도쿄', '도쿄:신주쿠', '신주쿠', '1-chome-1', '도쿄:신주쿠:가부키초:1-chome-1'"" }
                     },
                     ""required"": [""areaKey""]
                 }"))
@@ -495,7 +495,9 @@ namespace Agent.Tools
 
         public string ExecuteTool(ChatToolCall toolCall)
         {
-            return ExecuteTool(toolCall.FunctionName, toolCall.FunctionArguments);
+            var result = ExecuteTool(toolCall.FunctionName, toolCall.FunctionArguments);
+            Debug.Log($"<color=green>[ToolExecutor] {actor.Name} ExecuteTool: {toolCall.FunctionName}, {toolCall.FunctionArguments}, {result}</color>");
+            return result;
         }
 
         public string ExecuteTool(GeminiFuncionCall functionCall)
@@ -513,18 +515,21 @@ namespace Agent.Tools
                 // 4. 올바르게 생성된 BinaryData를 함수에 전달합니다.
                 result = ExecuteTool(functionCall.Name, argsAsBinaryData);
             }
+            Debug.Log($"<color=green>[ToolExecutor] {actor.Name} ExecuteTool: {functionCall.Name}, {result}</color>");
             return result;
         }
 
         // Claude용
         public string ExecuteTool(string toolName, JsonNode arguments)
         {
-            return ExecuteTool(toolName, BinaryData.FromString(arguments.ToString()));
+            var result = ExecuteTool(toolName, BinaryData.FromString(arguments.ToString()));
+            Debug.Log($"<color=green>[ToolExecutor] {actor.Name} ExecuteTool: {toolName}, {arguments}, {result}</color>");
+            return result;
         }
 
         public string ExecuteTool(string toolName, System.BinaryData arguments)
         {
-            Debug.Log($"<color=green>[ToolExecutor] {actor.Name} ExecuteTool: {toolName}, {arguments}</color>");
+            //Debug.Log($"<color=green>[ToolExecutor] {actor.Name} ExecuteTool: {toolName}, {arguments}</color>");
             switch (toolName)
             {
                 case nameof(SwapInventoryToHand):

@@ -133,7 +133,7 @@ public class ActivityBubbleUI : MonoBehaviour
                 }
 
                 // 외부 취소 신호를 전달하여 즉시 중단
-                await SimDelay.DelaySimSeconds(1).AttachExternalCancellation(token);
+                await SimDelay.DelaySimMinutes(1).AttachExternalCancellation(token);
                 remainingSeconds--;
             }
         }

@@ -203,7 +203,7 @@ public class Area : MonoBehaviour, ILocation
                     var tokens = full.Split(':');
                     for (int i = 0; i < tokens.Length; i++)
                     {
-                        if (string.Equals(tokens[i], "미나미 카라스야마", System.StringComparison.Ordinal) || string.Equals(tokens[i], "카부키쵸", System.StringComparison.Ordinal))
+                        if (string.Equals(tokens[i], "미나미 카라스야마", System.StringComparison.Ordinal) || string.Equals(tokens[i], "가부키초", System.StringComparison.Ordinal))
                         {
                             return string.Join(":", tokens, i, tokens.Length - i);
                         }

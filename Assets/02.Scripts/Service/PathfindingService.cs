@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using System.Text.RegularExpressions;
 
 public interface IPathfindingService : IService
 {
@@ -113,6 +114,23 @@ public class PathfindingService : IPathfindingService
         if (startArea == null || string.IsNullOrEmpty(targetLocationKey) || string.IsNullOrEmpty(startArea.LocationToString()))
             return new List<Area>();
 
+        // If key has scope and contains a segment like '{n}-chome-{n}' or '나카미세도리',
+        // cut everything before that segment and use the remainder as targetTail.
+        bool hasScope = targetLocationKey.IndexOf(':') >= 0;
+        string[] keyTokens = hasScope ? targetLocationKey.Split(':') : new[] { targetLocationKey };
+        int pivotIndex = -1;
+        for (int i = 0; i < keyTokens.Length; i++)
+        {
+            var tok = keyTokens[i];
+            if (Regex.IsMatch(tok ?? string.Empty, @"^\d+-chome-\d+$") || string.Equals(tok, "나카미세도리", System.StringComparison.Ordinal))
+            {
+                pivotIndex = i;
+                break;
+            }
+        }
+        bool allowTailMatch = hasScope && pivotIndex >= 0;
+        string targetTail = allowTailMatch ? string.Join(":", keyTokens, pivotIndex, keyTokens.Length - pivotIndex) : null;
+
         // BFS로 최단 경로 찾기
         var queue = new Queue<Area>();
         var visited = new HashSet<Area>();
@@ -136,6 +154,10 @@ public class PathfindingService : IPathfindingService
             }
             // current의 전체 경로가 targetLocationKey를 포함(부분 일치)하면 매칭으로 처리
             else if (!string.IsNullOrEmpty(currentFullPath) && currentFullPath.IndexOf(targetLocationKey, System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                isTargetFound = true;
+            }
+            else if (allowTailMatch && !string.IsNullOrEmpty(currentFullPath) && currentFullPath.IndexOf(targetTail, System.StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 isTargetFound = true;
             }

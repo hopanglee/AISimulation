@@ -244,7 +244,7 @@ Real Time: 2025-10-19 21:03:46
 [ToolUse name=FindBuildingAreaPath input={"buildingName":"\uBAA8\uCE74\uD558\uC6B0\uC2A4"}]
 
 --- User ---
-[ToolResult id=toolu_011gKvuufiCyRYHEEgeaLpAz result='모카하우스'의 에리어 경로: 도쿄:신주쿠:카부키쵸:1-chome-3]
+[ToolResult id=toolu_011gKvuufiCyRYHEEgeaLpAz result='모카하우스'의 에리어 경로: 도쿄:신주쿠:가부키초:1-chome-3]
 
 --- User ---
 도구 호출 한도(3회)에 도달했습니다. 더 이상 도구를 사용하지 말고 최종 결과만 JSON으로 응답하세요.

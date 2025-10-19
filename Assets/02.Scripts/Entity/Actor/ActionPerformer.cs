@@ -209,7 +209,7 @@ public class ActionPerformer
             async (parameters) =>
             {
                 // 짧은 멈춤으로 관찰 제스처
-                await SimDelay.DelaySimSeconds(1, currentToken);
+                await SimDelay.DelaySimMinutes(1, currentToken);
                 return true;
             }
         );

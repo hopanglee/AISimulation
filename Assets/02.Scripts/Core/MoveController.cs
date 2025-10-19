@@ -96,21 +96,25 @@ public class MoveController : MonoBehaviour
 
         while (true)
         {
-			// Simulation 시간이 멈추면 이동도 일시정지
-			var timeService = Services.Get<ITimeService>();
-			if (timeService != null && !timeService.IsTimeFlowing)
-			{
-				if (followerEntity != null) followerEntity.isStopped = true;
-				// 시간 재개까지 대기
-				while (timeService != null && !timeService.IsTimeFlowing)
-				{
-					yield return null;
-				}
-				if (followerEntity != null) followerEntity.isStopped = false;
+            // Simulation 시간이 멈추면 이동도 일시정지
+            var timeService = Services.Get<ITimeService>();
+            if (timeService != null && !timeService.IsTimeFlowing)
+            {
+                if (followerEntity != null) followerEntity.isStopped = true;
+                // 시간 재개까지 대기
+                while (timeService != null && !timeService.IsTimeFlowing)
+                {
+                    yield return null;
+                }
+                if (followerEntity != null) followerEntity.isStopped = false;
 
-				// 재개 시 현재 배속으로 속도 재보정
-				//ApplyTimeScaledSpeed();
-			}
+                // 재개 시 현재 배속으로 속도 재보정
+                //ApplyTimeScaledSpeed();
+            }
+
+            // GameTime과 동기화된 고정 스텝(0.1초) 대기: 움직임 판정/거리 계산의 일관성 향상
+            // GameService.Update에서 fixedStep=0.1f로 UpdateTime을 호출하므로 여기서도 동일 cadence로 대기
+            yield return new WaitForSeconds(GameService.fixedStep);
 
             bool reached = false;
             if (followerEntity != null)

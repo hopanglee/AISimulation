@@ -27,7 +27,7 @@ public class Door : InteractableProp
         string result = isOpen ? "문을 열었다." : "문을 잠갔다.";
 
         // 간단한 연출 지연(선택): 1초 대기
-        await SimDelay.DelaySimSeconds(1, cancellationToken);
+        await SimDelay.DelaySimMinutes(1, cancellationToken);
 
         // 버블 표시
         if (actor is MainActor mainActor && mainActor.activityBubbleUI != null)

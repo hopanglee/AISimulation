@@ -365,7 +365,7 @@ namespace Agent.ActionHandlers
                     bubble.SetFollowTarget(actor.transform);
                     bubble.Show(activityName, Mathf.Max(1, delay * 60));
                     // PerformActivity 전체 동안 기다림 (초 기반)
-                    await SimDelay.DelaySimSeconds(Mathf.Max(1, delay * 60), token);
+                    await SimDelay.DelaySimMinutes(Mathf.Max(1, delay), token);
                 }
                 else
                 {

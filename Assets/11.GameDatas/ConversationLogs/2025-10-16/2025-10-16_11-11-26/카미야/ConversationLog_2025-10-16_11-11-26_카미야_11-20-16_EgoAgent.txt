@@ -84,7 +84,7 @@ Now let's check Kamiya's area structure to understand his surroundings better.
         이자카야 스미레
           홀
   신주쿠
-    카부키쵸
+    가부키초
       1-chome-1
         대중 온천
           남자 락커룸
@@ -172,7 +172,7 @@ Now let's check Kamiya's area structure to understand his surroundings better.
 미나미 카라스야마:5-chome-9 <-> 5-chome-10, 5-chome-8
 미나미 카라스야마:나카미세도리 <-> 5-chome-4, 5-chome-8
 이자카야 스미레:홀 <-> 나카미세도리
-카부키쵸:1-chome-1 <-> 1-chome-2, 1-chome-6, 1-chome-7, 1-chome-8, 1-chome-9
+가부키초:1-chome-1 <-> 1-chome-2, 1-chome-6, 1-chome-7, 1-chome-8, 1-chome-9
 대중 온천:남자 락커룸 <-> 남자 목욕탕, 로비
 대중 온천:남자 목욕탕 <-> 남자 락커룸, 남자 사우나
 대중 온천:남자 사우나 <-> 남자 목욕탕
@@ -180,20 +180,20 @@ Now let's check Kamiya's area structure to understand his surroundings better.
 대중 온천:여자 락커룸 <-> 로비, 여자 목욕탕
 대중 온천:여자 목욕탕 <-> 여자 락커룸, 여자 사우나
 대중 온천:여자 사우나 <-> 여자 목욕탕
-카부키쵸:1-chome-2 <-> 1-chome-1, 1-chome-3, 1-chome-5, 1-chome-6, 1-chome-9
+가부키초:1-chome-2 <-> 1-chome-1, 1-chome-3, 1-chome-5, 1-chome-6, 1-chome-9
 네코마트:상품 진열대 <-> 1-chome-2, 카운터
 상품 진열대:카운터 <-> 상품 진열대
 이자카야 미도리:홀 <-> 1-chome-2
 호스트클럽 오로라:VIP실 <-> 복도
 호스트클럽 오로라:복도 <-> 1-chome-2, VIP실, 홀
 호스트클럽 오로라:홀 <-> 복도
-카부키쵸:1-chome-3 <-> 1-chome-2, 1-chome-4
+가부키초:1-chome-3 <-> 1-chome-2, 1-chome-4
 카페 모카하우스:창고 <-> 카운터
 카페 모카하우스:홀 <-> 1-chome-3, 카운터, 화장실
 홀:카운터 <-> 창고, 홀
 카페 모카하우스:화장실 <-> 홀
-카부키쵸:1-chome-4 <-> 1-chome-3, 1-chome-5
-카부키쵸:1-chome-5 <-> 1-chome-2, 1-chome-4, 1-chome-6
+가부키초:1-chome-4 <-> 1-chome-3, 1-chome-5
+가부키초:1-chome-5 <-> 1-chome-2, 1-chome-4, 1-chome-6
 이자카야 카게츠:홀 <-> 1-chome-5
 카페 브루랩:창고 <-> 카운터
 카페 브루랩:홀 <-> 1-chome-5, 카운터, 화장실
@@ -201,15 +201,15 @@ Now let's check Kamiya's area structure to understand his surroundings better.
 카페 브루랩:화장실 <-> 홀
 편의점 타누키:상품 진열대 <-> 1-chome-5, 카운터
 상품 진열대:카운터 <-> 상품 진열대
-카부키쵸:1-chome-6 <-> 1-chome-1, 1-chome-2, 1-chome-5, 1-chome-7
-카부키쵸:1-chome-7 <-> 1-chome-1, 1-chome-6
+가부키초:1-chome-6 <-> 1-chome-1, 1-chome-2, 1-chome-5, 1-chome-7
+가부키초:1-chome-7 <-> 1-chome-1, 1-chome-6
 세이메이 종합병원:로비 <-> 1-chome-7, 진료실, 프론트, 환자실
 로비:프론트 <-> 로비
 세이메이 종합병원:진료실 <-> 로비
 세이메이 종합병원:환자실 <-> 로비
 이자카야 하나미치:홀 <-> 1-chome-7
-카부키쵸:1-chome-8 <-> 1-chome-1, 1-chome-9, 5-chome-1
-카부키쵸:1-chome-9 <-> 1-chome-1, 1-chome-2, 1-chome-8
+가부키초:1-chome-8 <-> 1-chome-1, 1-chome-9, 5-chome-1
+가부키초:1-chome-9 <-> 1-chome-1, 1-chome-2, 1-chome-8
 ]
 
 --- Assistant ---
@@ -224,7 +224,7 @@ Let me try again with the full path:
 [ToolUse name=FindShortestAreaPathFromActor input={"targetAreaKey":"\uCE74\uBD80\uD0A4\uCD78:1-chome-3"}]
 
 --- User ---
-[ToolResult id=toolu_01Xs5KF2WpSSquXTrZTEEga6 result=No path found from 거실 to 카부키쵸:1-chome-3]
+[ToolResult id=toolu_01Xs5KF2WpSSquXTrZTEEga6 result=No path found from 거실 to 가부키초:1-chome-3]
 
 --- Assistant ---
 Let's check Kamiya's memories related to Hino:

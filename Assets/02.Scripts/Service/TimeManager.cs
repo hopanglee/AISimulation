@@ -24,6 +24,16 @@ public interface ITimeService : IService
     bool IsTimeFlowing { get; }
 
     /// <summary>
+    /// 누적 시뮬레이션 시간(초)
+    /// </summary>
+    long GetTotalSeconds();
+
+    /// <summary>
+    /// 현재 분의 초(0~59)
+    /// </summary>
+    int GetSecondOfMinute();
+
+    /// <summary>
     /// 시간 흐름 시작
     /// </summary>
     void StartTimeFlow();
@@ -87,14 +97,16 @@ public struct GameTime : IComparable<GameTime>, IComparable
     public int day;
     public int hour;
     public int minute;
+    public int second;
 
-    public GameTime(int year, int month, int day, int hour, int minute)
+    public GameTime(int year, int month, int day, int hour, int minute, int second = 0)
     {
         this.year = year;
         this.month = month;
         this.day = day;
         this.hour = hour;
         this.minute = minute;
+        this.second = second;
     }
 
     public override string ToString()
@@ -618,7 +630,7 @@ public class TimeManager : ITimeService
         SetTime(currentTime.year, currentTime.month, currentTime.day, hour, minute);
     }
 
-    public void SetTime(int year, int month, int day, int hour, int minute)
+    public void SetTime(int year, int month, int day, int hour, int minute, int second = 0)
     {
         currentTime.year = Mathf.Clamp(year, 2024, 2100);
         currentTime.month = Mathf.Clamp(month, 1, 12);
@@ -629,6 +641,8 @@ public class TimeManager : ITimeService
         );
         currentTime.hour = Mathf.Clamp(hour, 0, 23);
         currentTime.minute = Mathf.Clamp(minute, 0, 59);
+        currentTime.second = Mathf.Clamp(second, 0, 59);
+        try { } catch { }
 
         onTimeChanged?.Invoke(currentTime);
         Debug.Log($"[TimeManager] Time set to {currentTime}");
@@ -653,48 +667,59 @@ public class TimeManager : ITimeService
         if (!isTimeFlowing)
             return;
         //Debug.Log($"[TimeManager] UpdateTime: {currentTime}");
-        // 시간 누적
+        // 시간 누적 (초 단위)
         accumulatedTime += deltaTime * timeScale;
 
-        // 1분(60초)마다 시간 증가
-        if (accumulatedTime >= 60f)
+        if (accumulatedTime >= 1f)
         {
-            int minutesToAdd = Mathf.FloorToInt(accumulatedTime / 60f);
-            accumulatedTime -= minutesToAdd * 60f;
+            int secondsToAdd = Mathf.FloorToInt(accumulatedTime);
+            accumulatedTime -= secondsToAdd;
 
-            // 시간 증가
-            currentTime.minute += minutesToAdd;
-
-            // 시간/일/월/연도 조정
-            while (currentTime.minute >= 60)
+            // 초 → 분/시/일/월/년 반영
+            int minutesToAdd = 0;
+            int totalSeconds = currentTime.second + secondsToAdd;
+            if (totalSeconds >= 60)
             {
-                currentTime.minute -= 60;
-                currentTime.hour++;
+                minutesToAdd = totalSeconds / 60;
+                currentTime.second = totalSeconds % 60;
+            }
+            else
+            {
+                currentTime.second = totalSeconds;
+            }
 
-                if (currentTime.hour >= 24)
+            if (minutesToAdd > 0)
+            {
+                currentTime.minute += minutesToAdd;
+
+                while (currentTime.minute >= 60)
                 {
-                    currentTime.hour = 0;
-                    currentTime.day++;
+                    currentTime.minute -= 60;
+                    currentTime.hour++;
 
-                    // 월 조정
-                    int daysInMonth = GameTime.GetDaysInMonth(currentTime.year, currentTime.month);
-                    if (currentTime.day > daysInMonth)
+                    if (currentTime.hour >= 24)
                     {
-                        currentTime.day = 1;
-                        currentTime.month++;
+                        currentTime.hour = 0;
+                        currentTime.day++;
 
-                        // 연도 조정
-                        if (currentTime.month > 12)
+                        int daysInMonth = GameTime.GetDaysInMonth(currentTime.year, currentTime.month);
+                        if (currentTime.day > daysInMonth)
                         {
-                            currentTime.month = 1;
-                            currentTime.year++;
+                            currentTime.day = 1;
+                            currentTime.month++;
+
+                            if (currentTime.month > 12)
+                            {
+                                currentTime.month = 1;
+                                currentTime.year++;
+                            }
                         }
                     }
                 }
-            }
 
-            // 시간 변경 이벤트 발생
-            onTimeChanged?.Invoke(currentTime);
+                // 분 단위 변경 시에만 이벤트 발생 (이전 동작 유지)
+                onTimeChanged?.Invoke(currentTime);
+            }
         }
     }
 
@@ -724,6 +749,23 @@ public class TimeManager : ITimeService
             // 자정을 넘어가는 경우 (예: 22:00 ~ 06:00)
             return current >= startTime || current <= endTime;
         }
+    }
+
+    public long GetTotalSeconds()
+    {
+        try
+        {
+            return currentTime.ToMinutes() * 60L + currentTime.second;
+        }
+        catch
+        {
+            return 0L;
+        }
+    }
+
+    public int GetSecondOfMinute()
+    {
+        return currentTime.second;
     }
 
     /// <summary>

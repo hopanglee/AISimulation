@@ -77,7 +77,7 @@ public class Thinker
                 var perceptionResult = await brain.Perception();
                 token.ThrowIfCancellationRequested();
 
-                await SimDelay.DelaySimSeconds(1, token);
+                await SimDelay.DelaySimMinutes(1, token);
                 token.ThrowIfCancellationRequested();
 
                 // 2. DayPlanner 실행
@@ -141,7 +141,7 @@ public class Thinker
 
                     var userMessage = paramResult.StartMemoryContent ?? "...";
                     actSelectorAgent.AddUserMessage(userMessage);
-                    await SimDelay.DelaySimSeconds(1, token);
+                    await SimDelay.DelaySimMinutes(1, token);
                 }
 
                 token.ThrowIfCancellationRequested();

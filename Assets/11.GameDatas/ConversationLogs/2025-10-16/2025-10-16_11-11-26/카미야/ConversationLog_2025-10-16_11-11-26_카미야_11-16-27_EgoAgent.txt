@@ -24,7 +24,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
 
 --- User ---
 [ToolResult id=toolu_01AouycBDRMsmAWkisLS7d6B result={
-  "도쿄:신주쿠:카부키쵸:1-chome-3:카페 모카하우스:홀": {
+  "도쿄:신주쿠:가부키초:1-chome-3:카페 모카하우스:홀": {
     "items": [],
     "props": [
       "냅킨홀더",
@@ -53,7 +53,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-2:호스트클럽 오로라:VIP실": {
+  "도쿄:신주쿠:가부키초:1-chome-2:호스트클럽 오로라:VIP실": {
     "items": [],
     "props": [
       "소파1-1",
@@ -102,7 +102,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-2:호스트클럽 오로라:홀": {
+  "도쿄:신주쿠:가부키초:1-chome-2:호스트클럽 오로라:홀": {
     "items": [],
     "props": [
       "소파1-1",
@@ -256,7 +256,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-1": {
+  "도쿄:신주쿠:가부키초:1-chome-1": {
     "items": [],
     "props": [],
     "actors": [],
@@ -272,7 +272,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-3:카페 모카하우스:홀:카운터": {
+  "도쿄:신주쿠:가부키초:1-chome-3:카페 모카하우스:홀:카운터": {
     "items": [],
     "props": [
       "작은 진열대",
@@ -291,7 +291,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-2:네코마트:상품 진열대": {
+  "도쿄:신주쿠:가부키초:1-chome-2:네코마트:상품 진열대": {
     "items": [],
     "props": [
       "과일 코너",
@@ -337,7 +337,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-1:대중 온천:남자 사우나": {
+  "도쿄:신주쿠:가부키초:1-chome-1:대중 온천:남자 사우나": {
     "items": [],
     "props": [],
     "actors": [],
@@ -347,7 +347,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-5:카페 브루랩:홀": {
+  "도쿄:신주쿠:가부키초:1-chome-5:카페 브루랩:홀": {
     "items": [],
     "props": [
       "냅킨홀더",
@@ -391,7 +391,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-5:카페 브루랩:창고": {
+  "도쿄:신주쿠:가부키초:1-chome-5:카페 브루랩:창고": {
     "items": [],
     "props": [
       "커피 백 보관서랍"
@@ -403,7 +403,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-7:이자카야 하나미치:홀": {
+  "도쿄:신주쿠:가부키초:1-chome-7:이자카야 하나미치:홀": {
     "items": [],
     "props": [
       "냉장고",
@@ -426,7 +426,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-7": {
+  "도쿄:신주쿠:가부키초:1-chome-7": {
     "items": [],
     "props": [],
     "actors": [],
@@ -453,7 +453,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-2:이자카야 미도리:홀": {
+  "도쿄:신주쿠:가부키초:1-chome-2:이자카야 미도리:홀": {
     "items": [],
     "props": [
       "냉장고",
@@ -476,7 +476,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-5:편의점 타누키:상품 진열대": {
+  "도쿄:신주쿠:가부키초:1-chome-5:편의점 타누키:상품 진열대": {
     "items": [],
     "props": [
       "과자 코너",
@@ -526,7 +526,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-2:호스트클럽 오로라:복도": {
+  "도쿄:신주쿠:가부키초:1-chome-2:호스트클럽 오로라:복도": {
     "items": [],
     "props": [],
     "actors": [],
@@ -555,7 +555,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-5": {
+  "도쿄:신주쿠:가부키초:1-chome-5": {
     "items": [],
     "props": [],
     "actors": [],
@@ -617,7 +617,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-7:세이메이 종합병원:환자실": {
+  "도쿄:신주쿠:가부키초:1-chome-7:세이메이 종합병원:환자실": {
     "items": [],
     "props": [
       "서랍1",
@@ -642,7 +642,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-1:대중 온천:남자 목욕탕": {
+  "도쿄:신주쿠:가부키초:1-chome-1:대중 온천:남자 목욕탕": {
     "items": [
       "바디워시1-1",
       "바디워시1-2",
@@ -729,7 +729,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-1:대중 온천:여자 목욕탕": {
+  "도쿄:신주쿠:가부키초:1-chome-1:대중 온천:여자 목욕탕": {
     "items": [
       "바디워시1-1",
       "바디워시1-2",
@@ -885,7 +885,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-2:네코마트:상품 진열대:카운터": {
+  "도쿄:신주쿠:가부키초:1-chome-2:네코마트:상품 진열대:카운터": {
     "items": [],
     "props": [],
     "actors": [
@@ -926,7 +926,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-5:편의점 타누키:상품 진열대:카운터": {
+  "도쿄:신주쿠:가부키초:1-chome-5:편의점 타누키:상품 진열대:카운터": {
     "items": [],
     "props": [],
     "actors": [
@@ -989,7 +989,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-3": {
+  "도쿄:신주쿠:가부키초:1-chome-3": {
     "items": [],
     "props": [],
     "actors": [],
@@ -1017,7 +1017,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-5:카페 브루랩:홀:카운터": {
+  "도쿄:신주쿠:가부키초:1-chome-5:카페 브루랩:홀:카운터": {
     "items": [],
     "props": [
       "작은 진열대",
@@ -1036,7 +1036,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-3:카페 모카하우스:창고": {
+  "도쿄:신주쿠:가부키초:1-chome-3:카페 모카하우스:창고": {
     "items": [],
     "props": [
       "커피 백 보관서랍"
@@ -1062,7 +1062,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-1:대중 온천:여자 락커룸": {
+  "도쿄:신주쿠:가부키초:1-chome-1:대중 온천:여자 락커룸": {
     "items": [
       "수건",
       "수건_1",
@@ -1093,7 +1093,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-3:카페 모카하우스:화장실": {
+  "도쿄:신주쿠:가부키초:1-chome-3:카페 모카하우스:화장실": {
     "items": [],
     "props": [
       "변기",
@@ -1107,7 +1107,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-9": {
+  "도쿄:신주쿠:가부키초:1-chome-9": {
     "items": [],
     "props": [],
     "actors": [],
@@ -1136,7 +1136,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-2": {
+  "도쿄:신주쿠:가부키초:1-chome-2": {
     "items": [],
     "props": [],
     "actors": [],
@@ -1154,7 +1154,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-7:세이메이 종합병원:로비:프론트": {
+  "도쿄:신주쿠:가부키초:1-chome-7:세이메이 종합병원:로비:프론트": {
     "items": [],
     "props": [
       "데스크"
@@ -1220,7 +1220,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-8": {
+  "도쿄:신주쿠:가부키초:1-chome-8": {
     "items": [],
     "props": [],
     "actors": [],
@@ -1232,7 +1232,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-5:카페 브루랩:화장실": {
+  "도쿄:신주쿠:가부키초:1-chome-5:카페 브루랩:화장실": {
     "items": [],
     "props": [
       "변기",
@@ -1246,7 +1246,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-1:대중 온천:여자 사우나": {
+  "도쿄:신주쿠:가부키초:1-chome-1:대중 온천:여자 사우나": {
     "items": [],
     "props": [],
     "actors": [],
@@ -1256,7 +1256,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-7:세이메이 종합병원:진료실": {
+  "도쿄:신주쿠:가부키초:1-chome-7:세이메이 종합병원:진료실": {
     "items": [],
     "props": [
       "의자",
@@ -1402,7 +1402,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-4": {
+  "도쿄:신주쿠:가부키초:1-chome-4": {
     "items": [],
     "props": [],
     "actors": [],
@@ -1424,7 +1424,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-1:대중 온천:로비": {
+  "도쿄:신주쿠:가부키초:1-chome-1:대중 온천:로비": {
     "items": [],
     "props": [],
     "actors": [],
@@ -1447,7 +1447,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-6": {
+  "도쿄:신주쿠:가부키초:1-chome-6": {
     "items": [],
     "props": [],
     "actors": [],
@@ -1460,7 +1460,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-1:대중 온천:남자 락커룸": {
+  "도쿄:신주쿠:가부키초:1-chome-1:대중 온천:남자 락커룸": {
     "items": [
       "수건",
       "수건_1",
@@ -1490,7 +1490,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-5:이자카야 카게츠:홀": {
+  "도쿄:신주쿠:가부키초:1-chome-5:이자카야 카게츠:홀": {
     "items": [],
     "props": [
       "냉장고",
@@ -1513,7 +1513,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-7:세이메이 종합병원:로비": {
+  "도쿄:신주쿠:가부키초:1-chome-7:세이메이 종합병원:로비": {
     "items": [],
     "props": [
       "Lobby Bench1",
@@ -1544,7 +1544,7 @@ I'll help you create a response for Kamiya that reflects his personality and cur
 [ToolUse name=FindBuildingAreaPath input={"buildingName":"\uCE74\uD398 \uBAA8\uCE74\uD558\uC6B0\uC2A4"}]
 
 --- User ---
-[ToolResult id=toolu_01G9YRJFUKzuqJEnNvVihGVp result='카페 모카하우스'의 에리어 경로: 도쿄:신주쿠:카부키쵸:1-chome-3]
+[ToolResult id=toolu_01G9YRJFUKzuqJEnNvVihGVp result='카페 모카하우스'의 에리어 경로: 도쿄:신주쿠:가부키초:1-chome-3]
 
 --- Assistant ---
 [ToolUse name=GetCookableRecipes input={}]

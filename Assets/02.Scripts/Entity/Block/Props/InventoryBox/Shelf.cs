@@ -20,9 +20,9 @@ public class Shelf : InventoryBox
         string status = "";
         if (items.Count == 0)
         {
-            status = "비어있습니다.";
+            status = $"비어있습니다 [최대 {maxItems}개].";
         }
-        else status = $"{items.Count}개의 물건이 있습니다. ({string.Join(", ", items.ConvertAll(item => item.Name))})";
+        else status = $"{items.Count}개의 물건이 있습니다[최대 {maxItems}개]. ({string.Join(", ", items.ConvertAll(item => item.Name))})";
 
         if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
         {

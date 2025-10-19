@@ -739,7 +739,7 @@ public class Gemini : LLMClient
         if (toolExecutor != null)
         {
             toolResult = toolExecutor.ExecuteTool(functionCall);
-            Debug.Log($"<color=yellow>[ToolResult][{functionCall.Name}] {toolResult}</color>");
+            //Debug.Log($"<color=yellow>[ToolResult][{functionCall.Name}] {toolResult}</color>");
             // 도구 실행 기록 저장 (캐시 리플레이용)
             try
             {

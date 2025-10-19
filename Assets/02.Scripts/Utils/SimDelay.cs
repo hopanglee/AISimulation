@@ -15,13 +15,12 @@ public static class SimDelay
 
 	public static async UniTask DelaySimMinutes(int simMinutes, CancellationToken token = default)
 	{
-
 		// UseGPT가 false인 경우 Task.Delay 사용 (Debug 모드)
 		if (IsDebugMode())
 		{
 			Debug.Log($"[Debug Mode] {simMinutes}분 지연 시작");
 			// 시뮬레이션 시간 1분당 실제 시간 1초
-
+			
 			float delaySeconds = simMinutes * 1f;
 			await Task.Delay((int)(delaySeconds * 1000), token);
 			return;
@@ -30,16 +29,18 @@ public static class SimDelay
 		{
 			Debug.Log($"[Simulation Mode] {simMinutes}분 지연 시작");
 		}
-
-		// 기존 로직: 시뮬레이션 시간 기반 지연
+		
+		// 개선된 로직: 시뮬레이션 시간(초 단위) 기반 정밀 지연
 		var timeService = Services.Get<ITimeService>();
 		if (timeService == null || simMinutes <= 0)
 		{
 			await UniTask.Yield();
 			return;
 		}
-		long target = timeService.CurrentTime.ToMinutes() + simMinutes;
-		while (timeService.CurrentTime.ToMinutes() < target)
+		// 현재 누적 초에 정확히 simMinutes*60초를 더한 목표 시각을 설정
+		long startSeconds = timeService.GetTotalSeconds();
+		long targetSeconds = startSeconds + (long)simMinutes * 60L;
+		while (timeService.GetTotalSeconds() < targetSeconds)
 		{
 			if (token.IsCancellationRequested) return;
 			await UniTask.Yield();

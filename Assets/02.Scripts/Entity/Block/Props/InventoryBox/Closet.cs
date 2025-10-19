@@ -7,11 +7,18 @@ public class Closet : InventoryBox
 {
     public override string Get()
     {
-        if(String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        string status = "";
+        if (items.Count == 0)
         {
-            return $"옷장 {GetLocalizedStatusDescription()} ";
+            status = $"옷장에 아무것도 없습니다[최대 {maxItems}개].";
         }
-        return $"옷장";
+        else status = $"옷장에 {items.Count}개의 물건이 있습니다[최대 {maxItems}개]. ({string.Join(", ", items.ConvertAll(item => item.Name))})";
+
+        if (String.IsNullOrEmpty(GetLocalizedStatusDescription()))
+        {
+            return $"{GetLocalizedStatusDescription()}, {status}";
+        }
+        return $"{status}";
     }
 
     public override async UniTask<string> Interact(Actor actor, CancellationToken cancellationToken = default)
@@ -24,7 +31,7 @@ public class Closet : InventoryBox
             bubble.Show($"{Name}에서 물건 이동 중", 0);
         }
         await SimDelay.DelaySimMinutes(1, cancellationToken);
-        
+
         // 기본 클래스의 스마트 알고리즘 사용
         var result = await ProcessSmartInventoryBoxInteraction(actor, cancellationToken);
         //await SimDelay.DelaySimMinutes(1, cancellationToken);

@@ -252,7 +252,7 @@ public class Claude : LLMClient
         {
             string result = toolExecutor.ExecuteTool(name, param);
             AddToolMessage(id, name, result);
-            Debug.Log($"<color=yellow>[ToolResult][{name}] {result}</color>");
+            //Debug.Log($"<color=yellow>[ToolResult][{name}] {result}</color>");
             // 도구 실행 기록 저장 (캐시 리플레이용)
             try
             {

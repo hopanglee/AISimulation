@@ -30,7 +30,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
 
 --- User ---
 [ToolResult id=toolu_01MHZevXF7yiQioddEEmLdhJ result={
-  "도쿄:신주쿠:카부키쵸:1-chome-3:카페 모카하우스:홀": {
+  "도쿄:신주쿠:가부키초:1-chome-3:카페 모카하우스:홀": {
     "items": [],
     "props": [
       "냅킨홀더",
@@ -59,7 +59,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-2:호스트클럽 오로라:VIP실": {
+  "도쿄:신주쿠:가부키초:1-chome-2:호스트클럽 오로라:VIP실": {
     "items": [],
     "props": [
       "소파1-1",
@@ -108,7 +108,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-2:호스트클럽 오로라:홀": {
+  "도쿄:신주쿠:가부키초:1-chome-2:호스트클럽 오로라:홀": {
     "items": [],
     "props": [
       "소파1-1",
@@ -264,7 +264,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-1": {
+  "도쿄:신주쿠:가부키초:1-chome-1": {
     "items": [],
     "props": [],
     "actors": [],
@@ -280,7 +280,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-3:카페 모카하우스:홀:카운터": {
+  "도쿄:신주쿠:가부키초:1-chome-3:카페 모카하우스:홀:카운터": {
     "items": [],
     "props": [
       "작은 진열대",
@@ -299,7 +299,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-2:네코마트:상품 진열대": {
+  "도쿄:신주쿠:가부키초:1-chome-2:네코마트:상품 진열대": {
     "items": [],
     "props": [
       "과일 코너",
@@ -345,7 +345,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-1:대중 온천:남자 사우나": {
+  "도쿄:신주쿠:가부키초:1-chome-1:대중 온천:남자 사우나": {
     "items": [],
     "props": [],
     "actors": [],
@@ -355,7 +355,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-5:카페 브루랩:홀": {
+  "도쿄:신주쿠:가부키초:1-chome-5:카페 브루랩:홀": {
     "items": [],
     "props": [
       "냅킨홀더",
@@ -399,7 +399,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-5:카페 브루랩:창고": {
+  "도쿄:신주쿠:가부키초:1-chome-5:카페 브루랩:창고": {
     "items": [],
     "props": [
       "커피 백 보관서랍"
@@ -411,7 +411,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-7:이자카야 하나미치:홀": {
+  "도쿄:신주쿠:가부키초:1-chome-7:이자카야 하나미치:홀": {
     "items": [],
     "props": [
       "냉장고",
@@ -434,7 +434,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-7": {
+  "도쿄:신주쿠:가부키초:1-chome-7": {
     "items": [],
     "props": [],
     "actors": [],
@@ -461,7 +461,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-2:이자카야 미도리:홀": {
+  "도쿄:신주쿠:가부키초:1-chome-2:이자카야 미도리:홀": {
     "items": [],
     "props": [
       "냉장고",
@@ -484,7 +484,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-5:편의점 타누키:상품 진열대": {
+  "도쿄:신주쿠:가부키초:1-chome-5:편의점 타누키:상품 진열대": {
     "items": [],
     "props": [
       "과자 코너",
@@ -534,7 +534,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-2:호스트클럽 오로라:복도": {
+  "도쿄:신주쿠:가부키초:1-chome-2:호스트클럽 오로라:복도": {
     "items": [],
     "props": [],
     "actors": [],
@@ -563,7 +563,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-5": {
+  "도쿄:신주쿠:가부키초:1-chome-5": {
     "items": [],
     "props": [],
     "actors": [],
@@ -625,7 +625,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-7:세이메이 종합병원:환자실": {
+  "도쿄:신주쿠:가부키초:1-chome-7:세이메이 종합병원:환자실": {
     "items": [],
     "props": [
       "서랍1",
@@ -650,7 +650,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-1:대중 온천:남자 목욕탕": {
+  "도쿄:신주쿠:가부키초:1-chome-1:대중 온천:남자 목욕탕": {
     "items": [
       "바디워시1-1",
       "바디워시1-2",
@@ -737,7 +737,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-1:대중 온천:여자 목욕탕": {
+  "도쿄:신주쿠:가부키초:1-chome-1:대중 온천:여자 목욕탕": {
     "items": [
       "바디워시1-1",
       "바디워시1-2",
@@ -908,7 +908,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2025-07-24T08:09:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-2:네코마트:상품 진열대:카운터": {
+  "도쿄:신주쿠:가부키초:1-chome-2:네코마트:상품 진열대:카운터": {
     "items": [],
     "props": [],
     "actors": [
@@ -949,7 +949,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-5:편의점 타누키:상품 진열대:카운터": {
+  "도쿄:신주쿠:가부키초:1-chome-5:편의점 타누키:상품 진열대:카운터": {
     "items": [],
     "props": [],
     "actors": [
@@ -1012,7 +1012,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-3": {
+  "도쿄:신주쿠:가부키초:1-chome-3": {
     "items": [],
     "props": [],
     "actors": [],
@@ -1040,7 +1040,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-5:카페 브루랩:홀:카운터": {
+  "도쿄:신주쿠:가부키초:1-chome-5:카페 브루랩:홀:카운터": {
     "items": [],
     "props": [
       "작은 진열대",
@@ -1059,7 +1059,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-3:카페 모카하우스:창고": {
+  "도쿄:신주쿠:가부키초:1-chome-3:카페 모카하우스:창고": {
     "items": [],
     "props": [
       "커피 백 보관서랍"
@@ -1085,7 +1085,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-1:대중 온천:여자 락커룸": {
+  "도쿄:신주쿠:가부키초:1-chome-1:대중 온천:여자 락커룸": {
     "items": [
       "수건",
       "수건_1",
@@ -1116,7 +1116,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-3:카페 모카하우스:화장실": {
+  "도쿄:신주쿠:가부키초:1-chome-3:카페 모카하우스:화장실": {
     "items": [],
     "props": [
       "변기",
@@ -1130,7 +1130,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-9": {
+  "도쿄:신주쿠:가부키초:1-chome-9": {
     "items": [],
     "props": [],
     "actors": [],
@@ -1159,7 +1159,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-2": {
+  "도쿄:신주쿠:가부키초:1-chome-2": {
     "items": [],
     "props": [],
     "actors": [],
@@ -1177,7 +1177,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-7:세이메이 종합병원:로비:프론트": {
+  "도쿄:신주쿠:가부키초:1-chome-7:세이메이 종합병원:로비:프론트": {
     "items": [],
     "props": [
       "데스크"
@@ -1243,7 +1243,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-8": {
+  "도쿄:신주쿠:가부키초:1-chome-8": {
     "items": [],
     "props": [],
     "actors": [],
@@ -1255,7 +1255,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-5:카페 브루랩:화장실": {
+  "도쿄:신주쿠:가부키초:1-chome-5:카페 브루랩:화장실": {
     "items": [],
     "props": [
       "변기",
@@ -1269,7 +1269,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-1:대중 온천:여자 사우나": {
+  "도쿄:신주쿠:가부키초:1-chome-1:대중 온천:여자 사우나": {
     "items": [],
     "props": [],
     "actors": [],
@@ -1279,7 +1279,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-7:세이메이 종합병원:진료실": {
+  "도쿄:신주쿠:가부키초:1-chome-7:세이메이 종합병원:진료실": {
     "items": [],
     "props": [
       "의자",
@@ -1425,7 +1425,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-4": {
+  "도쿄:신주쿠:가부키초:1-chome-4": {
     "items": [],
     "props": [],
     "actors": [],
@@ -1447,7 +1447,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-1:대중 온천:로비": {
+  "도쿄:신주쿠:가부키초:1-chome-1:대중 온천:로비": {
     "items": [],
     "props": [],
     "actors": [],
@@ -1470,7 +1470,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-6": {
+  "도쿄:신주쿠:가부키초:1-chome-6": {
     "items": [],
     "props": [],
     "actors": [],
@@ -1483,7 +1483,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-1:대중 온천:남자 락커룸": {
+  "도쿄:신주쿠:가부키초:1-chome-1:대중 온천:남자 락커룸": {
     "items": [
       "수건",
       "수건_1",
@@ -1513,7 +1513,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-5:이자카야 카게츠:홀": {
+  "도쿄:신주쿠:가부키초:1-chome-5:이자카야 카게츠:홀": {
     "items": [],
     "props": [
       "냉장고",
@@ -1536,7 +1536,7 @@ I'll help analyze this situation as Hino. First, I'll look at the current state 
     ],
     "lastSeen": "2024-11-14T00:00:00Z"
   },
-  "도쿄:신주쿠:카부키쵸:1-chome-7:세이메이 종합병원:로비": {
+  "도쿄:신주쿠:가부키초:1-chome-7:세이메이 종합병원:로비": {
     "items": [],
     "props": [
       "Lobby Bench1",
@@ -1570,7 +1570,7 @@ I'll check if I can find any location memories about Cafe Brulab which was menti
 [ToolUse name=FindBuildingAreaPath input={"buildingName":"\uCE74\uD398 \uBE0C\uB8E8\uB7A9"}]
 
 --- User ---
-[ToolResult id=toolu_01GjVKadSxaXjk9gWTTVthPx result='카페 브루랩'의 에리어 경로: 도쿄:신주쿠:카부키쵸:1-chome-5]
+[ToolResult id=toolu_01GjVKadSxaXjk9gWTTVthPx result='카페 브루랩'의 에리어 경로: 도쿄:신주쿠:가부키초:1-chome-5]
 
 --- Assistant ---
 Let me also check what recipes I can cook:
@@ -1590,15 +1590,15 @@ Let me also check what recipes I can cook:
 --- Assistant ---
 {
   "thought_chain": [
-    "어제 카부키쵸에서 교통사고가 난 것 같은데, 왜 내가 집에 있는 거지? 기억이 흐릿해서 혼란스럽다.",
+    "어제 가부키초에서 교통사고가 난 것 같은데, 왜 내가 집에 있는 거지? 기억이 흐릿해서 혼란스럽다.",
     "1월 12일에 사고가 있었다는 기록과 지금 7월 24일이라는 시계가 보이는데, 이게 정말 과거의 일인가 아니면 기억이 섞인 건가?",
     "협탁에 내 일기와 아이폰이 있고, 카미야와 와타야한테서 메시지가 왔다는 알림이 보인다. 왜 같은 물건이 두 개씩 있지?",
-    "카미야는 '내일은 모카하우스 16...'이라고 했고, 모카하우스는 카부키쵸 1-chome-3에 있는 카페다.",
+    "카미야는 '내일은 모카하우스 16...'이라고 했고, 모카하우스는 가부키초 1-chome-3에 있는 카페다.",
     "와타야 이즈미는 내 기억 속에서 날 안아줬던 소중한 사람이고, '선 3개가 마음...'이라고 메시지를 보냈다.",
     "배고픔도 심하고 혼란스러운데, 일단 루틴대로 일기부터 읽고 상황을 파악해야겠다. 생각이 정리되면 옷 갈아입고 모카하우스로 가야할 것 같다.",
     "이 상황이 뭔가 이상한데, 호기심이 생기고 빨리 확인하고 싶은 마음도 든다. 하지만 섣불리 행동하기보단 차분하게 상황을 파악하는 게 좋겠다."
   ],
-  "situation_interpretation": "으으... 머리가 띵~하네. 어제 확실히 카부키쵸에서 차랑 부딪혔던 것 같은데, 왜 내가 집에 있지? 기억이 좀 뒤죽박죽이야. 일단 도넛이랑 물 덕분에 배는 좀 채웠으니까, 이제 눈앞에 있는 일기부터 읽어봐야겠어! 내 루틴이니까~ 카미야랑 와타야한테서 메시지도 왔네. 특히 카미야는... 내일 모카하우스 약속인가? 두근두근~ 근데 이상하게 협탁에 물건들이 두 개씩 있고, 내 기억엔 1월에 사고가 났는데 지금은 7월이라니. 뭔가 놓친 게 있는 것 같아. 일단 침착하게 일기 먼저 보고 예쁘게 차려입은 다음에 모든 걸 확인하러 가자!",
+  "situation_interpretation": "으으... 머리가 띵~하네. 어제 확실히 가부키초에서 차랑 부딪혔던 것 같은데, 왜 내가 집에 있지? 기억이 좀 뒤죽박죽이야. 일단 도넛이랑 물 덕분에 배는 좀 채웠으니까, 이제 눈앞에 있는 일기부터 읽어봐야겠어! 내 루틴이니까~ 카미야랑 와타야한테서 메시지도 왔네. 특히 카미야는... 내일 모카하우스 약속인가? 두근두근~ 근데 이상하게 협탁에 물건들이 두 개씩 있고, 내 기억엔 1월에 사고가 났는데 지금은 7월이라니. 뭔가 놓친 게 있는 것 같아. 일단 침착하게 일기 먼저 보고 예쁘게 차려입은 다음에 모든 걸 확인하러 가자!",
   "emotions": [
     {
       "name": "혼란",
@@ -1626,15 +1626,15 @@ Let me also check what recipes I can cook:
 --- Final Response ---
 {
   "thought_chain": [
-    "어제 카부키쵸에서 교통사고가 난 것 같은데, 왜 내가 집에 있는 거지? 기억이 흐릿해서 혼란스럽다.",
+    "어제 가부키초에서 교통사고가 난 것 같은데, 왜 내가 집에 있는 거지? 기억이 흐릿해서 혼란스럽다.",
     "1월 12일에 사고가 있었다는 기록과 지금 7월 24일이라는 시계가 보이는데, 이게 정말 과거의 일인가 아니면 기억이 섞인 건가?",
     "협탁에 내 일기와 아이폰이 있고, 카미야와 와타야한테서 메시지가 왔다는 알림이 보인다. 왜 같은 물건이 두 개씩 있지?",
-    "카미야는 '내일은 모카하우스 16...'이라고 했고, 모카하우스는 카부키쵸 1-chome-3에 있는 카페다.",
+    "카미야는 '내일은 모카하우스 16...'이라고 했고, 모카하우스는 가부키초 1-chome-3에 있는 카페다.",
     "와타야 이즈미는 내 기억 속에서 날 안아줬던 소중한 사람이고, '선 3개가 마음...'이라고 메시지를 보냈다.",
     "배고픔도 심하고 혼란스러운데, 일단 루틴대로 일기부터 읽고 상황을 파악해야겠다. 생각이 정리되면 옷 갈아입고 모카하우스로 가야할 것 같다.",
     "이 상황이 뭔가 이상한데, 호기심이 생기고 빨리 확인하고 싶은 마음도 든다. 하지만 섣불리 행동하기보단 차분하게 상황을 파악하는 게 좋겠다."
   ],
-  "situation_interpretation": "으으... 머리가 띵~하네. 어제 확실히 카부키쵸에서 차랑 부딪혔던 것 같은데, 왜 내가 집에 있지? 기억이 좀 뒤죽박죽이야. 일단 도넛이랑 물 덕분에 배는 좀 채웠으니까, 이제 눈앞에 있는 일기부터 읽어봐야겠어! 내 루틴이니까~ 카미야랑 와타야한테서 메시지도 왔네. 특히 카미야는... 내일 모카하우스 약속인가? 두근두근~ 근데 이상하게 협탁에 물건들이 두 개씩 있고, 내 기억엔 1월에 사고가 났는데 지금은 7월이라니. 뭔가 놓친 게 있는 것 같아. 일단 침착하게 일기 먼저 보고 예쁘게 차려입은 다음에 모든 걸 확인하러 가자!",
+  "situation_interpretation": "으으... 머리가 띵~하네. 어제 확실히 가부키초에서 차랑 부딪혔던 것 같은데, 왜 내가 집에 있지? 기억이 좀 뒤죽박죽이야. 일단 도넛이랑 물 덕분에 배는 좀 채웠으니까, 이제 눈앞에 있는 일기부터 읽어봐야겠어! 내 루틴이니까~ 카미야랑 와타야한테서 메시지도 왔네. 특히 카미야는... 내일 모카하우스 약속인가? 두근두근~ 근데 이상하게 협탁에 물건들이 두 개씩 있고, 내 기억엔 1월에 사고가 났는데 지금은 7월이라니. 뭔가 놓친 게 있는 것 같아. 일단 침착하게 일기 먼저 보고 예쁘게 차려입은 다음에 모든 걸 확인하러 가자!",
   "emotions": [
     {
       "name": "혼란",

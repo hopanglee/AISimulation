@@ -1,0 +1,54 @@
+﻿{
+  "payload": {
+    "situation_interpretation": "우와~ 머릿속이 완전 복잡해! 1월에 교통사고가 났는데 지금은 7월이라니, 내 기억에 구멍이 뻥! 뚫렸나봐! 그런데 더 미치겠는 건, 카미야라는 애가 있는데 그 사람이 누군지 기억이 안 나! 일기장엔 그 애 뒤태 스케치가 있고, 메시지는 엄청 친밀해 보여. 오늘 12시에 모카하우스에서 만나기로 했는데! 와, 설레기도 하고 불안하기도 하고... 일단 배고파 죽겠으니까 도넛부터 먹고 와타야한테 물어봐야겠다! 어떤 옷 입지? 예쁘게 입고 싶어! 카미야가 나한테 특별한 사람인 것 같은데, 내가 기억을 못하다니! 너무 답답해!",
+    "thought_chain": [
+      "와타야 이즈미는 내 절친한 친구로 기억이 나는데, 카미야는 기억이 별로 없네...",
+      "일기장에는 카미야의 뒤태 스케치가 있고, 메시지 내용을 보니 서로 친밀한 관계인 것 같아",
+      "카미야한테 '??루 군'이라고 불렀다는 기억도 있고, 널 좋아해도 될까?라는 말도 있었다고...",
+      "모카하우스는 신주쿠 가부키초에 있고, 거기서 카미야를 만나기로 한 약속이 오늘 있나봐",
+      "배도 고프고 먼저 도넛 먹어야겠다!",
+      "그리고 카미야가 누군지 알고 싶어 미치겠어! 와타야한테 물어봐야지",
+      "오늘 카미야를 만나러 가야 하는데 어떤 옷을 입을까? 예쁘게 입고 싶어!"
+    ],
+    "emotions": [
+      {
+        "name": "호기심",
+        "intensity": 0.9
+      },
+      {
+        "name": "혼란",
+        "intensity": 0.8
+      },
+      {
+        "name": "설렘",
+        "intensity": 0.7
+      },
+      {
+        "name": "배고픔",
+        "intensity": 0.7
+      },
+      {
+        "name": "불안",
+        "intensity": 0.5
+      }
+    ]
+  },
+  "tools": [
+    {
+      "name": "LoadRelationshipByName",
+      "argsJson": "{\"targetName\":\"\\uC640\\uD0C0\\uC57C \\uC774\\uC988\\uBBF8\"}"
+    },
+    {
+      "name": "LoadRelationshipByName",
+      "argsJson": "{\"targetName\":\"\\uCE74\\uBBF8\\uC57C\"}"
+    },
+    {
+      "name": "FindBuildingAreaPath",
+      "argsJson": "{\"buildingName\":\"\\uBAA8\\uCE74\\uD558\\uC6B0\\uC2A4\"}"
+    },
+    {
+      "name": "FindShortestAreaPathFromActor",
+      "argsJson": "{\"targetAreaKey\":\"\\uB3C4\\uCFC4:\\uC2E0\\uC8FC\\uCFE0:\\uCE74\\uBD80\\uD0A4\\uCD78:1-chome-3\"}"
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+﻿{
+  "payload": {
+    "consolidated_chunks": [
+      {
+        "chunk_id": "accident_20250112",
+        "summary": "가부키초에서 차량에 부딪힘(교통사고 발생)",
+        "time_range": "2025-01-12 15:00",
+        "main_events": [
+          "차량이 매우 빠르게 다가와 부딪힘(쾅!)"
+        ],
+        "people_involved": [],
+        "emotions": [
+          {
+            "name": "공포",
+            "intensity": 0.9
+          },
+          {
+            "name": "혼란",
+            "intensity": 0.9
+          },
+          {
+            "name": "충격",
+            "intensity": 0.8
+          }
+        ],
+        "original_entries_count": 1
+      },
+      {
+        "chunk_id": "morning_memory_check_20250724",
+        "summary": "거실에서 일어나 일기와 휴대폰으로 기억의 빈틈과 카미야·와타야 약속 확인",
+        "time_range": "2025-07-24 08:00–08:25",
+        "main_events": [
+          "거실에서 일어나 협탁의 일기 집어 읽음",
+          "일기에서 카미야의 뒤태 스케치·'긍정' 메모 확인",
+          "아이폰으로 카미야·와타야와의 채팅 확인(모카하우스 12:00 약속)"
+        ],
+        "people_involved": [
+          "카미야",
+          "와타야"
+        ],
+        "emotions": [
+          {
+            "name": "혼란",
+            "intensity": 0.9
+          },
+          {
+            "name": "호기심",
+            "intensity": 0.9
+          },
+          {
+            "name": "배고픔",
+            "intensity": 0.7
+          },
+          {
+            "name": "불안",
+            "intensity": 0.6
+          },
+          {
+            "name": "설렘",
+            "intensity": 0.6
+          }
+        ],
+        "original_entries_count": 25
+      },
+      {
+        "chunk_id": "prepare_and_plan_20250724",
+        "summary": "도넛으로 컨디션 보충하고 와타야 메시지 확인, 모임 동행·준비 계획",
+        "time_range": "2025-07-24 08:26–08:34",
+        "main_events": [
+          "식탁의 도넛 집어 컨디션 보충",
+          "아이폰 알림으로 와타야 새 메시지 수신",
+          "만남(모카하우스 12:00) 준비 계획 수립(동행 요청, 준비물 체크)"
+        ],
+        "people_involved": [
+          "와타야",
+          "카미야"
+        ],
+        "emotions": [
+          {
+            "name": "배고픔",
+            "intensity": 0.7
+          },
+          {
+            "name": "호기심",
+            "intensity": 0.9
+          },
+          {
+            "name": "불안",
+            "intensity": 0.5
+          },
+          {
+            "name": "결의",
+            "intensity": 0.6
+          }
+        ],
+        "original_entries_count": 6
+      }
+    ],
+    "consolidation_reasoning": "시간적 연속성과 동일한 목표(기억의 빈칸 확인 및 오후 모임 준비)를 기준으로 묶었습니다. 1) 1월의 교통사고는 별도 중요 사건으로 독립 처리, 2) 7월 24일 아침의 일기·채팅 확인 활동은 하나의 정보수집 덩어리로, 3) 도넛 섭취·메시지 알림·모임 준비는 행동 및 계획 실행 덩어리로 분류했습니다.",
+    "total_original_entries": 32,
+    "total_consolidated_chunks": 3
+  },
+  "tools": []
+}
