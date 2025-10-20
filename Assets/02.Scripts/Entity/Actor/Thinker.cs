@@ -166,37 +166,33 @@ public class Thinker
                             {
                                 if (actor.HandItem != null)
                                 {
-
-                                    var p = paramResult?.Parameters;
-                                    if (actor.HandItem is iPhone)
+                                    if (actor.HandItem is Book)
                                     {
-                                        var cmd = GetStringParam(p, "command");
-                                        if (!string.IsNullOrEmpty(cmd) && (string.Equals(cmd, "recent_read", StringComparison.OrdinalIgnoreCase)
-                                            || string.Equals(cmd, "continue_read", StringComparison.OrdinalIgnoreCase)))
-                                        {
-                                            breakAfterAct = true;
-                                        }
-
+                                        breakAfterAct = true;
                                     }
-                                    else if (actor.HandItem is Note)
+                                    else
                                     {
-                                        var action = GetStringParam(p, "action");
-                                        if (!string.IsNullOrEmpty(action) && string.Equals(action, "read", StringComparison.OrdinalIgnoreCase))
+                                        var p = paramResult?.Parameters;
+                                        if (actor.HandItem is iPhone)
                                         {
-                                            breakAfterAct = true;
+                                            var cmd = GetStringParam(p, "command");
+                                            if (!string.IsNullOrEmpty(cmd) && (string.Equals(cmd, "recent_read", StringComparison.OrdinalIgnoreCase)
+                                                || string.Equals(cmd, "continue_read", StringComparison.OrdinalIgnoreCase)))
+                                            {
+                                                breakAfterAct = true;
+                                            }
+
                                         }
-                                    }
-                                    else if (actor.HandItem is Book)
-                                    {
-                                        var action = GetStringParam(p, "action");
-                                        if (!string.IsNullOrEmpty(action) && string.Equals(action, "read", StringComparison.OrdinalIgnoreCase))
+                                        else if (actor.HandItem is Note)
                                         {
-                                            breakAfterAct = true;
+                                            var action = GetStringParam(p, "action");
+                                            if (!string.IsNullOrEmpty(action) && string.Equals(action, "read", StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                breakAfterAct = true;
+                                            }
                                         }
                                     }
-
                                 }
-
                             }
                         }
                     }
