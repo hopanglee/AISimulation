@@ -69,12 +69,11 @@ public class ActivityBubbleUI : MonoBehaviour
         isVisible = true;
         gameObject.SetActive(true);
 
-        // 즉시 텍스트 반영 (totalSeconds가 0이어도 텍스트가 보이도록)
-        var displayText = activityName ?? string.Empty;
-        if (displayText.Length > 90) displayText = displayText.Substring(0, 90);
-        activityText.text = remainingSeconds > 0
-            ? $"{displayText}"
-            : displayText;
+		// 즉시 텍스트 반영 (totalSeconds가 0이어도 텍스트가 보이도록)
+		var displayText = FormatDisplayText(activityName);
+		activityText.text = remainingSeconds > 0
+			? $"{displayText}"
+			: displayText;
 
         Canvas.ForceUpdateCanvases();
 
@@ -110,6 +109,21 @@ public class ActivityBubbleUI : MonoBehaviour
         followTarget = target;
     }
 
+	private string FormatDisplayText(string activityName)
+	{
+		var text = activityName ?? string.Empty;
+		if (text.Length > 150) text = text.Substring(0, 150);
+		if (text.Length <= 50) return text;
+		var sb = new System.Text.StringBuilder(text.Length + text.Length / 50);
+		for (int i = 0; i < text.Length; i += 50)
+		{
+			int len = Math.Min(50, text.Length - i);
+			sb.Append(text, i, len);
+			if (i + len < text.Length) sb.Append('\n');
+		}
+		return sb.ToString();
+	}
+
     private async UniTask RunCountdownAsync(string activityName, CancellationToken token)
     {
         try
@@ -118,11 +132,10 @@ public class ActivityBubbleUI : MonoBehaviour
             {
                 if (activityText != null)
                 {
-                    var displayText = activityName ?? string.Empty;
-                    if (displayText.Length > 90) displayText = displayText.Substring(0, 90);
-                    activityText.text = remainingSeconds > 0
-                        ? $"{displayText}"
-                        : displayText;
+					var displayText = FormatDisplayText(activityName);
+					activityText.text = remainingSeconds > 0
+						? $"{displayText}"
+						: displayText;
                 }
 
                 if (remainingSeconds <= 0)

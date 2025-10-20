@@ -16,6 +16,7 @@ namespace Agent
         public class MoveToAreaParameter
         {
             public string area_name { get; set; }
+            public string move_mode { get; set; }
         }
 
         private readonly string systemPrompt;
@@ -30,9 +31,10 @@ namespace Agent
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""area_name"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(movableAreas)}, ""description"": ""이동할_위치_이름"" }}
+                                ""area_name"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(movableAreas)}, ""description"": ""이동할_위치_이름"" }},
+                                ""move_mode"": {{ ""type"": ""string"", ""enum"": [""Walk"", ""Run""], ""description"": ""이동_방식(기본:Walk)"" }}
                             }},
-                            ""required"": [""area_name""]
+                            ""required"": [""area_name"", ""move_mode""]
                         }}";
             var schema = new LLMClientSchema { name = "move_to_area_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
             SetResponseFormat(schema);
@@ -71,7 +73,8 @@ namespace Agent
                 ActType = request.ActType,
                 Parameters = new Dictionary<string, object>
                 {
-                    { "area_name", param.area_name }
+                    { "area_name", param.area_name },
+                    { "move_mode", string.IsNullOrEmpty(param.move_mode) ? "Walk" : param.move_mode }
                 }
             };
         }

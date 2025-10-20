@@ -1,0 +1,9 @@
+﻿{
+  "payload": {
+    "command": "chat",
+    "target_actor": "와타야",
+    "message": "고마워! 바로 출발해도 될까? 위치 공유해줘~ 네가 옆에 있으면 훨씬 안심돼!",
+    "message_count": null
+  },
+  "tools": []
+}

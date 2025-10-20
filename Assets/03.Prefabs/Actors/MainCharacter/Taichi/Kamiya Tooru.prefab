@@ -972,14 +972,14 @@ MonoBehaviour:
     day: 0
     hour: 0
     minute: 0
+    second: 0
   wakeUpTime:
     year: 0
     month: 0
     day: 0
     hour: 0
     minute: 0
-  cleanlinessDecayIntervalMinutes: 30
-  cleanlinessDecayAmount: 3
+    second: 0
   statusUpdateIntervalMinutes: 5
   currentActivity: Idle
   forceNewDayPlanForThisActor: 0
@@ -989,6 +989,10 @@ MonoBehaviour:
   goalAlreadyChanged: 1
   whenToChangeGoal: 
   afterGoal: 
+  controlAnimationByMovement: 1
+  idleAnimation: {fileID: 7400000, guid: d210a778dd9a82143aacd098a3b90a0e, type: 3}
+  walkAnimation: {fileID: 7400000, guid: e4011a827630c2b429d9ae23e9e7bec2, type: 3}
+  runAnimation: {fileID: 7400000, guid: 329bba3f98837fb499bd525f03e43917, type: 3}
   cookRecipes:
     keys:
     - "\uB77C\uBA74"
@@ -1032,6 +1036,7 @@ MonoBehaviour:
     day: 0
     hour: 0
     minute: 0
+    second: 0
   yesterdaySleepLocation: 
 --- !u!114 &8579625608813117610
 MonoBehaviour:
@@ -1105,6 +1110,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isMoving: 0
+  isTeleporting: 0
 --- !u!114 &4554740682372916237
 MonoBehaviour:
   m_ObjectHideFlags: 0

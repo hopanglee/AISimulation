@@ -1,0 +1,99 @@
+﻿{
+  "payload": {
+    "evaluations": [
+      {
+        "chunk_id": "c1-accident-20250112",
+        "importance_score": 1.0,
+        "surprise_score": 0.95,
+        "overall_score": 0.0,
+        "reasoning": "이 사건은 기억 공백의 원인으로서 트라우마·장기적 정서 영향(공포·혼란)을 남겼고 생활·안전과 직접 연결되는 인생 전환점 가능성이 큼. 따라서 최고 수준의 중요도로 분류. 사고 자체는 예기치 못한 충격적 사건이므로 의외성도 매우 높음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "c2-morning-clues-0800",
+        "importance_score": 0.85,
+        "surprise_score": 0.65,
+        "overall_score": 0.0,
+        "reasoning": "기상 직후 기억의 구멍을 자각하고, 일기·채팅에서 모임(카미야, 모카하우스 12시) 관련 단서를 확보한 내용으로 현재 상황 해석과 행동 결정에 직접적 영향을 줌. 기억 회복·행동 계획 측면에서 중요. 의외성은 기억 공백 상태에서 단서를 발견한 점이 약간 예상 밖이라 중간 수준.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "c3-reach-out-wataya-0826",
+        "importance_score": 0.8,
+        "surprise_score": 0.55,
+        "overall_score": 0.0,
+        "reasoning": "교통사고·기억 공백을 주변 신뢰자(와타야)에게 공유하고 동행을 부탁한 것은 안전망을 만들고 위험 관리를 시도한 중요한 대인적 대응 행위임. 자기보호·지원 요청이라는 행동은 장기기억 가치가 있음. 의외성은 보통 수준(도움을 청한 것은 예측 가능)임.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "c4-review-chat-0856",
+        "importance_score": 0.6,
+        "surprise_score": 0.4,
+        "overall_score": 0.0,
+        "reasoning": "대화 목록을 복기해 일정·감정을 정리하고 준비 각오를 다진 자기정리 과정은 상황 적응력과 정서 조절에 기여하나 직접적 사건보다는 일상적 준비에 가까움. 중요도는 중간. 의외성은 낮음(예상 가능한 내적 점검).",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "c5-pings-and-plan-0900",
+        "importance_score": 0.45,
+        "surprise_score": 0.3,
+        "overall_score": 0.0,
+        "reasoning": "옷장으로 향하며 알림을 재확인하고 계획을 고정한 일련의 동작은 외출 준비의 일부로 의미는 있으나 특기할 만한 전환점은 아님. 중요도는 낮중간, 의외성은 낮음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "c6-assurance-0907",
+        "importance_score": 0.88,
+        "surprise_score": 0.3,
+        "overall_score": 0.0,
+        "reasoning": "와타야의 ‘당연하지, 내가 있을게’ 확답은 히노의 심리적 안전과 불안 완화에 직접적 영향을 줌. 지원 약속은 사고 후 행동·정서에 큰 영향을 미치므로 고중요로 판단. 다만 친구의 즉각적 지지는 예측 가능한 반응이어서 의외성은 낮음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "c7-hydrate-and-affirm-0909",
+        "importance_score": 0.35,
+        "surprise_score": 0.2,
+        "overall_score": 0.0,
+        "reasoning": "물 마시고 컨디션 조절하는 자기관리 행동은 건강 관점에서 유용하지만 장기적으로 중요한 정보라 판단되기 어렵다. 의외성도 거의 없음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "c8-snack-stabilize-0915",
+        "importance_score": 0.5,
+        "surprise_score": 0.25,
+        "overall_score": 0.0,
+        "reasoning": "만남 전 허기 달래기와 감정 균형 맞추기는 즉각적 행동·컨디션 관리라는 점에서 다소 의미가 있음(자기돌봄 행동). 그러나 장기 기억으로 필수적이라고 보기엔 일상적이며 의외성은 낮음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "c9-wardrobe-0927",
+        "importance_score": 0.45,
+        "surprise_score": 0.2,
+        "overall_score": 0.0,
+        "reasoning": "옷장으로 이동해 갈아입기 준비를 한 것은 외출 준비 과정의 한 부분으로, 구체적이지만 일상적 사건에 해당. 중요도·의외성 모두 낮음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "c10-dressup-0940",
+        "importance_score": 0.6,
+        "surprise_score": 0.35,
+        "overall_score": 0.0,
+        "reasoning": "잠옷 정리의 난관을 해결하고 캐주얼 착장을 완료한 것은 문제 해결 능력(실제 외출 준비 완료)을 보여줌. 직접적인 성취감·안도감을 줘 행동 전환의 촉매가 되었으므로 중간 정도의 장기 보존 가치가 있음. 다만 큰 변화 사건은 아님.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "c11-final-check-0949",
+        "importance_score": 0.75,
+        "surprise_score": 0.3,
+        "overall_score": 0.0,
+        "reasoning": "최종 다짐·아이폰 소지 확인·채팅 재확인을 통해 계획 실행 의지를 확정한 단계로, 실제로 외출·대면 만남으로 가는 결정적 직전 행동임. 행동 결과에 큰 영향을 줄 수 있으므로 중요도가 비교적 높음. 의외성은 낮은 편.",
+        "should_keep": false
+      }
+    ],
+    "kept_chunks": [],
+    "filtered_chunks": [],
+    "filter_reasoning": "목표(상위 70%)에 맞춰 장기 기억으로 보존할 항목을 선정할 때, 히노의 안전·정체성·대인관계·행동 전환에 장기적 영향을 미칠 가능성이 큰 청크들을 우선했다. 구체적으로: (1) 사고 기억(c1)은 트라우마·기억 공백의 핵심 원인으로 반드시 보존해야 함, (2) 기억 공백과 만남 단서 확보(c2)와 (3) 이를 바탕으로 지원을 요청한 행동(c3)은 사건 이해와 대응의 핵심 연결고리, (4) 와타야의 확답(c6)은 심리적 안전망을 구성해 히노의 행동·정서에 큰 영향을 줌, (5) 최종 다짐·체크(c11)은 실제 행동 개시 직전의 결정적 단계라 중요함, (6) 잠옷 정리 후 착장(c10)은 난관 해결 및 성취 경험으로 장기적 자기효능감과 연결될 수 있음, (7) 대화 복기(c4)는 정서·일정 정리라는 면에서 상황 적응에 도움되므로 포함했다. 반면 물 마시기·간식·옷장 이동·알림 수신 등(c5,c7,c8,c9)은 유용한 하루 일과 기록이지만 반복적·일상적 성격이 강해 우선순위에서 제외했다. 이러한 선택은 히노의 안전과 대인 지원, 행동으로 이어지는 핵심 연결고리를 장기 기억으로 보존하려는 목적에 기반함.",
+    "retention_percentage": 0.0
+  },
+  "tools": []
+}

@@ -77,6 +77,18 @@ public abstract partial class NPC : Actor
         timeService = Services.Get<ITimeService>();
     }
 
+    protected override void Start()
+    {
+        base.Start();
+
+        // Animator가 활성화되어 있을 때만 idle1 재생
+        var animator = GetComponent<Animator>();
+        if (animator != null && animator.enabled && animator.isActiveAndEnabled)
+        {
+            animator.Play("idle1", 0, 0f);
+        }
+    }
+
     protected virtual void OnValidate()
     {
         // ActionType이 변경되었을 때 파라미터 예시 로그 출력

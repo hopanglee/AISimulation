@@ -1,0 +1,9 @@
+﻿{
+  "payload": {
+    "command": "chat",
+    "target_actor": "히노",
+    "message": "모카하우스 / 12:00 / 창가 자리 — 지금 출발할게.",
+    "message_count": null
+  },
+  "tools": []
+}

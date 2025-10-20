@@ -283,7 +283,7 @@ public class Thinker
 		async UniTask RestartNextFrameEarly()
 		{
 			// 한 프레임 대기 후 다음 프레임의 Update에서 즉시 실행
-			await UniTask.Yield(PlayerLoopTiming.EarlyUpdate);
+			await UniTask.Yield(PlayerLoopTiming.FixedUpdate);
 			thinkActCts?.Cancel();
 			Debug.Log($"[{actor.Name}] 외부 이벤트 발생 - Think/Act 루프 재시작");
 			// 긴 루프를 기다리지 않고 즉시 새 루프를 기동

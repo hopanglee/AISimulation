@@ -1,0 +1,15 @@
+﻿{
+  "payload": {
+    "area_name": "5-chome-11"
+  },
+  "tools": [
+    {
+      "name": "FindShortestAreaPathFromActor",
+      "argsJson": "{\"targetAreaKey\": \"5-chome-11\"}"
+    },
+    {
+      "name": "FindBuildingAreaPath",
+      "argsJson": "{\"buildingName\": \"모카하우스\"}"
+    }
+  ]
+}

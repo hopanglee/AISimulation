@@ -895,9 +895,9 @@ namespace Agent.Tools
 					var curBuilding = locationService?.GetBuilding(cur);
 					bool sameBuilding = prevBuilding != null && curBuilding != null &&
 						string.Equals(prevBuilding.locationName, curBuilding.locationName, StringComparison.Ordinal);
-					minutes += sameBuilding ? 5 : 10;
+					minutes += sameBuilding ? 6 : 12;
 				}
-                return $"{actor?.Name ?? "캐릭터"}의 현재 위치 '{fromName}'에서 '{targetKey}'까지의 최단 경로:\n{pretty}, 예상 소요 시간: {minutes}분";
+                return $"{actor?.Name ?? "캐릭터"}의 현재 위치 '{fromName}'에서 '{targetKey}'까지의 최단 경로:\n{pretty}, 예상 소요 시간(오직 이동만 했을 때): {minutes}분";
             }
             catch (Exception ex)
             {

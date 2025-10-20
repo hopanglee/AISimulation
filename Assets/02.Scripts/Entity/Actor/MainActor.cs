@@ -125,6 +125,18 @@ public abstract class MainActor : Actor
 	public string ActivityDescription => activityDescription;
 	public bool IsPerformingActivity => currentActivity != "Idle";
 
+	[Header("Animation (Legacy)")]
+	[SerializeField, Tooltip("Animation 컴포넌트를 이동 상태에 따라 자동 제어할지 여부")]
+	private bool controlAnimationByMovement = true;
+	private Animation legacyAnimation;
+	[SerializeField, Tooltip("Idle 상태에서 재생할 AnimationClip (Legacy Animation)")]
+	private AnimationClip idleAnimation;
+	[SerializeField, Tooltip("Walk 상태에서 재생할 AnimationClip (Legacy Animation)")]
+	private AnimationClip walkAnimation;
+	[SerializeField, Tooltip("Run 상태에서 재생할 AnimationClip (Legacy Animation)")]
+	private AnimationClip runAnimation;
+	private string lastPlayedClip;
+
 	public string[] GetCookableDishKeys()
 	{
 		if (cookRecipes == null || cookRecipes.Count == 0) return System.Array.Empty<string>();
@@ -200,6 +212,8 @@ public abstract class MainActor : Actor
 		timeService = Services.Get<ITimeService>();
 		if (timeService != null)
 			timeService.SubscribeToTimeEvent(OnSimulationTimeChanged);
+
+		legacyAnimation = GetComponent<Animation>();
 	}
 
 
@@ -212,6 +226,11 @@ public abstract class MainActor : Actor
 	#region Update Function
 	// 메서드들은 Actor로 이동하여 공용화됨
 	#endregion
+
+	private void LateUpdate()
+	{
+		UpdateMovementAnimation();
+	}
 
 	#region Sleep System
 	public virtual async UniTask Sleep(int? minutes = null)
@@ -508,6 +527,50 @@ public abstract class MainActor : Actor
 			Entity.ApplyIfInRange(ref Judgment, judgmentEffect);
 		}
 
+	}
+
+	private void UpdateMovementAnimation()
+	{
+		if (!controlAnimationByMovement) return;
+		if (legacyAnimation == null || !legacyAnimation.enabled || !legacyAnimation.isActiveAndEnabled) return;
+
+		EnsureAnimationClipsRegistered();
+
+		AnimationClip desired = null;
+		var mc = MoveController;
+		if (mc != null && mc.isMoving)
+		{
+			desired = mc.CurrentMoveMode == MoveController.MoveMode.Run ? (runAnimation ?? walkAnimation) : (walkAnimation ?? runAnimation);
+		}
+		else
+		{
+			desired = idleAnimation ?? walkAnimation ?? runAnimation;
+		}
+
+		if (desired == null) return;
+		string clipName = desired.name;
+		if (!legacyAnimation.IsPlaying(clipName) || lastPlayedClip != clipName)
+		{
+			legacyAnimation.CrossFade(clipName, 0.15f);
+			lastPlayedClip = clipName;
+		}
+	}
+
+	private void EnsureAnimationClipsRegistered()
+	{
+		if (legacyAnimation == null) return;
+		TryRegisterClip(idleAnimation);
+		TryRegisterClip(walkAnimation);
+		TryRegisterClip(runAnimation);
+	}
+
+	private void TryRegisterClip(AnimationClip clip)
+	{
+		if (clip == null) return;
+		if (legacyAnimation.GetClip(clip.name) == null)
+		{
+			legacyAnimation.AddClip(clip, clip.name);
+		}
 	}
 
 	/// <summary>

@@ -1,0 +1,13 @@
+﻿{
+  "payload": {
+    "act_type": "UseObject",
+    "reasoning": "시간이 촉박하므로 아이폰으로 히노에게 약속 형식의 짧은 메시지를 보내고 즉시 출발 준비를 마치기 위해 선택했다.",
+    "intention": "히노에게 '모카하우스 / 12:00 / 창가 자리 — 지금 출발할게.'라는 짧은 메시지를 보내 그녀의 불안을 덜어주고 즉시 출발한다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"아이폰\"}"
+    }
+  ]
+}

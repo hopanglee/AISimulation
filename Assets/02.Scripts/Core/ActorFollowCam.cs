@@ -9,9 +9,9 @@ public class ActorFollowCam : MonoBehaviour
     [SerializeField]
     private Transform target;
     private Vector3 focusTarget;
-    private Transform focusTargetTransform;
-    [Header("Focus Settings")]
-    [SerializeField] private float focusSpeed = 5f;
+    //private Transform focusTargetTransform;
+    // [Header("Focus Settings")]
+    // [SerializeField] private float focusSpeed = 5f;
 
     [Header("Zoom Settings")]
     [SerializeField] private float zoomSpeed = 3f;
@@ -25,10 +25,12 @@ public class ActorFollowCam : MonoBehaviour
     {
         if (target != null)
         {
-            focusTargetTransform = target;
+            //focusTargetTransform = target;
             // 초기 위치 계산
+            
             Vector3 initialFocusTarget = CalculateFocusPosition(target.position);
             focusTarget = new Vector3(initialFocusTarget.x, transform.position.y, initialFocusTarget.z);
+            transform.localPosition = focusTarget;
         }
 
         cam = GetComponent<Camera>();
@@ -42,12 +44,12 @@ public class ActorFollowCam : MonoBehaviour
     private void LateUpdate()
     {
 
-        if (focusTargetTransform != null)
-        {
-            var newFocus = CalculateFocusPosition(focusTargetTransform.position);
-            focusTarget = new Vector3(newFocus.x, transform.position.y, newFocus.z);
-        }
-        transform.position = Vector3.Lerp(transform.position, focusTarget, Time.deltaTime * focusSpeed);
+        // if (focusTargetTransform != null)
+        // {
+        //     var newFocus = CalculateFocusPosition(focusTargetTransform.position);
+        //     focusTarget = new Vector3(newFocus.x, transform.position.y, newFocus.z);
+        // }
+        // transform.position = Vector3.Lerp(transform.position, focusTarget, Time.deltaTime * focusSpeed);
 
         // 마우스 휠 줌 처리 및 적용 (CameraController와 동일한 개념)
         HandleZoom();
@@ -76,8 +78,9 @@ public class ActorFollowCam : MonoBehaviour
         Vector3 baseOffset = -cameraForward * focusDistance;
 
         Vector3 targetPosition = characterPosition + baseOffset + rotationOffset;
-        targetPosition.y = this.transform.position.y;
-
+        targetPosition.z = -25.93f;
+        targetPosition.y = this.transform.localPosition.y;
+        targetPosition.x = 0;
         return targetPosition;
     }
 

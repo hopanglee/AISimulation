@@ -343,7 +343,7 @@ namespace Agent
                 availableActions.Add(ActionType.GiveMoney);
                 availableActions.Add(ActionType.GiveItem);
                 availableActions.Add(ActionType.RemoveClothing);
-                availableActions.Add(ActionType.PerformActivity);
+                //availableActions.Add(ActionType.PerformActivity);
                 availableActions.Add(ActionType.Wait);
                 availableActions.Add(ActionType.Think);
 

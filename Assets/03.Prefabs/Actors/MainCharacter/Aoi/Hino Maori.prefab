@@ -914,14 +914,14 @@ MonoBehaviour:
     day: 0
     hour: 0
     minute: 0
+    second: 0
   wakeUpTime:
     year: 0
     month: 0
     day: 0
     hour: 0
     minute: 0
-  cleanlinessDecayIntervalMinutes: 30
-  cleanlinessDecayAmount: 3
+    second: 0
   statusUpdateIntervalMinutes: 5
   currentActivity: Idle
   forceNewDayPlanForThisActor: 0
@@ -939,6 +939,10 @@ MonoBehaviour:
     '\uBAB8\uACFC \uB9C8\uC74C'\uC5D0 \uCD95\uC801\uB418\uC5B4 \uC0AC\uB77C\uC9C0\uC9C0
     \uC54A\uC74C\uC744 \uC2A4\uC2A4\uB85C \uC99D\uBA85\uD558\uACE0 \uC778\uC2DD\uD558\uB294
     \uAC83"
+  controlAnimationByMovement: 1
+  idleAnimation: {fileID: 7400000, guid: 1b9d4c78e0059254991d9f8a3e13466a, type: 3}
+  walkAnimation: {fileID: 7400000, guid: c79e6fe82bbabb84db653a1fb4941775, type: 3}
+  runAnimation: {fileID: 7400000, guid: 041ce56c388712d4598ba691d5025fa2, type: 3}
   cookRecipes:
     keys:
     - "\uBE75"
@@ -988,6 +992,7 @@ MonoBehaviour:
     day: 0
     hour: 0
     minute: 0
+    second: 0
   yesterdaySleepLocation: 
   useMemoryResetSystem: 1
 --- !u!114 &4887048522806061288
@@ -1062,6 +1067,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isMoving: 0
+  isTeleporting: 0
 --- !u!114 &5546478074513875818
 MonoBehaviour:
   m_ObjectHideFlags: 0

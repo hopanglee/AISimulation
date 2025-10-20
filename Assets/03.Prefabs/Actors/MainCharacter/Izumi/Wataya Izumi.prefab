@@ -908,6 +908,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isMoving: 0
+  isTeleporting: 0
 --- !u!114 &5546478074513875818
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1067,14 +1068,14 @@ MonoBehaviour:
     day: 23
     hour: 22
     minute: 0
+    second: 0
   wakeUpTime:
     year: 2025
     month: 7
     day: 23
     hour: 7
     minute: 0
-  cleanlinessDecayIntervalMinutes: 20
-  cleanlinessDecayAmount: 1
+    second: 0
   statusUpdateIntervalMinutes: 5
   currentActivity: Idle
   forceNewDayPlanForThisActor: 0
@@ -1084,6 +1085,10 @@ MonoBehaviour:
   goalAlreadyChanged: 1
   whenToChangeGoal: 
   afterGoal: 
+  controlAnimationByMovement: 1
+  idleAnimation: {fileID: 7400000, guid: d99592ba951105040aa0d037dd306965, type: 3}
+  walkAnimation: {fileID: 7400000, guid: 4c32763ab7d419f459287f6421d228b9, type: 3}
+  runAnimation: {fileID: 7400000, guid: 97677e2c7f2ebc946b11c24200030814, type: 3}
   cookRecipes:
     keys:
     - "\uB77C\uBA74"
@@ -1127,6 +1132,7 @@ MonoBehaviour:
     day: 22
     hour: 22
     minute: 0
+    second: 0
   yesterdaySleepLocation: "\uC640\uD0C0\uC57C\uC758 \uC9D1:\uAC70\uC2E4:\uCE68\uB300"
 --- !u!4 &529616869720991405 stripped
 Transform:

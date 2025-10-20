@@ -221,13 +221,16 @@ public class ExternalEventService : IExternalEventService
             {
                 if (CanSendEvent(target))
                 {
+                    var ran = movedActor?.MoveController?.CurrentMoveMode == MoveController.MoveMode.Run;
                     var externalEvent = new ExternalEvent
                     {
                         EventType = ExternalEventType.ActorActionCompleted, // 영역 진입은 '외부 행위 발생'으로 취급
                         SourceActor = movedActor,
                         TargetActor = target,
                         CompletedActionType = ActionType.MoveToArea,
-                        AdditionalInfo = $"{movedActor.Name}가 {fromArea?.locationName ?? "Unknown"}에서 {toArea.locationName}로 이동했다."
+                        AdditionalInfo = ran
+                            ? $"{movedActor.Name}가 {fromArea?.locationName ?? "Unknown"}에서 {toArea.locationName}로 달려왔다."
+                            : $"{movedActor.Name}가 {fromArea?.locationName ?? "Unknown"}에서 {toArea.locationName}로 걸어왔다."
                     };
                     SendExternalEvent(externalEvent);
                 }

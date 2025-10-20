@@ -17,6 +17,7 @@ namespace Agent
         public class MoveToEntityParameter
         {
             public string entity_name { get; set; }
+            public string move_mode { get; set; }
         }
 
         private readonly string systemPrompt;
@@ -30,9 +31,10 @@ namespace Agent
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""entity_name"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(entityList)}, ""description"": ""이동할_개체_이름"" }}
+                                ""entity_name"": {{ ""type"": ""string"", ""enum"": {JsonConvert.SerializeObject(entityList)}, ""description"": ""이동할_개체_이름"" }},
+                                ""move_mode"": {{ ""type"": ""string"", ""enum"": [""Walk"", ""Run""], ""description"": ""이동_방식(기본:Walk)"" }}
                             }},
-                            ""required"": [""entity_name""]
+                            ""required"": [""entity_name"", ""move_mode""]
                         }}";
             var schema = new LLMClientSchema { name = "move_to_entity_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
             SetResponseFormat(schema);
@@ -70,7 +72,8 @@ namespace Agent
                 ActType = request.ActType,
                 Parameters = new Dictionary<string, object>
                 {
-                    { "entity_name", param.entity_name }
+                    { "entity_name", param.entity_name },
+                    { "move_mode", string.IsNullOrEmpty(param.move_mode) ? "Walk" : param.move_mode }
                 }
             };
         }

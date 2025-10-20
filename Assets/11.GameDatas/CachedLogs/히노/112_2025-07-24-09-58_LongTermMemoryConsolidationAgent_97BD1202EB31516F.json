@@ -1,0 +1,365 @@
+﻿{
+  "payload": {
+    "consolidated_chunks": [
+      {
+        "chunk_id": "CH-20250112-1",
+        "summary": "1월 교통사고의 급작스런 충돌로 공포와 혼란이 강하게 남음",
+        "start_time": "2025-01-12T15:00:00Z",
+        "end_time": "2025-01-12T15:00:00Z",
+        "main_events": [
+          "교차로 진입 직후 이동",
+          "갑작스런 차량 충돌 발생",
+          "공포·혼란·충격이 오랫동안 잔존"
+        ],
+        "people_involved": [],
+        "emotions": [
+          {
+            "name": "공포",
+            "intensity": 0.95
+          },
+          {
+            "name": "혼란",
+            "intensity": 0.95
+          },
+          {
+            "name": "충격",
+            "intensity": 0.95
+          }
+        ],
+        "location": "신주쿠:가부키초:1-chome-6",
+        "original_entries_count": 1
+      },
+      {
+        "chunk_id": "CH-20250724-2",
+        "summary": "기상 직후 기억 공백 자각, 일기·채팅으로 카미야와 12시 약속 확인",
+        "start_time": "2025-07-24T08:00:00Z",
+        "end_time": "2025-07-24T08:19:00Z",
+        "main_events": [
+          "아침 기상 후 기억의 구멍 자각",
+          "일기에서 카미야 스케치와 긍정 메시지 발견",
+          "채팅에서 모카하우스 12시 약속 확인"
+        ],
+        "people_involved": [
+          "카미야"
+        ],
+        "emotions": [
+          {
+            "name": "혼란",
+            "intensity": 0.8
+          },
+          {
+            "name": "호기심",
+            "intensity": 0.85
+          },
+          {
+            "name": "불안",
+            "intensity": 0.7
+          },
+          {
+            "name": "설렘",
+            "intensity": 0.7
+          }
+        ],
+        "location": "히노의 집:거실",
+        "original_entries_count": 3
+      },
+      {
+        "chunk_id": "CH-20250724-3",
+        "summary": "도넛으로 컨디션 관리 결심, 와타야에게 상황 설명과 동행 요청",
+        "start_time": "2025-07-24T08:26:00Z",
+        "end_time": "2025-07-24T08:39:00Z",
+        "main_events": [
+          "도넛을 집어 인벤토리에 보관",
+          "컨디션 회복 위해 먹기로 결심",
+          "아이폰 알림 수신",
+          "와타야에게 불안·기억 공백 설명 및 동행 부탁 메시지 전송"
+        ],
+        "people_involved": [
+          "와타야"
+        ],
+        "emotions": [
+          {
+            "name": "불안",
+            "intensity": 0.7
+          },
+          {
+            "name": "신뢰",
+            "intensity": 0.8
+          },
+          {
+            "name": "기대감",
+            "intensity": 0.75
+          },
+          {
+            "name": "배고픔",
+            "intensity": 0.6
+          },
+          {
+            "name": "안도",
+            "intensity": 0.6
+          }
+        ],
+        "location": "히노의 집:거실(식탁)",
+        "original_entries_count": 2
+      },
+      {
+        "chunk_id": "CH-20250724-4",
+        "summary": "와타야 대화 내역 검토, 설렘·불안 속 외출 준비 결심 및 알림 수신",
+        "start_time": "2025-07-24T08:52:00Z",
+        "end_time": "2025-07-24T08:58:00Z",
+        "main_events": [
+          "최근 대화들을 검토해 맥락 복원",
+          "‘오늘 12시 모카하우스’ 계획 재확인",
+          "카미야가 특별한 사람임을 내적으로 확언",
+          "갈아입기·외출 준비를 결심",
+          "와타야 새 메시지 알림 수신"
+        ],
+        "people_involved": [
+          "와타야",
+          "카미야"
+        ],
+        "emotions": [
+          {
+            "name": "설렘",
+            "intensity": 0.8
+          },
+          {
+            "name": "불안",
+            "intensity": 0.7
+          },
+          {
+            "name": "호기심",
+            "intensity": 0.75
+          },
+          {
+            "name": "신뢰",
+            "intensity": 0.8
+          },
+          {
+            "name": "기대감",
+            "intensity": 0.8
+          }
+        ],
+        "location": "히노의 집:거실",
+        "original_entries_count": 6
+      },
+      {
+        "chunk_id": "CH-20250724-5",
+        "summary": "와타야의 ‘당연하지, 내가 있을게’ 답장 확인, 동행 확정과 기대 고조",
+        "start_time": "2025-07-24T08:59:00Z",
+        "end_time": "2025-07-24T09:05:00Z",
+        "main_events": [
+          "최근 채팅 다시 열람",
+          "대화 전문 확인으로 관계 맥락 재정리",
+          "와타야의 ‘당연하지, 내가 있을게’ 답장 확인",
+          "12시 계획과 준비 의지 재확인",
+          "배고픔 해결 계획(도넛)을 덧붙여 마음 다잡기"
+        ],
+        "people_involved": [
+          "와타야"
+        ],
+        "emotions": [
+          {
+            "name": "안심",
+            "intensity": 0.8
+          },
+          {
+            "name": "신뢰",
+            "intensity": 0.9
+          },
+          {
+            "name": "기대감",
+            "intensity": 0.85
+          },
+          {
+            "name": "불안",
+            "intensity": 0.6
+          },
+          {
+            "name": "설렘",
+            "intensity": 0.75
+          }
+        ],
+        "location": "히노의 집:거실",
+        "original_entries_count": 5
+      },
+      {
+        "chunk_id": "CH-20250724-6",
+        "summary": "물 마시며 타임라인 재정리, 컨디션과 계획 점검으로 마음 안정",
+        "start_time": "2025-07-24T09:06:00Z",
+        "end_time": "2025-07-24T09:10:00Z",
+        "main_events": [
+          "아이폰과 물컵 교체",
+          "물 마셔 수분 보충",
+          "12시 모카하우스 약속 재확인",
+          "도넛 섭취·준비 가속을 다짐"
+        ],
+        "people_involved": [
+          "와타야"
+        ],
+        "emotions": [
+          {
+            "name": "차분",
+            "intensity": 0.7
+          },
+          {
+            "name": "기대감",
+            "intensity": 0.75
+          },
+          {
+            "name": "불안",
+            "intensity": 0.6
+          },
+          {
+            "name": "설렘",
+            "intensity": 0.7
+          }
+        ],
+        "location": "히노의 집:거실",
+        "original_entries_count": 4
+      },
+      {
+        "chunk_id": "CH-20250724-7",
+        "summary": "도넛을 챙겨 먹어 배고픔 해소, 출발 전 에너지 보충 완료",
+        "start_time": "2025-07-24T09:11:00Z",
+        "end_time": "2025-07-24T09:18:00Z",
+        "main_events": [
+          "식탁으로 이동해 접시 확인(도넛 2개)",
+          "도넛 인벤토리 보관 및 손 물건 교체",
+          "도넛 섭취로 허기 해소",
+          "출발 전 컨디션을 의식적으로 끌어올림"
+        ],
+        "people_involved": [],
+        "emotions": [
+          {
+            "name": "만족",
+            "intensity": 0.7
+          },
+          {
+            "name": "기대감",
+            "intensity": 0.7
+          },
+          {
+            "name": "조급함",
+            "intensity": 0.6
+          },
+          {
+            "name": "설렘",
+            "intensity": 0.65
+          }
+        ],
+        "location": "히노의 집:거실(식탁)",
+        "original_entries_count": 8
+      },
+      {
+        "chunk_id": "CH-20250724-8",
+        "summary": "만남을 떠올리며 옷장으로 이동, 잠옷을 벗고 준비 돌입",
+        "start_time": "2025-07-24T09:20:00Z",
+        "end_time": "2025-07-24T09:26:00Z",
+        "main_events": [
+          "카미야와의 12시 만남 재다짐",
+          "옷장으로 이동해 캐주얼복 앞 도착",
+          "옷 벗기 시작",
+          "잠옷을 벗어 준비 단계로 진입"
+        ],
+        "people_involved": [
+          "카미야",
+          "와타야"
+        ],
+        "emotions": [
+          {
+            "name": "설렘",
+            "intensity": 0.8
+          },
+          {
+            "name": "기대감",
+            "intensity": 0.8
+          },
+          {
+            "name": "불안",
+            "intensity": 0.6
+          },
+          {
+            "name": "조급함",
+            "intensity": 0.6
+          }
+        ],
+        "location": "히노의 집:거실(옷장 앞)",
+        "original_entries_count": 4
+      },
+      {
+        "chunk_id": "CH-20250724-9",
+        "summary": "준비 과정 지속, 잠옷 정리 난항 끝 보관 완료하며 마음 다잡기",
+        "start_time": "2025-07-24T09:28:00Z",
+        "end_time": "2025-07-24T09:36:00Z",
+        "main_events": [
+          "옷 벗기 추가 진행",
+          "‘오늘은 특별한 만남’ 내적 확언",
+          "잠옷 보관 시도 시 공간 부족 문제 발생",
+          "결국 잠옷을 옷장에 정리 완료"
+        ],
+        "people_involved": [
+          "카미야",
+          "와타야"
+        ],
+        "emotions": [
+          {
+            "name": "설렘",
+            "intensity": 0.75
+          },
+          {
+            "name": "집중",
+            "intensity": 0.6
+          },
+          {
+            "name": "조급함",
+            "intensity": 0.6
+          },
+          {
+            "name": "불안",
+            "intensity": 0.55
+          }
+        ],
+        "location": "히노의 집:거실(옷장)",
+        "original_entries_count": 6
+      },
+      {
+        "chunk_id": "CH-20250724-10",
+        "summary": "캐주얼복을 챙겨 갈아입고 외출 준비를 완전히 마무리",
+        "start_time": "2025-07-24T09:37:00Z",
+        "end_time": "2025-07-24T09:41:00Z",
+        "main_events": [
+          "캐주얼복 집어 들기",
+          "인벤토리에 보관 후 잠옷과 교체",
+          "캐주얼복 사용 결정",
+          "캐주얼복 착용 완료로 준비 마감"
+        ],
+        "people_involved": [],
+        "emotions": [
+          {
+            "name": "성취",
+            "intensity": 0.8
+          },
+          {
+            "name": "설렘",
+            "intensity": 0.8
+          },
+          {
+            "name": "긴장",
+            "intensity": 0.6
+          },
+          {
+            "name": "기대감",
+            "intensity": 0.85
+          }
+        ],
+        "location": "히노의 집:거실(옷장)",
+        "original_entries_count": 5
+      }
+    ],
+    "consolidation_reasoning": "시간 순으로 큰 전환점을 기준(사고 회상 → 7/24 아침 루틴)으로 나누고, 7/24는 맥락/행동 흐름(정보수집→지원요청→확인→컨디션 관리→복장 준비)과 감정 변화(혼란/불안→신뢰/안심→설렘/기대) 지점에서 더 잘게 분할했습니다. 각 청크는 같은 장소·목적의 연속 행위가 시작-진행-마무리까지 묶이도록 구성했습니다.",
+    "total_original_entries": 44,
+    "total_consolidated_chunks": 10
+  },
+  "tools": []
+}

@@ -83,7 +83,7 @@ public class GameService : MonoBehaviour, IGameService
     private bool isSimulationRunning = false;
     private List<Actor> allActors = new List<Actor>();
     private bool wasRunningBeforePause = false;
-    private bool skipNextDeltaAfterResume = false;
+    //private bool skipNextDeltaAfterResume = false;
 
     private ITimeService timeService;
 
@@ -98,10 +98,10 @@ public class GameService : MonoBehaviour, IGameService
         {
             QualitySettings.vSyncCount = 0; // VSync 비활성화
             Application.targetFrameRate = 30; // 필요 시 옵션화 가능
-            
+
             // FixedUpdate도 30fps에 맞춰 조정 (더 안정적인 물리/시간 업데이트)
             Time.fixedDeltaTime = 1f / Application.targetFrameRate; // 0.0333333초
-            
+
             Debug.Log($"[GameService] Frame lock applied: targetFrameRate={Application.targetFrameRate}, vSyncCount={QualitySettings.vSyncCount}, fixedDeltaTime={Time.fixedDeltaTime:F6}");
         }
         catch { }
@@ -112,21 +112,9 @@ public class GameService : MonoBehaviour, IGameService
         // 시간 업데이트 (시뮬레이션이 실행 중이고 포커스를 잃지 않았을 때만)
         if (isSimulationRunning && timeService != null && timeService.IsTimeFlowing && Application.isFocused)
         {
-            // 재개 직후 첫 프레임의 큰 deltaTime으로 인한 시간 점프 방지
-            if (skipNextDeltaAfterResume)
-            {
-                skipNextDeltaAfterResume = false;
-            }
-            else
-            {
-                // FixedUpdate의 고정된 deltaTime 사용 (더 안정적)
-                timeService.UpdateTime(Time.fixedDeltaTime);
-            }
-        }
+            // FixedUpdate의 고정된 deltaTime 사용 (더 안정적)
+            timeService.UpdateTime(Time.fixedDeltaTime);
 
-        // ExternalEventService 업데이트 (지역 변화 확인)
-        if (isSimulationRunning)
-        {
             Services.Get<IExternalEventService>().Update();
         }
     }
@@ -261,7 +249,7 @@ public class GameService : MonoBehaviour, IGameService
         isSimulationRunning = true;
         // Release API-call based pause; time resumes only when all API pauses are cleared
         timeService?.EndAPICall();
-        skipNextDeltaAfterResume = true; // 큰 delta 방지
+        //skipNextDeltaAfterResume = true; // 큰 delta 방지
 
         // 루틴 재시작 제거 - 이미 실행 중인 루틴이 있으므로 중복 시작 방지
         // _ = RunDayPlanningRoutine(true); // 이 줄 제거

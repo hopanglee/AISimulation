@@ -146,13 +146,15 @@ public class SimulationController : MonoBehaviour
         SetupUI();
 
         // 초기 분할 화면 상태: OFF
-        splitViewEnabled = false;
-        if (hinoCamera != null) hinoCamera.gameObject.SetActive(false);
-        if (kamiyaCamera != null) kamiyaCamera.gameObject.SetActive(false);
-        if (watayaCamera != null) watayaCamera.gameObject.SetActive(false);
-        if (focusHinoButton != null) focusHinoButton.gameObject.SetActive(true);
-        if (focusKamiyaButton != null) focusKamiyaButton.gameObject.SetActive(true);
-        if (focusWatayaButton != null) focusWatayaButton.gameObject.SetActive(true);
+        // splitViewEnabled = false;
+        // if (hinoCamera != null) hinoCamera.gameObject.SetActive(false);
+        // if (kamiyaCamera != null) kamiyaCamera.gameObject.SetActive(false);
+        // if (watayaCamera != null) watayaCamera.gameObject.SetActive(false);
+        // if (focusHinoButton != null) focusHinoButton.gameObject.SetActive(true);
+        // if (focusKamiyaButton != null) focusKamiyaButton.gameObject.SetActive(true);
+        // if (focusWatayaButton != null) focusWatayaButton.gameObject.SetActive(true);
+        ToggleSplitViewCameras();
+
 
         // 자동 시작 옵션
         if (autoStartOnPlay)

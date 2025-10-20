@@ -1,0 +1,305 @@
+﻿{
+  "payload": {
+    "consolidated_chunks": [
+      {
+        "chunk_id": "2025-07-24-CH1",
+        "summary": "기상 후 수술·약속·정돈을 점검하고 노트로 오늘을 재확인했다.",
+        "start_time": "2025-07-24T08:00:00Z",
+        "end_time": "2025-07-24T08:26:00Z",
+        "main_events": [
+          "아침에 수술·히노 약속·정돈 계획을 떠올림",
+          "블레이저로 갈아입고 하루 계획을 정리함",
+          "협탁의 노트로 수술일과 오늘의 문장을 재확인함"
+        ],
+        "people_involved": [
+          "히노"
+        ],
+        "emotions": [
+          {
+            "name": "책임감",
+            "intensity": 0.95
+          },
+          {
+            "name": "불안",
+            "intensity": 0.8
+          },
+          {
+            "name": "결의",
+            "intensity": 0.85
+          },
+          {
+            "name": "애정",
+            "intensity": 0.9
+          },
+          {
+            "name": "차분함",
+            "intensity": 0.6
+          }
+        ],
+        "location": "카미야의 집:거실",
+        "original_entries_count": 3
+      },
+      {
+        "chunk_id": "2025-07-24-CH2",
+        "summary": "도넛과 물로 마음을 가라앉히며 정돈과 히노 만남을 준비했다.",
+        "start_time": "2025-07-24T08:37:00Z",
+        "end_time": "2025-07-24T08:59:00Z",
+        "main_events": [
+          "도넛을 집어 먹으며 마음을 다독임",
+          "물 마시며 정돈 의무를 재확인함",
+          "히노와의 12시 만남 준비를 되새김"
+        ],
+        "people_involved": [
+          "히노"
+        ],
+        "emotions": [
+          {
+            "name": "책임감",
+            "intensity": 0.9
+          },
+          {
+            "name": "애정",
+            "intensity": 0.88
+          },
+          {
+            "name": "불안",
+            "intensity": 0.75
+          },
+          {
+            "name": "정돈욕구",
+            "intensity": 0.92
+          },
+          {
+            "name": "차분함",
+            "intensity": 0.65
+          }
+        ],
+        "location": "카미야의 집:거실",
+        "original_entries_count": 3
+      },
+      {
+        "chunk_id": "2025-07-24-CH3",
+        "summary": "식탁의 물컵·도넛을 점검·교체하며 미세 정리를 시작했다.",
+        "start_time": "2025-07-24T09:07:00Z",
+        "end_time": "2025-07-24T09:12:00Z",
+        "main_events": [
+          "식탁·접시와 상호작용하여 배치 상태 확인",
+          "물컵을 집어 들고 도넛과 순서를 교체함",
+          "접시 상태와 손에 든 물건을 반복 점검함"
+        ],
+        "people_involved": [],
+        "emotions": [
+          {
+            "name": "정돈욕구",
+            "intensity": 0.95
+          },
+          {
+            "name": "집중",
+            "intensity": 0.8
+          },
+          {
+            "name": "불안",
+            "intensity": 0.72
+          },
+          {
+            "name": "책임감",
+            "intensity": 0.88
+          }
+        ],
+        "location": "카미야의 집:거실",
+        "original_entries_count": 10
+      },
+      {
+        "chunk_id": "2025-07-24-CH4",
+        "summary": "불안을 낮추려 잠옷을 옷장에 수납하며 정리 루틴을 실행했다.",
+        "start_time": "2025-07-24T09:13:00Z",
+        "end_time": "2025-07-24T09:21:00Z",
+        "main_events": [
+          "정돈이 마음의 평정에 필요함을 자각",
+          "도넛↔잠옷을 교체해 정리 우선순위 전환",
+          "옷장으로 이동해 잠옷을 수납하고 완료 확인"
+        ],
+        "people_involved": [
+          "히노"
+        ],
+        "emotions": [
+          {
+            "name": "책임감",
+            "intensity": 0.92
+          },
+          {
+            "name": "불안",
+            "intensity": 0.78
+          },
+          {
+            "name": "사랑",
+            "intensity": 0.9
+          },
+          {
+            "name": "결의",
+            "intensity": 0.86
+          },
+          {
+            "name": "세심함",
+            "intensity": 0.8
+          }
+        ],
+        "location": "카미야의 집:거실",
+        "original_entries_count": 7
+      },
+      {
+        "chunk_id": "2025-07-24-CH5",
+        "summary": "식탁으로 돌아와 물컵·도넛을 재배치해 정돈 단계를 마쳤다.",
+        "start_time": "2025-07-24T09:22:00Z",
+        "end_time": "2025-07-24T09:31:00Z",
+        "main_events": [
+          "식탁으로 복귀하여 물컵을 다시 집음",
+          "도넛을 접시에 내려놓아 위치 정리",
+          "재배치 과정을 점검하며 정돈 단계를 마침"
+        ],
+        "people_involved": [
+          "히노"
+        ],
+        "emotions": [
+          {
+            "name": "정돈욕구",
+            "intensity": 0.9
+          },
+          {
+            "name": "책임감",
+            "intensity": 0.9
+          },
+          {
+            "name": "긴장",
+            "intensity": 0.7
+          },
+          {
+            "name": "사랑",
+            "intensity": 0.88
+          },
+          {
+            "name": "안도",
+            "intensity": 0.6
+          }
+        ],
+        "location": "카미야의 집:거실",
+        "original_entries_count": 8
+      },
+      {
+        "chunk_id": "2025-07-24-CH6",
+        "summary": "히노 안정을 최우선으로 다짐하고 아이폰으로 연락 준비를 했다.",
+        "start_time": "2025-07-24T09:32:00Z",
+        "end_time": "2025-07-24T09:40:00Z",
+        "main_events": [
+          "히노 안정을 최우선 과제로 재확인",
+          "와타야의 간섭을 의식하되 무시하기로 결심",
+          "아이폰을 집어 약속 재확인 메시지 준비"
+        ],
+        "people_involved": [
+          "히노",
+          "와타야"
+        ],
+        "emotions": [
+          {
+            "name": "책임감",
+            "intensity": 0.92
+          },
+          {
+            "name": "사랑",
+            "intensity": 0.9
+          },
+          {
+            "name": "불안",
+            "intensity": 0.76
+          },
+          {
+            "name": "경계",
+            "intensity": 0.75
+          },
+          {
+            "name": "집중",
+            "intensity": 0.86
+          }
+        ],
+        "location": "카미야의 집:거실",
+        "original_entries_count": 6
+      },
+      {
+        "chunk_id": "2025-07-24-CH7",
+        "summary": "채팅을 확인하고 히노에게 12시 약속 재확인 메시지를 보냈다.",
+        "start_time": "2025-07-24T09:44:00Z",
+        "end_time": "2025-07-24T09:44:00Z",
+        "main_events": [
+          "최근 히노와의 채팅 내역 3개를 확인",
+          "12:00 모카하우스 약속이 맞는지 재확인 전송",
+          "만남 일정에 대한 상호 인식 점검"
+        ],
+        "people_involved": [
+          "히노"
+        ],
+        "emotions": [
+          {
+            "name": "책임감",
+            "intensity": 0.9
+          },
+          {
+            "name": "사랑",
+            "intensity": 0.9
+          },
+          {
+            "name": "기대",
+            "intensity": 0.8
+          },
+          {
+            "name": "불안",
+            "intensity": 0.68
+          }
+        ],
+        "location": "카미야의 집:거실",
+        "original_entries_count": 2
+      },
+      {
+        "chunk_id": "2025-07-24-CH8",
+        "summary": "마음을 정리하고 책을 챙기며 만남 준비물과 공간을 정돈했다.",
+        "start_time": "2025-07-24T09:47:00Z",
+        "end_time": "2025-07-24T09:52:00Z",
+        "main_events": [
+          "만남 전 마음가짐과 준비 계획을 보완",
+          "식탁으로 이동해 준비물 정리 시작",
+          "카미야의 노트를 두고 ‘숨의 문장들’을 챙김"
+        ],
+        "people_involved": [
+          "히노"
+        ],
+        "emotions": [
+          {
+            "name": "집중",
+            "intensity": 0.86
+          },
+          {
+            "name": "차분함",
+            "intensity": 0.75
+          },
+          {
+            "name": "책임감",
+            "intensity": 0.9
+          },
+          {
+            "name": "사랑",
+            "intensity": 0.88
+          },
+          {
+            "name": "정돈욕구",
+            "intensity": 0.9
+          }
+        ],
+        "location": "카미야의 집:거실",
+        "original_entries_count": 4
+      }
+    ],
+    "consolidation_reasoning": "시간 흐름에 따라 아침 각오(0–2), 사전 안정화(3–5), 식탁 미세 정리 1차(6–15), 옷장 정리로 불안 완화(16–22), 식탁 재배치로 정돈 마무리(23–30), 연락 준비 결심 및 기기 취득(31–36), 실제 메시지 발송(37–38), 최종 준비물 점검과 책 챙김(39–42)으로 분할했다. 각 청크는 장소와 맥락의 연속성, 감정 변화(불안→정돈→결의→안정)와 행동의 완결성(계획-정리-연락-준비)의 흐름을 기준으로 묶었다.",
+    "total_original_entries": 43,
+    "total_consolidated_chunks": 8
+  },
+  "tools": []
+}

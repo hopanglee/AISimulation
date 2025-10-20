@@ -514,7 +514,11 @@ public class Brain
                     if (parameters != null && parameters.TryGetValue("area_name", out var areaObj))
                     {
                         var area = areaObj?.ToString();
-                        if (!string.IsNullOrEmpty(area)) return $"'{area}'(으)로 이동하기로 했다.";
+                        if (!string.IsNullOrEmpty(area))
+                        {
+                            var run = parameters.TryGetValue("move_mode", out var mm) && string.Equals(mm?.ToString(), "Run", StringComparison.OrdinalIgnoreCase);
+                            return run ? $"'{area}'(으)로 달려가기로 했다." : $"'{area}'(으)로 걸어가기로 했다.";
+                        }
                     }
                     return "다른 곳으로 이동하기로 했다.";
 
@@ -522,7 +526,11 @@ public class Brain
                     if (parameters != null && parameters.TryGetValue("entity_name", out var entObj))
                     {
                         var entity = entObj?.ToString();
-                        if (!string.IsNullOrEmpty(entity)) return $"'{entity}' 쪽으로 다가가기로 했다.";
+                        if (!string.IsNullOrEmpty(entity))
+                        {
+                            var run = parameters.TryGetValue("move_mode", out var mm) && string.Equals(mm?.ToString(), "Run", StringComparison.OrdinalIgnoreCase);
+                            return run ? $"'{entity}' 쪽으로 달려가기로 했다." : $"'{entity}' 쪽으로 걸어가기로 했다.";
+                        }
                     }
                     return "누군가/무언가에게 다가가기로 했다.";
 

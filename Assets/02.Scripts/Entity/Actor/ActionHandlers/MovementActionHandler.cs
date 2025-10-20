@@ -30,6 +30,9 @@ namespace Agent.ActionHandlers
             // 앉아있는 상태면 자동으로 일어나기
             TryStandUpIfSeated();
 
+            // 이동 모드 적용 (없으면 기본 Walk)
+            ApplyMoveMode(parameters);
+
             string targetValue = null;
 
             // target_area 파라미터 확인
@@ -93,6 +96,9 @@ namespace Agent.ActionHandlers
         {
             // 앉아있는 상태면 자동으로 일어나기
             TryStandUpIfSeated();
+
+            // 이동 모드 적용 (없으면 기본 Walk)
+            ApplyMoveMode(parameters);
 
             string targetValue = null;
 
@@ -269,6 +275,27 @@ namespace Agent.ActionHandlers
             }
         }
 
+        private void ApplyMoveMode(Dictionary<string, object> parameters)
+        {
+            try
+            {
+                var mode = MoveController.MoveMode.Walk;
+                if (parameters != null && parameters.TryGetValue("move_mode", out var modeObj))
+                {
+                    if (modeObj is string s)
+                    {
+                        if (string.Equals(s, "run", StringComparison.OrdinalIgnoreCase)) mode = MoveController.MoveMode.Run;
+                        else mode = MoveController.MoveMode.Walk;
+                    }
+                }
+                actor?.MoveController?.SetMoveMode(mode);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogWarning($"[MovementActionHandler] 이동 모드 적용 실패: {ex.Message}");
+            }
+        }
+
         /// <summary>
         /// 직접 이동을 실행합니다.
         /// </summary>
@@ -421,7 +448,8 @@ namespace Agent.ActionHandlers
                 string locationKey = actor?.curLocation?.GetSimpleKey();
                 if (memoryManager != null)
                 {
-                    string content = $"{targetName}에 도착했다";
+                    bool ran = actor?.MoveController?.CurrentMoveMode == MoveController.MoveMode.Run;
+                    string content = ran ? $"{targetName}로 달려왔다" : $"{targetName}에 도착했다";
                     string details = "이동 성공";
                     memoryManager.AddShortTermMemory(content, details, locationKey);
                 }

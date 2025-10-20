@@ -1,0 +1,13 @@
+﻿{
+  "payload": {
+    "act_type": "UseObject",
+    "reasoning": "카미야의 새 채팅이 왔고 이 메시지가 다음 행동(출발·대기·시간조정)을 결정할 열쇠라서 즉시 확인해야 한다.",
+    "intention": "아이폰으로 채팅을 확인해 카미야의 반응을 보고 부드럽게 도착 지연을 알리고(또는 다른 조치를 취할지) 결정하겠다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"아이폰\"}"
+    }
+  ]
+}

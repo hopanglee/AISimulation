@@ -46,11 +46,11 @@ namespace Agent
                             ""type"": ""object"",
                             ""additionalProperties"": false,
                             ""properties"": {{
-                                ""ActivityName"": {{ ""type"": ""string"", ""description"": ""수행할 활동 정보"" }},
-                                ""Duration"": {{ ""type"": ""integer"", ""minimum"": 3, ""maximum"": 15, ""description"": ""활동 소요 시간 (분 단위, 3-15분)"" }},
-                                ""Result"": {{ ""type"": ""string"", ""description"": ""활동 완료 시 결과. 항상 성공/이상적 금지. 현재 상황에 자연스럽고 때때로 전혀 예상치 못한(작은 실패, 부수 효과, 우연한 발견 등) 현실적인 결과를 1문장으로 작성"" }}
+                                ""activity_name"": {{ ""type"": ""string"", ""description"": ""수행할 활동 정보"" }},
+                                ""duration"": {{ ""type"": ""integer"", ""minimum"": 3, ""maximum"": 15, ""description"": ""활동 소요 시간 (분 단위, 3-15분)"" }},
+                                ""result"": {{ ""type"": ""string"", ""description"": ""활동 완료 시 결과. 항상 성공/이상적 금지. 현재 상황에 자연스럽고 때때로 전혀 예상치 못한(작은 실패, 부수 효과, 우연한 발견 등) 현실적인 결과를 1문장으로 작성"" }}
                             }},
-                            ""required"": [""ActivityName"", ""Duration"", ""Result""]
+                            ""required"": [""activity_name"", ""duration"", ""result""]
                         }}";
             var schema = new LLMClientSchema { name = "perform_activity_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
             SetResponseFormat(schema);

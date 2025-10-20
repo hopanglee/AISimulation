@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using Pathfinding;
 using UnityEngine;
 
@@ -12,6 +14,7 @@ public class MoveController : MonoBehaviour
     public event Action OnReached;
     public bool LastMoveSucceeded { get; private set; } = false;
     private Coroutine arrivalRoutine = null;
+    private CancellationTokenSource arrivalCts = null;
     private bool hasReachedEventFired = false;
     // private bool useLockstepMovement = false; // 리플레이 결정성 강화를 위한 락스텝 옵션
     // private int lockstepFramesPerTick = 5; // 틱 전환 후 허용할 이동 프레임 수
@@ -21,6 +24,14 @@ public class MoveController : MonoBehaviour
     // 마지막 목표 (거리 기반 도착 판정 보강용)
     private Vector3? lastTargetPosition = null;
     private Transform lastTargetTransform = null;
+
+    public enum MoveMode
+    {
+        Walk,
+        Run
+    }
+
+    public MoveMode CurrentMoveMode { get; private set; } = MoveMode.Walk;
 
     public bool isTeleporting = false;
     public void SetTeleporting(bool value)
@@ -59,6 +70,18 @@ public class MoveController : MonoBehaviour
         }
     }
 
+    public void SetMoveMode(MoveMode mode)
+    {
+        if (followerEntity == null) return;
+        var multiplier = mode == MoveMode.Run ? 2f : 1f;
+        if (baseMaxSpeed <= 0f)
+        {
+            baseMaxSpeed = followerEntity.maxSpeed;
+        }
+        followerEntity.maxSpeed = baseMaxSpeed * multiplier;
+        CurrentMoveMode = mode;
+    }
+
     public void Teleport(Vector3 position)
     {
         followerEntity.Teleport(position, true);
@@ -80,13 +103,16 @@ public class MoveController : MonoBehaviour
         // 시뮬레이션 시간 배속에 따라 속도 보정
         //ApplyTimeScaledSpeed();
 
+        // 취소 토큰으로 이전 대기 작업 취소
+        if (arrivalCts != null) { arrivalCts.Cancel(); arrivalCts.Dispose(); arrivalCts = null; }
         if (arrivalRoutine != null)
         {
             StopCoroutine(arrivalRoutine);
             arrivalRoutine = null;
         }
         hasReachedEventFired = false;
-        arrivalRoutine = StartCoroutine(CheckArrival());
+        arrivalCts = new CancellationTokenSource();
+        CheckArrivalAsync(arrivalCts.Token).Forget();
     }
 
     public void SetTarget(Transform transform)
@@ -116,131 +142,150 @@ public class MoveController : MonoBehaviour
         // 시뮬레이션 시간 배속에 따라 속도 보정
         //ApplyTimeScaledSpeed();
 
+        if (arrivalCts != null) { arrivalCts.Cancel(); arrivalCts.Dispose(); arrivalCts = null; }
         if (arrivalRoutine != null)
         {
             StopCoroutine(arrivalRoutine);
             arrivalRoutine = null;
         }
         hasReachedEventFired = false;
-        arrivalRoutine = StartCoroutine(CheckArrival());
+        arrivalCts = new CancellationTokenSource();
+        CheckArrivalAsync(arrivalCts.Token).Forget();
     }
 
-    private IEnumerator CheckArrival()
+    private async UniTaskVoid CheckArrivalAsync(CancellationToken ct)
     {
         isMoving = true;
-
-        if (followerEntity == null)
-            Debug.LogError("FollowerEntity is NULL");
-
-        // 리플레이 결정성 향상을 위해 GameTime 기반 루프
-        var timeService = Services.Get<ITimeService>();
-
-        while (true)
+        try
         {
-            // Simulation 시간이 멈추면 이동도 일시정지
-            timeService = Services.Get<ITimeService>();
-            if (timeService != null && !timeService.IsTimeFlowing)
+            if (followerEntity == null)
+                Debug.LogError("FollowerEntity is NULL");
+
+            // 리플레이 결정성 향상을 위해 GameTime 기반 루프
+            var timeService = Services.Get<ITimeService>();
+
+            while (true)
             {
-                if (followerEntity != null) followerEntity.isStopped = true;
-                // 시간 재개 및 GameTime 틱 발생까지 대기
-                while (true)
+                if (ct.IsCancellationRequested) break;
+                // Simulation 시간이 멈추면 이동도 일시정지
+                timeService = Services.Get<ITimeService>();
+                if (timeService != null && !timeService.IsTimeFlowing)
                 {
-                    timeService = Services.Get<ITimeService>();
-                    if (timeService != null && timeService.IsTimeFlowing)
+                    if (followerEntity != null) followerEntity.isStopped = true;
+                    // 시간 재개 및 GameTime 틱 발생까지 대기
+                    while (true)
                     {
-                        break;
+                        if (ct.IsCancellationRequested) break;
+                        timeService = Services.Get<ITimeService>();
+                        if (timeService != null && timeService.IsTimeFlowing)
+                        {
+                            break;
+                        }
+                        await UniTask.Yield(PlayerLoopTiming.FixedUpdate, ct);
                     }
-                    yield return null;
+                    if (followerEntity != null) followerEntity.isStopped = false;
                 }
-                if (followerEntity != null) followerEntity.isStopped = false;
+
+                // GameTime 기반 대기: CurrentTime이 다음 틱으로 변할 때까지 대기
+                if (timeService != null)
+                {
+                    //var start = timeService.CurrentTime;
+                    //if (useLockstepMovement && followerEntity != null) followerEntity.isStopped = true; // 틱 사이에는 항상 정지
+                    // while (true)
+                    // {
+                    //     yield return null;
+                    //     timeService = Services.Get<ITimeService>();
+                    //     if (timeService != null && timeService.IsTimeFlowing && !timeService.CurrentTime.Equals(start))
+                    //         break;
+                    // }
+                    // 틱 전환 직후 N프레임 이동 허용 (소프트 락스텝)
+                    // if (useLockstepMovement && followerEntity != null)
+                    // {
+                    //     //followerEntity.isStopped = false;
+                    //     int frames = Mathf.Max(1, lockstepFramesPerTick);
+                    //     for (int i = 0; i < frames; i++)
+                    //     {
+                    //         yield return null;
+                    //     }
+                    //     followerEntity.isStopped = true;
+                    // }
+                }
+                else
+                {
+                    Debug.LogError("TimeService is null");
+                }
+
+                bool reached = false;
+                if (followerEntity != null)
+                {
+                    // 다양한 도착 조건을 모두 고려
+                    reached = followerEntity.reachedCrowdedEndOfPath
+                              || followerEntity.reachedEndOfPath
+                              || followerEntity.reachedDestination;
+
+                }
+                else
+                {
+                    Debug.Log($"followerEntity NULL");
+                }
+                if (reached)
+                    break;
+
+                // 바쁜 대기 방지: 다음 프레임까지 양보하여 CPU 점유 과다 및 프리즈 방지
+                await UniTask.Yield(PlayerLoopTiming.FixedUpdate, ct);
             }
 
-            // GameTime 기반 대기: CurrentTime이 다음 틱으로 변할 때까지 대기
-            if (timeService != null)
+            // 도착 판정 이후, 목표와의 실제 거리를 한 번 더 확인하여 성공/실패 결정
+            float threshold = 0.8f;
+            float thresholdSqr = threshold * threshold;
+
+            Vector3 currentPos = followerEntity != null ? followerEntity.transform.position : transform.position;
+            Vector3? finalTargetPos = null;
+            if (lastTargetTransform != null)
+                finalTargetPos = lastTargetTransform.position;
+            else if (lastTargetPosition.HasValue)
+                finalTargetPos = lastTargetPosition.Value;
+
+            if (finalTargetPos.HasValue)
             {
-                //var start = timeService.CurrentTime;
-                //if (useLockstepMovement && followerEntity != null) followerEntity.isStopped = true; // 틱 사이에는 항상 정지
-                // while (true)
-                // {
-                //     yield return null;
-                //     timeService = Services.Get<ITimeService>();
-                //     if (timeService != null && timeService.IsTimeFlowing && !timeService.CurrentTime.Equals(start))
-                //         break;
-                // }
-                // 틱 전환 직후 N프레임 이동 허용 (소프트 락스텝)
-                // if (useLockstepMovement && followerEntity != null)
-                // {
-                //     //followerEntity.isStopped = false;
-                //     int frames = Mathf.Max(1, lockstepFramesPerTick);
-                //     for (int i = 0; i < frames; i++)
-                //     {
-                //         yield return null;
-                //     }
-                //     followerEntity.isStopped = true;
-                // }
+                float sqrDist = MathExtension.SquaredDistance2D(currentPos, finalTargetPos.Value);
+                LastMoveSucceeded = sqrDist <= thresholdSqr;
+                if (!isTeleporting && !LastMoveSucceeded)
+                {
+                    var namePrefixWarn = entity != null ? entity.Name : gameObject.name;
+                    float dist = Mathf.Sqrt(sqrDist);
+                    Debug.LogWarning($"<b>[{namePrefixWarn}] 도착 전에 멈췄습니다. 목표까지 거리: {dist:F2}m (임계값 {threshold:F2}m)</b>");
+                }
+                else if (isTeleporting)
+                {
+                    LastMoveSucceeded = true;
+                    isTeleporting = false;
+                }
             }
             else
             {
-                Debug.LogError("TimeService is null");
-            }
-
-            bool reached = false;
-            if (followerEntity != null)
-            {
-                // 다양한 도착 조건을 모두 고려
-                reached = followerEntity.reachedCrowdedEndOfPath
-                          || followerEntity.reachedEndOfPath
-                          || followerEntity.reachedDestination;
-
-            }
-            else
-            {
-                Debug.Log($"followerEntity NULL");
-            }
-            if (reached)
-                break;
-
-            // 바쁜 대기 방지: 다음 프레임까지 양보하여 CPU 점유 과다 및 프리즈 방지
-            yield return null;
-        }
-
-        // 도착 판정 이후, 목표와의 실제 거리를 한 번 더 확인하여 성공/실패 결정
-        float threshold = 0.8f;
-        float thresholdSqr = threshold * threshold;
-
-        Vector3 currentPos = followerEntity != null ? followerEntity.transform.position : transform.position;
-        Vector3? finalTargetPos = null;
-        if (lastTargetTransform != null)
-            finalTargetPos = lastTargetTransform.position;
-        else if (lastTargetPosition.HasValue)
-            finalTargetPos = lastTargetPosition.Value;
-
-        if (finalTargetPos.HasValue)
-        {
-            float sqrDist = MathExtension.SquaredDistance2D(currentPos, finalTargetPos.Value);
-            LastMoveSucceeded = sqrDist <= thresholdSqr;
-            if (!isTeleporting && !LastMoveSucceeded)
-            {
-                var namePrefixWarn = entity != null ? entity.Name : gameObject.name;
-                float dist = Mathf.Sqrt(sqrDist);
-                Debug.LogWarning($"<b>[{namePrefixWarn}] 도착 전에 멈췄습니다. 목표까지 거리: {dist:F2}m (임계값 {threshold:F2}m)</b>");
-            }
-            else if (isTeleporting)
-            {
+                // 목표 정보를 알 수 없으면 기존 도착 판정에 따름 (보수적으로 성공 처리)
                 LastMoveSucceeded = true;
                 isTeleporting = false;
             }
-        }
-        else
-        {
-            // 목표 정보를 알 수 없으면 기존 도착 판정에 따름 (보수적으로 성공 처리)
-            LastMoveSucceeded = true;
-            isTeleporting = false;
-        }
 
-        isMoving = false;
-        arrivalRoutine = null;
-        OnReachTarget();
+            // 완료 처리: 취소가 아니라면 콜백 실행
+            isMoving = false;
+            arrivalRoutine = null;
+            if (!ct.IsCancellationRequested)
+            {
+                OnReachTarget();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // 취소 예외는 정상 흐름으로 무시
+        }
+        finally
+        {
+            isMoving = false;
+            arrivalRoutine = null;
+        }
     }
     private void OnReachTarget()
     {
@@ -288,8 +333,13 @@ public class MoveController : MonoBehaviour
             // Hard-stop movement
             followerEntity.isStopped = true;
             followerEntity.canMove = false;
+            // Restore base walking speed
+            if (baseMaxSpeed > 0f)
+                followerEntity.maxSpeed = baseMaxSpeed;
+            CurrentMoveMode = MoveMode.Walk;
         }
 
+        if (arrivalCts != null) { arrivalCts.Cancel(); arrivalCts.Dispose(); arrivalCts = null; }
         if (arrivalRoutine != null)
         {
             StopCoroutine(arrivalRoutine);
@@ -302,5 +352,15 @@ public class MoveController : MonoBehaviour
         lastTargetPosition = null;
 
         OnReached = null;
+    }
+
+    private void OnDestroy()
+    {
+        if (arrivalCts != null)
+        {
+            arrivalCts.Cancel();
+            arrivalCts.Dispose();
+            arrivalCts = null;
+        }
     }
 }
