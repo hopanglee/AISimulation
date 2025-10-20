@@ -22,6 +22,11 @@ public class MoveController : MonoBehaviour
     private Vector3? lastTargetPosition = null;
     private Transform lastTargetTransform = null;
 
+    public bool isTeleporting = false;
+    public void SetTeleporting(bool value)
+    {
+        isTeleporting = value;
+    }
     private void Awake()
     {
         followerEntity = GetComponent<FollowerEntity>();
@@ -38,7 +43,8 @@ public class MoveController : MonoBehaviour
                 // policy.mode = Pathfinding.AutoRepathPolicy.Mode.Never;
                 // followerEntity.autoRepath = policy;
             }
-            catch {
+            catch
+            {
                 Debug.LogWarning($"[{entity.Name}] autoRepath 설정 실패");
             }
 
@@ -46,7 +52,8 @@ public class MoveController : MonoBehaviour
             {
                 followerEntity.positionSmoothing = 0f;
             }
-            catch {
+            catch
+            {
                 Debug.LogWarning($"[{entity.Name}] positionSmoothing 설정 실패");
             }
         }
@@ -55,7 +62,7 @@ public class MoveController : MonoBehaviour
     public void Teleport(Vector3 position)
     {
         followerEntity.Teleport(position, true);
-        followerEntity?.SetDestination(Vector3.positiveInfinity);
+        SetTarget(position);
     }
 
     public void SetTarget(Vector3 vector)
@@ -70,8 +77,8 @@ public class MoveController : MonoBehaviour
         lastTargetPosition = vector;
         lastTargetTransform = null;
 
-		// 시뮬레이션 시간 배속에 따라 속도 보정
-		//ApplyTimeScaledSpeed();
+        // 시뮬레이션 시간 배속에 따라 속도 보정
+        //ApplyTimeScaledSpeed();
 
         if (arrivalRoutine != null)
         {
@@ -106,16 +113,16 @@ public class MoveController : MonoBehaviour
         lastTargetTransform = transform;
         lastTargetPosition = null;
 
-		// 시뮬레이션 시간 배속에 따라 속도 보정
-		//ApplyTimeScaledSpeed();
+        // 시뮬레이션 시간 배속에 따라 속도 보정
+        //ApplyTimeScaledSpeed();
 
-		if (arrivalRoutine != null)
-		{
-			StopCoroutine(arrivalRoutine);
-			arrivalRoutine = null;
-		}
-		hasReachedEventFired = false;
-		arrivalRoutine = StartCoroutine(CheckArrival());
+        if (arrivalRoutine != null)
+        {
+            StopCoroutine(arrivalRoutine);
+            arrivalRoutine = null;
+        }
+        hasReachedEventFired = false;
+        arrivalRoutine = StartCoroutine(CheckArrival());
     }
 
     private IEnumerator CheckArrival()
@@ -212,17 +219,23 @@ public class MoveController : MonoBehaviour
         {
             float sqrDist = MathExtension.SquaredDistance2D(currentPos, finalTargetPos.Value);
             LastMoveSucceeded = sqrDist <= thresholdSqr;
-            if (!LastMoveSucceeded)
+            if (!isTeleporting && !LastMoveSucceeded)
             {
                 var namePrefixWarn = entity != null ? entity.Name : gameObject.name;
                 float dist = Mathf.Sqrt(sqrDist);
                 Debug.LogWarning($"<b>[{namePrefixWarn}] 도착 전에 멈췄습니다. 목표까지 거리: {dist:F2}m (임계값 {threshold:F2}m)</b>");
+            }
+            else if (isTeleporting)
+            {
+                LastMoveSucceeded = true;
+                isTeleporting = false;
             }
         }
         else
         {
             // 목표 정보를 알 수 없으면 기존 도착 판정에 따름 (보수적으로 성공 처리)
             LastMoveSucceeded = true;
+            isTeleporting = false;
         }
 
         isMoving = false;

@@ -15,9 +15,12 @@ public class TeleportTrigger : MonoBehaviour
 
         if (trigger == null)
             return;
-        var followEntity = trigger.GetComponent<FollowerEntity>();
+        var moveController = trigger.GetComponent<MoveController>();
+        //var followEntity = moveController.GetComponent<FollowerEntity>();
 
-        followEntity.SetDestination(targetPos.position);
-        followEntity.Teleport(targetPos.position, true);
+        //followEntity.SetDestination(targetPos.position);
+        moveController.SetTeleporting(true);
+        moveController.Teleport(targetPos.position);
+        //moveController.SetTeleporting(false);
     }
 }
