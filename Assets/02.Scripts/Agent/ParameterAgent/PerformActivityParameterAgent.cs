@@ -14,8 +14,11 @@ namespace Agent
     {
         public class PerformActivityParameter
         {
+            [JsonProperty("activity_name")]
             public string ActivityName { get; set; }
+            [JsonProperty("duration")]
             public int Duration { get; set; } = 5; // 기본값 5분
+            [JsonProperty("result")]
 			public string Result { get; set; }
         }
 

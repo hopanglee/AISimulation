@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Agent;
 using Cysharp.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Agent.ActionHandlers
@@ -68,7 +69,7 @@ namespace Agent.ActionHandlers
                                 Debug.Log($"[{actor.Name}] {targetActor.Name}에게 말함: {message}");
 
                                 // 성공적인 대화에 대한 피드백
-                                
+
                                 thinkingActor.brain.memoryManager.AddShortTermMemory(
                                     $"나: '{message}'",
                                     "",
@@ -363,7 +364,16 @@ namespace Agent.ActionHandlers
                 if (bubble != null)
                 {
                     bubble.SetFollowTarget(actor.transform);
-                    bubble.Show(activityName, Mathf.Max(1, delay * 60));
+                    bubble.Show(activityName, 0);
+                    
+                    if(actor is MainActor thinkingActor && thinkingActor.brain?.memoryManager != null)
+                    {
+                        thinkingActor.brain.memoryManager.AddShortTermMemory(
+                            $"'{activityName}'",
+                            null,
+                            thinkingActor?.curLocation?.GetSimpleKey()
+                        );
+                    }
                     // PerformActivity 전체 동안 기다림 (초 기반)
                     await SimDelay.DelaySimMinutes(Mathf.Max(1, delay), token);
                 }
@@ -383,11 +393,14 @@ namespace Agent.ActionHandlers
             {
                 try
                 {
-                    stmActor.brain.memoryManager.AddShortTermMemory(
-                        $"활동 '{activityName}'을(를) 마쳤다.",
-                        $"결과: {resultText}",
-                        stmActor?.curLocation?.GetSimpleKey()
-                    );
+                    if (!string.IsNullOrEmpty(resultText))
+                    {
+                        stmActor.brain.memoryManager.AddShortTermMemory(
+                            $"{resultText}",
+                            null,
+                            stmActor?.curLocation?.GetSimpleKey()
+                        );
+                    }
                 }
                 catch
                 {
