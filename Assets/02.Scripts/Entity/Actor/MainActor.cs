@@ -474,7 +474,7 @@ public abstract class MainActor : Actor
 		if (isSleeping && wakeUpTime != null && currentTime.Equals(wakeUpTime))
 		{
 			Debug.Log($"[{Name}] WakeUpTime: {wakeUpTime.ToString()}, CurrentTime: {currentTime.ToString()}");
-			_ = WakeUp(); // async WakeUp 백그라운드 호출
+			WakeUp().Forget(); // async WakeUp 백그라운드 호출
 		}
 	}
 

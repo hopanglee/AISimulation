@@ -33,6 +33,8 @@ public class Thinker
 
     private const int relationshipUpdateCycleCount = 3;
     private int currentCycleBudget = BaseCycleCount;
+	// 외부 이벤트 재시작 동시성 제어 (0: idle, 1: restarting)
+	private int isRestartingFlag = 0;
 
     public Thinker(Actor actor, Brain brain)
     {
@@ -77,11 +79,11 @@ public class Thinker
             Debug.Log($"[{actor.Name}] GPT 비활성화됨 - Think/Act 루프 시작 안함");
             return;
         }
-
-        // 기존 루프 취소
-        thinkActCts?.Cancel();
+        
         thinkActCts = new CancellationTokenSource();
         var token = thinkActCts.Token;
+        // 새 CTS/Token 준비 완료 → 외부 이벤트 재시작 게이트 해제
+        System.Threading.Volatile.Write(ref isRestartingFlag, 0);
 
         Debug.Log($"[{actor.Name}] Think/Act 루프 시작");
         int currentRelationshipUpdateCycle = 0;
@@ -220,6 +222,14 @@ public class Thinker
                 {
                     currentCycleBudget = Math.Clamp(currentCycleBudget + 1, BaseCycleCount, MaxCycleCount);
                 }
+
+                if(actor is MainActor mainActor)
+                {
+                    if(mainActor.IsSleeping)
+                    {
+                        break;
+                    }
+                }
                 // 5. Act가 끝나면 다시 Think (루프로 계속)
                 // 외부 이벤트가 발생하면 OnExternalEvent()에서 이 루프를 취소하고 새로 시작
                 int stmCount = brain.memoryManager != null ? brain.memoryManager.GetShortTermMemoryCount() : 0;
@@ -242,7 +252,7 @@ public class Thinker
         catch (OperationCanceledException)
         {
             // 이벤트로 인해 취소된 경우
-            Debug.Log($"[{actor.Name}] Think/Act 루프가 외부 이벤트로 취소됨");
+            Debug.Log($"<color=purple>[{actor.Name}] Think/Act 루프가 외부 이벤트로 취소됨</color>");
             // 외부 이벤트로 재시작되면 5회부터 다시 시작
             currentCycleBudget = BaseCycleCount;
         }
@@ -252,18 +262,25 @@ public class Thinker
     /// 외부 이벤트가 발생했을 때 호출됩니다.
     /// 현재 실행 중인 Think/Act 루프를 취소하고 새로운 루프를 시작합니다.
     /// </summary>
-    public async void OnExternalEventAsync()
+    public void OnExternalEventAsync()
     {
+		// 이미 재시작 중이면 중복 호출 무시 (원자적 교환으로 경합 방지)
+		if (System.Threading.Interlocked.Exchange(ref isRestartingFlag, 1) == 1)
+		{
+			return;
+		}
 
-        try
-        {
-            Debug.Log($"[{actor.Name}] 외부 이벤트 발생 - Think/Act 루프 재시작");
-            await StartThinkAndActLoop();
-        }
+		try
+		{
+			thinkActCts?.Cancel();
+			Debug.Log($"[{actor.Name}] 외부 이벤트 발생 - Think/Act 루프 재시작");
+			// 긴 루프를 기다리지 않고 즉시 새 루프를 기동
+			StartThinkAndActLoop().Forget();
+		}
         catch (Exception ex)
-        {
-            Debug.LogError($"[{actor.Name}] Think/Act 루프 재시작 실패: {ex.Message}");
-        }
+		{
+			Debug.LogError($"[{actor.Name}] Think/Act 루프 재시작 실패: {ex.Message}");
+		}
     }
 
     /// <summary>

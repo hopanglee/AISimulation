@@ -11,6 +11,10 @@ public class MoveController : MonoBehaviour
     public bool isMoving = false;
     public event Action OnReached;
     public bool LastMoveSucceeded { get; private set; } = false;
+    private Coroutine arrivalRoutine = null;
+    private bool hasReachedEventFired = false;
+    // private bool useLockstepMovement = false; // 리플레이 결정성 강화를 위한 락스텝 옵션
+    // private int lockstepFramesPerTick = 5; // 틱 전환 후 허용할 이동 프레임 수
 
     private Entity entity;
     private float baseMaxSpeed = 0f;
@@ -27,6 +31,24 @@ public class MoveController : MonoBehaviour
         if (followerEntity != null)
         {
             baseMaxSpeed = followerEntity.maxSpeed;
+            // 결정성 강화를 위해 자동 재경로 비활성화 및 위치 스무딩 제거
+            try
+            {
+                var policy = followerEntity.autoRepath;
+                policy.mode = Pathfinding.AutoRepathPolicy.Mode.Never;
+                followerEntity.autoRepath = policy;
+            }
+            catch {
+                Debug.LogWarning($"[{entity.Name}] autoRepath 설정 실패");
+            }
+
+            try
+            {
+                followerEntity.positionSmoothing = 0f;
+            }
+            catch {
+                Debug.LogWarning($"[{entity.Name}] positionSmoothing 설정 실패");
+            }
         }
     }
 
@@ -51,7 +73,13 @@ public class MoveController : MonoBehaviour
 		// 시뮬레이션 시간 배속에 따라 속도 보정
 		//ApplyTimeScaledSpeed();
 
-        StartCoroutine(CheckArrival());
+        if (arrivalRoutine != null)
+        {
+            StopCoroutine(arrivalRoutine);
+            arrivalRoutine = null;
+        }
+        hasReachedEventFired = false;
+        arrivalRoutine = StartCoroutine(CheckArrival());
     }
 
     public void SetTarget(Transform transform)
@@ -81,7 +109,13 @@ public class MoveController : MonoBehaviour
 		// 시뮬레이션 시간 배속에 따라 속도 보정
 		//ApplyTimeScaledSpeed();
 
-		StartCoroutine(CheckArrival());
+		if (arrivalRoutine != null)
+		{
+			StopCoroutine(arrivalRoutine);
+			arrivalRoutine = null;
+		}
+		hasReachedEventFired = false;
+		arrivalRoutine = StartCoroutine(CheckArrival());
     }
 
     private IEnumerator CheckArrival()
@@ -91,30 +125,57 @@ public class MoveController : MonoBehaviour
         if (followerEntity == null)
             Debug.LogError("FollowerEntity is NULL");
 
-        // 한 프레임 대기 후 상태 체크 시작
-        yield return null;
+        // 리플레이 결정성 향상을 위해 GameTime 기반 루프
+        var timeService = Services.Get<ITimeService>();
 
         while (true)
         {
             // Simulation 시간이 멈추면 이동도 일시정지
-            var timeService = Services.Get<ITimeService>();
+            timeService = Services.Get<ITimeService>();
             if (timeService != null && !timeService.IsTimeFlowing)
             {
                 if (followerEntity != null) followerEntity.isStopped = true;
-                // 시간 재개까지 대기
-                while (timeService != null && !timeService.IsTimeFlowing)
+                // 시간 재개 및 GameTime 틱 발생까지 대기
+                while (true)
                 {
+                    timeService = Services.Get<ITimeService>();
+                    if (timeService != null && timeService.IsTimeFlowing)
+                    {
+                        break;
+                    }
                     yield return null;
                 }
                 if (followerEntity != null) followerEntity.isStopped = false;
-
-                // 재개 시 현재 배속으로 속도 재보정
-                //ApplyTimeScaledSpeed();
             }
 
-            // GameTime과 동기화된 고정 스텝(0.1초) 대기: 움직임 판정/거리 계산의 일관성 향상
-            // GameService.Update에서 fixedStep=0.1f로 UpdateTime을 호출하므로 여기서도 동일 cadence로 대기
-            yield return new WaitForSeconds(GameService.fixedStep);
+            // GameTime 기반 대기: CurrentTime이 다음 틱으로 변할 때까지 대기
+            if (timeService != null)
+            {
+                //var start = timeService.CurrentTime;
+                //if (useLockstepMovement && followerEntity != null) followerEntity.isStopped = true; // 틱 사이에는 항상 정지
+                // while (true)
+                // {
+                //     yield return null;
+                //     timeService = Services.Get<ITimeService>();
+                //     if (timeService != null && timeService.IsTimeFlowing && !timeService.CurrentTime.Equals(start))
+                //         break;
+                // }
+                // 틱 전환 직후 N프레임 이동 허용 (소프트 락스텝)
+                // if (useLockstepMovement && followerEntity != null)
+                // {
+                //     //followerEntity.isStopped = false;
+                //     int frames = Mathf.Max(1, lockstepFramesPerTick);
+                //     for (int i = 0; i < frames; i++)
+                //     {
+                //         yield return null;
+                //     }
+                //     followerEntity.isStopped = true;
+                // }
+            }
+            else
+            {
+                Debug.LogError("TimeService is null");
+            }
 
             bool reached = false;
             if (followerEntity != null)
@@ -132,7 +193,8 @@ public class MoveController : MonoBehaviour
             if (reached)
                 break;
 
-            yield return null; // 프레임 대기
+            // 바쁜 대기 방지: 다음 프레임까지 양보하여 CPU 점유 과다 및 프리즈 방지
+            yield return null;
         }
 
         // 도착 판정 이후, 목표와의 실제 거리를 한 번 더 확인하여 성공/실패 결정
@@ -164,23 +226,14 @@ public class MoveController : MonoBehaviour
         }
 
         isMoving = false;
+        arrivalRoutine = null;
         OnReachTarget();
     }
-	private void ApplyTimeScaledSpeed()
-	{
-		if (followerEntity == null) return;
-		var timeService = Services.Get<ITimeService>();
-		if (timeService == null) return;
-		try
-		{
-			float scale = Mathf.Max(0.01f, timeService.TimeScale);
-			var scaled = Mathf.Max(0.01f, baseMaxSpeed * scale);
-			followerEntity.maxSpeed = scaled;
-		}
-		catch { }
-	}
     private void OnReachTarget()
     {
+        if (hasReachedEventFired) return;
+        hasReachedEventFired = true;
+
         var namePrefix = entity != null ? entity.Name : gameObject.name;
         Debug.Log($"[{namePrefix}] REACH!!");
 
@@ -224,11 +277,13 @@ public class MoveController : MonoBehaviour
             followerEntity.canMove = false;
         }
 
-        if (isMoving)
+        if (arrivalRoutine != null)
         {
-            StopCoroutine(CheckArrival());
-            isMoving = false;
+            StopCoroutine(arrivalRoutine);
+            arrivalRoutine = null;
         }
+        isMoving = false;
+        hasReachedEventFired = false;
 
         lastTargetTransform = null;
         lastTargetPosition = null;

@@ -11,7 +11,7 @@ using Agent.Tools;
 
 namespace Agent
 {
-    public class MoveToAreaParameterAgent : GPT, IParameterAgentBase
+    public class MoveToAreaParameterAgent : GPT5, IParameterAgentBase
     {
         public class MoveToAreaParameter
         {
@@ -44,6 +44,8 @@ namespace Agent
 
             AddTools(ToolManager.NeutralToolDefinitions.FindShortestAreaPathFromActor);
             AddTools(ToolManager.NeutralToolDefinitions.FindBuildingAreaPath);
+
+            Debug.LogWarning($"[{actor.Name}] MoveToAreaParameterAgent {JsonConvert.SerializeObject(movableAreas)}");
         }
 
         public async UniTask<MoveToAreaParameter> GenerateParametersAsync(CommonContext context)

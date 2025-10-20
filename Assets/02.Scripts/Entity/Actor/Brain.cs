@@ -127,7 +127,7 @@ public class Brain
             return;
         }
 
-        _ = thinker.StartThinkAndActLoop();
+        thinker.StartThinkAndActLoop().Forget();
     }
 
 
@@ -176,7 +176,7 @@ public class Brain
     {
         try
         {
-            Debug.Log($"[ExternalEventService] [{actor.Name}] 외부 이벤트 발생 - 반응 여부 결정 시작");
+            Debug.Log($"<color=yellow>[ExternalEventService] [{actor.Name}] 외부 이벤트 발생 - 반응 여부 결정 시작</color>");
             if (!string.IsNullOrEmpty(description))
             {
                 try

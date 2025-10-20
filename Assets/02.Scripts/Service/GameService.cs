@@ -93,6 +93,14 @@ public class GameService : MonoBehaviour, IGameService
 
     public void Initialize()
     {
+        // 전역 프레임레이트 고정 (리플레이 여부와 무관하게 항상 적용)
+        try
+        {
+            QualitySettings.vSyncCount = 0; // VSync 비활성화
+            Application.targetFrameRate = 30; // 필요 시 옵션화 가능
+            Debug.Log($"[GameService] Frame lock applied: targetFrameRate={Application.targetFrameRate}, vSyncCount={QualitySettings.vSyncCount}");
+        }
+        catch { }
     }
 
     private void Update()
@@ -107,16 +115,17 @@ public class GameService : MonoBehaviour, IGameService
             }
             else
             {
-                // deltaTime 상한을 두어 예외적 스파이크 방지 (예: 0.25초)
-                var dt = Mathf.Min(Time.deltaTime, 0.1f);
-                simAccumulator += dt;
+                //deltaTime 상한을 두어 예외적 스파이크 방지 (예: 0.25초)
+                // var dt = Mathf.Min(Time.deltaTime, 0.1f);
+                // simAccumulator += dt;
 
-                // 누적 시간만큼 고정 스텝으로 여러 번 진행
-                while (simAccumulator >= fixedStep)
-                {
-                    timeService.UpdateTime(fixedStep);
-                    simAccumulator -= fixedStep;
-                }
+                // // 누적 시간만큼 고정 스텝으로 여러 번 진행
+                // while (simAccumulator >= fixedStep)
+                // {
+                //     timeService.UpdateTime(fixedStep);
+                //     simAccumulator -= fixedStep;
+                // }
+                timeService.UpdateTime(1f / Application.targetFrameRate); // 30fps
             }
         }
 

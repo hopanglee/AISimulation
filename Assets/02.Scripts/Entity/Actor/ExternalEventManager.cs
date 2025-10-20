@@ -265,11 +265,9 @@ public class ExternalEventService : IExternalEventService
                 }
                 catch { }
 
-                if (mainActor.MoveController.isMoving)
-                {
-                    mainActor.MoveController.Reset();
-                    Debug.LogWarning($"<color=yellow>[ExternalEventService] {mainActor.Name}</color>의 이동이 중단되었습니다.");
-                }
+
+                mainActor.MoveController.Reset();
+                Debug.LogWarning($"<color=yellow>[ExternalEventService] {mainActor.Name}</color>의 이동이 중단되었습니다.");
 
                 // Brain에 외부 이벤트 설명과 함께 전달
                 mainActor.brain.OnExternalEvent(externalEvent.AdditionalInfo);

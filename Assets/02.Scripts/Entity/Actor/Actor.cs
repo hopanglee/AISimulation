@@ -158,7 +158,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 if (ApplyOutfitFbx(_currentOutfit))
                 {
                     // 착용 의상은 비활성화하고 보관 트랜스폼에 부착, 위치 등록
-                    SetItemVisibility(_currentOutfit, false);
+
                     if (_currentOutfit.curLocation == null)
                         _currentOutfit.curLocation = this;
                     if (_currentClothesRoot != null)
@@ -166,6 +166,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                         _currentOutfit.transform.SetParent(_currentClothesRoot, false);
                         _currentOutfit.transform.localPosition = Vector3.zero;
                         _currentOutfit.transform.localRotation = Quaternion.identity;
+                        SetItemVisibility(_currentOutfit, false);
                         // localScale은 변경하지 않음 (원본 스케일 유지)
                     }
                 }
@@ -489,8 +490,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         // FBX 교체
         if (ApplyOutfitFbx(clothing))
         {
-            // 새로 착용한 의상 아이템을 보이지 않게 처리
-            SetItemVisibility(clothing, false);
+
 
             // 착용된 의상의 위치를 Actor로 설정
             clothing.curLocation = this;
@@ -502,6 +502,9 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 clothing.transform.localPosition = Vector3.zero;
                 clothing.transform.localRotation = Quaternion.identity;
                 clothing.transform.localScale = Vector3.one;
+                // 새로 착용한 의상 아이템을 보이지 않게 처리
+                SetItemVisibility(clothing, false);
+                //clothing.gameObject.SetActive(false);
             }
 
             // 손에 들고 있던 의상을 입은 경우 손 비우기

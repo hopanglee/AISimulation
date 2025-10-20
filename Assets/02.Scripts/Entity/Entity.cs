@@ -74,13 +74,25 @@ public abstract class Entity : MonoBehaviour, ILocation
                 locationManager.Add(_curLocation as ILocation, this);
 
                 this.transform.parent = _curLocation.transform;
+
+                if(_curLocation is InventoryBox inventoryBox && inventoryBox.useSimplePlacement)
+                {
+                    this.gameObject.SetActive(false);
+                }
+                else if(_curLocation is Inven inven)
+                {
+                    this.gameObject.SetActive(false);
+                }
+                else
+                {
+                    this.gameObject.SetActive(true);
+                }
             }
             else
             {
                 // 만약 location이 null이면 부모 해제
                 this.transform.parent = null;
             }
-            ;
         } // SetLocation 호출
     }
 

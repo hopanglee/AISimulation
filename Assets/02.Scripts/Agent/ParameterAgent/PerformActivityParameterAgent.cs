@@ -21,7 +21,7 @@ namespace Agent
 
         private readonly string systemPrompt;
 
-        public PerformActivityParameterAgent(Actor actor) : base(actor, "gpt-5")
+        public PerformActivityParameterAgent(Actor actor) : base(actor)
         {
             // 시스템 프롬프트를 동적으로 빌드: 현재 배우, 관계, 최근 계획 등 치환값 포함
             var characterInfo = actor.LoadCharacterInfo();

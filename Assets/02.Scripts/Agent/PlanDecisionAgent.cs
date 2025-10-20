@@ -15,7 +15,7 @@ using System.IO;
 public class PlanDecisionAgent : GPT
 {
 
-	public PlanDecisionAgent(Actor actor) : base(actor)// "gpt-4o-mini"
+	public PlanDecisionAgent(Actor actor) : base(actor)
 	{
 
 		SetAgentType(nameof(PlanDecisionAgent));

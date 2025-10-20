@@ -28,6 +28,8 @@ public interface ITimeService : IService
     /// </summary>
     long GetTotalSeconds();
 
+    double GetTotalTicks();
+
     /// <summary>
     /// 현재 분의 초(0~59)
     /// </summary>
@@ -672,54 +674,63 @@ public class TimeManager : ITimeService
 
         if (accumulatedTime >= 1f)
         {
-            int secondsToAdd = Mathf.FloorToInt(accumulatedTime);
-            accumulatedTime -= secondsToAdd;
+			int secondsToAdd = Mathf.FloorToInt(accumulatedTime);
+			accumulatedTime -= secondsToAdd;
 
-            // 초 → 분/시/일/월/년 반영
-            int minutesToAdd = 0;
-            int totalSeconds = currentTime.second + secondsToAdd;
-            if (totalSeconds >= 60)
-            {
-                minutesToAdd = totalSeconds / 60;
-                currentTime.second = totalSeconds % 60;
-            }
-            else
-            {
-                currentTime.second = totalSeconds;
-            }
+			// 모든 계산을 로컬 복사본에서 수행 후 한 번에 반영
+			GameTime newTime = currentTime;
 
-            if (minutesToAdd > 0)
-            {
-                currentTime.minute += minutesToAdd;
+			// 초 → 분/시/일/월/년 반영
+			int minutesToAdd = 0;
+			int totalSeconds = newTime.second + secondsToAdd;
+			if (totalSeconds >= 60)
+			{
+				minutesToAdd = totalSeconds / 60;
+				newTime.second = totalSeconds % 60;
+			}
+			else
+			{
+				newTime.second = totalSeconds;
+			}
 
-                while (currentTime.minute >= 60)
-                {
-                    currentTime.minute -= 60;
-                    currentTime.hour++;
+			if (minutesToAdd > 0)
+			{
+				newTime.minute += minutesToAdd;
 
-                    if (currentTime.hour >= 24)
-                    {
-                        currentTime.hour = 0;
-                        currentTime.day++;
+				while (newTime.minute >= 60)
+				{
+					newTime.minute -= 60;
+					newTime.hour++;
 
-                        int daysInMonth = GameTime.GetDaysInMonth(currentTime.year, currentTime.month);
-                        if (currentTime.day > daysInMonth)
-                        {
-                            currentTime.day = 1;
-                            currentTime.month++;
+					if (newTime.hour >= 24)
+					{
+						newTime.hour = 0;
+						newTime.day++;
 
-                            if (currentTime.month > 12)
-                            {
-                                currentTime.month = 1;
-                                currentTime.year++;
-                            }
-                        }
-                    }
-                }
+						int daysInMonth = GameTime.GetDaysInMonth(newTime.year, newTime.month);
+						if (newTime.day > daysInMonth)
+						{
+							newTime.day = 1;
+							newTime.month++;
 
-                // 분 단위 변경 시에만 이벤트 발생 (이전 동작 유지)
-                onTimeChanged?.Invoke(currentTime);
-            }
+							if (newTime.month > 12)
+							{
+								newTime.month = 1;
+								newTime.year++;
+							}
+						}
+					}
+				}
+			}
+
+			// 계산이 끝난 뒤 한 번에 반영
+			currentTime = newTime;
+
+			// 분 단위 변경 시에만 이벤트 발생 (이전 동작 유지)
+			if (minutesToAdd > 0)
+			{
+				onTimeChanged?.Invoke(currentTime);
+			}
         }
     }
 
@@ -759,7 +770,21 @@ public class TimeManager : ITimeService
         }
         catch
         {
+            Debug.LogError("[TimeManager] GetTotalSeconds 오류");
             return 0L;
+        }
+    }
+
+    public double GetTotalTicks()
+    {
+        try
+        {
+            return (double)GetTotalSeconds() + accumulatedTime;
+        }
+        catch
+        {
+            Debug.LogError("[TimeManager] GetTotalTicks 오류");
+            return 0d;
         }
     }
 

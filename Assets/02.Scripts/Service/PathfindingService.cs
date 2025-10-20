@@ -130,7 +130,8 @@ public class PathfindingService : IPathfindingService
         }
         bool allowTailMatch = hasScope && pivotIndex >= 0;
         string targetTail = allowTailMatch ? string.Join(":", keyTokens, pivotIndex, keyTokens.Length - pivotIndex) : null;
-
+        string tailLeaf = hasScope ? keyTokens[keyTokens.Length - 1] : null;
+        
         // BFS로 최단 경로 찾기
         var queue = new Queue<Area>();
         var visited = new HashSet<Area>();
@@ -148,6 +149,7 @@ public class PathfindingService : IPathfindingService
             // targetLocationKey가 전체 경로인지, 부분경로인지, 또는 지역 이름인지 확인
             bool isTargetFound = false;
             var currentFullPath = current.LocationToString();
+            var building = locationManager.GetBuilding(current);
             if (!string.IsNullOrEmpty(currentFullPath) && currentFullPath == targetLocationKey)
             {
                 isTargetFound = true;
@@ -165,14 +167,18 @@ public class PathfindingService : IPathfindingService
             {
                 isTargetFound = true;
             }
-            else if (locationManager != null)
+            else if (building != null)
             {
-                var building = locationManager.GetBuilding(current);
-                if (building != null && building.locationName == targetLocationKey)
+                if(building.locationName == targetLocationKey)
+                {
+                    isTargetFound = true;
+                }
+                else if(tailLeaf != null && tailLeaf.Length > 1 && building.locationName.IndexOf(tailLeaf, System.StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     isTargetFound = true;
                 }
             }
+
 
             if (isTargetFound)
             {
@@ -207,7 +213,6 @@ public class PathfindingService : IPathfindingService
                     queue.Enqueue(connected);
                 }
             }
-
         }
 
         Debug.LogWarning($"No path found from {startArea.locationName} to {targetLocationKey}");

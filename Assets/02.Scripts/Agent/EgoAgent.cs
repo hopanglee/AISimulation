@@ -14,9 +14,9 @@ using Anthropic.SDK.Constants;
 /// 자아 에이전트 - 이성과 본능의 타협을 담당
 /// 두 에이전트의 결과를 적절히 조합하여 최종 결정을 내립니다.
 /// </summary>
-public class EgoAgent : GPT
+public class EgoAgent : GPT4oMini
 {
-    public EgoAgent(Actor actor) : base(actor, "gpt-4o-mini")
+    public EgoAgent(Actor actor) : base(actor)
     {
         SetAgentType(nameof(EgoAgent));
 

@@ -19,7 +19,7 @@ public class SuperegoAgent : GPT
     private DayPlanner dayPlanner; // DayPlanner 참조 추가
 
     public SuperegoAgent(Actor actor)
-        : base(actor, "gpt-5")
+        : base(actor)
     {
         SetAgentType(nameof(SuperegoAgent));
 
