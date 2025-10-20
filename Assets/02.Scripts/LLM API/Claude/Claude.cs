@@ -57,6 +57,9 @@ public class Claude : LLMClient
     // API 재시도 설정 (과부하/일시 오류 대비)
     private int maxApiRetries = 3;
     private int apiRetryBaseDelayMs = 3000;
+    // PARSE 재시도 설정 (비JSON 응답 시 재요청)
+    private const int maxParseRetries = 3;
+    private int parseRetryBaseDelayMs = 2000;
     // Prompt Caching mode (Automatic caches System + Tools; FineGrained lets you set CacheControl per content)
     private PromptCacheType promptCachingMode = PromptCacheType.AutomaticToolsAndSystem;
 
@@ -486,8 +489,8 @@ public class Claude : LLMClient
                     }
                     catch (Exception exOuter)
                     {
-                    Debug.LogWarning($"[Claude][PARSE ERROR] Outermost-object parse failed: {exOuter.Message}. Trying common JSON fixes (insert missing commas, remove trailing commas)...");
-                    var sanitized = FixJsonCommonIssues(outer);
+                        Debug.LogWarning($"[Claude][PARSE ERROR] Outermost-object parse failed: {exOuter.Message}. Trying common JSON fixes (insert missing commas, remove trailing commas)...");
+                        var sanitized = FixJsonCommonIssues(outer);
                         try
                         {
                             var result = JsonConvert.DeserializeObject<T>(sanitized);
@@ -498,11 +501,87 @@ public class Claude : LLMClient
                         }
                         catch (Exception ex2)
                         {
-                            Debug.LogError($"[Claude][PARSE ERROR] Raw response: {finalResponse}");
-                            Debug.LogError($"Second parse failed: {ex2.Message}");
+                            Debug.LogWarning($"[Claude][PARSE ERROR] Raw response: {finalResponse}");
+                            Debug.LogWarning($"Second parse failed: {ex2.Message}");
+
+                            // 비JSON 응답으로 파싱이 완전히 실패 → 전체 재요청을 최대 maxParseRetries회 시도
+                            int parseAttempt = 1;
+                            while (parseAttempt < maxParseRetries)
+                            {
+                                int delay = parseRetryBaseDelayMs * (int)Math.Pow(2, parseAttempt) + UnityEngine.Random.Range(0, 250);
+                                Debug.LogWarning($"[Claude][PARSE RETRY] Non-JSON response. Retrying request for JSON in {delay}ms (attempt {parseAttempt + 1}/{maxParseRetries})");
+
+                                // 다음 응답에서는 도구를 사용하지 말고, 오직 JSON만 출력하도록 사용자 메시지로 강제 지시
+                                AddUserMessage("이전 응답이 JSON이 아닙니다. 도구를 사용하지 말고, 오직 유효한 JSON만 출력하세요.");
+
+                                await UniTask.Delay(delay);
+
+                                MessageResponse retryRes = null;
+                                try
+                                {
+                                    retryRes = await client.Messages.GetClaudeMessageAsync(parameters);
+                                }
+                                catch (Exception callEx)
+                                {
+                                    // 네트워크/일시 오류는 다음 parseAttempt로 넘기며 재시도
+                                    Debug.LogWarning($"[Claude][PARSE RETRY] Request failed during retry: {callEx.Message}");
+                                    parseAttempt++;
+                                    continue;
+                                }
+
+                                // 재시도 응답 처리
+                                string retryText = retryRes?.FirstMessage;
+                                if (enableOutgoingLogs)
+                                {
+                                    try { await SaveRawResponseLogAsync(retryText, agentTypeOverride); } catch { }
+                                }
+                                Debug.Log($"<color=orange>[Claude][RETRY Response]: {retryText}</color>");
+
+                                // 우선 바로 파싱 시도
+                                try
+                                {
+                                    var retryResult = JsonConvert.DeserializeObject<T>(retryText);
+                                    try { SaveCachedResponse(new LLMCacheEnvelope<T> { payload = retryResult, tools = executedTools }); } catch { }
+                                    await SaveConversationLogAsync(messages, retryText);
+                                    Debug.Log("<b>[Claude][PARSE RETRY] Parsed successfully.</b>");
+                                    return retryResult;
+                                }
+                                catch
+                                {
+                                    // 아웃터모스트/보정 재시도
+                                    var retryOuter = ExtractOutermostJsonObject(retryText);
+                                    try
+                                    {
+                                        var retryResult = JsonConvert.DeserializeObject<T>(retryOuter);
+                                        try { SaveCachedResponse(new LLMCacheEnvelope<T> { payload = retryResult, tools = executedTools }); } catch { }
+                                        await SaveConversationLogAsync(messages, retryText);
+                                        Debug.Log("<b>[Claude][PARSE RETRY] Parsed successfully after outermost-object extraction.</b>");
+                                        return retryResult;
+                                    }
+                                    catch
+                                    {
+                                        var retrySanitized = FixJsonCommonIssues(retryOuter);
+                                        try
+                                        {
+                                            var retryResult = JsonConvert.DeserializeObject<T>(retrySanitized);
+                                            try { SaveCachedResponse(new LLMCacheEnvelope<T> { payload = retryResult, tools = executedTools }); } catch { }
+                                            await SaveConversationLogAsync(messages, retryText);
+                                            Debug.Log("<b>[Claude][PARSE RETRY] Parsed successfully after sanitization.</b>");
+                                            return retryResult;
+                                        }
+                                        catch
+                                        {
+                                            // 다음 parseAttempt로 반복
+                                        }
+                                    }
+                                }
+
+                                parseAttempt++;
+                            }
+
                             await SaveConversationLogAsync(messages, $"ERROR: {ex.Message} | SANITIZE_ERROR: {ex2.Message}");
                             throw new InvalidOperationException(
-                                $"Failed to parse Claude response into {typeof(T)}"
+                                $"Failed to parse Claude response into {typeof(T)} after {maxParseRetries} parse retries"
                             );
                         }
                     }

@@ -1,9 +1,0 @@
-﻿{
-  "payload": {
-    "command": "recent_read",
-    "target_actor": "카미야",
-    "message": null,
-    "message_count": 10
-  },
-  "tools": []
-}

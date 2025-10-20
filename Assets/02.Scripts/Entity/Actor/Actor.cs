@@ -998,7 +998,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         if (curLocation != newLocation)
         {
             curLocation = newLocation;
-            Debug.Log($"[LocationTracker] 현재 방 변경됨: {newLocation.locationName}");
+            Debug.Log($"[LocationTracker] [{this.Name}] 현재 방 변경됨: {newLocation.locationName}");
         }
     }
 
