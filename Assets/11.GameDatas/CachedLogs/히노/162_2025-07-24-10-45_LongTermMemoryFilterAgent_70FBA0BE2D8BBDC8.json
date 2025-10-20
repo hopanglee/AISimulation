@@ -1,0 +1,83 @@
+﻿{
+  "payload": {
+    "evaluations": [
+      {
+        "chunk_id": "C1",
+        "importance_score": 0.98,
+        "surprise_score": 0.98,
+        "overall_score": 0.0,
+        "reasoning": "교통사고로 인한 기억 공백과 극심한 공포·혼란은 인생 전환점급 사건으로 장기 기억으로 반드시 보존해야 함. 사건 자체가 안전·건강·정체성(기억)에 큰 영향을 주므로 중요도가 매우 높고 예기치 못한 충격이라 의외성도 매우 높음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "C2",
+        "importance_score": 0.75,
+        "surprise_score": 0.65,
+        "overall_score": 0.0,
+        "reasoning": "일기와 스케치를 통해 기억 공백을 자각하고 외부 약속(모카하우스 12시)을 확인한 장면은 사고 이후 본인의 현재 상태를 이해하고 행동 계획을 세우는 출발점임. 상황 인식 및 약속 확인이라는 의미에서 중상 수준의 중요도이며, 기억 공백을 새롭게 자각한 점은 다소 예상 밖임.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "C3",
+        "importance_score": 0.88,
+        "surprise_score": 0.55,
+        "overall_score": 0.0,
+        "reasoning": "사고 후 불안을 와타야에게 털어놓고 동행을 요청·수락받은 것은 회복 과정에서 핵심적인 사회적 지지 사건임. 정서적 안정과 행동 실행(외출)에 직접 연결되므로 중요도가 높음. 친밀한 지원이긴 하나 예상 가능한 반응이라 의외성은 중간 이하.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "C4",
+        "importance_score": 0.6,
+        "surprise_score": 0.45,
+        "overall_score": 0.0,
+        "reasoning": "와타야와의 대화 목록 확인 및 시간 촉박함 자각은 실행 과정의 일상적 조정에 해당. 출발에 대한 압박을 보여주나 장기적으로 결정적 변화로 보기는 어려워 중요도는 중간, 의외성은 낮음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "C5",
+        "importance_score": 0.72,
+        "surprise_score": 0.6,
+        "overall_score": 0.0,
+        "reasoning": "카미야와의 일정 최종 확인 및 감정(설렘·조급함) 고조는 만남의 동기를 강화하는 정서적 증폭 지점임. 만남이 회복에 핵심적이므로 보존 가치가 있음. 다만 사건 자체가 치명적 전환은 아니어서 최고 등급은 아님.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "C6",
+        "importance_score": 0.7,
+        "surprise_score": 0.5,
+        "overall_score": 0.0,
+        "reasoning": "와타야의 '지켜줄게' 같은 보호적 메시지 수신은 정서적 지지의 구체적 증거로, 회복·안심 과정에서 의미가 큼. 또한 허기 관리(도넛 준비)는 신체적 안정에 도움이 되어 실용적 중요도도 있음. 의외성은 보통 수준.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "C7",
+        "importance_score": 0.35,
+        "surprise_score": 0.2,
+        "overall_score": 0.0,
+        "reasoning": "도넛 섭취로 컨디션을 조절한 내용은 일상적 신체관리 기록으로 중요도가 낮음. 에너지 보충이라는 실용성은 있으나 장기 기억으로 보존할 필요성은 낮음; 의외성도 낮음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "C8",
+        "importance_score": 0.78,
+        "surprise_score": 0.5,
+        "overall_score": 0.0,
+        "reasoning": "양쪽(카미야·와타야) 메시지 최종 검토와 출발 모드 전환은 행동으로 옮기기 직전의 중요한 준비 단계임. 사고 회복을 위한 실천 의지와 기대감이 명확하므로 장기 보존 가치가 높음. 의외성은 보통.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "C9",
+        "importance_score": 0.82,
+        "surprise_score": 0.6,
+        "overall_score": 0.0,
+        "reasoning": "출발을 결심하고 복도로 이동을 시작한 순간은 사고 이후 실제 행동 개시를 의미함(만남을 통한 기억회복 시도). 의사결정과 행동으로 이어지는 중요한 전환점이라 높은 중요도를 부여함. 만남이 기억 회복의 열쇠라는 확신은 다소 예상 밖일 수 있음.",
+        "should_keep": false
+      }
+    ],
+    "kept_chunks": [],
+    "filtered_chunks": [],
+    "filter_reasoning": "선별 기준은 '사건의 장기적 영향력(안전·건강·정체성 변화)', '회복 과정에서의 결정적 전환(행동·사회적 지지)', 그리고 '정서적 의미(지지·불안·결심)'입니다. 따라서 교통사고로 인한 기억 공백(C1)은 최우선으로 보존해야 하고, 그에 이어 사고 인식과 외부 약속 확인(C2), 와타야와의 신뢰와 동행 약속(C3), 출발 직전의 준비·검토 단계(C8), 출발 결심·행동 개시(C9), 그리고 와타야의 보호적 메시지와 허기 관리로 나타난 정서·신체적 안정 시도(C6)를 포함해 상위 6개(약 67%)를 장기 기억으로 남기도록 권장합니다. 제외된 항목(C4, C5, C7)은 중요하거나 정보성은 있으나(시간 촉박함·감정 고조·간단한 식사) 전체 이야기·회복 경로를 보전하는 데 상대적으로 중복되거나 덜 결정적이라 우선 순위에서 제외했습니다.",
+    "retention_percentage": 0.0
+  },
+  "tools": []
+}
