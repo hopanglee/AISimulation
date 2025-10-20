@@ -1,0 +1,17 @@
+﻿{
+  "payload": {
+    "act_type": "MoveToEntity",
+    "reasoning": "지금 즉시 히노에게 안심시키는 답장을 보내야 하니 아이폰을 집어 바로 메시지로 '당연하지, 내가 있을게'라고 보낼 준비를 하려 합니다.",
+    "intention": "협탁에 있는 아이폰을 집어 들고 히노에게 다정하게 ‘당연하지, 내가 있을게’라고 답장해 안심시키고 이후 모카하우스로 갈 준비를 시작한다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"협탁:아이폰\"}"
+    },
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"아이폰\"}"
+    }
+  ]
+}

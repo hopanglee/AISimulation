@@ -1,0 +1,83 @@
+﻿{
+  "payload": {
+    "evaluations": [
+      {
+        "chunk_id": "chunk_01_sleep",
+        "importance_score": 0.1,
+        "surprise_score": 0.1,
+        "overall_score": 0.0,
+        "reasoning": "단순한 수면 기록으로 장기적 의미나 인간관계에 미치는 영향이 거의 없음. 일상적이고 예측 가능한 사건이라 의외성도 낮음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "chunk_02_wake_immediate_jealousy",
+        "importance_score": 0.9,
+        "surprise_score": 0.5,
+        "overall_score": 0.0,
+        "reasoning": "기상 직후의 강한 질투·집착·결의 표출은 이후 행동과 의사결정의 동력으로 작용하므로 중요한 감정적 전환점임. 와타야의 핵심 동기(카미야·히노 통제)가 다시 재확인되지만, 기존 장기기억과 일관되어 완전히 예기치 못한 내용은 아님.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "chunk_03_morning_prep_items",
+        "importance_score": 0.4,
+        "surprise_score": 0.2,
+        "overall_score": 0.0,
+        "reasoning": "물과 도넛을 챙기는 일상적 준비 행동과 전략 수립의 초기 단계로, 행동의 배경 정보로 쓸모는 있지만 독립적으로 장기보존할 중요성은 낮음. 의외성은 거의 없음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "chunk_04_get_phone_prepare_msg",
+        "importance_score": 0.6,
+        "surprise_score": 0.25,
+        "overall_score": 0.0,
+        "reasoning": "메시지 전송을 위한 구체적 준비 행동으로 곧 일어날 행동(연락)에 직결되므로 중간 수준의 중요성. 그러나 예상 가능한 단계적 행동이고 특별히 충격적인 요소는 없음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "chunk_05_message_hino_initial",
+        "importance_score": 0.8,
+        "surprise_score": 0.4,
+        "overall_score": 0.0,
+        "reasoning": "히노에게 먼저 연락해 약속과 준비를 묻는 행동은 와타야가 히노를 통제·보호하려는 의도를 직접적으로 드러내므로 중요한 대인관계 이벤트. 의외성은 중간—기대되는 행동이지만 의도와 세부가 유의미함.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "chunk_06_message_kamiya_and_wait",
+        "importance_score": 0.8,
+        "surprise_score": 0.5,
+        "overall_score": 0.0,
+        "reasoning": "카미야에게 의심 섞인 메시지를 보낸 것은 와타야의 질투와 대립 전략이 외부 대상에게 향한 구체적 시도로, 대인관계 역학에 직접적인 영향을 미친다. 이미 반복된 패턴이므로 완전한 충격은 아님.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "chunk_07_notification_and_hino_reply",
+        "importance_score": 0.95,
+        "surprise_score": 0.6,
+        "overall_score": 0.0,
+        "reasoning": "히노의 불안 메시지와 함께 교통사고 후유증(기억 문제)을 다시 확인한 것은 핵심적 정보 리마인더이자, 와타야의 행동(동행·보호 욕구)을 촉발하는 결정적 계기임. 와타야가 히노의 상태를 알고 있다는 장기기억과 연결되어 매우 중요하되, 내용 자체는 이미 알고 있던 사실이라 완전한 충격은 아님.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "chunk_08_decide_to_accompany_hino",
+        "importance_score": 0.9,
+        "surprise_score": 0.4,
+        "overall_score": 0.0,
+        "reasoning": "히노 곁에 있기로 결심하고 즉시 동행을 결정한 것은 실제 행동으로 이어지는 중요한 의사결정. 관계 통제와 보호 의지를 명확히 드러내므로 장기기억으로 보존할 가치가 높음. 다만 와타야의 평소 성향과 일관되어 의외성은 낮음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "chunk_09_prepare_message_kamiya_followup",
+        "importance_score": 0.65,
+        "surprise_score": 0.3,
+        "overall_score": 0.0,
+        "reasoning": "카미야에게 보낼 후속 메시지 계획은 와타야의 지속적 개입 의도를 보여주는 행동적 신호로 중간 정도의 중요성. 반복적이고 예상 가능한 패턴이라 의외성은 낮음.",
+        "should_keep": false
+      }
+    ],
+    "kept_chunks": [],
+    "filtered_chunks": [],
+    "filter_reasoning": "장기기억으로 보존할 상위 약 70%(6개)는 인간관계에 직접적 영향을 미치거나 와타야의 핵심 동기(히노 보호, 카미야에 대한 질투)를 구체적 행동으로 드러내는 청크들로 선정했습니다. 따라서 선택된 항목은: chunk_07(히노의 메시지·기억 문제 확인), chunk_02(기상 직후의 강한 질투·결의), chunk_08(히노 동행 결정), chunk_05(히노에게 먼저 연락), chunk_06(카미야에게 보낸 의심성 메시지), chunk_09(카미야 후속 메시지 준비)입니다. 이들은 관계 역학을 형성하고 향후 사건 전개에 영향을 줄 핵심 단서들입니다. 반면 단순 수면 기록(chunk_01), 일상적 준비 행동(chunk_03)과 준비(일부 중복되는 chunk_04)는 중요도가 낮고 중복 정보가 있어 우선순위에서 제외했습니다.",
+    "retention_percentage": 0.0
+  },
+  "tools": []
+}

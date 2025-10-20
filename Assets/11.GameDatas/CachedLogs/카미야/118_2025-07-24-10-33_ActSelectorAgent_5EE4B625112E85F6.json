@@ -1,0 +1,13 @@
+﻿{
+  "payload": {
+    "act_type": "UseObject",
+    "reasoning": "모카하우스에 제시간에 도착해 히노에게 안정감을 주려면 도착 자리와 말투를 출발 전에 노트에 짧게 정리해 확인해야 합니다.",
+    "intention": "지금 손에 든 노트를 읽어 현재 내용을 확인한 뒤 도착 장소/시간/좌석 위치의 세 가지 키워드를 간단히 적어 출발 준비를 마치겠습니다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"카미야의 노트\"}"
+    }
+  ]
+}
