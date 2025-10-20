@@ -90,7 +90,7 @@ namespace Agent.Tools
             // 건물 이름으로 해당 건물이 속한 지역 경로(상위-하위)를 ":"로 연결해 반환합니다. 예: "도쿄:신주쿠:가부키초:1-chome-5"
             public static readonly ChatTool FindBuildingAreaPath = ChatTool.CreateFunctionTool(
                 functionName: nameof(FindBuildingAreaPath),
-                functionDescription: "건물 이름을 받아 상위에서 말단까지 ':'로 연결된 지역 경로를 반환합니다(예: '도쿄:신주쿠:가부키초:1-chome-5').",
+                functionDescription: "건물 이름의 전체 주소를 반환합니다.(예: '도쿄:신주쿠:가부키초:1-chome-5').",
                 functionParameters: System.BinaryData.FromBytes(
                     System.Text.Encoding.UTF8.GetBytes(
                         @"{
@@ -98,7 +98,7 @@ namespace Agent.Tools
                             ""properties"": {
                                 ""buildingName"": {
                                     ""type"": ""string"",
-                                    ""description"": ""검색할 지역화된 건물 이름(예: '이자카야 카게츠')""
+                                    ""description"": ""검색할 건물 이름(예: '이자카야 카게츠')""
                                 }
                             },
                             ""required"": [""buildingName""]
