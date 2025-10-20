@@ -1,0 +1,56 @@
+﻿{
+  "payload": {
+    "situation_interpretation": "아이폰에 와타야의 메시지가 왔네. 모카하우스까지 72분이나 걸린다고? 바로 출발하지 않으면 늦을 거야! 카미야는 누구지? 기억이 안 나는데 심장이 두근거려. 채팅 기록을 보니 특별한 사이인 것 같은데... 6월에 누가 나한테 고백했다는 기억도 있고. 사고 후 기억이 모두 지워졌지만, 이건 정말 중요한 만남일 거야. 와타야가 같이 있어 줄 테니 안심이 돼. 당장 나가서 모든 걸 알아내야겠어! 가부키초는 사고 장소라 무섭지만, 내 기억을 찾는 게 더 중요해!",
+    "thought_chain": [
+      "아이폰에 와타야의 메시지가 왔네, 빨리 읽어봐야겠어.",
+      "카미야... 내 기억에 확실하지 않은 부분이 많은데, 설레는 감정이 강하게 느껴져.",
+      "채팅 기록을 보니 카미야와 나 사이에 뭔가 특별한 게 있었던 것 같아.",
+      "6월에 있었던 고백이나 곁지킴 같은 일들... 카미야였을까?",
+      "모카하우스까지 72분이나 걸리는군. 지금 바로 출발해야 12시에 늦지 않을 수 있어.",
+      "와타야는 내 가장 믿는 친구니까 함께 있으면 안심이 될 거야.",
+      "사고가 났던 가부키초로 가는 건 무섭지만, 기억을 되찾기 위해 가야만 해.",
+      "왜 1월의 사고 이후로 내 기억에 구멍이 생긴 거지? 카미야가 그 답을 가지고 있을까?",
+      "궁금해서 견딜 수가 없어! 당장 가야겠어!"
+    ],
+    "emotions": [
+      {
+        "name": "호기심",
+        "intensity": 0.9
+      },
+      {
+        "name": "설렘",
+        "intensity": 0.8
+      },
+      {
+        "name": "조급함",
+        "intensity": 0.9
+      },
+      {
+        "name": "불안",
+        "intensity": 0.7
+      },
+      {
+        "name": "기대감",
+        "intensity": 0.8
+      }
+    ]
+  },
+  "tools": [
+    {
+      "name": "FindShortestAreaPathFromActor",
+      "argsJson": "{\"targetAreaKey\":\"\\uAC00\\uBD80\\uD0A4\\uCD08:1-chome-5\"}"
+    },
+    {
+      "name": "LoadRelationshipByName",
+      "argsJson": "{\"targetName\":\"\\uCE74\\uBBF8\\uC57C\"}"
+    },
+    {
+      "name": "LoadRelationshipByName",
+      "argsJson": "{\"targetName\":\"\\uC640\\uD0C0\\uC57C \\uC774\\uC988\\uBBF8\"}"
+    },
+    {
+      "name": "FindBuildingAreaPath",
+      "argsJson": "{\"buildingName\":\"\\uBAA8\\uCE74\\uD558\\uC6B0\\uC2A4\"}"
+    }
+  ]
+}
