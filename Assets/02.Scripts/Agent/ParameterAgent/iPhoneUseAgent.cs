@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System.Linq;
 using System.Threading;
 using static Agent.IParameterAgentBase;
+using Agent.Tools;
 
 namespace Agent
 {
@@ -16,13 +17,13 @@ namespace Agent
         {
             [JsonProperty("command")]
             public string Command { get; set; } // "chat", "recent_read", "continue_read"
-            
+
             [JsonProperty("target_actor")]
             public string TargetActor { get; set; }
-            
+
             [JsonProperty("message")]
             public string Message { get; set; } // chat 명령어일 때만 사용
-            
+
             [JsonProperty("message_count")]
             public int? MessageCount { get; set; } // read/continue 명령어일 때만 사용
         }
@@ -43,7 +44,7 @@ namespace Agent
                     { "memory", actor.LoadCharacterMemory() },
                     { "character_situation", actor.LoadActorSituation() }
                 });
-                            var schemaJson = $@"{{
+            var schemaJson = $@"{{
                             ""type"": ""object"",
                             ""description"": ""iPhone 사용을 위한 파라미터 스키마 (continue_read 시 message_count>0 이면 최신 방향으로, <0 이면 과거 방향으로 이동하여 해당 구간을 읽음)"",
                             ""additionalProperties"": false,
@@ -57,6 +58,15 @@ namespace Agent
                         }}";
             var schema = new LLMClientSchema { name = "iphone_use_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
             SetResponseFormat(schema);
+            // 월드 정보와 계획 조회, 메모리/관계 도구 추가
+            AddTools(ToolManager.NeutralToolDefinitions.GetAreaHierarchy);
+            AddTools(ToolManager.NeutralToolDefinitions.GetAreaConnections);
+            //AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
+
+            AddTools(ToolManager.NeutralToolDefinitions.FindShortestAreaPathFromActor);
+            AddTools(ToolManager.NeutralToolDefinitions.FindBuildingAreaPath);
+
+            AddTools(ToolManager.NeutralToolDefinitions.LoadRelationshipByName);
         }
 
         public async UniTask<iPhoneUseParameter> GenerateParametersAsync(CommonContext context)
@@ -64,19 +74,19 @@ namespace Agent
             ClearMessages();
             AddSystemMessage(systemPrompt);
             AddUserMessage(BuildUserMessage(context));
-            var response = await SendWithCacheLog<iPhoneUseParameter>( );
+            var response = await SendWithCacheLog<iPhoneUseParameter>();
             return response;
         }
 
         public async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
-        {            
+        {
             var param = await GenerateParametersAsync(new CommonContext
             {
                 Reasoning = request.Reasoning,
                 Intention = request.Intention,
                 PreviousFeedback = request.PreviousFeedback
             });
-            
+
             return new ActParameterResult
             {
                 ActType = request.ActType,
@@ -97,20 +107,20 @@ namespace Agent
         {
             try
             {
-				var names = new List<string>();
-				var mains = UnityEngine.Object.FindObjectsByType<MainActor>(UnityEngine.FindObjectsInactive.Exclude, UnityEngine.FindObjectsSortMode.None);
-				foreach (var m in mains)
-				{
-					if (m == null) continue;
-					if (actor != null && ReferenceEquals(m, actor)) continue;
-					if (!string.IsNullOrEmpty(m.Name)) names.Add(m.Name);
-				}
-				return names.Distinct().OrderBy(n => n).ToList();
-			}
+                var names = new List<string>();
+                var mains = UnityEngine.Object.FindObjectsByType<MainActor>(UnityEngine.FindObjectsInactive.Exclude, UnityEngine.FindObjectsSortMode.None);
+                foreach (var m in mains)
+                {
+                    if (m == null) continue;
+                    if (actor != null && ReferenceEquals(m, actor)) continue;
+                    if (!string.IsNullOrEmpty(m.Name)) names.Add(m.Name);
+                }
+                return names.Distinct().OrderBy(n => n).ToList();
+            }
             catch (Exception ex)
             {
                 Debug.LogWarning($"[iPhoneUseAgent] 주변 Actor 목록 가져오기 실패: {ex.Message}");
-				return new List<string>();
+                return new List<string>();
             }
         }
 
@@ -124,15 +134,15 @@ namespace Agent
                 {"intention", context.Intention},
                 {"current_time", $"{timeService.CurrentTime.ToKoreanString()}"}
             };
-            
+
             var message = localizationService.GetLocalizedText("iphone_use_parameter_message", replacements);
-            
+
             if (!string.IsNullOrEmpty(context.PreviousFeedback))
             {
                 message += $"\n\nPrevious Action Feedback: {context.PreviousFeedback}";
                 message += "\n\nPlease consider this feedback when making your selection.";
             }
-            
+
             return message;
         }
     }

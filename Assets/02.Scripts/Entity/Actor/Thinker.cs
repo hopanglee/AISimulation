@@ -3,6 +3,8 @@ using System.Threading;
 using Agent;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using System.IO;
+using System.Collections.Generic;
 
 /// <summary>
 /// Actor의 Think/Act 루프를 관리하는 클래스
@@ -37,6 +39,31 @@ public class Thinker
         this.actor = actor;
         this.brain = brain;
     }
+
+    private static string GetStringParam(Dictionary<string, object> parameters, string key)
+    {
+        if (parameters == null) return null;
+        if (parameters.TryGetValue(key, out var val) && val != null)
+            return val.ToString();
+        return null;
+    }
+
+    // private bool HasNextCacheFileForUseObject()
+    // {
+    //     try
+    //     {
+    //         var actorName = actor != null ? actor.Name : "Unknown";
+    //         var baseDir = Path.Combine(Application.dataPath, "11.GameDatas", "CachedLogs", actorName ?? "Unknown");
+    //         if (!Directory.Exists(baseDir)) return false;
+    //         var pattern = $"{actor.CacheCount}_*_*_*.json";
+    //         var files = Directory.GetFiles(baseDir, pattern);
+    //         return files != null && files.Length > 0;
+    //     }
+    //     catch
+    //     {
+    //         return false;
+    //     }
+    // }
 
     /// <summary>
     /// Think/Act 루프를 시작합니다.
@@ -121,9 +148,56 @@ public class Thinker
                     if (selection != null)
                     {
                         // Think 액션은 한 번 실행 후 루프 종료
-                        if (selection.ActType == ActionType.Think || selection.ActType == ActionType.Sleep || selection.ActType == ActionType.PerformActivity || selection.ActType == ActionType.UseObject || selection.ActType == ActionType.MoveToArea)
+                        if (selection.ActType == ActionType.Think || selection.ActType == ActionType.Sleep || selection.ActType == ActionType.PerformActivity || selection.ActType == ActionType.MoveToArea)
                         {
                             breakAfterAct = true;
+                        }
+
+                        if (selection.ActType == ActionType.UseObject)
+                        {
+                            if ((actor.Name == "히노" && actor.CacheCount <= 154) ||
+                            (actor.Name == "와타야" && actor.CacheCount <= 123) ||
+                            (actor.Name == "카미야" && actor.CacheCount <= 125)
+                            ) // 이전 캐시 대로 실행되도록 조건 추가
+                            {
+                                breakAfterAct = true;
+                            }
+                            else
+                            {
+                                if (actor.HandItem != null)
+                                {
+
+                                    var p = paramResult?.Parameters;
+                                    if (actor.HandItem is iPhone)
+                                    {
+                                        var cmd = GetStringParam(p, "command");
+                                        if (!string.IsNullOrEmpty(cmd) && (string.Equals(cmd, "recent_read", StringComparison.OrdinalIgnoreCase)
+                                            || string.Equals(cmd, "continue_read", StringComparison.OrdinalIgnoreCase)))
+                                        {
+                                            breakAfterAct = true;
+                                        }
+
+                                    }
+                                    else if (actor.HandItem is Note)
+                                    {
+                                        var action = GetStringParam(p, "action");
+                                        if (!string.IsNullOrEmpty(action) && string.Equals(action, "read", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            breakAfterAct = true;
+                                        }
+                                    }
+                                    else if (actor.HandItem is Book)
+                                    {
+                                        var action = GetStringParam(p, "action");
+                                        if (!string.IsNullOrEmpty(action) && string.Equals(action, "read", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            breakAfterAct = true;
+                                        }
+                                    }
+
+                                }
+
+                            }
                         }
                     }
 

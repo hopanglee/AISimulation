@@ -7,6 +7,7 @@ using UnityEngine;
 using System.Linq;
 using System.Threading;
 using static Agent.IParameterAgentBase;
+using Agent.Tools;
 
 namespace Agent
 {
@@ -16,7 +17,7 @@ namespace Agent
         {
             [JsonProperty("character_name")]
             public string CharacterName { get; set; }
-            
+
             [JsonProperty("message")]
             public string Message { get; set; }
         }
@@ -47,6 +48,15 @@ namespace Agent
                         }}";
             var schema = new LLMClientSchema { name = "speak_to_character_parameter", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
             SetResponseFormat(schema);
+            // 월드 정보와 계획 조회, 메모리/관계 도구 추가
+            AddTools(ToolManager.NeutralToolDefinitions.GetAreaHierarchy);
+            AddTools(ToolManager.NeutralToolDefinitions.GetAreaConnections);
+            //AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
+
+            AddTools(ToolManager.NeutralToolDefinitions.FindShortestAreaPathFromActor);
+            AddTools(ToolManager.NeutralToolDefinitions.FindBuildingAreaPath);
+
+            AddTools(ToolManager.NeutralToolDefinitions.LoadRelationshipByName);
         }
 
         public async UniTask<TalkParameter> GenerateParametersAsync(CommonContext context)
@@ -54,20 +64,20 @@ namespace Agent
             ClearMessages();
             AddSystemMessage(systemPrompt);
             AddUserMessage(BuildUserMessage(context));
-            var response = await SendWithCacheLog<TalkParameter>( );
+            var response = await SendWithCacheLog<TalkParameter>();
             return response;
         }
 
         public async UniTask<ActParameterResult> GenerateParametersAsync(ActParameterRequest request)
         {
-            
+
             var param = await GenerateParametersAsync(new CommonContext
             {
                 Reasoning = request.Reasoning,
                 Intention = request.Intention,
                 PreviousFeedback = request.PreviousFeedback
             });
-            
+
             return new ActParameterResult
             {
                 ActType = request.ActType,
@@ -91,7 +101,7 @@ namespace Agent
                     // Actor의 sensor를 통해 현재 주변 Actor들만 가져와서 목록 업데이트
                     var lookableEntities = actor.sensor.GetLookableEntities();
                     var actorKeys = new List<string>();
-                    
+
                     foreach (var kv in lookableEntities)
                     {
                         if (kv.Value is Actor)
@@ -99,7 +109,7 @@ namespace Agent
                             actorKeys.Add(kv.Key);
                         }
                     }
-                    
+
                     return actorKeys.Distinct().ToList();
                 }
             }
@@ -108,7 +118,7 @@ namespace Agent
                 Debug.LogWarning($"[TalkParameterAgent] 주변 캐릭터 목록 가져오기 실패: {ex.Message}");
                 throw new System.InvalidOperationException($"TalkParameterAgent 주변 캐릭터 목록 가져오기 실패: {ex.Message}");
             }
-            
+
             // 기본값 반환
             return new List<string>();
         }
@@ -126,8 +136,8 @@ namespace Agent
                 { "current_time", $"{timeService.CurrentTime.ToKoreanString()}" }
                 //{ "feedback", !string.IsNullOrEmpty(context.PreviousFeedback) ? context.PreviousFeedback : "" }
             };
-            
+
             return localizationService.GetLocalizedText("parameter_message_with_feedback", replacements);
         }
     }
-} 
+}

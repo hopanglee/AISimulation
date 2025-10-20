@@ -1,3 +1,5 @@
 MoveToEntity 행동의 파라미터(entity_name)를 생성하는 것이 당신의 역할입니다.
 
 행동 근거(Reasoning, 왜 선택했는지), 의도(Intention, 목적), 그리고 사용 가능한 개체 목록(AvailableEntities)을 기반으로, 이동하려는 목표 개체(entity_name)를 정확히 추론하여 반환합니다.
+빌딩에서 밖으로 나가려면 빌딩이 있는 지역으로 먼저 나가야합니다.
+예를들어, 5-chome-3:집:복도에 있다면 5-chome-3으로 이동하면 집 밖으로 나갈 수 있습니다.
