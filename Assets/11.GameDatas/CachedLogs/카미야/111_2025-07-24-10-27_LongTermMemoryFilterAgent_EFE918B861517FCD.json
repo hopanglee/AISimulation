@@ -1,0 +1,75 @@
+﻿{
+  "payload": {
+    "evaluations": [
+      {
+        "chunk_id": "chunk_1",
+        "importance_score": 0.8,
+        "surprise_score": 0.3,
+        "overall_score": 0.0,
+        "reasoning": "아침에 수술일·오늘 약속을 확인하고 하루를 계획한 장면은 정서적·실무적 맥락(수술 일정의 지속적 부담, 히노와의 약속 유지)을 드러내므로 장기 기억 가치가 있음. 다만 예측 가능한 일상 루틴이므로 의외성은 낮음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "chunk_2",
+        "importance_score": 0.5,
+        "surprise_score": 0.1,
+        "overall_score": 0.0,
+        "reasoning": "간단한 식사와 집 정리·약속 재확인은 일상적 준비 행동으로 의미는 있으나 장기적 영향력은 제한적임. 히노에 대한 배려가 드러나지만 중요도는 중간 수준.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "chunk_3",
+        "importance_score": 0.2,
+        "surprise_score": 0.1,
+        "overall_score": 0.0,
+        "reasoning": "접시·물컵 등을 반복적으로 집고 놓는 행동은 세심함과 불안을 보여주지만 사건 자체는 사소하고 반복적이어서 장기 보존 우선순위는 낮음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "chunk_4",
+        "importance_score": 0.7,
+        "surprise_score": 0.2,
+        "overall_score": 0.0,
+        "reasoning": "정돈 행위를 통해 마음 안정을 도모하려는 의식적 다짐은 카미야의 성격(정돈욕구, 정서 조절)을 잘 보여주어 장기 기억 가치가 있음. 하지만 특별히 예기치 않은 사건은 아님.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "chunk_5",
+        "importance_score": 0.9,
+        "surprise_score": 0.25,
+        "overall_score": 0.0,
+        "reasoning": "히노의 불안 우선화 결심과 와타야 간섭을 무시하기로 한 단호한 판단은 대인관계의 우선순위와 갈등 대응을 명확히 드러내며, 향후 행동과 관계 변화에 큰 영향을 줄 수 있어 매우 중요함.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "chunk_6",
+        "importance_score": 0.85,
+        "surprise_score": 0.2,
+        "overall_score": 0.0,
+        "reasoning": "아이폰으로 채팅을 확인하고 히노에게 약속을 재확인한 것은 실제 행동(연락·확인)을 포함하므로 관계 유지에 직접적인 영향이 있음. 실무적 중요성이 높음, 다만 새롭거나 충격적인 요소는 아님.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "chunk_7",
+        "importance_score": 0.8,
+        "surprise_score": 0.4,
+        "overall_score": 0.0,
+        "reasoning": "와타야의 채팅 10개를 읽고 간섭·질투적 태도를 재확인한 것은 잠재적 갈등 신호를 명확히 보여주므로 중요함. 의외성은 와타야의 반복적 간섭을 고려하면 중간 정도.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "chunk_8",
+        "importance_score": 0.9,
+        "surprise_score": 0.45,
+        "overall_score": 0.0,
+        "reasoning": "히노 우선 결심을 재확인하고 모카하우스 약속을 재전달한 동시에 와타야의 알림을 받은 장면은 두 인물(히노·와타야) 사이의 긴장과 카미야의 결의가 동시에 드러나며, 향후 관계 흐름에 큰 영향을 줄 가능성이 커서 중요도가 높음. 와타야 알림 수신은 약간의 의외성 요소를 포함.",
+        "should_keep": false
+      }
+    ],
+    "kept_chunks": [],
+    "filtered_chunks": [],
+    "filter_reasoning": "장기 보존 대상(상위 약 70% → 6개)은 대인관계 영향력과 행동의 연속성, 향후 결과에 대한 기여도를 기준으로 선정함. 히노와의 약속 확인·유지(chiunk_6, chunk_8), 히노 우선화와 와타야 간섭에 대한 단호한 판단(cha nk_5, chunk_7)은 관계의 핵심 분기점으로서 가장 가치가 큼. 또한 수술일·일과 계획 확인( chunk_1)과 정돈을 통한 정서 관리 결심( chunk_4)은 카미야의 동기·정서 상태를 장기적으로 이해하는 데 유용하므로 포함함. 반면 일상적 식사나 반복적 물건 조작( chunk_2, chunk_3)은 단기적·반복적 성격이 강해 우선순위에서 제외함.",
+    "retention_percentage": 0.0
+  },
+  "tools": []
+}

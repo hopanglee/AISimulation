@@ -59,6 +59,11 @@ public class GPT : LLMClient
         this.SetActor(actor);
     }
 
+    public void SetMaxOutputTokenCount(int count)
+    {
+        try { this.options.MaxOutputTokenCount = count; } catch { }
+    }
+
     protected override object GetHashKey()
     {
         // 기본 구현: 캐시 키 비활성화에 가까운 고정 키 제공
@@ -240,7 +245,7 @@ public class GPT : LLMClient
             {
                 writer.WriteLine(logContent.ToString());
             }
-            Debug.Log($"[{agentTypeOverride ?? "Unknown"}] Conversation log saved (appended): {filePath}");
+            //Debug.Log($"[{agentTypeOverride ?? "Unknown"}] Conversation log saved (appended): {filePath}");
         }
         catch (Exception ex)
         {
@@ -484,7 +489,7 @@ public class GPT : LLMClient
             {
                 await SaveRequestLogAsync(messages, options, agentTypeForLog);
             }
-            Debug.Log($"GPT Request: SaveRequestLogAsync 완료");
+            //Debug.Log($"GPT Request: SaveRequestLogAsync 완료");
             ChatCompletion completion;
             // 과부하/일시적 네트워크 오류에 대한 재시도 로직
             {
@@ -510,7 +515,7 @@ public class GPT : LLMClient
                                 continue;
                             }
                         }
-                        Debug.Log($"GPT Request: CompleteChatAsync 완료");
+                        //Debug.Log($"GPT Request: CompleteChatAsync 완료");
                         break;
                     }
                     catch (Exception callEx)
@@ -652,7 +657,7 @@ public class GPT : LLMClient
                         {
                             // Best-effort: bump output tokens if supported by SDK
                             var current = this.options?.MaxOutputTokenCount ?? 0;
-                            var next = current > 0 ? Math.Min(current * 2, 8192) : 4096;
+                            var next = current > 0 ? Math.Min(current * 2, 4096 * 2) : 4096;
                             try { this.options.MaxOutputTokenCount = next; } catch { }
                             try { options.MaxOutputTokenCount = next; } catch { }
                         }

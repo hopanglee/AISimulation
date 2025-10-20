@@ -130,6 +130,7 @@ public class LongTermMemoryConsolidationAgent : GPT
                         }}";
         var schema = new LLMClientSchema { name = "memory_consolidation", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
         SetResponseFormat(schema);
+        SetMaxOutputTokenCount(4096 * 2);
     }
 
     private string FormatEmotions(List<Emotions> emotions)

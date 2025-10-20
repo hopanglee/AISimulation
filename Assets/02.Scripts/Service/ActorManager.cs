@@ -117,7 +117,7 @@ public class ActorManager : IActorService
         string actorName = actor.Name;
         actorActResults[actorName] = actResult;
         
-        Debug.Log($"[ActorManager] {actorName}의 ActSelectResult 저장됨 - ActType: {actResult.ActType}, Reasoning: {actResult.Reasoning}, Intention: {actResult.Intention}");
+        //Debug.Log($"[ActorManager] {actorName}의 ActSelectResult 저장됨 - ActType: {actResult.ActType}, Reasoning: {actResult.Reasoning}, Intention: {actResult.Intention}");
     }
 
     /// <summary>

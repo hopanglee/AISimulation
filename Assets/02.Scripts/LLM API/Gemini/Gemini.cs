@@ -353,7 +353,7 @@ public class Gemini : LLMClient
 
             // Claude와 동일하게 시스템 프롬프트에도 스키마 안내를 덧붙이되,
             // 아직 시스템 메시지가 없다면 버퍼에 저장해 다음 AddSystemMessage 때 합칩니다.
-            var appended = $"\n\n 당신은 항상 다음 Json형식으로 응답해야 합니다: {schemaJson}";
+            var appended = $"\n\n 다음 규칙을 따르세요:\n1) 오직 유효한 JSON만 출력 (설명/마크다운/코드블록 금지)\n2) 모든 키는 스키마와 정확히 일치\n3) 필드 사이 콤마 필수, 마지막 필드 뒤 콤마 금지\n4) 문자열엔 줄바꿈/따옴표를 올바르게 이스케이프\n5) JSON 외 텍스트 출력 금지\n\n당신은 항상 다음 Json형식으로만 응답해야 합니다: {schemaJson}";
             var baseSystem = GetSystemMessage();
             if (string.IsNullOrEmpty(baseSystem))
             {
@@ -659,9 +659,9 @@ public class Gemini : LLMClient
                     }
                     catch (Exception exOuter)
                     {
-                        Debug.LogWarning($"[Gemini][PARSE ERROR] Outermost-object parse failed: {exOuter.Message}. Trying sanitized JSON (remove trailing commas)...");
+                        Debug.LogWarning($"[Gemini][PARSE ERROR] Outermost-object parse failed: {exOuter.Message}. Trying common JSON fixes (insert missing commas, remove trailing commas)...");
 
-                        var sanitized = RemoveTrailingCommas(outer);
+                        var sanitized = FixJsonCommonIssues(outer);
                         try
                         {
                             var result = JsonConvert.DeserializeObject<T>(sanitized);

@@ -42,9 +42,9 @@ public class EgoAgent : GPT
                 { "current_time", $"{timeService.CurrentTime.ToKoreanString()}" },
                 { "character_name", actor.Name },
                 { "personality", actor.LoadPersonality() },
-                { "info", $"- 정보: {characterInfo}\n" }, 
-                { "memory", $"{characterMemory}\n" },
-                { "character_situation", $"{actor.Name}의 현재 상태: \n{actor.LoadActorSituation()}\n" },
+                { "info", $"{characterInfo}" }, 
+                { "memory", $"{characterMemory}" },
+                { "character_situation", $"{actor.LoadActorSituation()}" },
                // { "goal", actor.LoadGoal() }
             };
 
@@ -298,8 +298,8 @@ public class EgoAgent : GPT
             var replacements = new Dictionary<string, string>
             {
                 { "current_time", $"{timeService.CurrentTime.ToKoreanString()}" },
-                { "superego_result",superegoResult.situation_interpretation },
-                { "id_result", idResult.situation_interpretation },
+                //{ "superego_result",superegoResult.situation_interpretation },
+                //{ "id_result", idResult.situation_interpretation },
                 { "superego_emotion", superegoEmotions },
                 { "id_emotion", idEmotions },
                 { "superego_thought_chain", string.Join(" -> ", superegoResult.thought_chain) },

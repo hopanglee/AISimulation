@@ -60,7 +60,7 @@ namespace Agent
                     { "personality", actor.LoadPersonality() },
                     { "info", actor.LoadCharacterInfo() },
                     { "long_term_memory", actor.LoadLongTermMemory() },
-                    { "relationship", actor.LoadRelationships() },
+                    //{ "relationship", actor.LoadRelationships() },
                     {"available_act", FormatAvailableActionsToString(GetCurrentAvailableActions())}
                 });
             ClearMessages();
@@ -171,8 +171,8 @@ namespace Agent
             }
             else
             {
-                replacements.Add("current_plan", string.Empty);
-                replacements.Add("plan_notify", string.Empty);
+                //replacements.Add("current_plan", string.Empty);
+                //replacements.Add("plan_notify", string.Empty);
             }
 
             var userMessage = localizationService.GetLocalizedText("current_action_context_prompt", replacements);

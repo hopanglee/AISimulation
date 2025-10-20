@@ -1,16 +1,12 @@
 현재 시간: {current_time}
 
-**이성**
+===이성===
 느낀 감정: {superego_emotion}
-생각 과정: {superego_thought_chain}
-최종 상황 인식 결과: {superego_result}
+생각: {superego_thought_chain}
 
--------------------------
-
-**본능**
+===본능===
 느낀 감정: {id_emotion}
-생각 과정: {id_thought_chain}
-최종 상황 인식 결과: {id_result}
+생각: {id_thought_chain}
 
 상황해석과 생각은 자연스러운 말투로 혼잣말처럼 만들어야 합니다.
 배고픔과 목마름, 졸림, 체력, 스트레스 등 정신적, 신체적 건강 수치가 안좋을수록 즉각적인 스트레스 해결 및 만족 욕구가 커져야 합니다.

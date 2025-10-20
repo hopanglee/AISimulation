@@ -781,7 +781,7 @@ public class TimeManager : ITimeService
             if (isTimeFlowing)
             {
                 isTimeFlowing = false;
-                Debug.Log($"[TimeManager] Time paused for API call (Actor count: {apiPauseCount})");
+                //Debug.Log($"[TimeManager] Time paused for API call (Actor count: {apiPauseCount})");
             }
         }
 
@@ -805,7 +805,7 @@ public class TimeManager : ITimeService
         if (apiPauseCount == 0 && wasTimeFlowingBeforeAPI)
         {
             isTimeFlowing = true;
-            Debug.Log("[TimeManager] All API pauses completed - time resumed");
+            //Debug.Log("[TimeManager] All API pauses completed - time resumed");
         }
     }
 

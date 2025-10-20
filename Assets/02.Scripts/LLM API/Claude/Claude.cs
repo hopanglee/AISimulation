@@ -281,7 +281,7 @@ public class Claude : LLMClient
         {
             var innerSchema = schema.format.DeepClone();
             var baseSystem = GetSystemMessage() ?? string.Empty;
-            var appended = $"\n\n 당신은 항상 다음 Json형식으로 응답해야 합니다: {innerSchema.ToString(Formatting.Indented)}";
+            var appended = $"\n\n 다음 규칙을 따르세요:\n1) 오직 유효한 JSON만 출력 (설명/마크다운/코드블록 금지)\n2) 모든 키는 스키마와 정확히 일치\n3) 필드 사이 콤마 필수, 마지막 필드 뒤 콤마 금지\n4) 문자열엔 줄바꿈/따옴표를 올바르게 이스케이프\n5) JSON 외 텍스트 출력 금지\n\n당신은 항상 다음 Json형식으로만 응답해야 합니다: {innerSchema.ToString(Formatting.Indented)}";
             if (String.IsNullOrEmpty(baseSystem)) // 현재 시스템 프롬프트 없음.
             {
                 jsonSystemMessage = appended;
@@ -338,7 +338,7 @@ public class Claude : LLMClient
             {
                 await SaveRequestLogAsync(messages, parameters, agentTypeForLog);
             }
-            Debug.Log($"Claude Request: SaveRequestLogAsync 완료");
+            //Debug.Log($"Claude Request: SaveRequestLogAsync 완료");
             MessageResponse res;
             // 과부하/일시적 네트워크 오류에 대한 재시도 로직
             {
@@ -363,7 +363,7 @@ public class Claude : LLMClient
                                 continue;
                             }
                         }
-                        Debug.Log($"Claude Request: CompleteChatAsync 완료");
+                        //Debug.Log($"Claude Request: CompleteChatAsync 완료");
                         break;
                     }
                     catch (Exception callEx)
@@ -448,7 +448,7 @@ public class Claude : LLMClient
             }
             else
             {
-                Debug.Log($"Claude Request: Stop");
+                //Debug.Log($"Claude Request: Stop");
                 finalResponse = res.FirstMessage;
                 // 파싱 전에 생 텍스트를 OutgoingRequestLog에 저장
                 if (enableOutgoingLogs)
@@ -486,8 +486,8 @@ public class Claude : LLMClient
                     }
                     catch (Exception exOuter)
                     {
-                        Debug.LogWarning($"[Claude][PARSE ERROR] Outermost-object parse failed: {exOuter.Message}. Trying sanitized JSON (remove trailing commas)...");
-                        var sanitized = RemoveTrailingCommas(outer);
+                    Debug.LogWarning($"[Claude][PARSE ERROR] Outermost-object parse failed: {exOuter.Message}. Trying common JSON fixes (insert missing commas, remove trailing commas)...");
+                    var sanitized = FixJsonCommonIssues(outer);
                         try
                         {
                             var result = JsonConvert.DeserializeObject<T>(sanitized);
@@ -734,7 +734,7 @@ public class Claude : LLMClient
             {
                 writer.WriteLine(logContent.ToString());
             }
-            Debug.Log($"[{agentTypeOverride ?? "Unknown"}] Conversation log saved (appended): {filePath}");
+            //Debug.Log($"[{agentTypeOverride ?? "Unknown"}] Conversation log saved (appended): {filePath}");
         }
         catch (Exception ex)
         {

@@ -1,19 +1,19 @@
 오늘 날짜와 시간 : {current_time}
 
-{character_name}의 상황 인식
+==={character_name}의 상황 인식===
 {interpretation}
 
-{character_name}의 현재 생각 체인
+==={character_name}의 현재 생각 체인===
 {thought_chain}
 
-{current_plan}
 
-{character_name}의 가장 최근의 기억입니다.
+==={character_name}의 가장 최근의 기억입니다.===
 {short_term_memory}
 
+
+=== 중요 ===
 UseObject 액션 시 사용되는 현재 {character_name}이 손에 들고 있는 아이템: {item_name}
 이 아이템이 아닌 인벤에 있는 아이템을 사용하려면 반드시 먼저 SwapInventoryToHand를 사용해서 아이템을 손으로 가져와야합니다.
 
-{plan_notify}
 가장 자연스러운 다음 행동을 고르세요.
 필요 시 제공된 도구(SwapInventoryToHand 등)를 먼저 호출해 준비를 마친 뒤 최종 JSON만 응답하세요.

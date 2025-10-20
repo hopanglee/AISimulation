@@ -1,0 +1,9 @@
+﻿{
+  "payload": {
+    "action": "write",
+    "page_number": 9,
+    "line_number": null,
+    "text": "읽음: 노트 확인 완료. 약속 키워드 — 장소: 모카하우스, 시간: 12:00, 좌석: 창가(왼쪽)."
+  },
+  "tools": []
+}

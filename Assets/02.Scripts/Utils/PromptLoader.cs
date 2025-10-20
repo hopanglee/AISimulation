@@ -366,7 +366,7 @@ Available Actions:
                 if (File.Exists(promptPath))
                 {
                     prompt = File.ReadAllText(promptPath);
-                    Debug.Log($"[PromptLoader] 프롬프트 파일 로드 완료: {promptFileName} (언어: {localizationService.CurrentLanguage})");
+                    //Debug.Log($"[PromptLoader] 프롬프트 파일 로드 완료: {promptFileName} (언어: {localizationService.CurrentLanguage})");
                 }
                 else
                 {

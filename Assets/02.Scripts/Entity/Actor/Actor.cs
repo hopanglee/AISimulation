@@ -1675,21 +1675,21 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     {
         if (this is MainActor mainActor)
         {
-            Debug.Log($"[Actor] MainActor 캐스팅 성공 - mainActor: {mainActor != null}");
+            //Debug.Log($"[Actor] MainActor 캐스팅 성공 - mainActor: {mainActor != null}");
 
             if (mainActor.brain == null)
             {
                 Debug.LogError("[Actor] mainActor.brain이 null입니다!");
                 return "brain이 null입니다.";
             }
-            Debug.Log($"[Actor] mainActor.brain 확인 완료 - brain 타입: {mainActor.brain.GetType().Name}");
+            //Debug.Log($"[Actor] mainActor.brain 확인 완료 - brain 타입: {mainActor.brain.GetType().Name}");
 
             if (mainActor.brain.memoryManager == null)
             {
                 Debug.LogError("[Actor] mainActor.brain.memoryManager가 null입니다!");
                 return "memoryManager가 null입니다.";
             }
-            Debug.Log($"[Actor] mainActor.brain.memoryManager 확인 완료 - memoryManager 타입: {mainActor.brain.memoryManager.GetType().Name}");
+            //Debug.Log($"[Actor] mainActor.brain.memoryManager 확인 완료 - memoryManager 타입: {mainActor.brain.memoryManager.GetType().Name}");
 
             var shortTermMemories = mainActor.brain.memoryManager.GetShortTermMemory();
 

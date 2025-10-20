@@ -306,7 +306,7 @@ public abstract class LLMClient
             }
             else if (gameService != null && !gameService.IsGPTApprovalEnabled())
             {
-                Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] GPT 승인 시스템이 비활성화되어 자동으로 진행합니다: {agentTypeOverride}");
+                //Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] GPT 승인 시스템이 비활성화되어 자동으로 진행합니다: {agentTypeOverride}");
             }
             #endregion
 
@@ -501,6 +501,37 @@ public abstract class LLMClient
         }
         // If braces are unbalanced, return from the first '{' to the end
         return text.Substring(firstBraceIndex);
+    }
+
+    // Utility: fix common issue - missing commas between object properties
+    // This attempts to insert a comma when an object property value is directly followed by the next property's key on a new line without a comma.
+    // It covers frequent LLM mistakes like: "key": "value"\n  "next": 1
+    protected static string InsertMissingCommasBetweenProperties(string json)
+    {
+        if (string.IsNullOrWhiteSpace(json)) return json;
+
+        // Fast regex-based fix for common cases: string/number/true/false/null/}/] followed by a newline+spaces then a quoted key without an intervening comma
+        // Example to fix: ... "situation_interpretation": "..."\n  "emotions": [ ... ]
+        var pattern = "(\\\"(?:[^\\\\\\\"]|\\\\.)*\\\"|\\}|\\]|-?\\d+(?:\\.\\d+)?|true|false|null)\\s*(\\r?\\n\\s*)(\\\"[A-Za-z0-9_]+\\\"\\s*:)";
+        var replaced = Regex.Replace(json, pattern, m =>
+        {
+            // If there is already a trailing comma just before newline, leave as-is
+            var before = m.Groups[1].Value;
+            if (before.Length > 0 && before[before.Length - 1] == ',') return m.Value; // already has comma
+            return m.Groups[1].Value + "," + m.Groups[2].Value + m.Groups[3].Value;
+        }, RegexOptions.Multiline);
+
+        return replaced;
+    }
+
+    // Utility: apply a sequence of common JSON fixes
+    protected static string FixJsonCommonIssues(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return text;
+        var outer = ExtractOutermostJsonObject(text);
+        var withCommas = InsertMissingCommasBetweenProperties(outer);
+        var noTrailing = RemoveTrailingCommas(withCommas);
+        return noTrailing;
     }
 
     protected void LogExceptionWithLocation(Exception ex, string context)

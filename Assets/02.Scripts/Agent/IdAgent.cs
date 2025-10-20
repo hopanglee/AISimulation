@@ -405,8 +405,8 @@ public class IdAgent : Claude
             }
             else
             {
-                replacements.Add("current_plan", string.Empty);
-                replacements.Add("plan_notify", string.Empty);
+                //replacements.Add("current_plan", string.Empty);
+                //replacements.Add("plan_notify", string.Empty);
             }
             var userMessage = localizationService.GetLocalizedText(
                 "id_agent_template",
