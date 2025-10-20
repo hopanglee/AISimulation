@@ -152,6 +152,8 @@ public class CameraController : MonoBehaviour
             // }
             var newFocus = CalculateFocusPosition(focusTargetTransform.position);
             focusTarget = new Vector3(newFocus.x, transform.position.y, newFocus.z);
+            // 일반 이동 모드
+            transform.position = Vector3.Lerp(transform.position, focusTarget, Time.deltaTime * 10f);
         }
         else
         {

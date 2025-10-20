@@ -395,7 +395,7 @@ public abstract class LLMClient
         try
         {
             int deletedCount = 0;
-            var files = Directory.GetFiles(baseDir, $"{startCount}_*.json");
+            var files = Directory.GetFiles(baseDir, $"{startCount}_*_{agentTypeOverride}_*.json");
             foreach (var file in files)
             {
                 if (string.Equals(file, keepFilePath, StringComparison.OrdinalIgnoreCase))

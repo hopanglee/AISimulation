@@ -1,0 +1,13 @@
+﻿{
+  "payload": {
+    "act_type": "UseObject",
+    "reasoning": "출발 전에 물을 한두 모금 마셔 수분을 보충하고 긴장을 가라앉혀 이동 중에 더 안정적으로 행동하기 위해.",
+    "intention": "물컵을 한두 모금 마신 뒤 아이폰과 노트를 손에 들 수 있도록 준비해 지체 없이 출발한다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"물컵\"}"
+    }
+  ]
+}

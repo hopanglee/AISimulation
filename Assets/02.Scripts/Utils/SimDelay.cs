@@ -34,7 +34,7 @@ public static class SimDelay
 		var timeService = Services.Get<ITimeService>();
 		if (timeService == null || simMinutes <= 0)
 		{
-			await UniTask.Yield();
+			await UniTask.Yield(PlayerLoopTiming.LastFixedUpdate);
 			return;
 		}
 		// 현재 누적 틱에 정확히 simMinutes*60초를 더한 목표 틱을 설정
@@ -43,7 +43,7 @@ public static class SimDelay
 		while (timeService.GetTotalTicks() < targetTicks)
 		{
 			if (token.IsCancellationRequested) return;
-			await UniTask.Yield();
+			await UniTask.Yield(PlayerLoopTiming.LastFixedUpdate);
 		}
 	}
 
