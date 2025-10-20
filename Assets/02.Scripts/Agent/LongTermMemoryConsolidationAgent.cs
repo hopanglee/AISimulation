@@ -67,7 +67,7 @@ public class MemoryConsolidationResult
 /// Short Term Memory를 통합하여 요약하는 Agent
 /// 하루가 끝날 때 Short Term Memory의 내용들을 몇 개의 덩어리로 묶어서 요약합니다.
 /// </summary>
-public class LongTermMemoryConsolidationAgent : GPT
+public class LongTermMemoryConsolidationAgent : GPT5
 {
 
     public LongTermMemoryConsolidationAgent(Actor actor) : base(actor)

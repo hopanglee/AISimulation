@@ -231,7 +231,7 @@ namespace Pathfinding {
 		/// <summary>\copydoc Pathfinding::IAstarAI::velocity</summary>
 		public Vector3 velocity {
 			get {
-				return Time.deltaTime > 0.00001f ? (previousPosition1 - previousPosition2) / Time.deltaTime : Vector3.zero;
+				return Time.fixedDeltaTime > 0.00001f ? (previousPosition1 - previousPosition2) / Time.fixedDeltaTime : Vector3.zero;
 			}
 		}
 
@@ -630,7 +630,7 @@ namespace Pathfinding {
 			if (canMove) {
 				Vector3 nextPosition;
 				Quaternion nextRotation;
-				MovementUpdate(Time.deltaTime, out nextPosition, out nextRotation);
+				MovementUpdate(Time.fixedDeltaTime, out nextPosition, out nextRotation);
 				FinalizeMovement(nextPosition, nextRotation);
 			}
 		}

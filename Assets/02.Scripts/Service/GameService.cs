@@ -89,7 +89,7 @@ public class GameService : MonoBehaviour, IGameService
 
     // Fixed-step simulation accumulator for deterministic timing
     public static readonly float fixedStep = 0.05f; // seconds per simulation step
-    private float simAccumulator = 0f;
+    //private float simAccumulator = 0f;
 
     public void Initialize()
     {
@@ -98,12 +98,16 @@ public class GameService : MonoBehaviour, IGameService
         {
             QualitySettings.vSyncCount = 0; // VSync 비활성화
             Application.targetFrameRate = 30; // 필요 시 옵션화 가능
-            Debug.Log($"[GameService] Frame lock applied: targetFrameRate={Application.targetFrameRate}, vSyncCount={QualitySettings.vSyncCount}");
+            
+            // FixedUpdate도 30fps에 맞춰 조정 (더 안정적인 물리/시간 업데이트)
+            Time.fixedDeltaTime = 1f / Application.targetFrameRate; // 0.0333333초
+            
+            Debug.Log($"[GameService] Frame lock applied: targetFrameRate={Application.targetFrameRate}, vSyncCount={QualitySettings.vSyncCount}, fixedDeltaTime={Time.fixedDeltaTime:F6}");
         }
         catch { }
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         // 시간 업데이트 (시뮬레이션이 실행 중이고 포커스를 잃지 않았을 때만)
         if (isSimulationRunning && timeService != null && timeService.IsTimeFlowing && Application.isFocused)
@@ -115,17 +119,8 @@ public class GameService : MonoBehaviour, IGameService
             }
             else
             {
-                //deltaTime 상한을 두어 예외적 스파이크 방지 (예: 0.25초)
-                // var dt = Mathf.Min(Time.deltaTime, 0.1f);
-                // simAccumulator += dt;
-
-                // // 누적 시간만큼 고정 스텝으로 여러 번 진행
-                // while (simAccumulator >= fixedStep)
-                // {
-                //     timeService.UpdateTime(fixedStep);
-                //     simAccumulator -= fixedStep;
-                // }
-                timeService.UpdateTime(1f / Application.targetFrameRate); // 30fps
+                // FixedUpdate의 고정된 deltaTime 사용 (더 안정적)
+                timeService.UpdateTime(Time.fixedDeltaTime);
             }
         }
 

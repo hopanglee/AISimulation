@@ -1,9 +1,0 @@
-﻿{
-  "payload": {
-    "command": "recent_read",
-    "target_actor": "히노",
-    "message": null,
-    "message_count": 1
-  },
-  "tools": []
-}

@@ -179,7 +179,7 @@ namespace Pathfinding.RVO {
 			progressAverage = jobResult.progressAverage[index];
 
 			lastJobDensityResult = shouldStop;
-			shouldStopDelayTimer = Mathf.Lerp(shouldStopDelayTimer, shouldStop ? 1 : 0, Time.deltaTime);
+			shouldStopDelayTimer = Mathf.Lerp(shouldStopDelayTimer, shouldStop ? 1 : 0, Time.fixedDeltaTime);
 			shouldStop = shouldStop && shouldStopDelayTimer > 0.1f;
 			lastShouldStopResult = shouldStop;
 			lastShouldStopDestination = jobResult.data[index].agentDestination;
@@ -270,39 +270,39 @@ namespace Pathfinding.RVO {
 				timer1 = 0f;
 				this.reachedDestination = true;
 				this.reachedDestinationPoint = this.lastShouldStopDestination;
-				rvoPriorityMultiplier = Mathf.Lerp(rvoPriorityMultiplier, StoppedPriority, Time.deltaTime * 2);
-				rvoFlowFollowingStrength = Mathf.Lerp(rvoFlowFollowingStrength, 1.0f, Time.deltaTime * 4);
+				rvoPriorityMultiplier = Mathf.Lerp(rvoPriorityMultiplier, StoppedPriority, Time.fixedDeltaTime * 2);
+				rvoFlowFollowingStrength = Mathf.Lerp(rvoFlowFollowingStrength, 1.0f, Time.fixedDeltaTime * 4);
 				wasStopped |= math.abs(progressAverage) < 0.1f;
 				isStopped |= wasStopped; // false && rvoPriorityMultiplier > 0.9f;
 			} else if (isStopped) {
 				// We have not reached the destination, but a separate script is telling is to stop
 				timer1 = 0f;
 				this.reachedDestination = false;
-				rvoPriorityMultiplier = Mathf.Lerp(rvoPriorityMultiplier, StoppedPriority, Time.deltaTime * 2);
-				rvoFlowFollowingStrength = Mathf.Lerp(rvoFlowFollowingStrength, 1.0f, Time.deltaTime * 4);
+				rvoPriorityMultiplier = Mathf.Lerp(rvoPriorityMultiplier, StoppedPriority, Time.fixedDeltaTime * 2);
+				rvoFlowFollowingStrength = Mathf.Lerp(rvoFlowFollowingStrength, 1.0f, Time.fixedDeltaTime * 4);
 				wasStopped |= math.abs(progressAverage) < 0.1f;
 			} else {
 				// Check if we had reached the current destination previously (but it is not reached any longer)
 				// TODO: Rename variable, confusing
 				if (this.reachedDestination) {
-					timer1 += Time.deltaTime;
+					timer1 += Time.fixedDeltaTime;
 					if (timer1 > 3 && returnAfterBeingPushedAway) {
 						// Make the agent try to move back to the destination
 						// Use a slightly higher priority than agents that are just standing still, but lower than regular agents
-						rvoPriorityMultiplier = Mathf.Lerp(rvoPriorityMultiplier, MoveBackPriority, Time.deltaTime * 2);
+						rvoPriorityMultiplier = Mathf.Lerp(rvoPriorityMultiplier, MoveBackPriority, Time.fixedDeltaTime * 2);
 						rvoFlowFollowingStrength = 0;
 						isStopped = false;
 						wasStopped = false;
 					} else {
-						rvoPriorityMultiplier = Mathf.Lerp(rvoPriorityMultiplier, StoppedPriority, Time.deltaTime * 2);
-						rvoFlowFollowingStrength = Mathf.Lerp(rvoFlowFollowingStrength, 1.0f, Time.deltaTime * 4);
+						rvoPriorityMultiplier = Mathf.Lerp(rvoPriorityMultiplier, StoppedPriority, Time.fixedDeltaTime * 2);
+						rvoFlowFollowingStrength = Mathf.Lerp(rvoFlowFollowingStrength, 1.0f, Time.fixedDeltaTime * 4);
 						wasStopped |= math.abs(progressAverage) < 0.1f;
 						isStopped = wasStopped;
 						//isStopped = false && rvoPriorityMultiplier > 0.9f;
 					}
 				} else {
 					// This is the common case: the agent is just on its way to the destination
-					rvoPriorityMultiplier = Mathf.Lerp(rvoPriorityMultiplier, DefaultPriority, Time.deltaTime * 4);
+					rvoPriorityMultiplier = Mathf.Lerp(rvoPriorityMultiplier, DefaultPriority, Time.fixedDeltaTime * 4);
 					rvoFlowFollowingStrength = 0f;
 					isStopped = false;
 					wasStopped = false;

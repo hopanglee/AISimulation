@@ -81,12 +81,12 @@ namespace Pathfinding.ECS.RVO {
 				return;
 			}
 
-			CopyFromEntitiesToRVOSimulator(ref systemState, simulator, SystemAPI.Time.DeltaTime);
+			CopyFromEntitiesToRVOSimulator(ref systemState, simulator, SystemAPI.Time.fixedDeltaTime);
 
 			// Schedule RVO update
 			simulator.Update(
 				systemState.Dependency,
-				SystemAPI.Time.DeltaTime,
+				SystemAPI.Time.fixedDeltaTime,
 				AIMovementSystemGroup.TimeScaledRateManager.IsLastSubstep,
 				systemState.WorldUpdateAllocator
 				);

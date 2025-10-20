@@ -669,16 +669,18 @@ public class TimeManager : ITimeService
         if (!isTimeFlowing)
             return;
         //Debug.Log($"[TimeManager] UpdateTime: {currentTime}");
+        
+        // 모든 계산을 로컬 복사본에서 수행 후 한 번에 반영
+        GameTime newTime = currentTime;
+        float newAccumulatedTime = accumulatedTime;
+        
         // 시간 누적 (초 단위)
-        accumulatedTime += deltaTime * timeScale;
+        newAccumulatedTime += deltaTime * timeScale;
 
-        if (accumulatedTime >= 1f)
+        if (newAccumulatedTime >= 1f)
         {
-			int secondsToAdd = Mathf.FloorToInt(accumulatedTime);
-			accumulatedTime -= secondsToAdd;
-
-			// 모든 계산을 로컬 복사본에서 수행 후 한 번에 반영
-			GameTime newTime = currentTime;
+			int secondsToAdd = Mathf.FloorToInt(newAccumulatedTime);
+			newAccumulatedTime -= secondsToAdd;
 
 			// 초 → 분/시/일/월/년 반영
 			int minutesToAdd = 0;
@@ -723,14 +725,20 @@ public class TimeManager : ITimeService
 				}
 			}
 
-			// 계산이 끝난 뒤 한 번에 반영
+			// 계산이 끝난 뒤 한 번에 반영 (원자적 업데이트)
 			currentTime = newTime;
+			accumulatedTime = newAccumulatedTime;
 
 			// 분 단위 변경 시에만 이벤트 발생 (이전 동작 유지)
 			if (minutesToAdd > 0)
 			{
 				onTimeChanged?.Invoke(currentTime);
 			}
+        }
+        else
+        {
+            // 1초 미만일 때는 accumulatedTime만 업데이트
+            accumulatedTime = newAccumulatedTime;
         }
     }
 

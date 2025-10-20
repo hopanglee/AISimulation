@@ -30,17 +30,17 @@ public static class SimDelay
 			Debug.Log($"[Simulation Mode] {simMinutes}분 지연 시작");
 		}
 		
-		// 개선된 로직: 시뮬레이션 시간(초 단위) 기반 정밀 지연
+		// 개선된 로직: 시뮬레이션 시간(틱 단위) 기반 정밀 지연
 		var timeService = Services.Get<ITimeService>();
 		if (timeService == null || simMinutes <= 0)
 		{
 			await UniTask.Yield();
 			return;
 		}
-		// 현재 누적 초에 정확히 simMinutes*60초를 더한 목표 시각을 설정
-		long startSeconds = timeService.GetTotalSeconds();
-		long targetSeconds = startSeconds + (long)simMinutes * 60L;
-		while (timeService.GetTotalSeconds() < targetSeconds)
+		// 현재 누적 틱에 정확히 simMinutes*60초를 더한 목표 틱을 설정
+		double startTicks = timeService.GetTotalTicks();
+		double targetTicks = startTicks + (double)simMinutes * 60.0;
+		while (timeService.GetTotalTicks() < targetTicks)
 		{
 			if (token.IsCancellationRequested) return;
 			await UniTask.Yield();

@@ -34,9 +34,9 @@ public class MoveController : MonoBehaviour
             // 결정성 강화를 위해 자동 재경로 비활성화 및 위치 스무딩 제거
             try
             {
-                var policy = followerEntity.autoRepath;
-                policy.mode = Pathfinding.AutoRepathPolicy.Mode.Never;
-                followerEntity.autoRepath = policy;
+                // var policy = followerEntity.autoRepath;
+                // policy.mode = Pathfinding.AutoRepathPolicy.Mode.Never;
+                // followerEntity.autoRepath = policy;
             }
             catch {
                 Debug.LogWarning($"[{entity.Name}] autoRepath 설정 실패");

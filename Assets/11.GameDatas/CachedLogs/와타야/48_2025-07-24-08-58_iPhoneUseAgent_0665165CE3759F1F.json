@@ -1,9 +1,0 @@
-﻿{
-  "payload": {
-    "command": "chat",
-    "target_actor": "히노",
-    "message": "당연하지, 내가 있을게.",
-    "message_count": null
-  },
-  "tools": []
-}

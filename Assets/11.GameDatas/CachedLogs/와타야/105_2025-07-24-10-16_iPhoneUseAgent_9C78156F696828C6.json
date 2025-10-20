@@ -1,9 +1,0 @@
-﻿{
-  "payload": {
-    "command": "chat",
-    "target_actor": "카미야",
-    "message": "걱정하지 마, 내가 옆에 있을게. 11시쯤 모카하우스에 도착할게 — 부담 갖지 않아도 돼, 그냥 알고만 있으면 돼. 고마워.",
-    "message_count": null
-  },
-  "tools": []
-}

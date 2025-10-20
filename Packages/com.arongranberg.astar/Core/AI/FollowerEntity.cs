@@ -931,7 +931,7 @@ namespace Pathfinding {
 		public Vector3 desiredVelocity {
 			get {
 				if (entityStorageCache.GetComponentData(entity, ref resolvedMovementAccessRO, out var resolvedMovement)) {
-					var dt = Mathf.Max(Time.deltaTime, 0.0001f);
+					var dt = Mathf.Max(Time.fixedDeltaTime, 0.0001f);
 					return Vector3.ClampMagnitude((Vector3)resolvedMovement.value.targetPoint - position, dt * resolvedMovement.value.speed) / dt;
 				} else {
 					return Vector3.zero;
@@ -943,7 +943,7 @@ namespace Pathfinding {
 		public Vector3 desiredVelocityWithoutLocalAvoidance {
 			get {
 				if (entityStorageCache.GetComponentData(entity, ref movementControlAccessRO, out var movementControl)) {
-					var dt = Mathf.Max(Time.deltaTime, 0.0001f);
+					var dt = Mathf.Max(Time.fixedDeltaTime, 0.0001f);
 					return Vector3.ClampMagnitude((Vector3)movementControl.value.targetPoint - position, dt * movementControl.value.speed) / dt;
 				} else {
 					return Vector3.zero;
