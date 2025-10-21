@@ -587,14 +587,15 @@ public class TimeManager : ITimeService
     private GameTime currentTime = new GameTime(2025, 7, 24, 7, 58); // 시작 시간: 2024년 1월 1일 6시
 
     [SerializeField]
-    private bool isTimeFlowing = false;
+    private static bool isTimeFlowing = false;
 
     private double accumulatedTime = 0d;
     private Action<GameTime> onTimeChanged;
 
     // API 호출 중인 Actor 수 추적 (정지/감속 개별 관리)
-    private int apiPauseCount = 0;
-    private bool wasTimeFlowingBeforeAPI = false;
+    private static int apiPauseCount = 0;
+    private static bool wasTimeFlowingBeforeAPI = false;
+    private static readonly object pauseLock = new object();
 
     private int apiSlowCount = 0;
     private float timeScaleBeforeAPI = 1f;
@@ -820,17 +821,7 @@ public class TimeManager : ITimeService
     /// </summary>
     public void StartAPICall()
     {
-        apiPauseCount++;
-
-        if (apiPauseCount == 1)
-        {
-            wasTimeFlowingBeforeAPI = isTimeFlowing;
-            if (isTimeFlowing)
-            {
-                isTimeFlowing = false;
-                //Debug.Log($"[TimeManager] Time paused for API call (Actor count: {apiPauseCount})");
-            }
-        }
+        StartTimeStop();
 
         Debug.Log($"[TimeManager] API call started (pause count: {apiPauseCount})");
     }
@@ -840,21 +831,54 @@ public class TimeManager : ITimeService
     /// </summary>
     public void EndAPICall()
     {
-        if (apiPauseCount <= 0)
+        EndTimeStop();
+        Debug.Log($"[TimeManager] API call ended (pause count: {apiPauseCount})");
+    }
+
+    public static void StartTimeStop()
+    {
+        int newCount = System.Threading.Interlocked.Increment(ref apiPauseCount);
+        if (newCount == 1)
         {
-            Debug.LogWarning("[TimeManager] EndAPICall called but no API calls are active!");
+            lock (pauseLock)
+            {
+                wasTimeFlowingBeforeAPI = isTimeFlowing;
+                if (isTimeFlowing)
+                {
+                    isTimeFlowing = false;
+                    Debug.Log($"[TimeManager] Time paused for Stop call (Call count: {apiPauseCount})");
+                }
+            }
+        }
+        //Debug.Log($"[TimeManager] API call started (pause count: {apiPauseCount})");
+    }
+
+    public static void EndTimeStop()
+    {
+        int newCount = System.Threading.Interlocked.Decrement(ref apiPauseCount);
+        if (newCount < 0)
+        {
+            System.Threading.Interlocked.Exchange(ref apiPauseCount, 0);
+            Debug.LogWarning("[TimeManager] EndTimeStop underflow: corrected to 0");
             return;
         }
 
-        apiPauseCount--;
-        Debug.Log($"[TimeManager] API call ended (pause count: {apiPauseCount})");
+        Debug.Log($"[TimeManager] Time resumed (남은 Call count: {apiPauseCount})");
 
-        if (apiPauseCount == 0 && wasTimeFlowingBeforeAPI)
+        if (newCount == 0)
         {
-            isTimeFlowing = true;
-            //Debug.Log("[TimeManager] All API pauses completed - time resumed");
+            lock (pauseLock)
+            {
+                if (wasTimeFlowingBeforeAPI)
+                {
+                    isTimeFlowing = true;
+                    //Debug.Log("[TimeManager] All API pauses completed - time resumed");
+                }
+            }
         }
     }
+
+
 
     /// <summary>
     /// GPT 대기 등 느린 진행을 위한 API 호출 시작 (배속 감소)

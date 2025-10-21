@@ -1,0 +1,13 @@
+﻿{
+  "payload": {
+    "act_type": "UseObject",
+    "reasoning": "배고픔이 먼저라서, 손에 든 도넛을 먹어 허기를 달래고 머리를 맑게 한 뒤 와타야에게 연락하고 옷을 고를 준비를 하기 위해 이 행동을 선택했다.",
+    "intention": "도넛을 먹어 배고픔을 해결하고 정신을 정리한 뒤 와타야에게 연락하고 예쁜 옷을 골라 모카하우스 약속에 차분히 임하겠다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"도넛\"}"
+    }
+  ]
+}

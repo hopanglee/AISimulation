@@ -172,10 +172,13 @@ public abstract partial class NPC : Actor
             UpdateLookableEntity();
 
             // 새로운 흐름: 선택 + 파라미터 생성 (Agent는 선택만, 파라미터는 NPC에서 생성)
+            TimeManager.StartTimeStop();
             var selection = await actionAgent.SelectActAsync();
-
+            
+            
             // 파라미터 생성
             var parameters = await GenerateActionParameters(selection);
+            TimeManager.EndTimeStop();
 
             // 우선순위에 따라 즉시 실행하거나 대기열에 추가
             await ProcessActionWithPriority(selection.ActType, parameters);

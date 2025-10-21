@@ -46,7 +46,7 @@ public class HospitalReceptionist : NPC, IPaymentable
         };
         string systemMessage = localizationService.GetLocalizedText("doctor_message", replacements);
         actionAgent.AddSystemMessage(systemMessage);
-        _ = ProcessEventWithAgent();
+        ProcessEventWithAgent().Forget();
     }
 
     /// <summary>

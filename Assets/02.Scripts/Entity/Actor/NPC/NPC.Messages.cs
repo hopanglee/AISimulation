@@ -20,7 +20,7 @@ private async UniTask LogActionCompletion(NPCActionType action, Dictionary<strin
 		{
 			actionAgent.AddSystemMessage(completionMessage);
 		}
-		await UniTask.Yield();
+		await UniTask.Yield(PlayerLoopTiming.FixedUpdate);
 	}
 
 protected virtual string GenerateActionCompletionMessage(NPCActionType action, Dictionary<string, object> parameters, string timeStamp, bool success = true)

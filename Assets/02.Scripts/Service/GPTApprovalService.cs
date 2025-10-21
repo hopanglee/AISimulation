@@ -128,7 +128,7 @@ public class GPTApprovalService : IGPTApprovalService
         var timeService = Services.Get<ITimeService>();
         if (timeService != null)
         {
-            timeService.StartAPICall();
+            TimeManager.StartTimeStop();
             Debug.Log("[GPTApprovalService] Approval popup opened - time paused");
         }
         
@@ -149,7 +149,7 @@ public class GPTApprovalService : IGPTApprovalService
             // 시간 재개 (팝업을 열기 직전에 정지했을 수 있음)
             if (timeService != null)
             {
-                timeService.EndAPICall();
+                TimeManager.EndTimeStop();
                 Debug.Log("[GPTApprovalService] Approval popup failed to open - time resumed");
             }
             

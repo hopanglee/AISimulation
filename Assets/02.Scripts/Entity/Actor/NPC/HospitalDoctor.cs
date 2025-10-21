@@ -53,7 +53,7 @@ public class HospitalDoctor : NPC
         string fromLabel = $"접수처 직원 {from?.Name}";
         string systemMessage = $"[{currentTime}] SYSTEM: [{fromLabel}] ▶ {text}";
         actionAgent.AddSystemMessage(systemMessage);
-        _ = ProcessEventWithAgent();
+        ProcessEventWithAgent().Forget();
     }
 
     /// <summary>

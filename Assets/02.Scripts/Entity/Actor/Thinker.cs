@@ -33,8 +33,8 @@ public class Thinker
 
     private const int relationshipUpdateCycleCount = 3;
     private int currentCycleBudget = BaseCycleCount;
-	// 외부 이벤트 재시작 동시성 제어 (0: idle, 1: restarting)
-	private int isRestartingFlag = 0;
+    // 외부 이벤트 재시작 동시성 제어 (0: idle, 1: restarting)
+    private int isRestartingFlag = 0;
 
     public Thinker(Actor actor, Brain brain)
     {
@@ -79,7 +79,7 @@ public class Thinker
             Debug.Log($"[{actor.Name}] GPT 비활성화됨 - Think/Act 루프 시작 안함");
             return;
         }
-        
+
         thinkActCts = new CancellationTokenSource();
         var token = thinkActCts.Token;
         // 새 CTS/Token 준비 완료 → 외부 이벤트 재시작 게이트 해제
@@ -100,23 +100,32 @@ public class Thinker
                 }
 
                 // 0. Perception 전에 goal 업데이트(1회 한정) 체크
+                TimeManager.StartTimeStop();
                 await brain.UpdateGoalBeforePerceptionAsync();
+                TimeManager.EndTimeStop();
+                token.ThrowIfCancellationRequested();
 
                 // 1. 상황 인식
+                TimeManager.StartTimeStop();
                 var perceptionResult = await brain.Perception();
+                TimeManager.EndTimeStop();
                 token.ThrowIfCancellationRequested();
+
 
                 await SimDelay.DelaySimMinutes(1, token);
                 token.ThrowIfCancellationRequested();
 
                 // 2. DayPlanner 실행
-                await brain.DayPlan();
-                token.ThrowIfCancellationRequested();
+                //await brain.DayPlan();
+                //token.ThrowIfCancellationRequested();
 
                 // 3. 관계 수정
+                
                 if (currentRelationshipUpdateCycle >= relationshipUpdateCycleCount)
                 {
+                    TimeManager.StartTimeStop();
                     await brain.UpdateRelationship(perceptionResult);
+                    TimeManager.EndTimeStop();
                     token.ThrowIfCancellationRequested();
                     currentRelationshipUpdateCycle = 0;
                 }
@@ -124,7 +133,9 @@ public class Thinker
                 {
                     currentRelationshipUpdateCycle++;
                 }
-                token.ThrowIfCancellationRequested();
+                
+                //token.ThrowIfCancellationRequested();
+                
 
                 // 4. Think - 행동 선택
                 // Think → Act를 currentCycleBudget 회 번갈아 실행
@@ -132,9 +143,11 @@ public class Thinker
                 for (int i = 0; i < currentCycleBudget; i++)
                 {
                     // 외부 이벤트/취소 확인
-                    token.ThrowIfCancellationRequested();
+                    //token.ThrowIfCancellationRequested();
                     actSelectorAgent.Cycle = i;
+                    TimeManager.StartTimeStop();
                     var (selection, paramResult) = await brain.Think(perceptionResult, actSelectorAgent);
+                    TimeManager.EndTimeStop();
                     token.ThrowIfCancellationRequested();
 
                     // 관찰 액션은 루프를 빠져나가 다음 Perception/사이클로 넘어가도록 처리
@@ -223,9 +236,9 @@ public class Thinker
                     currentCycleBudget = Math.Clamp(currentCycleBudget + 1, BaseCycleCount, MaxCycleCount);
                 }
 
-                if(actor is MainActor mainActor)
+                if (actor is MainActor mainActor)
                 {
-                    if(mainActor.IsSleeping)
+                    if (mainActor.IsSleeping)
                     {
                         break;
                     }
@@ -237,11 +250,15 @@ public class Thinker
                 Debug.Log($"[{actor.Name}] STM {stmCount}개");
 
                 // 메모리 처리 구간을 상호배타적으로 보호: 끝날 때까지 다음 사이클 대기
+                TimeManager.StartTimeStop();
                 await brain.MemoryProcessingBarrier.WaitAsync(token);
+                TimeManager.EndTimeStop();
                 try
                 {
+                    TimeManager.StartTimeStop();
                     await brain.ProcessCircleEndMemoryAsync();
                     await brain.PerformLongTermMemoryMaintenanceAsync();
+                    TimeManager.EndTimeStop();
                 }
                 finally
                 {
@@ -264,31 +281,33 @@ public class Thinker
     /// </summary>
     public void OnExternalEventAsync()
     {
-		// 이미 재시작 중이면 중복 호출 무시 (원자적 교환으로 경합 방지)
-		if (System.Threading.Interlocked.Exchange(ref isRestartingFlag, 1) == 1)
-		{
-			return;
-		}
+        // 이미 재시작 중이면 중복 호출 무시 (원자적 교환으로 경합 방지)
+        if (System.Threading.Interlocked.Exchange(ref isRestartingFlag, 1) == 1)
+        {
+            return;
+        }
 
-		try
-		{
-			// 다음 프레임의 EarlyUpdate에서 가장 먼저 취소가 일어나도록 스케줄링
-			RestartNextFrameEarly().Forget();
-		}
+        try
+        {
+            // 다음 프레임의 EarlyUpdate에서 가장 먼저 취소가 일어나도록 스케줄링
+            RestartNextFrameEarly().Forget();
+        }
         catch (Exception ex)
-		{
-			Debug.LogError($"[{actor.Name}] Think/Act 루프 재시작 실패: {ex.Message}");
-		}
+        {
+            Debug.LogError($"[{actor.Name}] Think/Act 루프 재시작 실패: {ex.Message}");
+        }
 
-		async UniTask RestartNextFrameEarly()
-		{
-			// 한 프레임 대기 후 다음 프레임의 Update에서 즉시 실행
-			await UniTask.Yield(PlayerLoopTiming.FixedUpdate);
-			thinkActCts?.Cancel();
-			Debug.Log($"[{actor.Name}] 외부 이벤트 발생 - Think/Act 루프 재시작");
-			// 긴 루프를 기다리지 않고 즉시 새 루프를 기동
-			StartThinkAndActLoop().Forget();
-		}
+        async UniTask RestartNextFrameEarly()
+        {
+            // 한 프레임 대기 후 다음 프레임의 Update에서 즉시 실행
+            TimeManager.StartTimeStop();
+            await UniTask.Yield(PlayerLoopTiming.FixedUpdate);
+            TimeManager.EndTimeStop();
+            thinkActCts?.Cancel();
+            Debug.Log($"[{actor.Name}] 외부 이벤트 발생 - Think/Act 루프 재시작");
+            // 긴 루프를 기다리지 않고 즉시 새 루프를 기동
+            StartThinkAndActLoop().Forget();
+        }
     }
 
     /// <summary>

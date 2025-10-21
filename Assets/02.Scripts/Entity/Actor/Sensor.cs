@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -760,7 +761,7 @@ public class Sensor
                         {
                             relationship.LastInteraction = currentTime;
                             // 관계 저장 (비동기로 처리)
-                            _ = relationshipMemoryManager.SaveRelationshipAsync(otherActor.Name, relationship);
+                            relationshipMemoryManager.SaveRelationshipAsync(otherActor.Name, relationship).Forget();
                         }
                     }
                 }

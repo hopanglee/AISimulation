@@ -234,7 +234,7 @@ public class GameService : MonoBehaviour, IGameService
         Debug.Log("[GameService] Pausing simulation...");
         isSimulationRunning = false;
         // Use API-call based pause so it composes with other API pauses
-        timeService?.StartAPICall();
+        TimeManager.StartTimeStop();
     }
 
     public void ResumeSimulation()
@@ -248,7 +248,7 @@ public class GameService : MonoBehaviour, IGameService
         Debug.Log("[GameService] Resuming simulation...");
         isSimulationRunning = true;
         // Release API-call based pause; time resumes only when all API pauses are cleared
-        timeService?.EndAPICall();
+        TimeManager.EndTimeStop();
         //skipNextDeltaAfterResume = true; // 큰 delta 방지
 
         // 루틴 재시작 제거 - 이미 실행 중인 루틴이 있으므로 중복 시작 방지

@@ -77,7 +77,10 @@ public abstract partial class NPC
 			}
 			finally
 			{
+				TimeManager.EndTimeStop();
 				await LogActionCompletion(actionType, parameters, actionSuccess);
+				TimeManager.EndTimeStop();
+				
 				isExecutingAction = false;
 				currentAction = NPCActionType.Unknown;
 				currentActionCancellation?.Dispose();

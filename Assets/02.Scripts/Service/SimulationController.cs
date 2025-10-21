@@ -153,7 +153,7 @@ public class SimulationController : MonoBehaviour
         if (focusHinoButton != null) focusHinoButton.gameObject.SetActive(true);
         if (focusKamiyaButton != null) focusKamiyaButton.gameObject.SetActive(true);
         if (focusWatayaButton != null) focusWatayaButton.gameObject.SetActive(true);
-        ToggleSplitViewCameras();
+        //ToggleSplitViewCameras();
 
 
         // 자동 시작 옵션
