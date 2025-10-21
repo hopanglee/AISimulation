@@ -82,7 +82,7 @@ public class GameService : MonoBehaviour, IGameService
 
     private bool isSimulationRunning = false;
     private List<Actor> allActors = new List<Actor>();
-    private bool wasRunningBeforePause = false;
+    // private bool wasRunningBeforePause = false;
     //private bool skipNextDeltaAfterResume = false;
 
     private ITimeService timeService;
@@ -110,7 +110,7 @@ public class GameService : MonoBehaviour, IGameService
     private void FixedUpdate()
     {
         // 시간 업데이트 (시뮬레이션이 실행 중이고 포커스를 잃지 않았을 때만)
-        if (isSimulationRunning && timeService != null && timeService.IsTimeFlowing && Application.isFocused)
+        if (isSimulationRunning && timeService != null && timeService.IsTimeFlowing)
         {
             // FixedUpdate의 고정된 deltaTime 사용 (더 안정적)
             timeService.UpdateTime(Time.fixedDeltaTime);
@@ -289,28 +289,28 @@ public class GameService : MonoBehaviour, IGameService
     /// <summary>
     /// Unity 에디터 일시정지 시 정리
     /// </summary>
-    private void OnApplicationPause(bool pauseStatus)
-    {
-        if (pauseStatus)
-        {
-            // Remember state and pause
-            wasRunningBeforePause = isSimulationRunning;
-            if (isSimulationRunning)
-            {
-                Debug.Log("[GameService] Application paused - stopping simulation");
-                PauseSimulation();
-            }
-        }
-        else
-        {
-            // App resumed from pause (e.g., mobile or editor play pause off)
-            if (wasRunningBeforePause && !isSimulationRunning)
-            {
-                Debug.Log("[GameService] Application resumed - resuming simulation");
-                ResumeSimulation();
-            }
-        }
-    }
+    // private void OnApplicationPause(bool pauseStatus)
+    // {
+    //     if (pauseStatus)
+    //     {
+    //         // Remember state and pause
+    //         wasRunningBeforePause = isSimulationRunning;
+    //         if (isSimulationRunning)
+    //         {
+    //             Debug.Log("[GameService] Application paused - stopping simulation");
+    //             PauseSimulation();
+    //         }
+    //     }
+    //     else
+    //     {
+    //         // App resumed from pause (e.g., mobile or editor play pause off)
+    //         if (wasRunningBeforePause && !isSimulationRunning)
+    //         {
+    //             Debug.Log("[GameService] Application resumed - resuming simulation");
+    //             ResumeSimulation();
+    //         }
+    //     }
+    // }
 
     /// <summary>
     /// 앱 포커스 복귀 시 자동 재개(에디터/데스크톱 대응)
@@ -342,10 +342,6 @@ public class GameService : MonoBehaviour, IGameService
     /// </summary>
     private void OnTimeChanged(GameTime newTime)
     {
-        // foreach (var actor in allActors)
-        // {
-        //     actor.OnSimulationTimeChanged(newTime);
-        // }
     }
 
     /// <summary>
@@ -359,28 +355,6 @@ public class GameService : MonoBehaviour, IGameService
 
         Debug.Log($"[GameService] Found {allActors.Count} actors in the scene");
     }
-
-    /// <summary>
-    /// 기상 시 하루 계획 루틴 (이제 OnTimeChanged에서 처리)
-    /// </summary>
-    private async UniTask RunDayPlanningRoutine(bool startThinkAfter = false)
-    {
-        Debug.Log("[GameService] Day planning routine initialized (now handled by time events)");
-
-        // 이제 OnTimeChanged에서 DayPlan을 처리하므로 여기서는 대기만
-        while (isSimulationRunning)
-        {
-            await UniTask.Yield();
-
-            // Unity 에디터가 중지되었는지 확인
-            if (!Application.isPlaying)
-            {
-                Debug.Log("[GameService] Application stopped - breaking day planning routine");
-                break;
-            }
-        }
-    }
-
 
     // Inspector에서 수동으로 시뮬레이션 제어할 수 있는 버튼들
     [Button("Start Simulation")]

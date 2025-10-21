@@ -215,6 +215,7 @@ public abstract class LLMClient
                                 {
                                     if (!File.Exists(currentCacheFilePath))
                                     {
+                                        Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 이동: {matchPath} -> {currentCacheFilePath}");
                                         File.Move(matchPath, currentCacheFilePath);
                                         matchPath = currentCacheFilePath;
                                     }

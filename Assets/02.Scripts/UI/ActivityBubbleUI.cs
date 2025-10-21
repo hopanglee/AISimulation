@@ -22,7 +22,7 @@ public class ActivityBubbleUI : MonoBehaviour
 
     private void Awake()
     {
-        mainCamera = Camera.main;
+        //mainCamera = Camera.main;
     }
 
     private void LateUpdate()

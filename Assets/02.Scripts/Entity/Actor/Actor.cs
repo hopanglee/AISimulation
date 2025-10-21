@@ -147,6 +147,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
         // SpeechBubbleUI 초기화
         InitializeSpeechBubble();
+        InitializeActivityBubble();
 
         // 초기 의상/모델 적용은 MainActor에서만 처리
         if (this is MainActor)
@@ -789,7 +790,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
 
     private void ClearCurrentClothesRootChildren()
     {
-        if (_currentClothesRoot == null || !Application.isPlaying) return;
+        if (_currentClothesRoot == null) return;
         for (int i = _currentClothesRoot.childCount - 1; i >= 0; i--)
         {
             var child = _currentClothesRoot.GetChild(i);
@@ -1025,6 +1026,14 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         else
         {
             Debug.LogWarning($"[{Name}] SpeechBubbleUI가 할당되지 않았습니다.");
+        }
+    }
+
+    private void InitializeActivityBubble()
+    {
+        if (activityBubbleUI != null)
+        {
+            activityBubbleUI.gameObject.SetActive(false);
         }
     }
 
