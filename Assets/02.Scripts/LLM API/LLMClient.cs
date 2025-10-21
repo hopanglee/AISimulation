@@ -262,12 +262,14 @@ public abstract class LLMClient
                                 try
                                 {
                                     double targetTicks = -1d;
+                                    bool hasCachedTicks = false;
                                     try
                                     {
                                         var ticksToken = obj["cachedTicks"];
                                         if (ticksToken != null && double.TryParse(ticksToken.ToString(), out var t))
                                         {
                                             targetTicks = t;
+                                            hasCachedTicks = true;
                                         }
                                     }
                                     catch { }
@@ -277,35 +279,51 @@ public abstract class LLMClient
                                         var currentTicks = timeService.GetTotalTicks();
                                         if (currentTicks + 1e-6 < targetTicks)
                                         {
-                                            try
-                                            {
-                                                // TimeStop 해제
-                                                if (apiPausedForCacheCheck)
-                                                {
-                                                    timeService.EndAPICall();
-                                                    apiPausedForCacheCheck = false;
-                                                }
-                                            }
-                                            catch { }
+                                            Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 타임 보정 필요: {currentTicks} -> {targetTicks}");
+                                            // try
+                                            // {
+                                            //     // TimeStop 해제
+                                            //     if (apiPausedForCacheCheck)
+                                            //     {
+                                            //         timeService.EndAPICall();
+                                            //         apiPausedForCacheCheck = false;
+                                            //     }
+                                            // }
+                                            // catch { }
 
-                                            // 대상 tick까지 대기 (프레임 단위)
-                                            while (true)
-                                            {
-                                                try
-                                                {
-                                                    if (timeService.GetTotalTicks() + 1e-6 >= targetTicks) break;
-                                                }
-                                                catch { break; }
-                                                await Cysharp.Threading.Tasks.UniTask.Yield(Cysharp.Threading.Tasks.PlayerLoopTiming.Update);
-                                            }
-                                            try
-                                            {
-                                                timeService.StartAPICall();
-                                                apiPausedForCacheCheck = true;
-                                            }
-                                            catch { }
+                                            // // 대상 tick까지 대기 (프레임 단위)
+                                            // while (true)
+                                            // {
+                                            //     try
+                                            //     {
+                                            //         if (timeService.GetTotalTicks() + 1e-6 >= targetTicks) break;
+                                            //     }
+                                            //     catch { break; }
+                                            //     await Cysharp.Threading.Tasks.UniTask.Yield(Cysharp.Threading.Tasks.PlayerLoopTiming.Update);
+                                            // }
+                                            // try
+                                            // {
+                                            //     timeService.StartAPICall();
+                                            //     apiPausedForCacheCheck = true;
+                                            // }
+                                            // catch { }
                                         }
                                     }
+
+                                    // cachedTicks가 없으면 현재 시간 기준으로 보강 저장
+                                    try
+                                    {
+                                        if (!hasCachedTicks && timeService != null)
+                                        {
+                                            var nowTicks = timeService.GetTotalTicks();
+                                            obj["cachedTicks"] = nowTicks;
+                                            var gtNow = timeService.CurrentTime;
+                                            obj["cachedGameTimeIso"] = gtNow != null ? gtNow.ToIsoString() : "";
+                                            try { System.IO.File.WriteAllText(matchPath, obj.ToString(Formatting.Indented), System.Text.Encoding.UTF8); } catch { }
+                                            Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 보강 저장: cachedTicks/ISO 추가됨 => {matchPath}");
+                                        }
+                                    }
+                                    catch { }
                                 }
                                 catch { }
 
