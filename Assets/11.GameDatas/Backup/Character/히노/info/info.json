@@ -56,12 +56,12 @@
     },
     {
       "name": "배고픔",
-      "intensity": 0.8
+      "intensity": 0.7
     },
     {
-      "name": "설렘",
-      "intensity": 0.6
+      "name": "기대감",
+      "intensity": 0.5
     }
   ],
-  "last_updated": "2025-07-24T08:11:00Z"
+  "last_updated": "2025-07-24T08:00:00Z"
 }

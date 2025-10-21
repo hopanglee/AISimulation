@@ -10,10 +10,10 @@ public class Shampoo : Item, IUsable
     {
         if (actor != null)
         {
-            int before = actor.Cleanliness;
-            int cleanlinessIncrease = 15;
+            float before = actor.Cleanliness;
+            float cleanlinessIncrease = 15;
             actor.Cleanliness = Mathf.Min(100, actor.Cleanliness + cleanlinessIncrease);
-            int actualInc = actor.Cleanliness - before;
+            float actualInc = actor.Cleanliness - before;
             Debug.Log($"머리를 감았습니다. 청결도 +{actualInc} ({before} → {actor.Cleanliness})");
         }
         else

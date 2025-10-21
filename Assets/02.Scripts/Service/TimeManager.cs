@@ -56,9 +56,19 @@ public interface ITimeService : IService
     void SubscribeToTimeEvent(Action<GameTime> callback);
 
     /// <summary>
+    /// 시간 이벤트 구독
+    /// </summary>
+    void SubscribeToTickEvent(Action<double> callback);
+
+    /// <summary>
     /// 시간 이벤트 구독 해제
     /// </summary>
     void UnsubscribeFromTimeEvent(Action<GameTime> callback);
+
+    /// <summary>   
+    /// 시간 이벤트 구독 해제
+    /// </summary>
+    void UnsubscribeFromTickEvent(Action<double> callback);
 
     /// <summary>
     /// 시간 업데이트 (GameService에서 호출)
@@ -516,24 +526,24 @@ public class GameTimeConverter : JsonConverter<GameTime>
                 return hasExistingValue ? existingValue : new GameTime(2024, 1, 1, 0, 0);
             }
         }
-		if (reader.TokenType == JsonToken.StartObject)
-		{
-			try
-			{
-				var obj = JObject.Load(reader);
-				int year = (int?)obj["year"] ?? 2024;
-				int month = (int?)obj["month"] ?? 1;
-				int day = (int?)obj["day"] ?? 1;
-				int hour = (int?)obj["hour"] ?? 0;
-				int minute = (int?)obj["minute"] ?? 0;
-				return new GameTime(year, month, day, hour, minute);
-			}
-			catch (Exception ex)
-			{
-				Debug.LogError($"[GameTimeConverter] Failed to parse GameTime from object at '{reader?.Path}': {ex.Message}");
-				return hasExistingValue ? existingValue : new GameTime(2024, 1, 1, 0, 0);
-			}
-		}
+        if (reader.TokenType == JsonToken.StartObject)
+        {
+            try
+            {
+                var obj = JObject.Load(reader);
+                int year = (int?)obj["year"] ?? 2024;
+                int month = (int?)obj["month"] ?? 1;
+                int day = (int?)obj["day"] ?? 1;
+                int hour = (int?)obj["hour"] ?? 0;
+                int minute = (int?)obj["minute"] ?? 0;
+                return new GameTime(year, month, day, hour, minute);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[GameTimeConverter] Failed to parse GameTime from object at '{reader?.Path}': {ex.Message}");
+                return hasExistingValue ? existingValue : new GameTime(2024, 1, 1, 0, 0);
+            }
+        }
         if (reader.TokenType == JsonToken.Date)
         {
             // Newtonsoft가 날짜 문자열을 자동으로 Date로 파싱한 경우 처리
@@ -579,7 +589,7 @@ public class TimeManager : ITimeService
     [SerializeField]
     private bool isTimeFlowing = false;
 
-    private float accumulatedTime = 0f;
+    private double accumulatedTime = 0d;
     private Action<GameTime> onTimeChanged;
 
     // API 호출 중인 Actor 수 추적 (정지/감속 개별 관리)
@@ -597,6 +607,8 @@ public class TimeManager : ITimeService
         set => timeScale = Mathf.Max(0.1f, value);
     }
     public bool IsTimeFlowing => isTimeFlowing;
+
+    private Action<double> onTickChanged;
 
     public void Initialize()
     {
@@ -669,77 +681,79 @@ public class TimeManager : ITimeService
         if (!isTimeFlowing)
             return;
         //Debug.Log($"[TimeManager] UpdateTime: {currentTime}");
-        
+
         // 모든 계산을 로컬 복사본에서 수행 후 한 번에 반영
         GameTime newTime = currentTime;
-        float newAccumulatedTime = accumulatedTime;
-        
+        double newAccumulatedTime = accumulatedTime;
+
         // 시간 누적 (초 단위)
         newAccumulatedTime += deltaTime * timeScale;
 
-        if (newAccumulatedTime >= 1f)
+        if (newAccumulatedTime >= 1d)
         {
-			int secondsToAdd = Mathf.FloorToInt(newAccumulatedTime);
-			newAccumulatedTime -= secondsToAdd;
+            int secondsToAdd = (int)Math.Floor(newAccumulatedTime);
+            newAccumulatedTime -= secondsToAdd;
 
-			// 초 → 분/시/일/월/년 반영
-			int minutesToAdd = 0;
-			int totalSeconds = newTime.second + secondsToAdd;
-			if (totalSeconds >= 60)
-			{
-				minutesToAdd = totalSeconds / 60;
-				newTime.second = totalSeconds % 60;
-			}
-			else
-			{
-				newTime.second = totalSeconds;
-			}
+            // 초 → 분/시/일/월/년 반영
+            int minutesToAdd = 0;
+            int totalSeconds = newTime.second + secondsToAdd;
+            if (totalSeconds >= 60)
+            {
+                minutesToAdd = totalSeconds / 60;
+                newTime.second = totalSeconds % 60;
+            }
+            else
+            {
+                newTime.second = totalSeconds;
+            }
 
-			if (minutesToAdd > 0)
-			{
-				newTime.minute += minutesToAdd;
+            if (minutesToAdd > 0)
+            {
+                newTime.minute += minutesToAdd;
 
-				while (newTime.minute >= 60)
-				{
-					newTime.minute -= 60;
-					newTime.hour++;
+                while (newTime.minute >= 60)
+                {
+                    newTime.minute -= 60;
+                    newTime.hour++;
 
-					if (newTime.hour >= 24)
-					{
-						newTime.hour = 0;
-						newTime.day++;
+                    if (newTime.hour >= 24)
+                    {
+                        newTime.hour = 0;
+                        newTime.day++;
 
-						int daysInMonth = GameTime.GetDaysInMonth(newTime.year, newTime.month);
-						if (newTime.day > daysInMonth)
-						{
-							newTime.day = 1;
-							newTime.month++;
+                        int daysInMonth = GameTime.GetDaysInMonth(newTime.year, newTime.month);
+                        if (newTime.day > daysInMonth)
+                        {
+                            newTime.day = 1;
+                            newTime.month++;
 
-							if (newTime.month > 12)
-							{
-								newTime.month = 1;
-								newTime.year++;
-							}
-						}
-					}
-				}
-			}
+                            if (newTime.month > 12)
+                            {
+                                newTime.month = 1;
+                                newTime.year++;
+                            }
+                        }
+                    }
+                }
+            }
 
-			// 계산이 끝난 뒤 한 번에 반영 (원자적 업데이트)
-			currentTime = newTime;
-			accumulatedTime = newAccumulatedTime;
+            // 계산이 끝난 뒤 한 번에 반영 (원자적 업데이트)
+            currentTime = newTime;
+            accumulatedTime = newAccumulatedTime;
 
-			// 분 단위 변경 시에만 이벤트 발생 (이전 동작 유지)
-			if (minutesToAdd > 0)
-			{
-				onTimeChanged?.Invoke(currentTime);
-			}
+            // 분 단위 변경 시에만 이벤트 발생 (이전 동작 유지)
+            if (minutesToAdd > 0)
+            {
+                onTimeChanged?.Invoke(currentTime);
+            }
         }
         else
         {
             // 1초 미만일 때는 accumulatedTime만 업데이트
             accumulatedTime = newAccumulatedTime;
         }
+
+        onTickChanged?.Invoke(GetTotalTicks());
     }
 
     /// <summary>
@@ -939,4 +953,15 @@ public class TimeManager : ITimeService
 
         SetTime(nextYear, nextMonth, nextDay, 0, 0);
     }
+
+    public void SubscribeToTickEvent(Action<double> callback)
+    {
+        onTickChanged += callback;
+    }
+
+    public void UnsubscribeFromTickEvent(Action<double> callback)
+    {
+        onTickChanged -= callback;
+    }
+
 }

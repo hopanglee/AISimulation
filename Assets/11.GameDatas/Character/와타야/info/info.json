@@ -18,7 +18,9 @@
     "성질이 급한",
     "외향적인",
     "매력적인",
-    "멘탈이 약한"
+    "멘탈이 약한",
+    "유혹에 약한",
+    "성적 욕구가 강한"
   ],
   "personality": [
     "새로운 것에 곧잘 흥미를 보이는는",
@@ -41,32 +43,28 @@
   "emotions": [
     {
       "name": "질투",
-      "intensity": 1.0
-    },
-    {
-      "name": "집착",
-      "intensity": 1.0
-    },
-    {
-      "name": "불안",
-      "intensity": 0.95
-    },
-    {
-      "name": "분노",
-      "intensity": 0.85
-    },
-    {
-      "name": "혼란",
       "intensity": 0.9
     },
     {
-      "name": "결의",
-      "intensity": 1.0
+      "name": "집착",
+      "intensity": 0.85
     },
     {
-      "name": "배신감",
+      "name": "결의",
       "intensity": 0.8
+    },
+    {
+      "name": "불안",
+      "intensity": 0.75
+    },
+    {
+      "name": "짜증",
+      "intensity": 0.7
+    },
+    {
+      "name": "호기심",
+      "intensity": 0.65
     }
   ],
-  "last_updated": "2025-10-18T16:49:56.7426685+09:00"
+  "last_updated": "2025-07-24T08:00:00Z"
 }

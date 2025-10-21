@@ -40,10 +40,42 @@ public static class SimDelay
 		// 현재 누적 틱에 정확히 simMinutes*60초를 더한 목표 틱을 설정
 		double startTicks = timeService.GetTotalTicks();
 		double targetTicks = startTicks + (double)simMinutes * 60.0;
-		while (timeService.GetTotalTicks() < targetTicks)
+
+		// 이벤트 기반 대기: 매 분 변경 이벤트가 발생할 때마다 확인
+		var tcs = new System.Threading.Tasks.TaskCompletionSource<bool>(System.Threading.Tasks.TaskCreationOptions.RunContinuationsAsynchronously);
+		CancellationTokenRegistration ctr = default;
+		System.Action<double> onTickChanged = null;
+		try
 		{
-			if (token.IsCancellationRequested) return;
-			await UniTask.Yield(PlayerLoopTiming.FixedUpdate);
+			onTickChanged = tick =>
+			{
+				if (tick >= targetTicks)
+				{
+					tcs.TrySetResult(true);
+				}
+			};
+			timeService.SubscribeToTickEvent(onTickChanged);
+
+			// 즉시 충족된 경우 빠르게 종료
+			if (timeService.GetTotalTicks() >= targetTicks)
+			{
+				return;
+			}
+
+			if (token.CanBeCanceled)
+			{
+				ctr = token.Register(() => tcs.TrySetCanceled(token));
+			}
+
+			await tcs.Task;
+		}
+		finally
+		{
+			if (onTickChanged != null)
+			{
+				timeService.UnsubscribeFromTickEvent(onTickChanged);
+			}
+			ctr.Dispose();
 		}
 	}
 

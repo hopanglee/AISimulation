@@ -93,7 +93,7 @@ public class MoveController : MonoBehaviour
         if (followerEntity != null)
         {
             // Ensure movement can resume after a forced stop
-            followerEntity.canMove = true;
+            followerEntity.simulateMovement = true;
             followerEntity.isStopped = false;
         }
         followerEntity?.SetDestination(vector);
@@ -123,7 +123,7 @@ public class MoveController : MonoBehaviour
         if (followerEntity != null)
         {
             // Ensure movement can resume after a forced stop
-            followerEntity.canMove = true;
+            followerEntity.simulateMovement = true;
             followerEntity.isStopped = false;
         }
 
@@ -161,12 +161,18 @@ public class MoveController : MonoBehaviour
             if (followerEntity == null)
                 Debug.LogError("FollowerEntity is NULL");
 
+
             // 리플레이 결정성 향상을 위해 GameTime 기반 루프
             var timeService = Services.Get<ITimeService>();
 
             while (true)
             {
                 if (ct.IsCancellationRequested) break;
+
+                // 바쁜 대기 방지: 다음 프레임까지 양보하여 CPU 점유 과다 및 프리즈 방지
+                await UniTask.Yield(PlayerLoopTiming.FixedUpdate, ct);
+                if (ct.IsCancellationRequested) break;
+
                 // Simulation 시간이 멈추면 이동도 일시정지
                 timeService = Services.Get<ITimeService>();
                 if (timeService != null && !timeService.IsTimeFlowing)
@@ -186,53 +192,12 @@ public class MoveController : MonoBehaviour
                     if (followerEntity != null) followerEntity.isStopped = false;
                 }
 
-                // GameTime 기반 대기: CurrentTime이 다음 틱으로 변할 때까지 대기
-                if (timeService != null)
-                {
-                    //var start = timeService.CurrentTime;
-                    //if (useLockstepMovement && followerEntity != null) followerEntity.isStopped = true; // 틱 사이에는 항상 정지
-                    // while (true)
-                    // {
-                    //     yield return null;
-                    //     timeService = Services.Get<ITimeService>();
-                    //     if (timeService != null && timeService.IsTimeFlowing && !timeService.CurrentTime.Equals(start))
-                    //         break;
-                    // }
-                    // 틱 전환 직후 N프레임 이동 허용 (소프트 락스텝)
-                    // if (useLockstepMovement && followerEntity != null)
-                    // {
-                    //     //followerEntity.isStopped = false;
-                    //     int frames = Mathf.Max(1, lockstepFramesPerTick);
-                    //     for (int i = 0; i < frames; i++)
-                    //     {
-                    //         yield return null;
-                    //     }
-                    //     followerEntity.isStopped = true;
-                    // }
-                }
-                else
-                {
-                    Debug.LogError("TimeService is null");
-                }
+                bool reached = followerEntity.reachedCrowdedEndOfPath
+                          || followerEntity.reachedEndOfPath
+                          || followerEntity.reachedDestination;
 
-                bool reached = false;
-                if (followerEntity != null)
-                {
-                    // 다양한 도착 조건을 모두 고려
-                    reached = followerEntity.reachedCrowdedEndOfPath
-                              || followerEntity.reachedEndOfPath
-                              || followerEntity.reachedDestination;
-
-                }
-                else
-                {
-                    Debug.Log($"followerEntity NULL");
-                }
                 if (reached)
                     break;
-
-                // 바쁜 대기 방지: 다음 프레임까지 양보하여 CPU 점유 과다 및 프리즈 방지
-                await UniTask.Yield(PlayerLoopTiming.FixedUpdate, ct);
             }
 
             // 도착 판정 이후, 목표와의 실제 거리를 한 번 더 확인하여 성공/실패 결정
@@ -332,7 +297,7 @@ public class MoveController : MonoBehaviour
         {
             // Hard-stop movement
             followerEntity.isStopped = true;
-            followerEntity.canMove = false;
+            followerEntity.simulateMovement = false;
             // Restore base walking speed
             if (baseMaxSpeed > 0f)
                 followerEntity.maxSpeed = baseMaxSpeed;

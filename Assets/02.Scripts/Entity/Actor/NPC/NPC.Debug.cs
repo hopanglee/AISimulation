@@ -73,8 +73,8 @@ public abstract partial class NPC
 		if (actor.Sleepiness > 80) statusList.Add("매우졸림");
 		else if (actor.Sleepiness > 60) statusList.Add("졸림");
 
-		if (actor.Hunger > 80) statusList.Add("매우배고픔");
-		else if (actor.Hunger > 60) statusList.Add("배고픔");
+		if (actor.Hunger < 20) statusList.Add("매우배고픔");
+		else if (actor.Hunger < 40) statusList.Add("배고픔");
 
 		if (actor.Stress > 80) statusList.Add("매우스트레스");
 		else if (actor.Stress > 60) statusList.Add("스트레스");

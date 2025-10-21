@@ -15,10 +15,10 @@ public class HandWash : Item, IUsable
             isWet = true;
             if (actor != null)
             {
-                int before = actor.Cleanliness;
-                int cleanlinessIncrease = 10;
+                float before = actor.Cleanliness;
+                float cleanlinessIncrease = 10;
                 actor.Cleanliness = Mathf.Min(100, actor.Cleanliness + cleanlinessIncrease);
-                int actualInc = actor.Cleanliness - before;
+                float actualInc = actor.Cleanliness - before;
                 Debug.Log($"손을 씻었습니다. 청결도 +{actualInc} ({before} → {actor.Cleanliness})");
             }
             else

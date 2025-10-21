@@ -56,32 +56,30 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         set => money = Mathf.Max(0, value); // 음수 방지
     }
 
-    [Header("Physical Needs (0 ~ 100)")]
-    [Range(0, 100)]
-    public int Hunger; // 배고픔
+    [FoldoutGroup("Current Status"), Header("Current Status (0~100)"), Tooltip("Actor의 현재 상태")]
+    [Range(0, 100)] public float Hunger; // 배고픔
 
-    [Range(0, 100)]
-    public int Thirst; // 갈증
+    [FoldoutGroup("Current Status")]
+    [Range(0, 100)] public float Thirst; // 갈증
 
-    [Range(0, 100)]
-    public int Stamina; // 피로 혹은 신체적 지침
+    [FoldoutGroup("Current Status")]
+    [Range(0, 100)] public float Stamina; // 피로 혹은 신체적 지침
 
-    [Range(0, 100)]
-    public int Cleanliness = 100; // 청결도
+    [FoldoutGroup("Current Status")]
+    [Range(0, 100)] public float Cleanliness = 100; // 청결도
 
     // 정신적 쾌락: 0 이상의 값 (예, 만족감, 즐거움)
-    public int MentalPleasure;
+    [FoldoutGroup("Current Status")]
+    [Range(0, 100)] public float MentalPleasure;
 
-    [Range(0, 100)]
-    public int Stress; // 스트레스 수치
+    [FoldoutGroup("Current Status")]
+    [Range(0, 100)] public float Stress; // 스트레스 수치
 
-    [Header("Sleepiness")]
-    [Range(0, 100)]
-    public int Sleepiness; // 졸림 수치. 일정 수치(예: 100 이상) 이상이면 강제로 잠들게 할 수 있음
+    [FoldoutGroup("Current Status")]
+    [Range(0, 100)] public float Sleepiness; // 졸림 수치. 일정 수치(예: 100 이상) 이상이면 강제로 잠들게 할 수 있음
 
-    [Header("Judgment")]
-    [Range(0, 100)]
-    public int Judgment; // 판단력
+    [FoldoutGroup("Current Status")]
+    [Range(0, 100)] public float Judgment; // 판단력
 
 
     /// <summary>

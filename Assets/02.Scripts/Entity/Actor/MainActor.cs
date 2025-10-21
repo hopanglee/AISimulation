@@ -517,10 +517,32 @@ public abstract class MainActor : Actor
 				curLocation.ApplyStatus(this); // 위치 체인(Entity)의 hunger/thirst/cleanlinessEffect 등 적용
 			}
 			// 추가: MainActor 자신의 Status Effects도 본인에게 적용
-			Entity.ApplyIfInRange(ref Hunger, hungerEffect);
-			Entity.ApplyIfInRange(ref Thirst, thirstEffect);
-			Entity.ApplyIfInRange(ref Stamina, staminaEffect);
-			Entity.ApplyIfInRange(ref Cleanliness, cleanlinessEffect);
+			// 이동 모드에 따라 Hunger/Thirst/Stamina/Cleanliness 변화량 가중치 적용 (Walk: x1.2, Run: x2)
+			var mc = MoveController;
+			float moveMul = 1f;
+			if (mc != null && mc.isMoving)
+			{
+				moveMul = mc.CurrentMoveMode == MoveController.MoveMode.Run ? 2f : 1.2f;
+			}
+
+			if (Mathf.Approximately(moveMul, 1f))
+			{
+				Entity.ApplyIfInRange(ref Hunger, hungerEffect);
+				Entity.ApplyIfInRange(ref Thirst, thirstEffect);
+				Entity.ApplyIfInRange(ref Stamina, staminaEffect);
+				Entity.ApplyIfInRange(ref Cleanliness, cleanlinessEffect);
+			}
+			else
+			{
+				var hungerScaled = new Entity.StatusModifier { enabled = hungerEffect.enabled, minValue = hungerEffect.minValue, maxValue = hungerEffect.maxValue, deltaPerTick = hungerEffect.deltaPerTick * moveMul };
+				var thirstScaled = new Entity.StatusModifier { enabled = thirstEffect.enabled, minValue = thirstEffect.minValue, maxValue = thirstEffect.maxValue, deltaPerTick = thirstEffect.deltaPerTick * moveMul };
+				var staminaScaled = new Entity.StatusModifier { enabled = staminaEffect.enabled, minValue = staminaEffect.minValue, maxValue = staminaEffect.maxValue, deltaPerTick = staminaEffect.deltaPerTick * moveMul };
+				var cleanlinessScaled = new Entity.StatusModifier { enabled = cleanlinessEffect.enabled, minValue = cleanlinessEffect.minValue, maxValue = cleanlinessEffect.maxValue, deltaPerTick = cleanlinessEffect.deltaPerTick * moveMul };
+				Entity.ApplyIfInRange(ref Hunger, hungerScaled);
+				Entity.ApplyIfInRange(ref Thirst, thirstScaled);
+				Entity.ApplyIfInRange(ref Stamina, staminaScaled);
+				Entity.ApplyIfInRange(ref Cleanliness, cleanlinessScaled);
+			}
 			Entity.ApplyIfInRange(ref MentalPleasure, mentalPleasureEffect);
 			Entity.ApplyIfInRange(ref Stress, stressEffect);
 			Entity.ApplyIfInRange(ref Sleepiness, sleepinessEffect);

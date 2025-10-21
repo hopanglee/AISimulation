@@ -59,7 +59,7 @@ namespace Pathfinding.Examples {
 				float mid = (mn+mx)/2;
 
 				Vector3 p = Evaluate(mid, out var dummy1, out var dummy2, out var dummy3);
-				if ((p-transform.position).sqrMagnitude > (speed*Time.fixedDeltaTime)*(speed*Time.fixedDeltaTime)) {
+				if ((p-transform.position).sqrMagnitude > (speed*Time.deltaTime)*(speed*Time.deltaTime)) {
 					mx = mid;
 				} else {
 					mn = mid;
@@ -70,7 +70,7 @@ namespace Pathfinding.Examples {
 
 			transform.position = Evaluate(time, out var derivative, out var dummy, out var curvature);
 
-			averageCurvature = Vector3.Lerp(averageCurvature, curvature, Time.fixedDeltaTime);
+			averageCurvature = Vector3.Lerp(averageCurvature, curvature, Time.deltaTime);
 
 			// Estimate the acceleration at the current point and use it to tilt the object inwards on the curve
 			var centripetalAcceleration = -Vector3.Cross(derivative.normalized, averageCurvature);

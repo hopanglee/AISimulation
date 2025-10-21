@@ -20,7 +20,7 @@ public class Area : MonoBehaviour, ILocation
 
         [Range(-10, 10)]
         [Tooltip("틱마다 변경할 값 (+/-)")]
-        public int deltaPerTick = 0;
+        public float deltaPerTick = 0;
     }
 
     [SerializeField]
@@ -104,7 +104,7 @@ public class Area : MonoBehaviour, ILocation
     [FoldoutGroup("Status Effects")] public StatusModifier sleepinessEffect = new();
     [FoldoutGroup("Status Effects")] public StatusModifier judgmentEffect = new();
 
-    private static void ApplyIfInRange(ref int actorValue, StatusModifier effect)
+    private static void ApplyIfInRange(ref float actorValue, StatusModifier effect)
     {
         if (effect == null || !effect.enabled) return;
         int min = Mathf.Clamp(effect.minValue, 0, 100);
@@ -119,7 +119,7 @@ public class Area : MonoBehaviour, ILocation
 
         if (actorValue >= min && actorValue <= max)
         {
-            int next = actorValue + effect.deltaPerTick;
+            float next = actorValue + effect.deltaPerTick;
             actorValue = Mathf.Clamp(next, 0, 100);
         }
     }

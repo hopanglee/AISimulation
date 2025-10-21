@@ -153,7 +153,7 @@ namespace Pathfinding.Examples {
 
 		class ProceduralTile {
 			int x, z;
-            System.Random rnd;
+			System.Random rnd;
 
 			ProceduralWorld world;
 
@@ -163,8 +163,7 @@ namespace Pathfinding.Examples {
 				this.x = x;
 				this.z = z;
 				this.world = world;
-                // Deterministic per-tile RNG seeded from a fixed base and tile coordinates
-                rnd = new System.Random(unchecked(20001114 ^ (x * 10007) ^ (z * 36007)));
+				rnd = new System.Random((x * 10007) ^ (z*36007));
 			}
 
 			Transform root;
