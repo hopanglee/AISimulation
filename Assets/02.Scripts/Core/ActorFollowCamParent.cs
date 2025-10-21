@@ -52,9 +52,9 @@ public class ActorFollowCamParent : MonoBehaviour
         if (mouseX == 0f && mouseY == 0f) return;
 
         // 우로 드래그할수록 Y 감소, 좌로 드래그할수록 Y 증가
-        yaw -= mouseX * orbitSensitivityX;
+        yaw = transform.eulerAngles.y - mouseX * orbitSensitivityX;
         // 위로 드래그할수록 X 감소, 아래로 드래그할수록 X 증가
-        pitch -= mouseY * orbitSensitivityY;
+        pitch = transform.eulerAngles.x - mouseY * orbitSensitivityY;
 
         transform.eulerAngles = new Vector3(pitch, yaw, 0f);
     }

@@ -241,12 +241,11 @@ public class HinoMaori : MainActor
         }
     }
 
-    public override async UniTask WakeUp()
+    public override void WakeUp()
     {
-        TimeManager.StartTimeStop();
         if (!useMemoryResetSystem)
         {
-            await base.WakeUp();
+            base.WakeUp();
             return;
         }
 
@@ -256,12 +255,23 @@ public class HinoMaori : MainActor
             return;
         }
 
+        RunWakeUpAsync().Forget();
+    }
 
-        // 기상 시 메모리 백업 (그날의 초기 상태 저장)
-        await BackupAllMemoryFiles();
-        TimeManager.EndTimeStop();
-        
+    private async UniTask RunWakeUpAsync()
+    {
+        try
+        {
+            TimeManager.StartTimeStop();
+            // 기상 시 메모리 백업 (그날의 초기 상태 저장)
+            await BackupAllMemoryFiles();
+        }
+        finally
+        {
+            TimeManager.EndTimeStop();
+        }
+
         // 백업 완료 후 평범한 base.WakeUp() 실행
-        base.WakeUp().Forget();
+        base.WakeUp();
     }
 }

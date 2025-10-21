@@ -15,14 +15,14 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float maxZ = 50f;
 
     [Header("Focus Settings")]
-    [SerializeField] private float focusSpeed = 5f;
+    [SerializeField] private float focusSpeed = 10f;
 
-    [Header("Orbit Settings")]
-    [SerializeField] private bool enableOrbit = true; // 우클릭 드래그로 타겟 중심 회전
-    [SerializeField] private int orbitMouseButton = 1; // 0: LMB, 1: RMB, 2: MMB
-    [SerializeField] private float orbitSensitivity = 1.0f;
-    [SerializeField] private float orbitYMin = -30f;
-    [SerializeField] private float orbitYMax = 80f;
+    // [Header("Orbit Settings")]
+    // [SerializeField] private bool enableOrbit = true; // 우클릭 드래그로 타겟 중심 회전
+    // [SerializeField] private int orbitMouseButton = 1; // 0: LMB, 1: RMB, 2: MMB
+    // [SerializeField] private float orbitSensitivity = 1.0f;
+    // [SerializeField] private float orbitYMin = -30f;
+    // [SerializeField] private float orbitYMax = 80f;
 
     private Camera mainCamera;
     private Vector3 targetPosition;
@@ -30,12 +30,12 @@ public class CameraController : MonoBehaviour
     private bool isFocusing = false;
     private Vector3 focusTarget;
     private Transform focusTargetTransform; // 포커스할 대상의 Transform
-    private float orbitYaw;
-    private float orbitPitch;
-    private float orbitDistance = 5f;
-    private bool isOrbiting = false;
-    private Vector3 orbitMouseStartPos;
-    private float orbitStartYaw;
+    // private float orbitYaw;
+    // private float orbitPitch;
+    // private float orbitDistance = 5f;
+    // private bool isOrbiting = false;
+    // private Vector3 orbitMouseStartPos;
+    // private float orbitStartYaw;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -153,12 +153,12 @@ public class CameraController : MonoBehaviour
             var newFocus = CalculateFocusPosition(focusTargetTransform.position);
             focusTarget = new Vector3(newFocus.x, transform.position.y, newFocus.z);
             // 일반 이동 모드
-            transform.position = Vector3.Lerp(transform.position, focusTarget, Time.deltaTime * 10f);
+            transform.position = Vector3.Lerp(transform.position, focusTarget, Time.deltaTime * focusSpeed);
         }
         else
         {
             // 일반 이동 모드
-            transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * 10f);
+            transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * focusSpeed);
         }
     }
 
@@ -196,15 +196,15 @@ public class CameraController : MonoBehaviour
         {
             focusTargetTransform = targetTransform;
             // 초기 위치 계산
-            Vector3 dir = transform.position - focusTargetTransform.position;
-            orbitDistance = Mathf.Max(0.01f, dir.magnitude); // 현재 카메라-타겟 거리 고정
-            orbitYaw = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
-            float sinArg = Mathf.Clamp(dir.y / orbitDistance, -1f, 1f);
-            orbitPitch = Mathf.Asin(sinArg) * Mathf.Rad2Deg;
-            orbitPitch = Mathf.Clamp(orbitPitch, orbitYMin, orbitYMax);
-            Quaternion rot = Quaternion.Euler(orbitPitch, orbitYaw, 0f);
-            Vector3 desired = focusTargetTransform.position + rot * new Vector3(0f, 0f, -orbitDistance);
-            focusTarget = new Vector3(desired.x, transform.position.y, desired.z);
+            // Vector3 dir = transform.position - focusTargetTransform.position;
+            // orbitDistance = Mathf.Max(0.01f, dir.magnitude); // 현재 카메라-타겟 거리 고정
+            // orbitYaw = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+            // float sinArg = Mathf.Clamp(dir.y / orbitDistance, -1f, 1f);
+            // orbitPitch = Mathf.Asin(sinArg) * Mathf.Rad2Deg;
+            // orbitPitch = Mathf.Clamp(orbitPitch, orbitYMin, orbitYMax);
+            // Quaternion rot = Quaternion.Euler(orbitPitch, orbitYaw, 0f);
+            // Vector3 desired = focusTargetTransform.position + rot * new Vector3(0f, 0f, -orbitDistance);
+            // focusTarget = new Vector3(desired.x, transform.position.y, desired.z);
             isFocusing = true;
         }
     }
