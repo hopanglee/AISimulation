@@ -205,7 +205,7 @@ public class Bed : SitableProp
             // MainActor인 경우 WakeUp 함수 호출
             if (actor is MainActor mainActor && mainActor.IsSleeping)
             {
-                mainActor.WakeUp().Forget();
+                mainActor.WakeUp();
             }
         }
     }
