@@ -283,7 +283,6 @@ public class ExternalEventService : IExternalEventService
                 }
                 catch { }
 
-
                 mainActor.MoveController.Reset();
                 Debug.LogWarning($"<color=yellow>[ExternalEventService] {mainActor.Name}</color>의 이동이 중단되었습니다.");
 

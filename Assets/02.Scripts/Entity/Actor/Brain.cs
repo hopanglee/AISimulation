@@ -79,13 +79,13 @@ public class Brain
         actionPerformer = new ActionPerformer(actor);
 
         // 메모리 처리 구간과 사이클 시작 간 상호배타 보장을 위한 배리어
-        MemoryProcessingBarrier = new System.Threading.SemaphoreSlim(1, 1);
+        //MemoryProcessingBarrier = new System.Threading.SemaphoreSlim(1, 1);
     }
 
     /// <summary>
     /// LTM 처리 중일 때 다음 사이클(Perception 등)이 대기하도록 하는 배리어
     /// </summary>
-    public System.Threading.SemaphoreSlim MemoryProcessingBarrier { get; private set; }
+    //public System.Threading.SemaphoreSlim MemoryProcessingBarrier { get; private set; }
 
     /// <summary>
     /// 강제로 새로운 DayPlan을 생성하도록 설정합니다.
@@ -183,7 +183,7 @@ public class Brain
                 {
                     memoryManager.AddShortTermMemory(description, "", actor?.curLocation?.GetSimpleKey());
                 }
-                catch { }   
+                catch { }
             }
             else
             {
@@ -710,15 +710,15 @@ public class Brain
             var visualInformation = mainActor.sensor.GetLookableEntityDescriptions();
             var perceptionAgent = new PerceptionAgentGroup(actor, dayPlanner);
             // 메모리 처리 중이면 Perception 시작을 대기시켜 로그/순서 간섭 방지
-            await MemoryProcessingBarrier.WaitAsync();
-            try
-            {
-                recentPerceptionResult = await perceptionAgent.InterpretVisualInformationAsync(visualInformation);
-            }
-            finally
-            {
-                MemoryProcessingBarrier.Release();
-            }
+            // await MemoryProcessingBarrier.WaitAsync();
+            // try
+            // {
+            recentPerceptionResult = await perceptionAgent.InterpretVisualInformationAsync(visualInformation);
+            // }
+            // finally
+            // {
+            //     MemoryProcessingBarrier.Release();
+            // }
 
             CharacterMemoryManager characterMemoryManager = new CharacterMemoryManager(actor);
             var characterInfo = characterMemoryManager.GetCharacterInfo();
@@ -731,7 +731,7 @@ public class Brain
         Debug.LogError($"[{actor.Name}] MainActor가 아닌 Actor에서 시각정보 해석을 시도했습니다.");
         throw new System.InvalidOperationException($"{actor.Name}은 MainActor가 아니므로 시각정보 해석을 수행할 수 없습니다.");
     }
-    
+
     /// <summary>
     /// 로깅 활성화 여부를 설정합니다.
     /// </summary>

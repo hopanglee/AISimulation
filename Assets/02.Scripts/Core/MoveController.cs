@@ -167,12 +167,12 @@ public class MoveController : MonoBehaviour
 
             while (true)
             {
-                if (ct.IsCancellationRequested) break;
+                if (ct.IsCancellationRequested) return;
 
 				// 바쁜 대기 방지: 다음 프레임까지 양보하여 CPU 점유 과다 방지
 				await UniTask.Yield(PlayerLoopTiming.FixedUpdate, ct);
 
-                if (ct.IsCancellationRequested) break;
+                if (ct.IsCancellationRequested) return;
 
                 // Simulation 시간이 멈추면 이동도 일시정지
                 timeService = Services.Get<ITimeService>();
@@ -182,7 +182,7 @@ public class MoveController : MonoBehaviour
                     // 시간 재개 및 GameTime 틱 발생까지 대기
                     while (true)
                     {
-                        if (ct.IsCancellationRequested) break;
+                        if (ct.IsCancellationRequested) return;
                         timeService = Services.Get<ITimeService>();
                         if (timeService != null && timeService.IsTimeFlowing)
                         {
