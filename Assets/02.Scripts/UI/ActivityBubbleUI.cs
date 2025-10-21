@@ -81,7 +81,7 @@ public class ActivityBubbleUI : MonoBehaviour
         if (!countdownRunning && totalSeconds > 0)
         {
             countdownRunning = true;
-            _ = RunCountdownAsync(activityName, countdownCts.Token);
+            RunCountdownAsync(activityName, countdownCts.Token).Forget();
         }
     }
 

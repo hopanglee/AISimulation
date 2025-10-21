@@ -393,7 +393,7 @@ public class SimulationController : MonoBehaviour
     {
         if (gameService != null)
         {
-            _ = gameService.StartSimulation();
+            gameService.StartSimulation();
             Debug.Log("[SimulationController] 시뮬레이션을 시작합니다...");
         }
     }

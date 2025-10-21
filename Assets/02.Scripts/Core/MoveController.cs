@@ -170,7 +170,10 @@ public class MoveController : MonoBehaviour
                 if (ct.IsCancellationRequested) break;
 
                 // 바쁜 대기 방지: 다음 프레임까지 양보하여 CPU 점유 과다 및 프리즈 방지
+                TimeManager.StartTimeStop();
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, ct);
+                TimeManager.EndTimeStop();
+
                 if (ct.IsCancellationRequested) break;
 
                 // Simulation 시간이 멈추면 이동도 일시정지
@@ -187,7 +190,10 @@ public class MoveController : MonoBehaviour
                         {
                             break;
                         }
+                        
+                        TimeManager.StartTimeStop();
                         await UniTask.Yield(PlayerLoopTiming.FixedUpdate, ct);
+                        TimeManager.EndTimeStop();
                     }
                     if (followerEntity != null) followerEntity.isStopped = false;
                 }

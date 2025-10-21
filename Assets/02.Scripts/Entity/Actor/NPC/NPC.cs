@@ -296,7 +296,7 @@ public abstract partial class NPC : Actor
         Debug.Log($"[{Name}] {from.Name}로부터 메시지 수신: {text}");
 
         // AI Agent를 통해 응답 처리
-        _ = ProcessHearEventWithAgent(from, text);
+        ProcessHearEventWithAgent(from, text).Forget();
     }
 
     /// <summary>
@@ -313,7 +313,7 @@ public abstract partial class NPC : Actor
         if (success)
         {
             // 성공적으로 받았으면 AI Agent를 통해 반응 처리
-            _ = ProcessReceiveEventWithAgent(from, item);
+            ProcessReceiveEventWithAgent(from, item).Forget();
         }
 
         return success;
@@ -327,7 +327,7 @@ public abstract partial class NPC : Actor
         base.OnMoneyReceived(from, amount);
 
         // AI Agent를 통해 돈을 받았을 때의 반응 처리
-        _ = ProcessMoneyReceivedEventWithAgent(from, amount);
+        ProcessMoneyReceivedEventWithAgent(from, amount).Forget();
     }
 
     /// <summary>

@@ -56,7 +56,7 @@ namespace Agent.ActionHandlers
                                     return false;
                             }
 
-                            _ = mainActor.Sleep(duration);
+                            mainActor.Sleep(duration).Forget();
                             return true;
                         }
                         else
