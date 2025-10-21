@@ -37,6 +37,8 @@ public interface ILocationService : IService
     /// 전체 월드의 Area 정보를 반환 (Static Tool)
     /// </summary>
     public string GetWorldAreaInfo();
+
+    public List<Building> GetAllBuildings();
 }
 
 public class LocationService : ILocationService
@@ -232,6 +234,11 @@ public class LocationService : ILocationService
         }
         // Debug.Log($"There is no building in {key.locationName}");
         return new();
+    }
+
+    public List<Building> GetAllBuildings()
+    {
+        return buildings.Values.SelectMany(b => b).ToList();
     }
 
     public Area GetArea(ILocation location)

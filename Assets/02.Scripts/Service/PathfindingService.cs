@@ -131,8 +131,8 @@ public class PathfindingService : IPathfindingService
         }
         bool allowTailMatch = hasScope && pivotIndex >= 0;
         string targetTail = allowTailMatch ? string.Join(":", keyTokens, pivotIndex, keyTokens.Length - pivotIndex) : null;
-        string tailLeaf = hasScope ? keyTokens[keyTokens.Length - 1] : null;
-        
+        string tailLeaf = allowTailMatch ? keyTokens[keyTokens.Length - 1] : null;
+
         // BFS로 최단 경로 찾기
         var queue = new Queue<Area>();
         var visited = new HashSet<Area>();
@@ -142,6 +142,7 @@ public class PathfindingService : IPathfindingService
         visited.Add(startArea);
 
         var locationManager = Services.Get<ILocationService>();
+        var buildings = locationManager.GetAllBuildings().Select(b => b.locationName).ToList().Distinct();
 
         while (queue.Count > 0)
         {
@@ -212,6 +213,15 @@ public class PathfindingService : IPathfindingService
                             isTargetFound = true;
                         }
                     }
+
+
+                    if (buildings.Contains(tailLeaf))
+                    { // 그냥 빌딩이 찾고싶던거임
+                        if (currentFullPath.IndexOf(targetTail) >= 0)
+                        {
+                            isTargetFound = true;
+                        }
+                    }
                 }
 
                 // 규칙 4: 지역명 완전 일치만 허용
@@ -224,6 +234,16 @@ public class PathfindingService : IPathfindingService
                 if (!isTargetFound && building != null && building.locationName == targetLocationKey)
                 {
                     isTargetFound = true;
+                }
+
+
+                buildings = locationManager.GetAllBuildings().Select(b => b.locationName).ToList().Distinct();
+                if (buildings.Contains(tailLeaf))
+                { // 그냥 빌딩 이름만 
+                    if (building != null && building.locationName == tailLeaf)
+                    {
+                        isTargetFound = true;
+                    }
                 }
             }
 
