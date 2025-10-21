@@ -1,9 +1,0 @@
-﻿{
-  "payload": {
-    "command": "chat",
-    "target_actor": "히노",
-    "message": "오늘 모카하우스 12:00, 괜찮아?",
-    "message_count": null
-  },
-  "tools": []
-}

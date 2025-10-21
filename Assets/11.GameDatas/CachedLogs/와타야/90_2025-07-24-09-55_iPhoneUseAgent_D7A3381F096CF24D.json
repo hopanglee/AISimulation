@@ -1,0 +1,11 @@
+﻿{
+  "payload": {
+    "command": "recent_read",
+    "target_actor": "카미야",
+    "message": null,
+    "message_count": 10
+  },
+  "tools": [],
+  "cachedTicks": 17574926.25,
+  "cachedGameTimeIso": "2025-07-24T09:55:00Z"
+}

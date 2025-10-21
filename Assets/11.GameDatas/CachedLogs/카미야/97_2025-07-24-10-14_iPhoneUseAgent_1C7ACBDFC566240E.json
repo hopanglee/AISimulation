@@ -1,0 +1,11 @@
+﻿{
+  "payload": {
+    "command": "chat",
+    "target_actor": "히노",
+    "message": "모카하우스 12:00. 괜찮아? 내가 조용히 기다릴게.",
+    "message_count": null
+  },
+  "tools": [],
+  "cachedTicks": 17576079.375,
+  "cachedGameTimeIso": "2025-07-24T10:14:00Z"
+}

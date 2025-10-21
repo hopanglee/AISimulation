@@ -1,0 +1,15 @@
+﻿{
+  "payload": {
+    "act_type": "UseObject",
+    "reasoning": "물컵을 손에 쥐었으니 먼저 물을 마셔 갈증을 해소하고 불안한 마음을 가라앉혀야 한다.",
+    "intention": "한 모금만 마셔 갈증과 긴장을 줄인 뒤 즉시 외출 준비를 재개하고 모카하우스로 출발할 준비를 하겠다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"물컵\"}"
+    }
+  ],
+  "cachedTicks": 17576951.25,
+  "cachedGameTimeIso": "2025-07-24T10:29:00Z"
+}

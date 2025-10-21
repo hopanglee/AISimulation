@@ -1,0 +1,10 @@
+﻿{
+  "payload": {
+    "act_type": "InteractWithObject",
+    "reasoning": "모카하우스로 가기 전에 세수를 해서 얼굴을 정돈하고 정신을 맑게 해야 캐주얼복으로 갈아입고 바로 출발할 수 있으니 세면대와 상호작용하겠다.",
+    "intention": "세면대에서 세수해 외모와 기분을 가다듬어 히노를 만나러 갈 준비를 완료한다."
+  },
+  "tools": [],
+  "cachedTicks": 17573411.25,
+  "cachedGameTimeIso": "2025-07-24T09:30:00Z"
+}

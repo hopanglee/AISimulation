@@ -3,5 +3,7 @@
     "add_item_name": "null",
     "remove_item_name": "도넛"
   },
-  "tools": []
+  "tools": [],
+  "cachedTicks": 17568360.0,
+  "cachedGameTimeIso": "2025-07-24T08:06:00Z"
 }

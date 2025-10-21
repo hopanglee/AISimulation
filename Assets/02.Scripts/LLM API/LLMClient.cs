@@ -237,9 +237,9 @@ public abstract class LLMClient
                                         // 시간 키가 다를 때만 이동 및 로그 (hash만 달라도 이동하지 않음)
                                         if (timeChanged)
                                         {
-                                            Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 이동(시간 변경): {oldTimeKey} -> {newTimeKey}");
-                                            File.Move(matchPath, currentCacheFilePath);
-                                            matchPath = currentCacheFilePath;
+                                            //Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 이동(시간 변경): {oldTimeKey} -> {newTimeKey}");
+                                            //File.Move(matchPath, currentCacheFilePath);
+                                            //matchPath = currentCacheFilePath;
                                         }
                                     }
                                     else

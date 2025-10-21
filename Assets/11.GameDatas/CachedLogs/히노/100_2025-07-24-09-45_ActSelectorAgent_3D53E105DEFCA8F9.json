@@ -1,0 +1,19 @@
+﻿{
+  "payload": {
+    "act_type": "UseObject",
+    "reasoning": "와타야와 카미야를 만나러 가기 위해 손에 든 캐주얼복을 입어 외출 준비를 빠르게 마치고 첫인상을 좋게 만들어 자신감을 높이려 선택했다.",
+    "intention": "캐주얼복으로 갈아입어 마음의 중심을 잡고 12시 모카하우스 약속에 차분하면서도 설레는 상태로 나가려 한다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"옷장:캐주얼복\"}"
+    },
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"캐주얼복\"}"
+    }
+  ],
+  "cachedTicks": 17574356.25,
+  "cachedGameTimeIso": "2025-07-24T09:45:00Z"
+}

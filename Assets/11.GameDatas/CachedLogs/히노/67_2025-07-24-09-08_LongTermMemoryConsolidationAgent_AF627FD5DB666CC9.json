@@ -262,5 +262,7 @@
     "total_original_entries": 44,
     "total_consolidated_chunks": 9
   },
-  "tools": []
+  "tools": [],
+  "cachedTicks": 17572110.0,
+  "cachedGameTimeIso": "2025-07-24T09:08:00Z"
 }

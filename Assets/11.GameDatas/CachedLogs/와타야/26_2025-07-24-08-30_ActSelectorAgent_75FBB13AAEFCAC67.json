@@ -9,5 +9,7 @@
       "name": "SwapInventoryToHand",
       "argsJson": "{\"itemName\":\"아이폰\"}"
     }
-  ]
+  ],
+  "cachedTicks": 17569801.875,
+  "cachedGameTimeIso": "2025-07-24T08:30:00Z"
 }

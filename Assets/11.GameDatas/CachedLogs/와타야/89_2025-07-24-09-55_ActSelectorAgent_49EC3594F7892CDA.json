@@ -1,0 +1,15 @@
+﻿{
+  "payload": {
+    "act_type": "UseObject",
+    "reasoning": "카미야의 무응답이 의심스러워 바로 아이폰을 확인해 답장을 확인하고 상황에 맞게 대응하려 합니다.",
+    "intention": "카미야의 반응을 확인한 뒤 필요하면 히노에게 안심시킬 메시지를 보내어 오늘 동행 의사를 확실히 전달하고 주도권을 잡겠다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"아이폰\"}"
+    }
+  ],
+  "cachedTicks": 17574926.25,
+  "cachedGameTimeIso": "2025-07-24T09:55:00Z"
+}

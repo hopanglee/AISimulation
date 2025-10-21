@@ -41,5 +41,7 @@
       "name": "LoadRelationshipByName",
       "argsJson": "{\"targetName\":\"히노 마오리\"}"
     }
-  ]
+  ],
+  "cachedTicks": 17568000.0,
+  "cachedGameTimeIso": "2025-07-24T08:00:00Z"
 }

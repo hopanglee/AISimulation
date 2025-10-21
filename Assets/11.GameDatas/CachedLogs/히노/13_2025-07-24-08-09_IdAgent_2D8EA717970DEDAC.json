@@ -48,5 +48,7 @@
       "name": "GetAreaHierarchy",
       "argsJson": "{}"
     }
-  ]
+  ],
+  "cachedTicks": 17568540.0,
+  "cachedGameTimeIso": "2025-07-24T08:09:00Z"
 }

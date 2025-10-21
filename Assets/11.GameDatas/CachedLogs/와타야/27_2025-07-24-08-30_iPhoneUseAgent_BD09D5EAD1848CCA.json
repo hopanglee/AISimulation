@@ -5,5 +5,7 @@
     "message": "몇 시에 갈까? 내가 미리 뭘 챙겨가면 좋을까~?",
     "message_count": null
   },
-  "tools": []
+  "tools": [],
+  "cachedTicks": 17569801.875,
+  "cachedGameTimeIso": "2025-07-24T08:30:00Z"
 }

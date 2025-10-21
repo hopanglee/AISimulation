@@ -9,5 +9,7 @@
       "name": "SwapInventoryToHand",
       "argsJson": "{\"itemName\":\"물컵\"}"
     }
-  ]
+  ],
+  "cachedTicks": 17568697.5,
+  "cachedGameTimeIso": "2025-07-24T08:11:00Z"
 }

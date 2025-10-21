@@ -1,0 +1,17 @@
+﻿{
+  "payload": {
+    "area_name": "5-chome-11"
+  },
+  "tools": [
+    {
+      "name": "FindBuildingAreaPath",
+      "argsJson": "{\"buildingName\": \"모카하우스\"}"
+    },
+    {
+      "name": "FindShortestAreaPathFromActor",
+      "argsJson": "{\"targetAreaKey\": \"모카하우스\"}"
+    }
+  ],
+  "cachedTicks": 17577251.25,
+  "cachedGameTimeIso": "2025-07-24T10:34:00Z"
+}

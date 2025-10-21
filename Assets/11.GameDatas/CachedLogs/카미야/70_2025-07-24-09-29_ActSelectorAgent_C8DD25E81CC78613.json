@@ -1,0 +1,10 @@
+﻿{
+  "payload": {
+    "act_type": "MoveToEntity",
+    "reasoning": "물컵을 씻어 접시를 정리하고 마음을 가다듬기 위해 먼저 접시 위의 물컵 쪽으로 가야 하기 때문입니다.",
+    "intention": "식탁 위의 물컵을 집어 세척 장소로 옮겨 거실을 정돈하고 히노와의 만남 준비를 차분히 마치겠다."
+  },
+  "tools": [],
+  "cachedTicks": 17573394.375,
+  "cachedGameTimeIso": "2025-07-24T09:29:00Z"
+}

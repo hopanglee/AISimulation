@@ -79,5 +79,7 @@
     "filter_reasoning": "장기 기억 보존은 (1) 사건의 전환점 여부, (2) 자기 인식/기억 상태와 관련성, (3) 주요 대인관계와 향후 행동에 영향을 줄 단서 여부를 기준으로 결정했습니다. 그 결과 상위 6개(약 67%)로 다음 청크들을 보존 대상으로 선정합니다: C0_accident_jan12(핵심 사건·원인), C1_wake_confusion_jul24(기억 누락 자각), C8_wataya_chat_history_and_reassurance(지지 네트워크·신뢰 근거), C3_read_diary_react(카미야 관련 정서적 단서), C5_check_kamiya_chat(구체적 약속·관계 단서), C7_prepare_water_message_wataya(도움 요청 행동·대인 의존성). 제외한 C2·C4·C6은 맥락상 지원적·일상적 행동으로, 핵심적 장기 기억으로 보존할 필요성은 상대적으로 낮다고 판단했습니다.",
     "retention_percentage": 0.0
   },
-  "tools": []
+  "tools": [],
+  "cachedTicks": 17572110.0,
+  "cachedGameTimeIso": "2025-07-24T09:08:00Z"
 }

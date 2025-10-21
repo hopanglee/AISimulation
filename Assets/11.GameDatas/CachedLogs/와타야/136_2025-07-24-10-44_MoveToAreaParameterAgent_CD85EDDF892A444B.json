@@ -1,0 +1,17 @@
+﻿{
+  "payload": {
+    "payload": {
+      "area_name": "복도",
+      "move_mode": "Run"
+    },
+    "tools": [
+      {
+        "name": "FindShortestAreaPathFromActor",
+        "argsJson": "{\"targetAreaKey\":\"복도\"}"
+      }
+    ]
+  },
+  "tools": [],
+  "cachedTicks": 17577855.0,
+  "cachedGameTimeIso": "2025-07-24T10:44:00Z"
+}

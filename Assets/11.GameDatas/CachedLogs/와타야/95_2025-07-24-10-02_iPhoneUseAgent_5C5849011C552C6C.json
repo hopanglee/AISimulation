@@ -1,0 +1,11 @@
+﻿{
+  "payload": {
+    "command": "chat",
+    "target_actor": "히노",
+    "message": "걱정하지 마, 내가 같이 갈게. 11시쯤 모카하우스에 도착할게. 무리하지 말고 기다리고 있어 — 내가 지켜줄게.",
+    "message_count": null
+  },
+  "tools": [],
+  "cachedTicks": 17575350.0,
+  "cachedGameTimeIso": "2025-07-24T10:02:00Z"
+}

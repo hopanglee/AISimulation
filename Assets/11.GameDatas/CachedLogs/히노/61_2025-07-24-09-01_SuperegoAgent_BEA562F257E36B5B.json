@@ -53,5 +53,7 @@
       "name": "FindBuildingAreaPath",
       "argsJson": "{\"buildingName\": \"카페 모카하우스\"}"
     }
-  ]
+  ],
+  "cachedTicks": 17571690.0,
+  "cachedGameTimeIso": "2025-07-24T09:01:00Z"
 }

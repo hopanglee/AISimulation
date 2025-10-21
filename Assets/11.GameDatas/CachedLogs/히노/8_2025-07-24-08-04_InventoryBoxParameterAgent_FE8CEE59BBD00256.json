@@ -3,5 +3,7 @@
     "add_item_name": "null",
     "remove_item_name": "히노의 일기"
   },
-  "tools": []
+  "tools": [],
+  "cachedTicks": 17568240.0,
+  "cachedGameTimeIso": "2025-07-24T08:04:00Z"
 }

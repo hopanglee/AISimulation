@@ -1,0 +1,10 @@
+﻿{
+  "payload": {
+    "act_type": "PickUpItem",
+    "reasoning": "손이 비어 있고 식탁 위의 물컵이 정리 첫 단계에 필요하므로 물컵을 먼저 집어올 필요가 있다.",
+    "intention": "물컵을 손에 들어 세척하거나 물을 확인해 정리와 마음을 차분히 하기 위함."
+  },
+  "tools": [],
+  "cachedTicks": 17573730.0,
+  "cachedGameTimeIso": "2025-07-24T09:35:00Z"
+}

@@ -42,5 +42,7 @@
       "name": "LoadRelationshipByName",
       "argsJson": "{\"targetName\":\"\\uC640\\uD0C0\\uC57C\"}"
     }
-  ]
+  ],
+  "cachedTicks": 17568000.0,
+  "cachedGameTimeIso": "2025-07-24T08:00:00Z"
 }

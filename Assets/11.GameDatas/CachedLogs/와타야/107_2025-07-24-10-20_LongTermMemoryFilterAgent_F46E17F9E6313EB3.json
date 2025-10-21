@@ -1,0 +1,85 @@
+﻿{
+  "payload": {
+    "evaluations": [
+      {
+        "chunk_id": "morning_wake_and_decision",
+        "importance_score": 0.95,
+        "surprise_score": 0.6,
+        "overall_score": 0.0,
+        "reasoning": "기상 직후 히노의 불안 메시지를 받고 즉시 행동(모카하우스로 동행 결심)으로 이어진 결정적 순간이다. 감정 강도가 최고치에 달해 인간관계 방향(히노 보호·카미야 견제)에 즉각적 영향을 준다. 다만 장기기억(히노의 증상)은 이미 알려진 정보라 완전 충격은 아니므로 의외성은 중간 수준으로 평가했다.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "초기소통_카톡_전송",
+        "importance_score": 0.9,
+        "surprise_score": 0.4,
+        "overall_score": 0.0,
+        "reasoning": "히노와 카미야에게 직접적으로 소통한 행위는 이후 관계 전개에 실질적 영향을 미칠 가능성이 크다(동행 의사 표명·기회로 삼겠다는 내적 판단). 의사결정·전략적 행위로 중요도가 높다. 내용이 계획적이고 예측 가능한 행동이므로 의외성은 낮음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "옷고르기와출발준비계획",
+        "importance_score": 0.6,
+        "surprise_score": 0.3,
+        "overall_score": 0.0,
+        "reasoning": "외출을 위해 구체적 준비와 우선순위 정리가 이루어져 실제 이동을 뒷받침한 실무적 청크다. 행동 계속성에 기여하므로 중요도는 중간. 개인적 일상행동이라 의외성은 낮다.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "화장실이동과초기정리",
+        "importance_score": 0.55,
+        "surprise_score": 0.3,
+        "overall_score": 0.0,
+        "reasoning": "외출 직전 불안·결의의 자기확인(히노 타이밍 이용)과 이동 행위가 포함되어 있어 준비 흐름을 이어가는데 도움된다. 그러나 큰 전략적 전환이나 새로운 정보 제공은 적어 중요도는 중간-낮음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "세면과정_청결및물끄기",
+        "importance_score": 0.25,
+        "surprise_score": 0.2,
+        "overall_score": 0.0,
+        "reasoning": "개인 위생·의복 관리에 관한 일상적 행위로 사건의 핵심적 변화나 인간관계에 미치는 영향이 거의 없다. 반복적이고 예측 가능한 행동이라 의외성도 낮다.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "간식섭취_간단안정행동",
+        "importance_score": 0.2,
+        "surprise_score": 0.2,
+        "overall_score": 0.0,
+        "reasoning": "도넛 섭취는 스트레스 완화의 즉각적 효과는 있으나 전체 내러티브 상 중요도는 낮다. 일상적 안정 행동으로 의외성은 없음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "옷갈아입기완료",
+        "importance_score": 0.6,
+        "surprise_score": 0.35,
+        "overall_score": 0.0,
+        "reasoning": "외출 준비의 최종 단계로서 행동 실행 가능성을 확정짓는 의미가 있어 중간 정도의 중요도가 있다. 그러나 본질적으로 예측 가능한 준비 행동이므로 의외성은 낮음.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "아이폰확인과대화기록검토",
+        "importance_score": 0.9,
+        "surprise_score": 0.5,
+        "overall_score": 0.0,
+        "reasoning": "카미야의 최근 태도·응답을 재확인한 행위는 와타야의 전략(감시·대응)에 직접적인 근거를 제공한다. 인간관계 역학과 향후 행동결정에 중요한 정보원이므로 중요도가 높다. 다만 이미 지속적으로 감시해온 대상이라 의외성은 중간 수준.",
+        "should_keep": false
+      },
+      {
+        "chunk_id": "최종다짐과출발준비완료",
+        "importance_score": 0.92,
+        "surprise_score": 0.45,
+        "overall_score": 0.0,
+        "reasoning": "출발 직전의 최종 결의 재확인은 의도된 행동(히노 안정화·존재감 과시)의 실행 가능성을 강하게 높인다. 즉시 행동으로 연결되는 결정적 정서적 상태라 중요도가 높다. 하지만 예측 가능한 전개라 의외성은 중간 이하로 평가했다.",
+        "should_keep": false
+      }
+    ],
+    "kept_chunks": [],
+    "filtered_chunks": [],
+    "filter_reasoning": "상위 약 70%(6개)를 선택할 때 기준은 '향후 인간관계 전개와 행동에 직접적 영향을 주는 청크'를 우선으로 했습니다. 구체적으로는(1) 즉시 행동으로 연결된 결정적 순간(Chunk 0, Chunk 8), (2) 대인 소통·전략적 메시지(Chunk 1), (3) 상대의 태도·근거를 확인하는 감시 행위(Chunk 7), (4) 외출 실행을 가능하게 하는 준비 행동(Chunk 2, Chunk 6)을 우선 보존했습니다. 반면 개인 위생·간식 섭취 등 일상적이고 반복적인 청크(Chunk 3, Chunk 4, Chunk 5)는 장기기억으로 남길 우선순위가 낮아 제외했습니다.",
+    "retention_percentage": 0.0
+  },
+  "tools": [],
+  "cachedTicks": 17576411.25,
+  "cachedGameTimeIso": "2025-07-24T10:20:00Z"
+}

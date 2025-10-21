@@ -1,0 +1,39 @@
+﻿{
+  "payload": {
+    "act_type": "MoveToArea",
+    "reasoning": "모카하우스로 가는 것이 지금 쫓아가야 할 목표이기 때문에 이동해야 합니다.",
+    "intention": "히노를 친구로서 챙기고 둘 사이에 쐐기를 박기 위해 모카하우스로 움직이고자 합니다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"캐주얼복\"}"
+    },
+    {
+      "name": "GetAreaHierarchy",
+      "argsJson": "{}"
+    },
+    {
+      "name": "FindShortestAreaPathFromActor",
+      "argsJson": "{\"targetAreaKey\":\"1-chome-3\"}"
+    },
+    {
+      "name": "FindShortestAreaPathFromActor",
+      "argsJson": "{\"targetAreaKey\": \"이자카야 스미레\"}"
+    },
+    {
+      "name": "FindShortestAreaPathFromActor",
+      "argsJson": "{\"targetAreaKey\": \"이자카야 타치바나\"}"
+    },
+    {
+      "name": "FindShortestAreaPathFromActor",
+      "argsJson": "{\"targetAreaKey\": \"키즈네편의점\"}"
+    },
+    {
+      "name": "FindShortestAreaPathFromActor",
+      "argsJson": "{\"targetAreaKey\": \"카페 모카하우스\"}"
+    }
+  ],
+  "cachedTicks": 17572773.75,
+  "cachedGameTimeIso": "2025-07-24T09:19:00Z"
+}

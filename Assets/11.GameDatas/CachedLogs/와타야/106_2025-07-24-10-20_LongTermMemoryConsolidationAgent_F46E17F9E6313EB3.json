@@ -1,0 +1,291 @@
+﻿{
+  "payload": {
+    "consolidated_chunks": [
+      {
+        "chunk_id": "morning_wake_and_decision",
+        "summary": "기상 직후 카미야에 대한 질투와 히노의 불안 메시지를 받고 즉시 모카하우스로 동행 결심.",
+        "start_time": "2025-07-24T08:00:00Z",
+        "end_time": "2025-07-24T08:54:00Z",
+        "main_events": [
+          "기상 직후 카미야·히노 관련 강한 감정 표출",
+          "히노의 불안 메시지 수신(모카하우스 약속·기억 문제 고지)",
+          "즉시 히노 곁에 가기로 결심"
+        ],
+        "people_involved": [
+          "히노 마오리",
+          "카미야 토루",
+          "와타야 이즈미(나)"
+        ],
+        "emotions": [
+          {
+            "name": "질투",
+            "intensity": 1.0
+          },
+          {
+            "name": "결의",
+            "intensity": 0.95
+          },
+          {
+            "name": "불안",
+            "intensity": 0.8
+          }
+        ],
+        "location": "와타야의 집:거실",
+        "original_entries_count": 5
+      },
+      {
+        "chunk_id": "초기소통_카톡_전송",
+        "summary": "히노에 상황 확인 후 카미야에게 동행 의사를 알리는 메시지 전송과 내부 판단.",
+        "start_time": "2025-07-24T09:04:00Z",
+        "end_time": "2025-07-24T09:13:00Z",
+        "main_events": [
+          "히노에게 약속 시간·준비 확인",
+          "카미야에게 동행 의사 메시지 전송",
+          "이번 동행을 기회로 삼겠다는 내부 판단"
+        ],
+        "people_involved": [
+          "히노 마오리",
+          "카미야 토루",
+          "와타야 이즈미(나)"
+        ],
+        "emotions": [
+          {
+            "name": "집착",
+            "intensity": 0.95
+          },
+          {
+            "name": "초조함",
+            "intensity": 0.9
+          },
+          {
+            "name": "질투",
+            "intensity": 0.95
+          }
+        ],
+        "location": "와타야의 집:거실",
+        "original_entries_count": 4
+      },
+      {
+        "chunk_id": "옷고르기와출발준비계획",
+        "summary": "캐주얼 복장 선택 후 외출 준비 목록을 만들고 이동을 시작함(복도 이동 포함).",
+        "start_time": "2025-07-24T09:14:00Z",
+        "end_time": "2025-07-24T09:26:00Z",
+        "main_events": [
+          "캐주얼 복장으로 갈아입기로 결정·옷장 이동",
+          "아이폰·소지품 정리 및 복도 이동",
+          "출발 전 세부 행동(세수·물·간식 등) 목록화"
+        ],
+        "people_involved": [
+          "와타야 이즈미(나)"
+        ],
+        "emotions": [
+          {
+            "name": "결의",
+            "intensity": 0.9
+          },
+          {
+            "name": "집착",
+            "intensity": 0.95
+          },
+          {
+            "name": "조바심/긴박감",
+            "intensity": 0.9
+          }
+        ],
+        "location": "와타야의 집:거실→복도",
+        "original_entries_count": 8
+      },
+      {
+        "chunk_id": "화장실이동과초기정리",
+        "summary": "화장실로 이동해 히노와 생일을 이용한 계획을 되뇌이며 준비에 착수.",
+        "start_time": "2025-07-24T09:27:00Z",
+        "end_time": "2025-07-24T09:45:00Z",
+        "main_events": [
+          "화장실 이동 및 도착",
+          "히노 불안 타이밍을 이용하겠다는 자기확인",
+          "출발 전 추가 준비(세수·옷 갈아입기 계획)"
+        ],
+        "people_involved": [
+          "히노 마오리",
+          "카미야 토루",
+          "와타야 이즈미(나)"
+        ],
+        "emotions": [
+          {
+            "name": "불안",
+            "intensity": 0.9
+          },
+          {
+            "name": "결의",
+            "intensity": 0.85
+          },
+          {
+            "name": "질투",
+            "intensity": 0.9
+          }
+        ],
+        "location": "와타야의 집:복도→화장실",
+        "original_entries_count": 4
+      },
+      {
+        "chunk_id": "세면과정_청결및물끄기",
+        "summary": "세면대 사용으로 의복·청결 관리(옷 세탁·물 사용·종결) 수행.",
+        "start_time": "2025-07-24T09:32:00Z",
+        "end_time": "2025-07-24T09:48:00Z",
+        "main_events": [
+          "세면대 상호작용 및 옷을 물로 씻음",
+          "물을 켜고 청결도 증가(세수·손 씻기)",
+          "다시 세면대 상호작용 후 물 끔"
+        ],
+        "people_involved": [
+          "와타야 이즈미(나)"
+        ],
+        "emotions": [
+          {
+            "name": "집중/신중함",
+            "intensity": 0.9
+          },
+          {
+            "name": "결의",
+            "intensity": 0.9
+          },
+          {
+            "name": "질투",
+            "intensity": 0.8
+          }
+        ],
+        "location": "와타야의 집:화장실(세면대)",
+        "original_entries_count": 6
+      },
+      {
+        "chunk_id": "간식섭취_간단안정행동",
+        "summary": "도넛을 꺼내 먹으며 잠깐 안정을 찾음(행동·물품 교체 포함).",
+        "start_time": "2025-07-24T09:40:00Z",
+        "end_time": "2025-07-24T09:43:00Z",
+        "main_events": [
+          "인벤토리와 손의 물품 교체(도넛)",
+          "도넛 사용 및 섭취",
+          "간단한 안정 취하기"
+        ],
+        "people_involved": [
+          "와타야 이즈미(나)"
+        ],
+        "emotions": [
+          {
+            "name": "희열/안정감",
+            "intensity": 0.6
+          },
+          {
+            "name": "초조함",
+            "intensity": 0.7
+          },
+          {
+            "name": "집착",
+            "intensity": 0.8
+          }
+        ],
+        "location": "와타야의 집:화장실",
+        "original_entries_count": 3
+      },
+      {
+        "chunk_id": "옷갈아입기완료",
+        "summary": "잠옷을 벗고 캐주얼로 갈아입어 외출 준비를 마무리함.",
+        "start_time": "2025-07-24T09:49:00Z",
+        "end_time": "2025-07-24T09:56:00Z",
+        "main_events": [
+          "잠옷 벗기 및 의복 교체",
+          "캐주얼 복장 착용 완료",
+          "외출 준비의 최종 점검"
+        ],
+        "people_involved": [
+          "와타야 이즈미(나)"
+        ],
+        "emotions": [
+          {
+            "name": "통제욕/주도성",
+            "intensity": 0.9
+          },
+          {
+            "name": "결의",
+            "intensity": 0.9
+          },
+          {
+            "name": "질투",
+            "intensity": 0.9
+          }
+        ],
+        "location": "와타야의 집:화장실",
+        "original_entries_count": 6
+      },
+      {
+        "chunk_id": "아이폰확인과대화기록검토",
+        "summary": "아이폰으로 카미야와의 최근 대화 10개를 점검해 그의 태도·응답을 재확인.",
+        "start_time": "2025-07-24T09:58:00Z",
+        "end_time": "2025-07-24T10:02:00Z",
+        "main_events": [
+          "아이폰을 손에 옮김",
+          "카미야와 최근 대화 10개 읽기",
+          "대화 내용(거절·감사·지시 등) 확인"
+        ],
+        "people_involved": [
+          "카미야 토루",
+          "와타야 이즈미(나)"
+        ],
+        "emotions": [
+          {
+            "name": "감시/확인욕구",
+            "intensity": 0.95
+          },
+          {
+            "name": "의심/불신",
+            "intensity": 0.9
+          },
+          {
+            "name": "좌절감",
+            "intensity": 0.7
+          }
+        ],
+        "location": "와타야의 집:화장실",
+        "original_entries_count": 5
+      },
+      {
+        "chunk_id": "최종다짐과출발준비완료",
+        "summary": "외출 직전 마지막으로 히노를 안정시키고 존재감을 확실히 하겠다는 다짐을 재확인.",
+        "start_time": "2025-07-24T10:04:00Z",
+        "end_time": "2025-07-24T10:04:00Z",
+        "main_events": [
+          "마지막 자기확인(오늘 기회 활용)",
+          "카미야의 침묵과 자신의 행동 계획 재확인",
+          "모카하우스로 이동 준비 완결"
+        ],
+        "people_involved": [
+          "히노 마오리",
+          "카미야 토루",
+          "와타야 이즈미(나)"
+        ],
+        "emotions": [
+          {
+            "name": "결의",
+            "intensity": 0.95
+          },
+          {
+            "name": "불안",
+            "intensity": 0.85
+          },
+          {
+            "name": "집착",
+            "intensity": 0.9
+          }
+        ],
+        "location": "와타야의 집:화장실→출발 직전",
+        "original_entries_count": 1
+      }
+    ],
+    "consolidation_reasoning": "시간순·맥락별 행동 흐름(기상→연락→준비→세면→의복교체→대화확인→출발 다짐)을 기준으로 감정 변화와 장소 이동을 묶어 의미 단위로 분할.",
+    "total_original_entries": 42,
+    "total_consolidated_chunks": 9
+  },
+  "tools": [],
+  "cachedTicks": 17576411.25,
+  "cachedGameTimeIso": "2025-07-24T10:20:00Z"
+}

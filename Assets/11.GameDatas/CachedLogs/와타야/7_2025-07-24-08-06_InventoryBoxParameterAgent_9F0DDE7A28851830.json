@@ -3,5 +3,7 @@
     "add_item_name": "null",
     "remove_item_name": "물컵"
   },
-  "tools": []
+  "tools": [],
+  "cachedTicks": 17568393.75,
+  "cachedGameTimeIso": "2025-07-24T08:06:00Z"
 }

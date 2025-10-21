@@ -50,5 +50,7 @@
       "name": "FindShortestAreaPathFromActor",
       "argsJson": "{\"targetAreaKey\":\"\\uB3C4\\uCFC4:\\uC2E0\\uC8FC\\uCFE0:\\uCE74\\uBD80\\uD0A4\\uCD78:1-chome-3\"}"
     }
-  ]
+  ],
+  "cachedTicks": 17569513.125,
+  "cachedGameTimeIso": "2025-07-24T08:25:00Z"
 }

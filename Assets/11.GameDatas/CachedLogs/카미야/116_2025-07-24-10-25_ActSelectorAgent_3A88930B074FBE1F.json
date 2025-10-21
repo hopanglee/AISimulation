@@ -1,0 +1,10 @@
+﻿{
+  "payload": {
+    "act_type": "PickUpItem",
+    "reasoning": "약속 전 필요한 자료를 손에 쥐고 출발 준비를 빠르게 마치기 위해 식탁 위의 카미야의 노트를 챙긴다.",
+    "intention": "카미야의 노트를 인벤토리에 넣어 출발 전 바로 확인할 수 있게 하고 곧 외출 준비를 완료한다."
+  },
+  "tools": [],
+  "cachedTicks": 17576718.75,
+  "cachedGameTimeIso": "2025-07-24T10:25:00Z"
+}

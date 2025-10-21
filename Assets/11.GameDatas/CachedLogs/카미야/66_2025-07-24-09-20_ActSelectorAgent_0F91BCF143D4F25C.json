@@ -1,0 +1,15 @@
+﻿{
+  "payload": {
+    "act_type": "MoveToEntity",
+    "reasoning": "잠옷을 옷장에 넣어 거실을 정리해야 하므로 옷장까지 가서 바로 정리할 수 있게 하려 합니다.",
+    "intention": "옷장으로 이동해 손에 든 잠옷을 넣어 거실을 깔끔하게 정리하고 마음을 차분하게 만들어 히노와의 약속 준비를 시작하겠다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"잠옷\"}"
+    }
+  ],
+  "cachedTicks": 17572815.0,
+  "cachedGameTimeIso": "2025-07-24T09:20:00Z"
+}

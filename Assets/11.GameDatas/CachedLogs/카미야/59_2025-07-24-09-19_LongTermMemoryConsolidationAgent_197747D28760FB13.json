@@ -1,0 +1,295 @@
+﻿{
+  "payload": {
+    "consolidated_chunks": [
+      {
+        "chunk_id": "A_sleep",
+        "summary": "밤에 침대에서 잠들어 휴식을 취했다.",
+        "start_time": "2025-07-23T21:00:00Z",
+        "end_time": "2025-07-23T21:00:00Z",
+        "main_events": [
+          "침대에서 잠듦"
+        ],
+        "people_involved": [
+          "카미야"
+        ],
+        "emotions": [
+          {
+            "name": "피로회복",
+            "intensity": 0.6
+          },
+          {
+            "name": "안정",
+            "intensity": 0.4
+          },
+          {
+            "name": "책임감(내일 대비)",
+            "intensity": 0.3
+          }
+        ],
+        "location": "카미야의 집:거실:침대",
+        "original_entries_count": 1
+      },
+      {
+        "chunk_id": "B_wake_and_reflect",
+        "summary": "아침에 일어나 수술·히노 약속·정돈 계획을 떠올렸다.",
+        "start_time": "2025-07-24T08:00:00Z",
+        "end_time": "2025-07-24T08:01:00Z",
+        "main_events": [
+          "기상",
+          "오늘 일정(모카하우스 12:00) 확인",
+          "수술일(8/7)과 히노에게 비밀 유지 다짐"
+        ],
+        "people_involved": [
+          "카미야",
+          "히노",
+          "와타야(언급)"
+        ],
+        "emotions": [
+          {
+            "name": "책임감",
+            "intensity": 0.95
+          },
+          {
+            "name": "불안",
+            "intensity": 0.75
+          },
+          {
+            "name": "애정(히노)",
+            "intensity": 0.9
+          },
+          {
+            "name": "차분함",
+            "intensity": 0.7
+          }
+        ],
+        "location": "카미야의 집:거실",
+        "original_entries_count": 2
+      },
+      {
+        "chunk_id": "C_breakfast_donut_sequence",
+        "summary": "식탁에서 도넛을 집어 먹으며 아침 식사를 했다.",
+        "start_time": "2025-07-24T08:01:00Z",
+        "end_time": "2025-07-24T08:11:00Z",
+        "main_events": [
+          "식탁으로 이동",
+          "접시에 있던 도넛 확인·집음",
+          "도넛을 먹음"
+        ],
+        "people_involved": [
+          "카미야"
+        ],
+        "emotions": [
+          {
+            "name": "차분함",
+            "intensity": 0.6
+          },
+          {
+            "name": "집중(일상 유지)",
+            "intensity": 0.75
+          },
+          {
+            "name": "애틋함(히노에 대한 생각)",
+            "intensity": 0.6
+          }
+        ],
+        "location": "카미야의 집:거실",
+        "original_entries_count": 7
+      },
+      {
+        "chunk_id": "D_change_clothes_prepare",
+        "summary": "블레이저로 갈아입고 하루 준비를 정돈적 사고로 계획했다.",
+        "start_time": "2025-07-24T08:13:00Z",
+        "end_time": "2025-07-24T08:24:00Z",
+        "main_events": [
+          "도넛 섭취 후 정리 필요성 인식",
+          "옷장으로 이동",
+          "블레이저 착용"
+        ],
+        "people_involved": [
+          "카미야",
+          "히노(언급)",
+          "와타야(언급)"
+        ],
+        "emotions": [
+          {
+            "name": "책임감",
+            "intensity": 0.9
+          },
+          {
+            "name": "결의",
+            "intensity": 0.8
+          },
+          {
+            "name": "불안(수술 관련)",
+            "intensity": 0.7
+          }
+        ],
+        "location": "카미야의 집:거실",
+        "original_entries_count": 7
+      },
+      {
+        "chunk_id": "E_notebook_retrieval_and_read",
+        "summary": "협탁의 노트를 꺼내 읽고 수술일과 오늘의 문장을 재확인했다.",
+        "start_time": "2025-07-24T08:26:00Z",
+        "end_time": "2025-07-24T08:36:00Z",
+        "main_events": [
+          "협탁으로 이동해 노트 획득",
+          "노트 내용(수술일·대처문장) 확인",
+          "'지금-여기부터' 문장으로 마음 다잡음"
+        ],
+        "people_involved": [
+          "카미야",
+          "히노(언급)"
+        ],
+        "emotions": [
+          {
+            "name": "집중",
+            "intensity": 0.8
+          },
+          {
+            "name": "결의",
+            "intensity": 0.85
+          },
+          {
+            "name": "애틋함(히노)",
+            "intensity": 0.75
+          }
+        ],
+        "location": "카미야의 집:거실",
+        "original_entries_count": 10
+      },
+      {
+        "chunk_id": "F_second_donut_and_reflection",
+        "summary": "다시 도넛을 집어 먹고 공간 정리와 히노 만나기 준비를 되새겼다.",
+        "start_time": "2025-07-24T08:37:00Z",
+        "end_time": "2025-07-24T08:50:00Z",
+        "main_events": [
+          "도넛을 다시 집어 먹음",
+          "목마름과 주변 어지러움 인식",
+          "공간 정리 계획 확정"
+        ],
+        "people_involved": [
+          "카미야",
+          "히노(언급)"
+        ],
+        "emotions": [
+          {
+            "name": "책임감",
+            "intensity": 0.9
+          },
+          {
+            "name": "불안",
+            "intensity": 0.75
+          },
+          {
+            "name": "애정(히노)",
+            "intensity": 0.85
+          }
+        ],
+        "location": "카미야의 집:거실",
+        "original_entries_count": 7
+      },
+      {
+        "chunk_id": "G_drink_water_and_compose",
+        "summary": "물컵을 들고 마시며 마음을 가다듬고 정돈 의무를 재확인했다.",
+        "start_time": "2025-07-24T08:51:00Z",
+        "end_time": "2025-07-24T08:58:00Z",
+        "main_events": [
+          "물컵 집음·음용",
+          "갈증 해소",
+          "정돈으로 마음 안정화 결심"
+        ],
+        "people_involved": [
+          "카미야"
+        ],
+        "emotions": [
+          {
+            "name": "정돈욕구",
+            "intensity": 0.9
+          },
+          {
+            "name": "차분함",
+            "intensity": 0.7
+          },
+          {
+            "name": "불안(잔존)",
+            "intensity": 0.6
+          }
+        ],
+        "location": "카미야의 집:거실",
+        "original_entries_count": 5
+      },
+      {
+        "chunk_id": "H_table_tidy_sequence_and_thoughts",
+        "summary": "식탁 위 물건들을 정리하며 히노를 위한 준비와 책임을 되뇌었다.",
+        "start_time": "2025-07-24T08:59:00Z",
+        "end_time": "2025-07-24T09:08:00Z",
+        "main_events": [
+          "식탁과 접시 상호작용",
+          "물컵을 접시에 올리고 도넛 위치 조정",
+          "정돈이 마음 안정의 시작임을 재확인"
+        ],
+        "people_involved": [
+          "카미야",
+          "히노(언급)",
+          "와타야(언급)"
+        ],
+        "emotions": [
+          {
+            "name": "책임감",
+            "intensity": 0.9
+          },
+          {
+            "name": "정돈욕구",
+            "intensity": 0.95
+          },
+          {
+            "name": "애틋함(히노)",
+            "intensity": 0.8
+          },
+          {
+            "name": "불안",
+            "intensity": 0.7
+          }
+        ],
+        "location": "카미야의 집:거실",
+        "original_entries_count": 9
+      },
+      {
+        "chunk_id": "I_final_plate_pickup",
+        "summary": "접시와 물컵을 손에 들고 정리 작업을 마무리했다.",
+        "start_time": "2025-07-24T09:09:00Z",
+        "end_time": "2025-07-24T09:11:00Z",
+        "main_events": [
+          "식탁:접시:물컵 집기",
+          "손에 들고 정리 완료"
+        ],
+        "people_involved": [
+          "카미야"
+        ],
+        "emotions": [
+          {
+            "name": "차분함",
+            "intensity": 0.75
+          },
+          {
+            "name": "완수감",
+            "intensity": 0.8
+          },
+          {
+            "name": "불안(잔존)",
+            "intensity": 0.5
+          }
+        ],
+        "location": "카미야의 집:거실",
+        "original_entries_count": 2
+      }
+    ],
+    "consolidation_reasoning": "시간 순서와 활동 흐름(수면→기상→아침식사→옷 갈아입기→노트 확인→간식 재섭취→수분 보충→정돈 행동)과 감정적 반복(히노·수술 관련 걱정, 정돈으로 안정 찾기)을 기준으로 연속된 행동군을 묶었다. 각 청크는 시작·진행·완료의 행동 단계를 포함하도록 분할해 일상적 루틴과 중요한 내적 결심을 보존했다.",
+    "total_original_entries": 50,
+    "total_consolidated_chunks": 9
+  },
+  "tools": [],
+  "cachedTicks": 17572753.125,
+  "cachedGameTimeIso": "2025-07-24T09:19:00Z"
+}

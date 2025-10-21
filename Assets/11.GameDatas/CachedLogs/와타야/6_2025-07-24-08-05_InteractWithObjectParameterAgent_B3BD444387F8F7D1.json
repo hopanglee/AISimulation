@@ -2,5 +2,7 @@
   "payload": {
     "object_name": "식탁"
   },
-  "tools": []
+  "tools": [],
+  "cachedTicks": 17568333.75,
+  "cachedGameTimeIso": "2025-07-24T08:05:00Z"
 }

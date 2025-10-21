@@ -1,0 +1,267 @@
+﻿{
+  "payload": {
+    "consolidated_chunks": [
+      {
+        "chunk_id": "C1_accident",
+        "summary": "1월 가부키초에서의 갑작스런 교통사고로 큰 충격과 기억 공백을 남긴 사건.",
+        "start_time": "2025-01-12T15:00:00Z",
+        "end_time": "2025-01-12T15:00:00Z",
+        "main_events": [
+          "신주쿠 가부키초에서 차량 충돌(교통사고)",
+          "즉각적인 충격과 혼란 발생",
+          "사건이 이후 기억 공백과 관련됨"
+        ],
+        "people_involved": [],
+        "emotions": [
+          {
+            "name": "공포",
+            "intensity": 0.95
+          },
+          {
+            "name": "혼란",
+            "intensity": 0.95
+          },
+          {
+            "name": "충격",
+            "intensity": 0.9
+          }
+        ],
+        "location": "신주쿠:가부키초:1-chome-6",
+        "original_entries_count": 1
+      },
+      {
+        "chunk_id": "C2_wake_and_diary",
+        "summary": "7/24 아침, 일어나 일기와 스케치를 읽고 기억의 구멍을 자각하며 감정이 격화됨.",
+        "start_time": "2025-07-24T08:00:00Z",
+        "end_time": "2025-07-24T08:05:00Z",
+        "main_events": [
+          "아침 기상 후 혼란과 기억 공백 자각",
+          "일기 읽음",
+          "카미야 관련 스케치와 긍정 메시지 발견"
+        ],
+        "people_involved": [],
+        "emotions": [
+          {
+            "name": "혼란",
+            "intensity": 0.9
+          },
+          {
+            "name": "호기심",
+            "intensity": 0.8
+          },
+          {
+            "name": "불안",
+            "intensity": 0.8
+          },
+          {
+            "name": "설렘",
+            "intensity": 0.6
+          }
+        ],
+        "location": "히노의 집:거실",
+        "original_entries_count": 2
+      },
+      {
+        "chunk_id": "C3_chat_and_meet_discovery",
+        "summary": "아이폰 채팅 확인을 통해 모카하우스에서 카미야와 만나기로 한 약속을 확인하고 알림 수신.",
+        "start_time": "2025-07-24T08:19:00Z",
+        "end_time": "2025-07-24T09:01:00Z",
+        "main_events": [
+          "카미야와의 채팅 확인",
+          "모카하우스에서 12:00 만남 확인",
+          "아이폰 알림 및 채팅 목록 재확인"
+        ],
+        "people_involved": [
+          "카미야",
+          "와타야"
+        ],
+        "emotions": [
+          {
+            "name": "호기심",
+            "intensity": 0.85
+          },
+          {
+            "name": "설렘",
+            "intensity": 0.8
+          },
+          {
+            "name": "기대",
+            "intensity": 0.8
+          },
+          {
+            "name": "불안",
+            "intensity": 0.7
+          }
+        ],
+        "location": "히노의 집:거실(아이폰)",
+        "original_entries_count": 4
+      },
+      {
+        "chunk_id": "C4_eating_and_grounding",
+        "summary": "배고픔을 달래고 물을 마시며 도넛을 먹고 컨디션을 회복하려는 준비적 행동과 생각들.",
+        "start_time": "2025-07-24T08:26:00Z",
+        "end_time": "2025-07-24T09:22:00Z",
+        "main_events": [
+          "도넛을 집어 인벤토리에 넣고 섭취",
+          "물컵 사용 및 물 마시기",
+          "음식으로 안도하고 외출 준비 결심"
+        ],
+        "people_involved": [],
+        "emotions": [
+          {
+            "name": "배고픔",
+            "intensity": 0.9
+          },
+          {
+            "name": "안도",
+            "intensity": 0.6
+          },
+          {
+            "name": "불안",
+            "intensity": 0.7
+          },
+          {
+            "name": "설렘",
+            "intensity": 0.75
+          }
+        ],
+        "location": "히노의 집:거실(식탁)",
+        "original_entries_count": 14
+      },
+      {
+        "chunk_id": "C5_request_and_reassurance_with_Wataya",
+        "summary": "와타야에게 사고 후 기억 공백과 불안을 설명하고 동행을 부탁해 와타야가 함께 가주기로 약속받음.",
+        "start_time": "2025-07-24T08:39:00Z",
+        "end_time": "2025-07-24T09:05:00Z",
+        "main_events": [
+          "와타야에게 상황 설명 및 동행 요청 메시지 전송",
+          "와타야와의 채팅 기록 확인",
+          "와타야의 동행 약속 수락"
+        ],
+        "people_involved": [
+          "와타야"
+        ],
+        "emotions": [
+          {
+            "name": "신뢰",
+            "intensity": 0.9
+          },
+          {
+            "name": "불안",
+            "intensity": 0.8
+          },
+          {
+            "name": "기대",
+            "intensity": 0.8
+          },
+          {
+            "name": "안심",
+            "intensity": 0.7
+          }
+        ],
+        "location": "히노의 집:거실(아이폰)",
+        "original_entries_count": 6
+      },
+      {
+        "chunk_id": "C6_decision_to_prepare",
+        "summary": "기억 공백을 인정하고 외출해 만남을 통해 풀기로 결심하며 옷장으로 이동해 준비 시작.",
+        "start_time": "2025-07-24T08:57:00Z",
+        "end_time": "2025-07-24T09:07:00Z",
+        "main_events": [
+          "기억 공백 관련 자기확인",
+          "외출 준비 결심",
+          "옷장 쪽으로 이동"
+        ],
+        "people_involved": [],
+        "emotions": [
+          {
+            "name": "설렘",
+            "intensity": 0.85
+          },
+          {
+            "name": "불안",
+            "intensity": 0.8
+          },
+          {
+            "name": "기대",
+            "intensity": 0.8
+          },
+          {
+            "name": "조급함",
+            "intensity": 0.6
+          }
+        ],
+        "location": "히노의 집:거실",
+        "original_entries_count": 3
+      },
+      {
+        "chunk_id": "C7_dressing_and_final_prep",
+        "summary": "옷장을 열어 잠옷을 정리하고 캐주얼복으로 갈아입어 외출 준비를 완료함.",
+        "start_time": "2025-07-24T09:23:00Z",
+        "end_time": "2025-07-24T09:45:00Z",
+        "main_events": [
+          "옷장 접근 및 잠옷 정리",
+          "캐주얼복 선택 및 인벤토리 조작",
+          "캐주얼복 착용 완료"
+        ],
+        "people_involved": [],
+        "emotions": [
+          {
+            "name": "조급함",
+            "intensity": 0.8
+          },
+          {
+            "name": "설렘",
+            "intensity": 0.8
+          },
+          {
+            "name": "불안",
+            "intensity": 0.75
+          },
+          {
+            "name": "기대",
+            "intensity": 0.8
+          }
+        ],
+        "location": "히노의 집:거실(옷장)",
+        "original_entries_count": 14
+      },
+      {
+        "chunk_id": "C8_phone_recheck_and_wrap",
+        "summary": "아이폰으로 와타야 채팅을 재확인하고 만남 준비를 최종 점검하며 외출 직전 정리함.",
+        "start_time": "2025-07-24T09:46:00Z",
+        "end_time": "2025-07-24T09:50:00Z",
+        "main_events": [
+          "아이폰 재확인(와타야 채팅 재열람)",
+          "만남 준비 최종 점검",
+          "외출 전 마음 정리"
+        ],
+        "people_involved": [
+          "와타야"
+        ],
+        "emotions": [
+          {
+            "name": "기대",
+            "intensity": 0.85
+          },
+          {
+            "name": "안심",
+            "intensity": 0.8
+          },
+          {
+            "name": "설렘",
+            "intensity": 0.8
+          }
+        ],
+        "location": "히노의 집:거실",
+        "original_entries_count": 3
+      }
+    ],
+    "consolidation_reasoning": "시간 순서와 장소(거실·아이폰·옷장 등), 행동 완결성(기상→확인→식사→메시지→준비→착의→최종 점검)과 사건 중요도(1월 사고는 독립) 기준으로 묶었습니다. 일상적 준비와 감정 변화를 세부 단계로 나누어 각 덩어리로 요약했습니다.",
+    "total_original_entries": 47,
+    "total_consolidated_chunks": 8
+  },
+  "tools": [],
+  "cachedTicks": 17575396.875,
+  "cachedGameTimeIso": "2025-07-24T10:03:00Z"
+}

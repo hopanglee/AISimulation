@@ -1,0 +1,15 @@
+﻿{
+  "payload": {
+    "act_type": "UseObject",
+    "reasoning": "빠르게(1~2분) 메시지 내용을 확인해 불안을 줄이고 출발 계획을 확정해야 하므로 손에 든 아이폰으로 채팅을 확인하겠습니다.",
+    "intention": "아이폰 채팅을 1~2분만 빠르게 확인해 '미안, 솔직히 말할게...'의 내용을 파악하고, 문제가 있으면 즉시 와타야에게 상황을 물어 계획을 안전하게 조정하겠습니다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"아이폰\"}"
+    }
+  ],
+  "cachedTicks": 17577461.25,
+  "cachedGameTimeIso": "2025-07-24T10:37:00Z"
+}

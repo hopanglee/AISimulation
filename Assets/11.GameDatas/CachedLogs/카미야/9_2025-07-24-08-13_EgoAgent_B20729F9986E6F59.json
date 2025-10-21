@@ -50,5 +50,7 @@
       "name": "GetCookableRecipes",
       "argsJson": "{}"
     }
-  ]
+  ],
+  "cachedTicks": 17568780.0,
+  "cachedGameTimeIso": "2025-07-24T08:13:00Z"
 }

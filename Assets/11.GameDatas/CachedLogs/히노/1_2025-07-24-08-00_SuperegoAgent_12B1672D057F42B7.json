@@ -43,5 +43,7 @@
       "name": "LoadRelationshipByName",
       "argsJson": "{\"targetName\": \"와타야\"}"
     }
-  ]
+  ],
+  "cachedTicks": 17568000.0,
+  "cachedGameTimeIso": "2025-07-24T08:00:00Z"
 }
