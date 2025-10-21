@@ -267,13 +267,8 @@ public class EgoAgent : GPT
         var schema = new LLMClientSchema { name = "ego_result", format = Newtonsoft.Json.Linq.JObject.Parse(schemaJson) };
         SetResponseFormat(schema);
 
-        // 월드 정보 도구 추가
-        //AddTools(ToolManager.NeutralToolDefinitions.GetAreaHierarchy);
-        //AddTools(ToolManager.NeutralToolDefinitions.FindShortestAreaPathFromActor);
-        //AddTools(ToolManager.NeutralToolDefinitions.FindBuildingAreaPath);
-        //AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
-        // 요리 레시피 조회 도구 추가
-        //AddTools(ToolManager.NeutralToolDefinitions.GetCookableRecipes);
+        // 월드/빌딩 정보 최소 툴
+        AddTools(ToolManager.NeutralToolDefinitions.GetAreasInCurrentBuilding);
 
     }
 

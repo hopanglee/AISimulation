@@ -104,6 +104,12 @@ public class Area : MonoBehaviour, ILocation
     [FoldoutGroup("Status Effects")] public StatusModifier sleepinessEffect = new();
     [FoldoutGroup("Status Effects")] public StatusModifier judgmentEffect = new();
 
+
+    private void Awake()
+    {
+        Services.Get<ILocationService>().Add(this.curLocation as Area, this);
+    }
+    
     private static void ApplyIfInRange(ref float actorValue, StatusModifier effect)
     {
         if (effect == null || !effect.enabled) return;

@@ -7,6 +7,7 @@ using System.Text;
 public interface ILocationService : IService
 {
     public void Add(ILocation key, Entity value);
+    public void Add(Area key, Area value);
 
     public List<Entity> Get(ILocation key, Actor actor = null);
 
@@ -55,12 +56,32 @@ public class LocationService : ILocationService
     [SerializeField]
     private SerializableDictionary<ILocation, List<Item>> items = new();
 
+    [SerializeField]
+    private SerializableDictionary<Area, List<Area>> areas = new();
+
     public void Initialize()
     {
         actors = new();
         props = new();
         buildings = new();
         items = new();
+    }
+
+    public void Add(Area key, Area value)
+    {
+        if(key == null || value == null) return;
+        if (areas.ContainsKey(key))
+        {
+            if(!areas[key].Contains(value))
+            {
+                areas[key].Add(value);
+            }
+        }
+        else
+        {
+            areas.Add(key, new List<Area>());
+            areas[key].Add(value);
+        }
     }
 
     public void Add(ILocation key, Entity value)
@@ -332,32 +353,41 @@ public class LocationService : ILocationService
 
     public List<Area> GetChildAreas(Area parent)
     {
-        var result = new List<Area>();
-        if (parent == null) return result;
+        // var result = new List<Area>();
+        // if (parent == null) return result;
 
-        // 1) Inspector로 연결된 childAreas 우선 사용
-        if (parent.childAreas != null && parent.childAreas.Count > 0)
-        {
-            foreach (var child in parent.childAreas)
-            {
-                if (child != null && !child.IsHideChild)
-                {
-                    result.Add(child);
-                }
-            }
-        }
-        return result;
-
-        // // 2) 백업: curLocation 체인을 통해 직접 자식 탐색 (hide 제외)
-        // var allAreas = UnityEngine.Object.FindObjectsByType<Area>(FindObjectsSortMode.None);
-        // foreach (var area in allAreas)
+        // // 1) Inspector로 연결된 childAreas 우선 사용
+        // if (parent.childAreas != null && parent.childAreas.Count > 0)
         // {
-        //     if (area != null && !area.IsHideChild && area.curLocation == parent)
+        //     foreach (var child in parent.childAreas)
         //     {
-        //         result.Add(area);
+        //         if (child != null && !child.IsHideChild)
+        //         {
+        //             result.Add(child);
+        //         }
         //     }
         // }
         // return result;
+
+        // 2) 백업: curLocation 체인을 통해 직접 자식 탐색 (hide 제외)
+        List<Area> result = new();
+        if (areas.ContainsKey(parent))
+        {
+            result = areas[parent];
+            foreach (var area in result)
+            {
+                if (!area.IsHideChild)
+                {
+                    if(areas.ContainsKey(area))
+                    {
+                        result.AddRange(areas[area]);
+                    }
+                }
+            }
+            result.RemoveAll(a => a.IsHideChild);
+        }
+
+        return result.Distinct().ToList();
     }
 
     /// <summary>

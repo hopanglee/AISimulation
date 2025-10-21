@@ -363,7 +363,7 @@ namespace Agent.ActionHandlers
             var locationService = Services.Get<ILocationService>();
             var currentArea = locationService.GetArea(actor.curLocation);
             var areaPath = pathfindingService.FindPathToLocation(currentArea, targetLocationKey);
-            var path = pathfindingService.AreaPathToLocationStringPath(areaPath);
+            var path = pathfindingService.AreaPathToLocationNamePath(areaPath);
 
             if (path != null && path.Count > 0)
             {

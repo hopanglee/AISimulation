@@ -296,6 +296,7 @@ public class IdAgent : Claude
         AddTools(ToolManager.NeutralToolDefinitions.LoadRelationshipByName);
         // 요리 레시피 조회 도구 추가
         AddTools(ToolManager.NeutralToolDefinitions.GetCookableRecipes);
+        AddTools(ToolManager.NeutralToolDefinitions.GetAreasInCurrentBuilding);
     }
 
     /// <summary>

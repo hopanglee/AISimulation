@@ -48,6 +48,7 @@ public interface IPathfindingService : IService
     Dictionary<string, AreaInfo> GetAllAreaInfoByFullPath();
 
     List<string> AreaPathToLocationStringPath(List<Area> path);
+    List<string> AreaPathToLocationNamePath(List<Area> path);
 }
 
 [System.Serializable]
@@ -146,34 +147,81 @@ public class PathfindingService : IPathfindingService
         {
             var current = queue.Dequeue();
 
-            // targetLocationKey가 전체 경로인지, 부분경로인지, 또는 지역 이름인지 확인
+            // targetLocationKey 매칭 규칙 (조기 성공 방지):
+            // 1) 전체 경로 완전 일치만 즉시 성공
+            // 2) 스코프 경계 단위로 정규화하여 비교 (':' 토큰 기준 접두 일치만 허용)
+            // 3) tail 비교는 현재 노드가 스코프 경계(예: 블록 or 빌딩)일 때만 허용
+            // 4) 지역명은 완전 일치만 허용 (부분 문자열 금지)
             bool isTargetFound = false;
             var currentFullPath = current.LocationToString();
             var building = locationManager.GetBuilding(current);
+
+            // 규칙 1: 전체 경로 완전 일치
             if (!string.IsNullOrEmpty(currentFullPath) && currentFullPath == targetLocationKey)
             {
                 isTargetFound = true;
             }
-            // current의 전체 경로가 targetLocationKey를 포함(부분 일치)하면 매칭으로 처리
-            else if (!string.IsNullOrEmpty(currentFullPath) && currentFullPath.IndexOf(targetLocationKey, System.StringComparison.OrdinalIgnoreCase) >= 0)
+            else
             {
-                isTargetFound = true;
-            }
-            else if (allowTailMatch && !string.IsNullOrEmpty(currentFullPath) && currentFullPath.IndexOf(targetTail, System.StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                isTargetFound = true;
-            }
-            else if (current.locationName == targetLocationKey)
-            {
-                isTargetFound = true;
-            }
-            else if (building != null)
-            {
-                if(building.locationName == targetLocationKey)
+                // 현재와 타깃을 스코프 토큰으로 분해
+                var currentTokens = string.IsNullOrEmpty(currentFullPath) ? null : currentFullPath.Split(':');
+                var targetTokens = string.IsNullOrEmpty(targetLocationKey) ? null : targetLocationKey.Split(':');
+
+                // 규칙 2: 접두 스코프 비교 (토큰 기준). 부분 문자열 포함 금지
+                if (currentTokens != null && targetTokens != null)
+                {
+                    int compareCount = Mathf.Min(currentTokens.Length, targetTokens.Length);
+                    bool allPrefixEqual = true;
+                    for (int i = 0; i < compareCount; i++)
+                    {
+                        if (!string.Equals(currentTokens[i], targetTokens[i], System.StringComparison.Ordinal))
+                        {
+                            allPrefixEqual = false;
+                            break;
+                        }
+                    }
+
+                    // 접두가 완전히 같은 경우에만 매칭으로 간주하되,
+                    // 동일 길이면 규칙 1에서 이미 처리됨. 여기서는 타깃이 더 짧아 상위 스코프를 가리킬 때만 허용
+                    if (allPrefixEqual && targetTokens.Length < currentTokens.Length)
+                    {
+                        isTargetFound = true;
+                    }
+                }
+
+                // 규칙 3: tail 비교는 현재가 스코프 경계일 때만 허용
+                if (!isTargetFound && allowTailMatch && !string.IsNullOrEmpty(currentFullPath) && !string.IsNullOrEmpty(targetTail))
+                {
+                    // 스코프 경계 여부 추정: 현재 노드가 블록(예: \d+-chome-\d+)이거나 빌딩 루트 토큰으로 끝날 때
+                    bool isScopeBoundary = false;
+                    if (currentTokens != null && currentTokens.Length > 0)
+                    {
+                        string last = currentTokens[currentTokens.Length - 1];
+                        if (Regex.IsMatch(last ?? string.Empty, @"^\d+-chome-\d+$"))
+                            isScopeBoundary = true;
+                        else if (building != null && string.Equals(last, building.locationName, System.StringComparison.Ordinal))
+                            isScopeBoundary = true;
+                    }
+
+                    if (isScopeBoundary)
+                    {
+                        // tail은 반드시 토큰 경계에서 접미로 일치해야 함
+                        // currentFullPath가 targetTail로 끝나는지 확인 (대소문자 구분)
+                        if (currentFullPath.EndsWith(targetTail, System.StringComparison.Ordinal))
+                        {
+                            isTargetFound = true;
+                        }
+                    }
+                }
+
+                // 규칙 4: 지역명 완전 일치만 허용
+                if (!isTargetFound && current.locationName == targetLocationKey)
                 {
                     isTargetFound = true;
                 }
-                else if(tailLeaf != null && tailLeaf.Length > 1 && building.locationName.IndexOf(tailLeaf, System.StringComparison.OrdinalIgnoreCase) >= 0)
+
+                // 빌딩명 비교는 완전 일치만 허용. tailLeaf 부분 일치는 금지
+                if (!isTargetFound && building != null && building.locationName == targetLocationKey)
                 {
                     isTargetFound = true;
                 }
@@ -296,6 +344,16 @@ public class PathfindingService : IPathfindingService
                      }
                  }
              }
+             return area.locationName; // default: area name
+         }).ToList();
+    }
+
+
+    public List<string> AreaPathToLocationNamePath(List<Area> path)
+    {
+        var locationService = Services.Get<ILocationService>();
+        return path.Select(area =>
+         {
              return area.locationName; // default: area name
          }).ToList();
     }

@@ -184,6 +184,12 @@ namespace Agent.Tools
                     )
                 )
             );
+
+            // 현재 캐릭터가 위치한 동일한 건물 내부의 모든 Area 이름을 반환합니다.
+            public static readonly ChatTool GetAreasInCurrentBuilding = ChatTool.CreateFunctionTool(
+                functionName: nameof(GetAreasInCurrentBuilding),
+                functionDescription: "현재 캐릭터가 있는 건물 내부의 모든 구역(방) 이름을 반환합니다."
+            );
         }
         #endregion
 
@@ -325,6 +331,13 @@ namespace Agent.Tools
                     ""required"": [""targetName""]
                 }"))
             };
+
+            public static readonly LLMToolSchema GetAreasInCurrentBuilding = new LLMToolSchema
+            {
+                name = nameof(GetAreasInCurrentBuilding),
+                description = "현재 캐릭터가 있는 건물 내부의 모든 구역(방) 이름을 반환합니다.",
+                format = null
+            };
         }
         #endregion
 
@@ -335,10 +348,10 @@ namespace Agent.Tools
             public static readonly LLMToolSchema[] ItemManagement = { NeutralToolDefinitions.SwapInventoryToHand };
             public static readonly LLMToolSchema[] Payment = { NeutralToolDefinitions.GetPaymentPriceList };
             public static readonly LLMToolSchema[] ActionInfo = { };
-            public static readonly LLMToolSchema[] WorldInfo = { NeutralToolDefinitions.GetWorldAreaInfo, NeutralToolDefinitions.GetCurrentTime, NeutralToolDefinitions.FindBuildingAreaPath, NeutralToolDefinitions.FindShortestAreaPathFromActor, NeutralToolDefinitions.GetAreaHierarchy, NeutralToolDefinitions.GetAreaConnections };
+            public static readonly LLMToolSchema[] WorldInfo = { NeutralToolDefinitions.GetWorldAreaInfo, NeutralToolDefinitions.GetCurrentTime, NeutralToolDefinitions.FindBuildingAreaPath, NeutralToolDefinitions.FindShortestAreaPathFromActor, NeutralToolDefinitions.GetAreaHierarchy, NeutralToolDefinitions.GetAreaConnections, NeutralToolDefinitions.GetAreasInCurrentBuilding };
             public static readonly LLMToolSchema[] Memory = { NeutralToolDefinitions.GetUserMemory, NeutralToolDefinitions.GetActorLocationMemories, NeutralToolDefinitions.GetActorLocationMemoriesFiltered, NeutralToolDefinitions.LoadRelationshipByName };
             public static readonly LLMToolSchema[] Plan = { NeutralToolDefinitions.GetCurrentPlan, NeutralToolDefinitions.GetCurrentSpecificAction };
-            public static readonly LLMToolSchema[] All = { NeutralToolDefinitions.GetCookableRecipes, NeutralToolDefinitions.SwapInventoryToHand, NeutralToolDefinitions.GetWorldAreaInfo, NeutralToolDefinitions.GetUserMemory, NeutralToolDefinitions.GetCurrentTime, NeutralToolDefinitions.GetCurrentPlan, NeutralToolDefinitions.GetCurrentSpecificAction, NeutralToolDefinitions.FindBuildingAreaPath, NeutralToolDefinitions.FindShortestAreaPathFromActor, NeutralToolDefinitions.GetAreaHierarchy, NeutralToolDefinitions.GetAreaConnections, NeutralToolDefinitions.LoadRelationshipByName };
+            public static readonly LLMToolSchema[] All = { NeutralToolDefinitions.GetCookableRecipes, NeutralToolDefinitions.SwapInventoryToHand, NeutralToolDefinitions.GetWorldAreaInfo, NeutralToolDefinitions.GetUserMemory, NeutralToolDefinitions.GetCurrentTime, NeutralToolDefinitions.GetCurrentPlan, NeutralToolDefinitions.GetCurrentSpecificAction, NeutralToolDefinitions.FindBuildingAreaPath, NeutralToolDefinitions.FindShortestAreaPathFromActor, NeutralToolDefinitions.GetAreaHierarchy, NeutralToolDefinitions.GetAreaConnections, NeutralToolDefinitions.LoadRelationshipByName, NeutralToolDefinitions.GetAreasInCurrentBuilding };
         }
         #endregion
 
@@ -562,6 +575,8 @@ namespace Agent.Tools
                     return GetCurrentSpecificAction();
                 case nameof(LoadRelationshipByName):
                     return LoadRelationshipByName(arguments);
+                case nameof(GetAreasInCurrentBuilding):
+                    return GetAreasInCurrentBuilding();
                 default:
                     return $"Error: Unknown tool '{toolName}'";
             }
@@ -1095,6 +1110,32 @@ namespace Agent.Tools
             catch (Exception ex)
             {
                 Debug.LogError($"<color=red>[ToolExecutor] {actor.Name} ExecuteTool: {ex.Message}</color>");
+                return $"에러 발생: {ex.Message}";
+            }
+        }
+
+        private string GetAreasInCurrentBuilding()
+        {
+            try
+            {
+                if (actor == null) return "에러 발생: 실행자에 바인딩된 캐릭터가 없습니다.";
+                var locationService = Services.Get<ILocationService>();
+                if (locationService == null) return "에러 발생: 위치 서비스를 사용할 수 없습니다.";
+
+                var currentArea = actor.curLocation as Area ?? locationService.GetArea(actor.curLocation);
+                if (currentArea == null)
+                    return "에러 발생: 현재 위치를 결정할 수 없습니다.";
+
+                var building = locationService.GetBuilding(currentArea);
+                if (building == null)
+                    return "현재 건물 내부에 있지 않다.";
+
+                var allAreas = locationService.GetChildAreas(building);
+
+                return string.Join(", ", allAreas.Select(a => a.locationName));
+            }
+            catch (Exception ex)
+            {
                 return $"에러 발생: {ex.Message}";
             }
         }

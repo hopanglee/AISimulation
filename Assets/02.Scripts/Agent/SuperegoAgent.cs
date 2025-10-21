@@ -294,6 +294,7 @@ public class SuperegoAgent : GPT
         AddTools(ToolManager.NeutralToolDefinitions.LoadRelationshipByName);
 
         AddTools(ToolManager.NeutralToolDefinitions.GetCookableRecipes);
+        AddTools(ToolManager.NeutralToolDefinitions.GetAreasInCurrentBuilding);
     }
 
     /// <summary>

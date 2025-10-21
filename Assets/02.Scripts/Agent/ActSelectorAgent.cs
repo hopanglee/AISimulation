@@ -214,6 +214,7 @@ namespace Agent
 
             AddTools(ToolManager.NeutralToolDefinitions.GetAreaHierarchy);
             AddTools(ToolManager.NeutralToolDefinitions.GetAreaConnections);
+            AddTools(ToolManager.NeutralToolDefinitions.GetAreasInCurrentBuilding);
             //AddTools(ToolManager.NeutralToolDefinitions.GetActorLocationMemoriesFiltered);
         }
         /// <summary>
