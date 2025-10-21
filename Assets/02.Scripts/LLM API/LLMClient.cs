@@ -163,6 +163,25 @@ public abstract class LLMClient
                 // 요청 시작 시점에 파일 경로를 고정 생성 (Directory 유무와 무관)
                 var fileName = GenerateCacheFileName();
                 currentCacheFilePath = Path.Combine(baseDir, fileName);
+                try
+                {
+                    // 새 파일 생성 경로에 동일 cacheCount 파일 수를 suffix로 부여 (countExisting + 1)
+                    var sameCountFiles = Directory.Exists(baseDir) ? Directory.GetFiles(baseDir, $"{actor.CacheCount}_*_*_*.json") : System.Array.Empty<string>();
+                    int createIndex = (sameCountFiles?.Length ?? 0) + 1;
+                    if (createIndex > 0)
+                    {
+                        var stem = Path.GetFileNameWithoutExtension(currentCacheFilePath) ?? string.Empty;
+                        // 이미 (n)로 끝나면 중복 추가하지 않음
+                        bool hasSuffix = stem.EndsWith(")") && stem.LastIndexOf('(') >= 0;
+                        if (!hasSuffix)
+                        {
+                            var dir = Path.GetDirectoryName(currentCacheFilePath) ?? baseDir;
+                            var newStem = $"{stem}({createIndex})";
+                            currentCacheFilePath = Path.Combine(dir, newStem + ".json");
+                        }
+                    }
+                }
+                catch { }
 
                 if (Directory.Exists(baseDir))
                 {
@@ -182,7 +201,7 @@ public abstract class LLMClient
 
                     string pattern = useLoose
                         ? $"{actor.CacheCount}_*_{agentPart}_*.json"    // 느슨: msgHash 무시
-                        : $"{actor.CacheCount}_*_{agentPart}_{currentMsgHash}.json"; // 정밀: msgHash 포함
+                        : $"{actor.CacheCount}_*_{agentPart}_{currentMsgHash}*.json"; // 정밀: msgHash 포함(접미 suffix 허용)
 
                     // 캐시 조회: 설정된 패턴으로 탐색
                     var exactMatch = Directory.GetFiles(baseDir, pattern);
@@ -208,48 +227,48 @@ public abstract class LLMClient
                     if (!string.IsNullOrEmpty(matchPath))
                     {
 
-                        try
-                        {
-                            if (!string.IsNullOrEmpty(currentCacheFilePath))
-                            {
+                        // try
+                        // {
+                        //     if (!string.IsNullOrEmpty(currentCacheFilePath))
+                        //     {
 
-                                var newFileName = currentCacheFilePath;
+                        //         var newFileName = currentCacheFilePath;
 
-                                if (!string.Equals(matchPath, currentCacheFilePath, StringComparison.OrdinalIgnoreCase))
-                                {
-                                    bool timeChanged = false;
-                                    string oldTimeKey = string.Empty;
-                                    string newTimeKey = string.Empty;
-                                    try
-                                    {
-                                        var oldName = System.IO.Path.GetFileNameWithoutExtension(matchPath) ?? string.Empty;
-                                        var newName = System.IO.Path.GetFileNameWithoutExtension(currentCacheFilePath) ?? string.Empty;
-                                        var oldParts = oldName.Split('_');
-                                        var newParts = newName.Split('_');
-                                        oldTimeKey = oldParts.Length >= 2 ? oldParts[1] : string.Empty;
-                                        newTimeKey = newParts.Length >= 2 ? newParts[1] : string.Empty;
-                                        timeChanged = !string.Equals(oldTimeKey, newTimeKey, StringComparison.Ordinal);
-                                    }
-                                    catch { }
+                        //         if (!string.Equals(matchPath, currentCacheFilePath, StringComparison.OrdinalIgnoreCase))
+                        //         {
+                        //             bool timeChanged = false;
+                        //             string oldTimeKey = string.Empty;
+                        //             string newTimeKey = string.Empty;
+                        //             try
+                        //             {
+                        //                 var oldName = System.IO.Path.GetFileNameWithoutExtension(matchPath) ?? string.Empty;
+                        //                 var newName = System.IO.Path.GetFileNameWithoutExtension(currentCacheFilePath) ?? string.Empty;
+                        //                 var oldParts = oldName.Split('_');
+                        //                 var newParts = newName.Split('_');
+                        //                 oldTimeKey = oldParts.Length >= 2 ? oldParts[1] : string.Empty;
+                        //                 newTimeKey = newParts.Length >= 2 ? newParts[1] : string.Empty;
+                        //                 timeChanged = !string.Equals(oldTimeKey, newTimeKey, StringComparison.Ordinal);
+                        //             }
+                        //             catch { }
 
-                                    if (!File.Exists(currentCacheFilePath))
-                                    {
-                                        // 시간 키가 다를 때만 이동 및 로그 (hash만 달라도 이동하지 않음)
-                                        if (timeChanged)
-                                        {
-                                            //Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 이동(시간 변경): {oldTimeKey} -> {newTimeKey}");
-                                            //File.Move(matchPath, currentCacheFilePath);
-                                            //matchPath = currentCacheFilePath;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Debug.LogError($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 이미 존재하는데 다른 거를 매칭해서 가져옴.. {currentCacheFilePath}");
-                                    }
-                                }
-                            }
-                        }
-                        catch { }
+                        //             if (!File.Exists(currentCacheFilePath))
+                        //             {
+                        //                 // 시간 키가 다를 때만 이동 및 로그 (hash만 달라도 이동하지 않음)
+                        //                 if (timeChanged)
+                        //                 {
+                        //                     //Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 이동(시간 변경): {oldTimeKey} -> {newTimeKey}");
+                        //                     //File.Move(matchPath, currentCacheFilePath);
+                        //                     //matchPath = currentCacheFilePath;
+                        //                 }
+                        //             }
+                        //             else
+                        //             {
+                        //                 Debug.LogError($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 이미 존재하는데 다른 거를 매칭해서 가져옴.. {currentCacheFilePath}");
+                        //             }
+                        //         }
+                        //     }
+                        // }
+                        // catch { }
 
                         var cachedJson = File.ReadAllText(matchPath);
                         try
