@@ -523,7 +523,7 @@ public abstract class LLMClient
                 File.WriteAllText(currentCacheFilePath, json, System.Text.Encoding.UTF8);
                 Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 저장: {currentCacheFilePath}");
                 // 동일 count의 기존 파일 정리 (방금 저장한 파일은 제외)
-                DeleteCacheFilesFromCountExcept(baseDir, actor.CacheCount, currentCacheFilePath);
+                //DeleteCacheFilesFromCountExcept(baseDir, actor.CacheCount, currentCacheFilePath);
                 actor.CacheCount++; // 저장 후 증가
             }
         }

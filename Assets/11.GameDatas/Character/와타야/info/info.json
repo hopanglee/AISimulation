@@ -43,28 +43,24 @@
   "emotions": [
     {
       "name": "질투",
+      "intensity": 1.0
+    },
+    {
+      "name": "집착/통제욕",
       "intensity": 0.9
     },
     {
-      "name": "집착",
-      "intensity": 0.85
-    },
-    {
-      "name": "결의",
-      "intensity": 0.8
-    },
-    {
       "name": "불안",
-      "intensity": 0.75
+      "intensity": 0.9
     },
     {
-      "name": "짜증",
+      "name": "결의/주도성",
+      "intensity": 0.9
+    },
+    {
+      "name": "짜증/분노",
       "intensity": 0.7
-    },
-    {
-      "name": "호기심",
-      "intensity": 0.65
     }
   ],
-  "last_updated": "2025-07-24T08:00:00Z"
+  "last_updated": "2025-07-24T10:45:00Z"
 }
