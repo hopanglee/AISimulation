@@ -376,7 +376,7 @@ namespace Agent.ActionHandlers
                     {
                         Debug.Log($"[{actor.Name}] {nextStep}로 이동 (목적지: {targetLocationKey})");
                         return await ExecuteDirectMove(nextStep, token);
-                        
+
                     }
                     else
                     {
@@ -400,23 +400,15 @@ namespace Agent.ActionHandlers
         /// </summary>
         private async UniTask WaitForMoveCompletion(TaskCompletionSource<bool> moveCompleted, string targetName, CancellationToken token)
         {
-            try
+
+            // CancellationToken과 함께 대기
+            using (token.Register(() => moveCompleted.SetCanceled()))
             {
-                // CancellationToken과 함께 대기
-                using (token.Register(() => moveCompleted.SetCanceled()))
-                {
-                    await moveCompleted.Task;
-                }
-                // 도착 직후 즉시 반환하여 다음 Think로 진행되도록 대기 제거
-                Debug.Log($"[{actor.Name}] {targetName}에 도착했습니다.");
+                await moveCompleted.Task;
             }
-            catch (OperationCanceledException)
-            {
-                Debug.Log($"[{actor.Name}] {targetName}로의 이동이 취소되었습니다.");
-                // 이동 취소 시 MoveController 정리
-                actor.MoveController.Reset();
-                throw; // 상위로 취소 예외 전파
-            }
+            // 도착 직후 즉시 반환하여 다음 Think로 진행되도록 대기 제거
+            Debug.Log($"[{actor.Name}] {targetName}에 도착했습니다.");
+
         }
 
         private void TryAddMoveFailureShortTermMemory(string targetName)

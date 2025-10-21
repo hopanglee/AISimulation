@@ -81,11 +81,6 @@ namespace Agent.ActionHandlers
                     }
                 }
             }
-            catch (OperationCanceledException)
-            {
-                Debug.Log($"[{actor.Name}] UseObject 액션이 취소됨");
-                throw;
-            }
             catch (Exception ex)
             {
                 Debug.LogError($"[{actor.Name}] HandleUseObject 오류: {ex.Message}");
@@ -118,11 +113,7 @@ namespace Agent.ActionHandlers
                 await SimDelay.DelaySimMinutes(1, token);
                 return true;
             }
-            catch (OperationCanceledException)
-            {
-                Debug.Log($"[{actor.Name}] Clothing 착용이 취소됨");
-                return false;
-            }
+    
             catch (Exception ex)
             {
                 Debug.LogError($"[{actor.Name}] HandleClothingUse 오류: {ex.Message}");
@@ -162,10 +153,7 @@ namespace Agent.ActionHandlers
                         return false;
                 }
             }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
+            
             catch (Exception ex)
             {
                 Debug.LogError($"[{actor.Name}] HandleiPhoneUse 오류: {ex.Message}");
@@ -323,10 +311,7 @@ namespace Agent.ActionHandlers
                 Debug.Log($"[{actor.Name}] Note {action} 완료");
                 return true;
             }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
+          
             catch (Exception ex)
             {
                 Debug.LogError($"[{actor.Name}] HandleNoteUse 오류: {ex.Message}");
@@ -368,10 +353,7 @@ namespace Agent.ActionHandlers
                 await SimDelay.DelaySimMinutes(3, token);
                 return isSuccess;
             }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
+           
             catch (Exception ex)
             {
                 Debug.LogError($"[{actor.Name}] HandleBookUse 오류: {ex.Message}");

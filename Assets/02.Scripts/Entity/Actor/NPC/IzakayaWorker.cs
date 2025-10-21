@@ -91,11 +91,7 @@ public class IzakayaWorker : NPC, IPaymentable
             var token = currentActionCancellation != null ? currentActionCancellation.Token : CancellationToken.None;
             await MoveToLocationAsync(locationKey, token);
         }
-        catch (OperationCanceledException)
-        {
-            Debug.LogWarning($"[{Name}] Move 액션이 취소되었습니다.");
-            Debug.Log("이동을 취소합니다.");
-        }
+
         catch (Exception ex)
         {
             Debug.LogError($"[{Name}] HandleMove 오류: {ex.Message}");
@@ -199,11 +195,7 @@ public class IzakayaWorker : NPC, IPaymentable
             Debug.Log($"{dishKey} 준비 완료.");
             await SimDelay.DelaySimMinutes(1, token);
         }
-        catch (OperationCanceledException)
-        {
-            Debug.LogWarning($"[{Name}] Cook 액션이 취소되었습니다.");
-            Debug.Log("조리를 취소합니다.");
-        }
+      
         catch (Exception ex)
         {
             Debug.LogError($"[{Name}] HandleCook 오류: {ex.Message}");

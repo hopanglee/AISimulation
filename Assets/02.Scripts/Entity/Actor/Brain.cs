@@ -385,11 +385,6 @@ public class Brain
                 mainActor.CurrentActivity = paramResult.ActType.ToString();
                 isSuccess = await actionPerformer.ExecuteAction(action, token);
             }
-            catch (OperationCanceledException)
-            {
-                isSuccess = false;
-                throw;
-            }
             catch (Exception actionEx)
             {
                 isSuccess = false;

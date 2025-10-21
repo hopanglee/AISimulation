@@ -88,11 +88,7 @@ public class HostClubWorker : NPC, IPaymentable
                 if (bubble != null) bubble.Hide();
             }
         }
-        catch (OperationCanceledException)
-        {
-            Debug.LogWarning($"[{Name}] Move 액션이 취소되었습니다.");
-            //ShowSpeech("이동을 취소합니다.");
-        }
+        
         catch (Exception ex)
         {
             Debug.LogError($"[{Name}] HandleMove 오류: {ex.Message}");

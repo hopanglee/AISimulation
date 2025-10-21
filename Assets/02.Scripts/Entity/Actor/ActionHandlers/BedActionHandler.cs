@@ -74,10 +74,6 @@ namespace Agent.ActionHandlers
                 Debug.LogWarning($"[{actor?.Name}] BedActionHandler.HandleSleep: 현재 위치가 침대가 아닙니다.");
                 return false;
             }
-            catch (OperationCanceledException)
-            {
-                return false;
-            }
             catch (Exception ex)
             {
                 Debug.LogError($"[{actor?.Name}] HandleSleep 오류: {ex.Message}");

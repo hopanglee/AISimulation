@@ -170,7 +170,7 @@ public class MoveController : MonoBehaviour
                 if (ct.IsCancellationRequested) return;
 
 				// 바쁜 대기 방지: 다음 프레임까지 양보하여 CPU 점유 과다 방지
-				await UniTask.Yield(PlayerLoopTiming.FixedUpdate, ct);
+				await UniTask.Yield(ct);
 
                 if (ct.IsCancellationRequested) return;
 
@@ -189,7 +189,7 @@ public class MoveController : MonoBehaviour
                             break;
                         }
                         
-						await UniTask.Yield(PlayerLoopTiming.FixedUpdate, ct);
+						await UniTask.Yield(ct);
                     }
                     if (followerEntity != null) followerEntity.isStopped = false;
                 }
@@ -243,10 +243,6 @@ public class MoveController : MonoBehaviour
             {
                 OnReachTarget();
             }
-        }
-        catch (OperationCanceledException)
-        {
-            // 취소 예외는 정상 흐름으로 무시
         }
         finally
         {

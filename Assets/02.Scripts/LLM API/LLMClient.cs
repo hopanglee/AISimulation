@@ -213,26 +213,30 @@ public abstract class LLMClient
 
                                 if (!string.Equals(matchPath, currentCacheFilePath, StringComparison.OrdinalIgnoreCase))
                                 {
+                                    bool timeChanged = false;
+                                    string oldTimeKey = string.Empty;
+                                    string newTimeKey = string.Empty;
+                                    try
+                                    {
+                                        var oldName = System.IO.Path.GetFileNameWithoutExtension(matchPath) ?? string.Empty;
+                                        var newName = System.IO.Path.GetFileNameWithoutExtension(currentCacheFilePath) ?? string.Empty;
+                                        var oldParts = oldName.Split('_');
+                                        var newParts = newName.Split('_');
+                                        oldTimeKey = oldParts.Length >= 2 ? oldParts[1] : string.Empty;
+                                        newTimeKey = newParts.Length >= 2 ? newParts[1] : string.Empty;
+                                        timeChanged = !string.Equals(oldTimeKey, newTimeKey, StringComparison.Ordinal);
+                                    }
+                                    catch { }
+
                                     if (!File.Exists(currentCacheFilePath))
                                     {
-                                        // 시간 키(YYYY-MM-DD-HH-mm)만 비교하여 다를 때에만 로그 출력
-                                        try
+                                        // 시간 키가 다를 때만 이동 및 로그 (hash만 달라도 이동하지 않음)
+                                        if (timeChanged)
                                         {
-                                            var oldName = System.IO.Path.GetFileNameWithoutExtension(matchPath) ?? string.Empty;
-                                            var newName = System.IO.Path.GetFileNameWithoutExtension(currentCacheFilePath) ?? string.Empty;
-                                            var oldParts = oldName.Split('_');
-                                            var newParts = newName.Split('_');
-                                            var oldTimeKey = oldParts.Length >= 2 ? oldParts[1] : string.Empty;
-                                            var newTimeKey = newParts.Length >= 2 ? newParts[1] : string.Empty;
-                                            if (!string.Equals(oldTimeKey, newTimeKey, StringComparison.Ordinal))
-                                            {
-                                                Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 이동(시간 변경): {oldTimeKey} -> {newTimeKey}");
-                                            }
+                                            Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 이동(시간 변경): {oldTimeKey} -> {newTimeKey}");
+                                            File.Move(matchPath, currentCacheFilePath);
+                                            matchPath = currentCacheFilePath;
                                         }
-                                        catch { }
-
-                                        File.Move(matchPath, currentCacheFilePath);
-                                        matchPath = currentCacheFilePath;
                                     }
                                     else
                                     {

@@ -281,6 +281,12 @@ public class Thinker
                     mainActor.activityBubbleUI.Hide();
                 }
             }
+
+            if (actor.MoveController.isMoving)
+            {
+                actor.MoveController.Reset();
+            }
+            
             StartThinkAndActLoop().Forget();
         }
     }
