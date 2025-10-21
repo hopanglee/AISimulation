@@ -40,25 +40,21 @@
       "intensity": 0.9
     },
     {
-      "name": "배려",
+      "name": "사랑(히노)",
       "intensity": 0.9
     },
     {
-      "name": "사랑",
-      "intensity": 0.7
+      "name": "조급함",
+      "intensity": 0.88
     },
     {
       "name": "불안",
-      "intensity": 0.6
+      "intensity": 0.85
     },
     {
-      "name": "희망",
-      "intensity": 0.5
-    },
-    {
-      "name": "차분함",
+      "name": "공포",
       "intensity": 0.8
     }
   ],
-  "last_updated": "2025-07-24T08:00:00Z"
+  "last_updated": "2025-07-24T10:50:00Z"
 }

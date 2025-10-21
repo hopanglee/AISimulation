@@ -215,7 +215,22 @@ public abstract class LLMClient
                                 {
                                     if (!File.Exists(currentCacheFilePath))
                                     {
-                                        Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 이동: {matchPath} -> {currentCacheFilePath}");
+                                        // 시간 키(YYYY-MM-DD-HH-mm)만 비교하여 다를 때에만 로그 출력
+                                        try
+                                        {
+                                            var oldName = System.IO.Path.GetFileNameWithoutExtension(matchPath) ?? string.Empty;
+                                            var newName = System.IO.Path.GetFileNameWithoutExtension(currentCacheFilePath) ?? string.Empty;
+                                            var oldParts = oldName.Split('_');
+                                            var newParts = newName.Split('_');
+                                            var oldTimeKey = oldParts.Length >= 2 ? oldParts[1] : string.Empty;
+                                            var newTimeKey = newParts.Length >= 2 ? newParts[1] : string.Empty;
+                                            if (!string.Equals(oldTimeKey, newTimeKey, StringComparison.Ordinal))
+                                            {
+                                                Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 이동(시간 변경): {oldTimeKey} -> {newTimeKey}");
+                                            }
+                                        }
+                                        catch { }
+
                                         File.Move(matchPath, currentCacheFilePath);
                                         matchPath = currentCacheFilePath;
                                     }
