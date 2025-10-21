@@ -81,8 +81,6 @@ namespace Agent.ActionHandlers
                 }
                 else
                 {
-
-
                     // Fallback: lookable에는 있지만 collectible/interaction 범위가 아니라면 이동 후 재시도
                     try
                     {

@@ -274,7 +274,13 @@ public class Thinker
             Debug.Log($"<color=purple>[{actor.Name}] Think/Act 루프가 외부 이벤트로 취소됨</color>");
             // 외부 이벤트로 재시작되면 5회부터 다시 시작
             currentCycleBudget = BaseCycleCount;
-
+            if (actor is MainActor mainActor)
+            {
+                if (mainActor.activityBubbleUI != null)
+                {
+                    mainActor.activityBubbleUI.Hide();
+                }
+            }
             StartThinkAndActLoop().Forget();
         }
     }

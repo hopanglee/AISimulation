@@ -322,6 +322,7 @@ public abstract class MainActor : Actor
 
 	public virtual async UniTask WakeUp()
 	{
+		TimeManager.StartTimeStop();
 		if (!isSleeping)
 		{
 			Debug.LogWarning($"[{Name}] Not sleeping!");
@@ -360,7 +361,8 @@ public abstract class MainActor : Actor
 		{
 			Debug.LogError($"[{Name}] StartDayPlan 실패: {ex.Message}");
 		}
-
+		TimeManager.EndTimeStop();
+		
 		// Think/Act 루프 시작 (백그라운드) - 예외 방어
 		try
 		{

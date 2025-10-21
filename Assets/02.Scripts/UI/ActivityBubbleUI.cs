@@ -15,8 +15,8 @@ public class ActivityBubbleUI : MonoBehaviour
 
     private bool isVisible = false;
     private int remainingSeconds = 0;
-    private bool countdownRunning = false;
-    private CancellationTokenSource countdownCts;
+    //private bool countdownRunning = false;
+    //private CancellationTokenSource countdownCts;
 
     private Camera mainCamera;
 
@@ -57,13 +57,13 @@ public class ActivityBubbleUI : MonoBehaviour
             return;
         }
 
-        // 이전 카운트다운이 돌고 있다면 취소
-        if (countdownCts != null)
-        {
-            try { countdownCts.Cancel(); } catch { }
-            countdownCts.Dispose();
-            countdownCts = null;
-        }
+        // // 이전 카운트다운이 돌고 있다면 취소
+        // if (countdownCts != null)
+        // {
+        //     try { countdownCts.Cancel(); } catch { }
+        //     countdownCts.Dispose();
+        //     countdownCts = null;
+        // }
 
         remainingSeconds = Mathf.Max(0, totalSeconds);
         isVisible = true;
@@ -77,25 +77,25 @@ public class ActivityBubbleUI : MonoBehaviour
 
         Canvas.ForceUpdateCanvases();
 
-        countdownCts = new CancellationTokenSource();
-        if (!countdownRunning && totalSeconds > 0)
-        {
-            countdownRunning = true;
-            RunCountdownAsync(activityName, countdownCts.Token).Forget();
-        }
+        // countdownCts = new CancellationTokenSource();
+        // if (!countdownRunning && totalSeconds > 0)
+        // {
+        //     countdownRunning = true;
+        //     RunCountdownAsync(activityName, countdownCts.Token).Forget();
+        // }
     }
 
     public void Hide()
     {
         isVisible = false;
         // 카운트다운 즉시 중단
-        if (countdownCts != null)
-        {
-            try { countdownCts.Cancel(); } catch { }
-            countdownCts.Dispose();
-            countdownCts = null;
-            countdownRunning = false;
-        }
+        // if (countdownCts != null)
+        // {
+        //     try { countdownCts.Cancel(); } catch { }
+        //     countdownCts.Dispose();
+        //     countdownCts = null;
+        //     countdownRunning = false;
+        // }
         gameObject.SetActive(false);
     }
 
@@ -124,41 +124,46 @@ public class ActivityBubbleUI : MonoBehaviour
 		return sb.ToString();
 	}
 
-    private async UniTask RunCountdownAsync(string activityName, CancellationToken token)
-    {
-        try
-        {
-            while (isVisible && !token.IsCancellationRequested)
-            {
-                if (activityText != null)
-                {
-					var displayText = FormatDisplayText(activityName);
-					activityText.text = remainingSeconds > 0
-						? $"{displayText}"
-						: displayText;
-                }
+    // private async UniTask RunCountdownAsync(string activityName, CancellationToken token)
+    // {
+    //     try
+    //     {
+    //         while (isVisible && !token.IsCancellationRequested)
+    //         {
+    //             if (activityText != null)
+    //             {
+	// 				var displayText = FormatDisplayText(activityName);
+	// 				activityText.text = remainingSeconds > 0
+	// 					? $"{displayText}"
+	// 					: displayText;
+    //             }
 
-                if (remainingSeconds <= 0)
-                {
-                    // 카운트다운이 끝나면 자동으로 숨김
-                    Hide();
-                    break;
-                }
+    //             if (remainingSeconds <= 0)
+    //             {
+    //                 // 카운트다운이 끝나면 자동으로 숨김
+    //                 Hide();
+    //                 break;
+    //             }
 
-                // 외부 취소 신호를 전달하여 즉시 중단
-                await SimDelay.DelaySimMinutes(1).AttachExternalCancellation(token);
-                remainingSeconds--;
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogWarning($"[ActivityBubbleUI] Countdown stopped: {ex.Message}");
-        }
-        finally
-        {
-            countdownRunning = false;
-        }
-    }
+    //             // 외부 취소 신호를 전달하여 즉시 중단
+    //             await SimDelay.DelaySimMinutes(1).AttachExternalCancellation(token);
+    //             remainingSeconds--;
+    //         }
+	// 	}
+	// 	catch (OperationCanceledException)
+	// 	{
+	// 		// 토큰 취소 시 버블을 즉시 숨김
+	// 		Hide();
+	// 	}
+	// 	catch (Exception ex)
+    //     {
+    //         Debug.LogWarning($"[ActivityBubbleUI] Countdown stopped: {ex.Message}");
+    //     }
+    //     finally
+    //     {
+    //         countdownRunning = false;
+    //     }
+    // }
 }
 
 

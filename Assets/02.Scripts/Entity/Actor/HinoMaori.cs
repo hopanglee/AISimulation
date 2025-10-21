@@ -243,6 +243,7 @@ public class HinoMaori : MainActor
 
     public override async UniTask WakeUp()
     {
+        TimeManager.StartTimeStop();
         if (!useMemoryResetSystem)
         {
             await base.WakeUp();
@@ -257,11 +258,10 @@ public class HinoMaori : MainActor
 
 
         // 기상 시 메모리 백업 (그날의 초기 상태 저장)
-        TimeManager.StartTimeStop();
         await BackupAllMemoryFiles();
         TimeManager.EndTimeStop();
         
         // 백업 완료 후 평범한 base.WakeUp() 실행
-        await base.WakeUp();
+        base.WakeUp().Forget();
     }
 }
