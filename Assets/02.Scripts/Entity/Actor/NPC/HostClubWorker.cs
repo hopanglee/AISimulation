@@ -83,6 +83,11 @@ public class HostClubWorker : NPC, IPaymentable
                 //ShowSpeech($"{locationKey}로 이동합니다.");
                 await MoveToLocationAsync(locationKey, token);
             }
+            catch (OperationCanceledException)
+            {
+                Debug.Log($"<color=green>[{Name}] HandleMove 취소됨</color>");
+                throw;
+            }
             finally
             {
                 if (bubble != null) bubble.Hide();

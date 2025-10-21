@@ -81,6 +81,11 @@ namespace Agent.ActionHandlers
                     }
                 }
             }
+            catch (OperationCanceledException)
+            {
+                // 취소는 상위로 전파
+                throw;
+            }
             catch (Exception ex)
             {
                 Debug.LogError($"[{actor.Name}] HandleUseObject 오류: {ex.Message}");
@@ -114,6 +119,11 @@ namespace Agent.ActionHandlers
                 return true;
             }
     
+            catch (OperationCanceledException)
+            {
+                // 취소는 상위로 전파
+                throw;
+            }
             catch (Exception ex)
             {
                 Debug.LogError($"[{actor.Name}] HandleClothingUse 오류: {ex.Message}");
@@ -154,6 +164,11 @@ namespace Agent.ActionHandlers
                 }
             }
             
+            catch (OperationCanceledException)
+            {
+                // 취소는 상위로 전파
+                throw;
+            }
             catch (Exception ex)
             {
                 Debug.LogError($"[{actor.Name}] HandleiPhoneUse 오류: {ex.Message}");
@@ -311,7 +326,11 @@ namespace Agent.ActionHandlers
                 Debug.Log($"[{actor.Name}] Note {action} 완료");
                 return true;
             }
-          
+            catch (OperationCanceledException)
+            {
+                Debug.Log($"<color=green>[{actor.Name}] HandleNoteUse 취소됨</color>");
+                throw;
+            }
             catch (Exception ex)
             {
                 Debug.LogError($"[{actor.Name}] HandleNoteUse 오류: {ex.Message}");
@@ -354,6 +373,11 @@ namespace Agent.ActionHandlers
                 return isSuccess;
             }
            
+            catch (OperationCanceledException)
+            {
+                Debug.Log($"<color=green>[{actor.Name}] HandleBookUse 취소됨</color>");
+                throw;
+            }
             catch (Exception ex)
             {
                 Debug.LogError($"[{actor.Name}] HandleBookUse 오류: {ex.Message}");

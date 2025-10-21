@@ -385,6 +385,12 @@ public class Brain
                 mainActor.CurrentActivity = paramResult.ActType.ToString();
                 isSuccess = await actionPerformer.ExecuteAction(action, token);
             }
+            catch (OperationCanceledException)
+            {
+                isSuccess = false;
+                Debug.Log($"<color=green>[{actor.Name}] Act 취소됨 ({paramResult.ActType})</color>");
+                throw;
+            }
             catch (Exception actionEx)
             {
                 isSuccess = false;

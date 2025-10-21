@@ -91,7 +91,11 @@ public class IzakayaWorker : NPC, IPaymentable
             var token = currentActionCancellation != null ? currentActionCancellation.Token : CancellationToken.None;
             await MoveToLocationAsync(locationKey, token);
         }
-
+        catch (OperationCanceledException)
+        {
+            Debug.Log($"<color=green>[{Name}] HandleMove 취소됨</color>");
+            throw;
+        }
         catch (Exception ex)
         {
             Debug.LogError($"[{Name}] HandleMove 오류: {ex.Message}");
@@ -195,7 +199,11 @@ public class IzakayaWorker : NPC, IPaymentable
             Debug.Log($"{dishKey} 준비 완료.");
             await SimDelay.DelaySimMinutes(1, token);
         }
-      
+        catch (OperationCanceledException)
+        {
+            Debug.Log($"<color=green>[{Name}] HandleCook 취소됨</color>");
+            throw;
+        }
         catch (Exception ex)
         {
             Debug.LogError($"[{Name}] HandleCook 오류: {ex.Message}");
@@ -279,6 +287,11 @@ public class IzakayaWorker : NPC, IPaymentable
                 string systemMessage = localizationService.GetLocalizedText("payment_system_message", replacements);
                 actionAgent.AddSystemMessage(systemMessage);
             }
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.Log($"<color=green>[{Name}] HandlePayment 취소됨</color>");
+            throw;
         }
         catch (Exception ex)
         {
@@ -377,7 +390,11 @@ public class IzakayaWorker : NPC, IPaymentable
                     // 이동 중지 및 상태 초기화
                     MoveController.Reset();
                 }
-                catch { }
+                catch (OperationCanceledException)
+                {
+                    Debug.Log($"<color=green>[{Name}] MoveToLocationAsync 취소됨</color>");
+                    throw;
+                }
             });
         }
 
@@ -446,7 +463,10 @@ public class IzakayaWorker : NPC, IPaymentable
                 {
                     tcs.TrySetCanceled(cancellationToken);
                 }
-                try { MoveController.Reset(); } catch { }
+                try { MoveController.Reset(); } catch (OperationCanceledException) {
+                    Debug.Log($"<color=green>[{Name}] MoveToPositionAsync 취소됨</color>");
+                    throw;
+                }
             });
         }
 
@@ -474,6 +494,11 @@ public class IzakayaWorker : NPC, IPaymentable
                 Debug.LogWarning($"[{Name}] 위치 이동 타임아웃: {position}");
                 MoveController.Reset();
             }
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.Log($"<color=green>[{Name}] MoveToPositionAsync 취소됨</color>");
+            throw;
         }
         finally
         {

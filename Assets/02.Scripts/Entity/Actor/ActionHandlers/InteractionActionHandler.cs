@@ -133,16 +133,22 @@ namespace Agent.ActionHandlers
                         var prop = interactableEntities.props[objectName];
                         if (prop is IInteractable interactable)
                         {
-
-                            string result = await interactable.TryInteract(actor, token);
-                            thinkingActor.brain.memoryManager.AddShortTermMemory(
-                                $"{result}",
-                                "",
-                                thinkingActor?.curLocation?.GetSimpleKey()
-                            );
-                            Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
-                            return true;
-
+                            try
+                            {
+                                string result = await interactable.TryInteract(actor, token);
+                                thinkingActor.brain.memoryManager.AddShortTermMemory(
+                                    $"{result}",
+                                    "",
+                                    thinkingActor?.curLocation?.GetSimpleKey()
+                                );
+                                Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
+                                return true;
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                Debug.Log($"[{actor.Name}] 상호작용이 취소되었습니다.");
+                                throw;
+                            }
                         }
                     }
                     // 2) Building에서 시도
@@ -151,17 +157,23 @@ namespace Agent.ActionHandlers
                         var building = interactableEntities.buildings[objectName];
                         if (building is IInteractable interactable)
                         {
+                            try
+                            {
+                                string result = await interactable.TryInteract(actor, token);
+                                thinkingActor.brain.memoryManager.AddShortTermMemory(
+                                    $"{result}",
+                                    "",
+                                    thinkingActor?.curLocation?.GetSimpleKey()
+                                );
 
-                            string result = await interactable.TryInteract(actor, token);
-                            thinkingActor.brain.memoryManager.AddShortTermMemory(
-                                $"{result}",
-                                "",
-                                thinkingActor?.curLocation?.GetSimpleKey()
-                            );
-
-                            Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
-                            return true;
-
+                                Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
+                                return true;
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                Debug.Log($"[{actor.Name}] 상호작용이 취소되었습니다.");
+                                throw;
+                            }
                         }
                     }
                     // 3) Item에서 시도 (Item이 IInteractable인 경우)
@@ -170,18 +182,23 @@ namespace Agent.ActionHandlers
                         var item = interactableEntities.items[objectName];
                         if (item is IInteractable interactable)
                         {
+                            try
+                            {
+                                string result = await interactable.TryInteract(actor, token);
+                                thinkingActor.brain.memoryManager.AddShortTermMemory(
+                                    $"{result}",
+                                    "",
+                                    thinkingActor?.curLocation?.GetSimpleKey()
+                                );
 
-                            string result = await interactable.TryInteract(actor, token);
-                            thinkingActor.brain.memoryManager.AddShortTermMemory(
-                                $"{result}",
-                                "",
-                                thinkingActor?.curLocation?.GetSimpleKey()
-                            );
-
-                            Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
-                            return true;
-
-
+                                Debug.Log($"[{actor.Name}] 상호작용 결과: {result}");
+                                return true;
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                Debug.Log($"[{actor.Name}] 상호작용이 취소되었습니다.");
+                                throw;
+                            }
                         }
                     }
                     else
@@ -262,6 +279,11 @@ namespace Agent.ActionHandlers
                                     "",
                                     thinkingActor?.curLocation?.GetSimpleKey()
                                 );
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                Debug.Log($"[{actor.Name}] 이동/상호작용 시도가 취소되었습니다.");
+                                throw;
                             }
                             catch (System.Exception ex)
                             {
@@ -344,8 +366,8 @@ namespace Agent.ActionHandlers
                 {
                     //bubble.SetFollowTarget(actor.transform);
                     bubble.Show(activityName, 0);
-
-                    if (actor is MainActor thinkingActor && thinkingActor.brain?.memoryManager != null)
+                    
+                    if(actor is MainActor thinkingActor && thinkingActor.brain?.memoryManager != null)
                     {
                         thinkingActor.brain.memoryManager.AddShortTermMemory(
                             $"'{activityName}'",
@@ -360,6 +382,11 @@ namespace Agent.ActionHandlers
                 {
                     await SimDelay.DelaySimMinutes(delay, token);
                 }
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.Log($"<color=green>[{actor.Name}] PerformActivity 취소됨</color>");
+                throw;
             }
             finally
             {
@@ -416,6 +443,11 @@ namespace Agent.ActionHandlers
                     bubble.Show("생각 정리 중...", 0);
                 }
                 await SimDelay.DelaySimMinutes(10, token);
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.Log($"<color=green>[{actor.Name}] Wait 취소됨</color>");
+                throw;
             }
             finally
             {

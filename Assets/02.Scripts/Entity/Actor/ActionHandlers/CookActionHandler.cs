@@ -46,6 +46,11 @@ namespace Agent.ActionHandlers
 
                 return await actor.Cook(dishKey, token);
             }
+            catch (OperationCanceledException)
+            {
+                Debug.Log($"<color=green>[{actor?.Name}] HandleCook 취소됨</color>");
+                throw;
+            }
             catch (Exception ex)
             {
                 Debug.LogError($"[{actor?.Name}] HandleCook 오류: {ex.Message}");

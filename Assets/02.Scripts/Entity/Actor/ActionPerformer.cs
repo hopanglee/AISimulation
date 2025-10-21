@@ -98,10 +98,16 @@ public class ActionPerformer
                 return false;
             }
         }
+        catch (OperationCanceledException)
+        {
+            Debug.Log($"<color=green>[{actor.Name}] ExecuteAction 취소됨 ({action.ActionType})</color>");
+            // 이동 중이었다면 MoveController 정리
+            throw;
+        }
         catch (Exception ex)
         {
             Debug.LogError($"[{actor.Name}] 액션 실행 실패 ({action.ActionType}): {ex.Message}");
-            return false;
+            throw;
         }
     }
 
