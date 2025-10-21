@@ -137,7 +137,7 @@ public class IzakayaWorker : NPC, IPaymentable
             {
                 if (bubble != null)
                 {
-                    bubble.SetFollowTarget(transform);
+                    //bubble.SetFollowTarget(transform);
                     bubble.Show($"{dishKey} 조리 중", 0);
                 }
                 Debug.Log($"{dishKey}를 조리합니다.");
@@ -177,7 +177,7 @@ public class IzakayaWorker : NPC, IPaymentable
                 var bubble2 = activityBubbleUI;
                 if (bubble2 != null)
                 {
-                    bubble2.SetFollowTarget(transform);
+                    //bubble2.SetFollowTarget(transform);
                     bubble2.Show($"{dishKey} 담는 중", 0);
                 }
                 var pick = PickUp(cookedFood);

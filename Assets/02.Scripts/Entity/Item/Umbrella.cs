@@ -13,7 +13,7 @@ public class Umbrella : Item, IUsable
         var bubble = actor?.activityBubbleUI;
         if (bubble != null)
         {
-            bubble.SetFollowTarget(actor.transform);
+            //bubble.SetFollowTarget(actor.transform);
             bubble.Show("우산 펴는 중", 0);
         }
         await SimDelay.DelaySimMinutes(1, token);

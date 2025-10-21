@@ -100,7 +100,7 @@ public class GameService : MonoBehaviour, IGameService
             Application.targetFrameRate = 30; // 필요 시 옵션화 가능
 
             // FixedUpdate도 30fps에 맞춰 조정 (더 안정적인 물리/시간 업데이트)
-            Time.fixedDeltaTime = 0.025f;//1f / Application.targetFrameRate; // 0.0333333초
+            Time.fixedDeltaTime = 1/32f;//1f / Application.targetFrameRate; // 0.0333333초
 
             Debug.Log($"[GameService] Frame lock applied: targetFrameRate={Application.targetFrameRate}, vSyncCount={QualitySettings.vSyncCount}, fixedDeltaTime={Time.fixedDeltaTime:F6}");
         }

@@ -31,7 +31,7 @@ public class BodyWash : Item, IUsable
         var bubble = actor?.activityBubbleUI;
         if (bubble != null)
         {
-            bubble.SetFollowTarget(actor.transform);
+            //bubble.SetFollowTarget(actor.transform);
             bubble.Show("샤워 중", 0);
         }
         await SimDelay.DelaySimMinutes(3, token);

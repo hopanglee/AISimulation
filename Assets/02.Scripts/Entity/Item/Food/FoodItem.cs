@@ -71,7 +71,7 @@ public abstract class FoodItem : Item, IUsable
         var bubble = actor?.activityBubbleUI;
         if (bubble != null)
         {
-            bubble.SetFollowTarget(actor.transform);
+            //bubble.SetFollowTarget(actor.transform);
             bubble.Show("음식 먹는 중", 0);
         }
         await SimDelay.DelaySimMinutes(3, token);

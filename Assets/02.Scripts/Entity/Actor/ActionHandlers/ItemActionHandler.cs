@@ -54,7 +54,7 @@ namespace Agent.ActionHandlers
                         }
                         if (bubble != null)
                         {
-                            bubble.SetFollowTarget(actor.transform);
+                            //bubble.SetFollowTarget(actor.transform);
                             bubble.Show($"{itemName}을(를) 집는 중", 0);
                         }
                         await SimDelay.DelaySimMinutes(2, token);
@@ -108,7 +108,7 @@ namespace Agent.ActionHandlers
                                         }
                                         if (bubble != null)
                                         {
-                                            bubble.SetFollowTarget(actor.transform);
+                                            //bubble.SetFollowTarget(actor.transform);
                                             bubble.Show($"{itemName}을(를) 집는 중", 0);
                                         }
                                         await SimDelay.DelaySimMinutes(2, token);
@@ -218,7 +218,7 @@ namespace Agent.ActionHandlers
                     }
                     if (bubble != null)
                     {
-                        bubble.SetFollowTarget(actor.transform);
+                        //bubble.SetFollowTarget(actor.transform);
                         bubble.Show($"{actor.HandItem.Name}을(를) {targetKey}에 내려놓는 중", 0);
                     }
                     // 실제 ILocation 객체를 사용하여 PutDown 호출
@@ -326,7 +326,7 @@ namespace Agent.ActionHandlers
                             bubble = thinkingActor.activityBubbleUI;
                             if (bubble != null)
                             {
-                                bubble.SetFollowTarget(actor.transform);
+                                //bubble.SetFollowTarget(actor.transform);
                                 bubble.Show($"{targetActor.Name}에게 돈 {amount}원을 주는 중", 0);
                                 await SimDelay.DelaySimMinutes(2, token);
                             }
@@ -380,7 +380,7 @@ namespace Agent.ActionHandlers
                                             bubble = thinkingActor.activityBubbleUI;
                                             if (bubble != null)
                                             {
-                                                bubble.SetFollowTarget(actor.transform);
+                                                //bubble.SetFollowTarget(actor.transform);
                                                 bubble.Show($"{targetActor.Name}에게 돈 {amount}원을 주는 중", 0);
                                                 await SimDelay.DelaySimMinutes(2, token);
                                             }
@@ -453,7 +453,7 @@ namespace Agent.ActionHandlers
                     }
                     if (bubble != null)
                     {
-                        bubble.SetFollowTarget(actor.transform);
+                        //bubble.SetFollowTarget(actor.transform);
                         bubble.Show($"{targetActor.Name}에게 {actor.HandItem?.Name ?? "아이템"} 건네주는 중", 0);
                     }
                     await SimDelay.DelaySimMinutes(2, token);
@@ -493,7 +493,7 @@ namespace Agent.ActionHandlers
                                     }
                                     if (bubble != null)
                                     {
-                                        bubble.SetFollowTarget(actor.transform);
+                                        //bubble.SetFollowTarget(actor.transform);
                                         bubble.Show($"{targetActor.Name}에게 {actor.HandItem?.Name ?? "아이템"} 건네주는 중", 0);
                                     }
                                     await SimDelay.DelaySimMinutes(2, token);

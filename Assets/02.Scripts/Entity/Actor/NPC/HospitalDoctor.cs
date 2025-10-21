@@ -83,7 +83,7 @@ public class HospitalDoctor : NPC
             {
                 if (bubble != null)
                 {
-                    bubble.SetFollowTarget(transform);
+                    //bubble.SetFollowTarget(transform);
                     bubble.Show($"{patientName} 진찰 중", 0);
                 }
                 // 진찰 실행 (시뮬레이션)

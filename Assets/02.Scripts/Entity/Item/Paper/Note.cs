@@ -409,7 +409,7 @@ public class Note : Item, IUsable
         var bubble = actor?.activityBubbleUI;
         if (bubble != null)
         {
-            bubble.SetFollowTarget(actor.transform);
+            //bubble.SetFollowTarget(actor.transform);
             //bubble.Show(msg, 0);
         }
 

@@ -44,7 +44,7 @@ namespace Agent.ActionHandlers
                     }
                     if (bubble != null)
                     {
-                        bubble.SetFollowTarget(actor.transform);
+                        //bubble.SetFollowTarget(actor.transform);
                         bubble.Show($"{actor.Name}이(가) {outfit.Name}을(를) 벗는 중", 0);
                     }
                     await SimDelay.DelaySimMinutes(2, token);

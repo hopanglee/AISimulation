@@ -130,7 +130,7 @@ public class CafeWorker : NPC, IHasExtraSenseAreas, IPaymentable
                                 {
                                     if (bubble != null)
                                     {
-                                        bubble.SetFollowTarget(transform);
+                                        //bubble.SetFollowTarget(transform);
                                         bubble.Show($"{menuKey} 준비 중", 0);
                                     }
                                     await SimDelay.DelaySimMinutes(3);
@@ -163,7 +163,7 @@ public class CafeWorker : NPC, IHasExtraSenseAreas, IPaymentable
                                 {
                                     if (bubble != null)
                                     {
-                                        bubble.SetFollowTarget(transform);
+                                        //bubble.SetFollowTarget(transform);
                                         bubble.Show($"{menuKey} 준비 중", 0);
                                     }
                                     await SimDelay.DelaySimMinutes(2);
@@ -195,7 +195,7 @@ public class CafeWorker : NPC, IHasExtraSenseAreas, IPaymentable
                                 {
                                     if (bubble != null)
                                     {
-                                        bubble.SetFollowTarget(transform);
+                                        //bubble.SetFollowTarget(transform);
                                         bubble.Show($"{key} 꺼내는 중", 0);
                                     }
                                     await SimDelay.DelaySimMinutes(1);
@@ -225,7 +225,7 @@ public class CafeWorker : NPC, IHasExtraSenseAreas, IPaymentable
                                 {
                                     if (bubble != null)
                                     {
-                                        bubble.SetFollowTarget(transform);
+                                        //bubble.SetFollowTarget(transform);
                                         bubble.Show($"{key} 꺼내는 중", 0);
                                     }
                                     await SimDelay.DelaySimMinutes(1);

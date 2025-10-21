@@ -129,7 +129,7 @@ namespace Agent.ActionHandlers
                 }
                 if (bubble != null)
                 {
-                    bubble.SetFollowTarget(actor.transform);
+                    //bubble.SetFollowTarget(actor.transform);
                     // var displayTopic = topic ?? string.Empty;
                     // if (displayTopic.Length > 20) displayTopic = displayTopic.Substring(0, 20);
                     bubble.Show($"{topic}에 대해 생각 중...", 0);

@@ -122,7 +122,7 @@ public abstract partial class NPC
 		{
 			if (bubble != null)
 			{
-				bubble.SetFollowTarget(transform);
+				//bubble.SetFollowTarget(transform);
 				bubble.Show("대기 중...", 0);
 			}
 			await SimDelay.DelaySimMinutes(1, currentActionCancellation != null ? currentActionCancellation.Token : default);
@@ -164,7 +164,7 @@ public abstract partial class NPC
 		var bubble = activityBubbleUI;
 		if (bubble != null)
 		{
-			bubble.SetFollowTarget(transform);
+			//bubble.SetFollowTarget(transform);
 
 		}
 		// 대상에게 이동
@@ -236,7 +236,7 @@ public abstract partial class NPC
 		var bubble = activityBubbleUI;
 		if (bubble != null)
 			{
-				bubble.SetFollowTarget(transform);
+				//bubble.SetFollowTarget(transform);
 				bubble.Show($"{targetActor.Name}에게 이동 중", 0);
 			}
 		// 이동 후 지급
@@ -373,7 +373,7 @@ public abstract partial class NPC
 			{
 				if (bubble != null)
 				{
-					bubble.SetFollowTarget(transform);
+					//bubble.SetFollowTarget(transform);
 					var placeName = (targetLocation as UnityEngine.MonoBehaviour)?.name ?? "현재 위치";
 					bubble.Show($"{placeName}에 {HandItem.Name} 놓는 중", 0);
 				}

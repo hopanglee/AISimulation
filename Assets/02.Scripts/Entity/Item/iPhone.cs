@@ -91,7 +91,7 @@ public class iPhone : Item, IUsable
         var bubble = actor?.activityBubbleUI;
         if (bubble != null)
         {
-            bubble.SetFollowTarget(actor.transform);
+            //bubble.SetFollowTarget(actor.transform);
         }
 
         if (variable is Dictionary<string, object> dict)

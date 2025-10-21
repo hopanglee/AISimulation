@@ -77,7 +77,7 @@ public class HostClubWorker : NPC, IPaymentable
             {
                 if (bubble != null)
                 {
-                    bubble.SetFollowTarget(transform);
+                    //bubble.SetFollowTarget(transform);
                     bubble.Show($"{locationKey}(으)로 이동 중", 0);
                 }
                 //ShowSpeech($"{locationKey}로 이동합니다.");

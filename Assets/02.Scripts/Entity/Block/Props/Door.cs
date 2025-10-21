@@ -32,7 +32,7 @@ public class Door : InteractableProp
         // 버블 표시
         if (actor is MainActor mainActor && mainActor.activityBubbleUI != null)
         {
-            mainActor.activityBubbleUI.SetFollowTarget(actor.transform);
+            //mainActor.activityBubbleUI.SetFollowTarget(actor.transform);
             mainActor.activityBubbleUI.Show(result, 2);
         }
 

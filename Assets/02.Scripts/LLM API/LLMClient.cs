@@ -139,6 +139,7 @@ public abstract class LLMClient
         LLMClientSchema schema = null,
         ChatDeserializer<T> deserializer = null)
     {
+        var timeService = Services.Get<ITimeService>();
         if (SerializeAllRequests)
         {
             await GlobalSendGate.WaitAsync();
@@ -148,6 +149,10 @@ public abstract class LLMClient
             #region 캐시 가능한 로그 기록 있는지 체크
             try
             {
+                // 모델 대기 동안 시뮬레이션 시간 완전 정지
+
+
+                timeService.StartAPICall();
 
                 var baseDir = Path.Combine(Application.dataPath, "11.GameDatas", "CachedLogs", actorName ?? "Unknown");
 
@@ -283,6 +288,12 @@ public abstract class LLMClient
             {
                 Debug.LogWarning($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 로그 확인 중 오류: {ex.Message}");
             }
+            finally
+            {
+
+                timeService.EndAPICall();
+
+            }
             #endregion
 
             #region GPT API 호출 전 승인 요청
@@ -312,7 +323,7 @@ public abstract class LLMClient
 
             #region GPT API 호출 시 시간 정지
             // 승인 사용 중이면 시간 정지는 ApprovalService에서, 여기서는 느린 진행만 적용
-            var timeService = Services.Get<ITimeService>();
+            //var timeService = Services.Get<ITimeService>();
             if (timeService != null)
             {
                 // 모델 대기 동안 시뮬레이션 시간 완전 정지

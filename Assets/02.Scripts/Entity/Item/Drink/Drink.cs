@@ -46,7 +46,7 @@ public abstract class Drink : Item, IUsable
         var bubble = actor?.activityBubbleUI;
         if (bubble != null)
         {
-            bubble.SetFollowTarget(actor.transform);
+            //bubble.SetFollowTarget(actor.transform);
             bubble.Show("음료 마시는 중", 0);
         }
         await SimDelay.DelaySimMinutes(2, token);

@@ -35,7 +35,7 @@ namespace Agent.ActionHandlers
                     if (mainActor.activityBubbleUI != null)
                     {
                         bubble = mainActor.activityBubbleUI;
-                        bubble.SetFollowTarget(actor.transform);
+                        //bubble.SetFollowTarget(actor.transform);
                     }
                     try
                     {

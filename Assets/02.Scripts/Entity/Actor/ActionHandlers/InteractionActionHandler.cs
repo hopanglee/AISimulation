@@ -60,7 +60,7 @@ namespace Agent.ActionHandlers
                                 }
                                 if (bubble != null)
                                 {
-                                    bubble.SetFollowTarget(actor.transform);
+                                    //bubble.SetFollowTarget(actor.transform);
                                     bubble.Show($"{targetActor.Name}와 대화 중", 0);
                                 }
                                 // 기본 대화 시간
@@ -363,7 +363,7 @@ namespace Agent.ActionHandlers
                 }
                 if (bubble != null)
                 {
-                    bubble.SetFollowTarget(actor.transform);
+                    //bubble.SetFollowTarget(actor.transform);
                     bubble.Show(activityName, 0);
                     
                     if(actor is MainActor thinkingActor && thinkingActor.brain?.memoryManager != null)
@@ -433,7 +433,7 @@ namespace Agent.ActionHandlers
                 }
                 if (bubble != null)
                 {
-                    bubble.SetFollowTarget(actor.transform);
+                    //bubble.SetFollowTarget(actor.transform);
                     bubble.Show("생각 정리 중...", 0);
                 }
                 await SimDelay.DelaySimMinutes(10, token);

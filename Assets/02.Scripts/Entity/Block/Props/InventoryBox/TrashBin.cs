@@ -113,7 +113,7 @@ public class TrashBin : InventoryBox
             if (actor is MainActor ma && ma.activityBubbleUI != null)
             {
                 bubble = ma.activityBubbleUI;
-                bubble.SetFollowTarget(actor.transform);
+                //bubble.SetFollowTarget(actor.transform);
                 bubble.Show($"쓰레기통에 물건 버리는 중", 0);
             }
             await SimDelay.DelaySimMinutes(1, cancellationToken);

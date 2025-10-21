@@ -37,7 +37,7 @@ public class Shelf : InventoryBox
         if (actor is MainActor ma && ma.activityBubbleUI != null)
         {
             bubble = ma.activityBubbleUI;
-            bubble.SetFollowTarget(actor.transform);
+            //bubble.SetFollowTarget(actor.transform);
             bubble.Show($"{Name}에서 물건 이동 중", 0);
         }
         await SimDelay.DelaySimMinutes(1, cancellationToken);

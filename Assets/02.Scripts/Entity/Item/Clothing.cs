@@ -116,7 +116,7 @@ public class Clothing : Item, IUsable
         var bubble = actor?.activityBubbleUI;
         if (bubble != null)
         {
-            bubble.SetFollowTarget(actor.transform);
+            //bubble.SetFollowTarget(actor.transform);
             bubble.Show($"{Name} 입는 중", 0);
         }
         await SimDelay.DelaySimMinutes(1, token);

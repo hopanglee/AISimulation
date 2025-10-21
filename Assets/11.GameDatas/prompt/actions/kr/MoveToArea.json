@@ -7,6 +7,12 @@
       "type": "string",
       "description": "이동할 목표 구역이나 건물의 이름",
       "required": true
+    },
+    {
+      "name": "move_mode",
+      "type": "string",
+      "description": "이동_방식(기본:Walk)",
+      "required": false
     }
   ],
   "requirements": [

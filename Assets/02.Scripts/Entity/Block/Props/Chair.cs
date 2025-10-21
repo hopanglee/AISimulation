@@ -92,7 +92,7 @@ public class Chair : SitableProp
             if (actor is MainActor ma && ma.activityBubbleUI != null)
             {
                 bubble = ma.activityBubbleUI;
-                bubble.SetFollowTarget(actor.transform);
+                //bubble.SetFollowTarget(actor.transform);
             }
 
             await SimDelay.DelaySimMinutes(1, cancellationToken);
