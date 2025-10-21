@@ -1,0 +1,13 @@
+﻿{
+  "payload": {
+    "act_type": "MoveToEntity",
+    "reasoning": "히노를 모카하우스로 동행하려면 지금 잠옷에서 갈아입어야 하므로 옷장(캐주얼복)으로 가서 준비하는 것이 필요합니다.",
+    "intention": "옷장으로 가서 캐주얼 복장을 꺼내 입을 준비를 해 곧 출발하고, 현장에서 히노 곁을 지켜 카미야와의 밀착을 늦추며 주도권을 잡을 발판을 마련하겠다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"아이폰\"}"
+    }
+  ]
+}

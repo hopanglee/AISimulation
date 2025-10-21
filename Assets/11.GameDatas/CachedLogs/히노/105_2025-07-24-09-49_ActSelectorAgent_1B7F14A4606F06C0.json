@@ -1,0 +1,13 @@
+﻿{
+  "payload": {
+    "act_type": "UseObject",
+    "reasoning": "12시에 만나는 약속을 안전하고 정확하게 준비하려면 손에 든 아이폰으로 와타야와 카미야의 최신 메시지·시간·장소를 확인하는 것이 가장 자연스럽습니다.",
+    "intention": "아이폰으로 채팅과 약속 정보를 확인하고 필요하면 바로 재확인 메시지를 보내 약속을 확정하겠다."
+  },
+  "tools": [
+    {
+      "name": "SwapInventoryToHand",
+      "argsJson": "{\"itemName\":\"아이폰\"}"
+    }
+  ]
+}

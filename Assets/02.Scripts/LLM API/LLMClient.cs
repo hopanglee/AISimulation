@@ -147,12 +147,16 @@ public abstract class LLMClient
         try
         {
             #region 캐시 가능한 로그 기록 있는지 체크
+            bool apiPausedForCacheCheck = false;
             try
             {
                 // 모델 대기 동안 시뮬레이션 시간 완전 정지
-
-
-                timeService.StartAPICall();
+                try
+                {
+                    timeService.StartAPICall();
+                    apiPausedForCacheCheck = true;
+                }
+                catch { }
 
                 var baseDir = Path.Combine(Application.dataPath, "11.GameDatas", "CachedLogs", actorName ?? "Unknown");
 
@@ -254,6 +258,57 @@ public abstract class LLMClient
                             var token = JToken.Parse(cachedJson);
                             if (token is JObject obj && obj["payload"] != null)
                             {
+                                // 0) 캐시 시각 정보 확인 및 필요 시 해당 시각까지 대기 (TimeStop 해제)
+                                try
+                                {
+                                    double targetTicks = -1d;
+                                    try
+                                    {
+                                        var ticksToken = obj["cachedTicks"];
+                                        if (ticksToken != null && double.TryParse(ticksToken.ToString(), out var t))
+                                        {
+                                            targetTicks = t;
+                                        }
+                                    }
+                                    catch { }
+
+                                    if (timeService != null && targetTicks >= 0)
+                                    {
+                                        var currentTicks = timeService.GetTotalTicks();
+                                        if (currentTicks + 1e-6 < targetTicks)
+                                        {
+                                            try
+                                            {
+                                                // TimeStop 해제
+                                                if (apiPausedForCacheCheck)
+                                                {
+                                                    timeService.EndAPICall();
+                                                    apiPausedForCacheCheck = false;
+                                                }
+                                            }
+                                            catch { }
+
+                                            // 대상 tick까지 대기 (프레임 단위)
+                                            while (true)
+                                            {
+                                                try
+                                                {
+                                                    if (timeService.GetTotalTicks() + 1e-6 >= targetTicks) break;
+                                                }
+                                                catch { break; }
+                                                await Cysharp.Threading.Tasks.UniTask.Yield(Cysharp.Threading.Tasks.PlayerLoopTiming.Update);
+                                            }
+                                            try
+                                            {
+                                                timeService.StartAPICall();
+                                                apiPausedForCacheCheck = true;
+                                            }
+                                            catch { }
+                                        }
+                                    }
+                                }
+                                catch { }
+
                                 // 1-1) 도구 리플레이
                                 try
                                 {
@@ -310,8 +365,7 @@ public abstract class LLMClient
             }
             finally
             {
-
-                timeService.EndAPICall();
+                try { if (apiPausedForCacheCheck) timeService.EndAPICall(); } catch { }
 
             }
             #endregion
@@ -404,7 +458,31 @@ public abstract class LLMClient
                     return;
                 }
 
-                var json = JsonConvert.SerializeObject(data, Formatting.Indented, EnumAsStringJsonSettings);
+                // Payload + ToolInvocations + Timestamp(ticks) 형태로 래핑 저장
+                var timeService = Services.Get<ITimeService>();
+                var envelope = new Newtonsoft.Json.Linq.JObject();
+                envelope["payload"] = data is string s
+                    ? JToken.FromObject(s)
+                    : JToken.Parse(JsonConvert.SerializeObject(data, EnumAsStringJsonSettings));
+
+                // 도구 호출 기록이 있는 경우 추가 (없다면 빈 배열)
+                try
+                {
+                    var list = new JArray();
+                    envelope["tools"] = list; // 현재 툴 기록을 외부에서 주입하지 않음 (확장 포인트)
+                }
+                catch { envelope["tools"] = new JArray(); }
+
+                try
+                {
+                    var ticks = timeService != null ? timeService.GetTotalTicks() : 0d;
+                    envelope["cachedTicks"] = ticks;
+                    var gt = timeService != null ? timeService.CurrentTime : new GameTime(2025, 1, 1, 0, 0);
+                    envelope["cachedGameTimeIso"] = gt != null ? gt.ToIsoString() : "";
+                }
+                catch { }
+
+                var json = envelope.ToString(Formatting.Indented);
                 File.WriteAllText(currentCacheFilePath, json, System.Text.Encoding.UTF8);
                 Debug.Log($"[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 저장: {currentCacheFilePath}");
                 // 동일 count의 기존 파일 정리 (방금 저장한 파일은 제외)

@@ -1,0 +1,266 @@
+﻿{
+  "payload": {
+    "consolidated_chunks": [
+      {
+        "chunk_id": "C0_accident_jan12",
+        "summary": "1월의 교통사고: 갑작스런 차량 충돌로 충격과 혼란이 남음.",
+        "start_time": "2025-01-12T15:00:00Z",
+        "end_time": "2025-01-12T15:00:00Z",
+        "main_events": [
+          "빠르게 다가오는 차량과 충돌(쾅!)"
+        ],
+        "people_involved": [],
+        "emotions": [
+          {
+            "name": "공포",
+            "intensity": 0.95
+          },
+          {
+            "name": "혼란",
+            "intensity": 0.9
+          },
+          {
+            "name": "충격",
+            "intensity": 0.9
+          }
+        ],
+        "location": "신주쿠:가부키초:1-chome-6",
+        "original_entries_count": 1
+      },
+      {
+        "chunk_id": "C1_wake_confusion_jul24",
+        "summary": "7/24 아침 기상: 기억의 구멍을 느끼며 혼란과 호기심이 섞인 상태.",
+        "start_time": "2025-07-24T08:00:00Z",
+        "end_time": "2025-07-24T08:00:00Z",
+        "main_events": [
+          "거실에서 일어나 체력 소폭 회복",
+          "1월 사고 후 기억 누락을 자각"
+        ],
+        "people_involved": [],
+        "emotions": [
+          {
+            "name": "혼란",
+            "intensity": 1.0
+          },
+          {
+            "name": "호기심",
+            "intensity": 0.9
+          },
+          {
+            "name": "불안",
+            "intensity": 0.9
+          },
+          {
+            "name": "배고픔",
+            "intensity": 0.6
+          }
+        ],
+        "location": "히노의 집:거실",
+        "original_entries_count": 2
+      },
+      {
+        "chunk_id": "C2_approach_nightstand_pick_diary",
+        "summary": "협탁으로 가서 일기와 아이폰 위치 확인, 일기 집어들기까지.",
+        "start_time": "2025-07-24T08:01:00Z",
+        "end_time": "2025-07-24T08:04:00Z",
+        "main_events": [
+          "협탁으로 이동",
+          "협탁 위 물건(아이폰·일기) 확인",
+          "일기 집어들기"
+        ],
+        "people_involved": [],
+        "emotions": [
+          {
+            "name": "호기심",
+            "intensity": 0.9
+          },
+          {
+            "name": "경계",
+            "intensity": 0.6
+          },
+          {
+            "name": "불안",
+            "intensity": 0.8
+          }
+        ],
+        "location": "히노의 집:거실(협탁)",
+        "original_entries_count": 6
+      },
+      {
+        "chunk_id": "C3_read_diary_react",
+        "summary": "일기를 읽고 카미야 관련 스케치와 긍정 메시지 발견, 감정 격화.",
+        "start_time": "2025-07-24T08:05:00Z",
+        "end_time": "2025-07-24T08:09:00Z",
+        "main_events": [
+          "노트(일기) 읽기",
+          "카미야의 뒤태 스케치와 '긍정적 마음' 문구 확인"
+        ],
+        "people_involved": [],
+        "emotions": [
+          {
+            "name": "호기심",
+            "intensity": 0.95
+          },
+          {
+            "name": "설렘",
+            "intensity": 0.8
+          },
+          {
+            "name": "불안",
+            "intensity": 0.85
+          }
+        ],
+        "location": "히노의 집:거실",
+        "original_entries_count": 4
+      },
+      {
+        "chunk_id": "C4_put_back_move_to_phone",
+        "summary": "일기를 협탁에 다시 놓고 아이폰 쪽으로 이동해 들고 확인 준비.",
+        "start_time": "2025-07-24T08:10:00Z",
+        "end_time": "2025-07-24T08:18:00Z",
+        "main_events": [
+          "일기 반납(협탁)",
+          "아이폰으로 이동해 집음"
+        ],
+        "people_involved": [],
+        "emotions": [
+          {
+            "name": "결심(정리하려는)",
+            "intensity": 0.7
+          },
+          {
+            "name": "불안",
+            "intensity": 0.8
+          },
+          {
+            "name": "호기심",
+            "intensity": 0.9
+          }
+        ],
+        "location": "히노의 집:거실(협탁→아이폰)",
+        "original_entries_count": 8
+      },
+      {
+        "chunk_id": "C5_check_kamiya_chat",
+        "summary": "카미야와의 채팅 확인: 모카하우스 약속 발견, 관계 단서 확보.",
+        "start_time": "2025-07-24T08:19:00Z",
+        "end_time": "2025-07-24T08:25:00Z",
+        "main_events": [
+          "카미야와 최근 채팅 열람",
+          "내일·모카하우스 약속(12:00) 확인"
+        ],
+        "people_involved": [
+          "카미야"
+        ],
+        "emotions": [
+          {
+            "name": "호기심",
+            "intensity": 0.95
+          },
+          {
+            "name": "설렘",
+            "intensity": 0.8
+          },
+          {
+            "name": "불안",
+            "intensity": 0.85
+          }
+        ],
+        "location": "히노의 집:거실(아이폰)",
+        "original_entries_count": 5
+      },
+      {
+        "chunk_id": "C6_get_eat_receive_wataya_notice",
+        "summary": "도넛 집어 인벤토리에 넣고 알림 수신, 먹고 컨디션 회복 결심.",
+        "start_time": "2025-07-24T08:26:00Z",
+        "end_time": "2025-07-24T08:37:00Z",
+        "main_events": [
+          "도넛 가져오기 및 인벤토리 등록",
+          "와타야로부터 알림(08:33) 수신",
+          "도넛 섭취로 기분 안정 시도"
+        ],
+        "people_involved": [
+          "와타야"
+        ],
+        "emotions": [
+          {
+            "name": "배고픔",
+            "intensity": 0.7
+          },
+          {
+            "name": "안도(일시적)",
+            "intensity": 0.6
+          },
+          {
+            "name": "불안",
+            "intensity": 0.8
+          }
+        ],
+        "location": "히노의 집:거실(식탁)",
+        "original_entries_count": 8
+      },
+      {
+        "chunk_id": "C7_prepare_water_message_wataya",
+        "summary": "물 마시고 아이폰으로 와타야에게 상황 설명·동행 부탁 메시지 전송.",
+        "start_time": "2025-07-24T08:39:00Z",
+        "end_time": "2025-07-24T08:43:00Z",
+        "main_events": [
+          "물 가져오기·교체 동작",
+          "와타야에게 모카하우스 동행 요청 메시지 준비"
+        ],
+        "people_involved": [
+          "와타야"
+        ],
+        "emotions": [
+          {
+            "name": "신뢰(와타야)",
+            "intensity": 0.9
+          },
+          {
+            "name": "불안",
+            "intensity": 0.8
+          },
+          {
+            "name": "기대감",
+            "intensity": 0.8
+          }
+        ],
+        "location": "히노의 집:거실(식탁→아이폰)",
+        "original_entries_count": 5
+      },
+      {
+        "chunk_id": "C8_wataya_chat_history_and_reassurance",
+        "summary": "와타야와의 최근 대화(지지 메시지들) 확인 후 동행 요청 발신, 마음이 안정됨.",
+        "start_time": "2025-07-24T08:47:00Z",
+        "end_time": "2025-07-24T08:55:00Z",
+        "main_events": [
+          "와타야와의 채팅(최근 10개) 검토",
+          "와타야에게 불안 호소 및 동행 요청 전송"
+        ],
+        "people_involved": [
+          "와타야"
+        ],
+        "emotions": [
+          {
+            "name": "신뢰",
+            "intensity": 0.95
+          },
+          {
+            "name": "안도",
+            "intensity": 0.85
+          },
+          {
+            "name": "불안",
+            "intensity": 0.6
+          }
+        ],
+        "location": "히노의 집:거실(아이폰)",
+        "original_entries_count": 5
+      }
+    ],
+    "consolidation_reasoning": "시간적 순서와 장소(거실·협탁·식탁), 행동(일기 확인→아이폰 확인→도넛 섭취→와타야 연락) 및 감정 변화(혼란→호기심·설렘→불안→신뢰/안도)를 기준으로 묶었습니다. 사고(1월)는 중요 사건으로 별도 청크로 분리했고, 7/24 아침 활동은 의미있는 단계별 행동 완결성에 따라 세부 청크로 나눴습니다.",
+    "total_original_entries": 44,
+    "total_consolidated_chunks": 9
+  },
+  "tools": []
+}

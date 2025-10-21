@@ -1,9 +1,0 @@
-﻿{
-  "payload": {
-    "command": "chat",
-    "target_actor": "카미야",
-    "message": "히노가 갑자기 불안해하네. 오늘 12:00 모카하우스에 내가 같이 갈게. 괜찮지?",
-    "message_count": null
-  },
-  "tools": []
-}

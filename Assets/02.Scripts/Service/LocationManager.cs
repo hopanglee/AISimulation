@@ -3,6 +3,7 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using System.Text;
+using Sirenix.OdinInspector.Editor.Validation;
 
 public interface ILocationService : IService
 {
@@ -69,10 +70,10 @@ public class LocationService : ILocationService
 
     public void Add(Area key, Area value)
     {
-        if(key == null || value == null) return;
+        if (key == null || value == null) return;
         if (areas.ContainsKey(key))
         {
-            if(!areas[key].Contains(value))
+            if (!areas[key].Contains(value))
             {
                 areas[key].Add(value);
             }
@@ -90,11 +91,11 @@ public class LocationService : ILocationService
         {
             if (actors.ContainsKey(key))
             {
-                if(!actors[key].Contains(actor))
+                if (!actors[key].Contains(actor))
                 {
                     actors[key].Add(actor);
                 }
-                
+
             }
             else
             {
@@ -106,7 +107,7 @@ public class LocationService : ILocationService
         {
             if (items.ContainsKey(key))
             {
-                if(!items[key].Contains(item))
+                if (!items[key].Contains(item))
                 {
                     items[key].Add(item);
                 }
@@ -121,7 +122,7 @@ public class LocationService : ILocationService
         {
             if (props.ContainsKey(key))
             {
-                if(!props[key].Contains(prop))
+                if (!props[key].Contains(prop))
                 {
                     props[key].Add(prop);
                 }
@@ -136,7 +137,7 @@ public class LocationService : ILocationService
         {
             if (buildings.ContainsKey(key))
             {
-                if(!buildings[key].Contains(building))
+                if (!buildings[key].Contains(building))
                 {
                     buildings[key].Add(building);
                 }
@@ -353,41 +354,30 @@ public class LocationService : ILocationService
 
     public List<Area> GetChildAreas(Area parent)
     {
-        // var result = new List<Area>();
-        // if (parent == null) return result;
+        var result = new List<Area>();
+        if (parent == null) return result;
 
-        // // 1) Inspector로 연결된 childAreas 우선 사용
-        // if (parent.childAreas != null && parent.childAreas.Count > 0)
-        // {
-        //     foreach (var child in parent.childAreas)
-        //     {
-        //         if (child != null && !child.IsHideChild)
-        //         {
-        //             result.Add(child);
-        //         }
-        //     }
-        // }
-        // return result;
-
-        // 2) 백업: curLocation 체인을 통해 직접 자식 탐색 (hide 제외)
-        List<Area> result = new();
-        if (areas.ContainsKey(parent))
+        // 1) Inspector로 연결된 childAreas 우선 사용
+        if (parent.childAreas != null && parent.childAreas.Count > 0)
         {
-            result = areas[parent];
-            foreach (var area in result)
+            foreach (var child in parent.childAreas)
             {
-                if (!area.IsHideChild)
+                if (child != null && !child.IsHideChild)
                 {
-                    if(areas.ContainsKey(area))
-                    {
-                        result.AddRange(areas[area]);
-                    }
+                    result.Add(child);
                 }
             }
-            result.RemoveAll(a => a.IsHideChild);
         }
 
-        return result.Distinct().ToList();
+
+        // 2) 백업: curLocation 체인을 통해 직접 자식 탐색 (hide 제외)
+
+        if (areas.ContainsKey(parent))
+        {
+            result.AddRange(areas[parent]);
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -471,7 +461,7 @@ public class LocationService : ILocationService
     private string GetTopGroupKey(Area area)
     {
         if (area == null) return "";
-        
+
         // 최상위 Area까지 올라가기
         var current = area;
         while (current.curLocation != null && current.curLocation is Area parentArea)
@@ -480,20 +470,20 @@ public class LocationService : ILocationService
         }
         return current.locationName; // 최상위 Area의 이름
     }
-    
+
     // 중간 그룹 추출 - Area의 curLocation 체인을 직접 사용
     private string GetMidGroupKey(Area area)
     {
         if (area == null) return "";
-        
+
         // 아파트 내부 공간인 경우 (특별 처리)
-        if (area.locationName.Contains("Apartment") || 
+        if (area.locationName.Contains("Apartment") ||
             (area.curLocation != null && area.curLocation.locationName.Contains("Apartment")))
         {
             // 아파트 이름까지 포함한 전체 경로 반환
             var current = area;
             var apartmentName = "";
-            
+
             // 아파트 이름 찾기
             while (current != null)
             {
@@ -504,21 +494,21 @@ public class LocationService : ILocationService
                 }
                 current = current.curLocation as Area;
             }
-            
+
             return apartmentName;
         }
-        
+
         // 일반 지역의 경우: 중간 레벨 Area 찾기
         var midLevel = area;
         var parent = area.curLocation as Area;
-        
+
         // 최상위에서 두 번째 레벨까지 올라가기
         while (parent != null && parent.curLocation != null && parent.curLocation is Area grandParent)
         {
             midLevel = parent;
             parent = grandParent;
         }
-        
+
         return midLevel.locationName;
     }
 

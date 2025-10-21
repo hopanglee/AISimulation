@@ -1,7 +1,5 @@
 using System;
 using System.Collections;
-using System.Threading;
-using Cysharp.Threading.Tasks;
 using Pathfinding;
 using UnityEngine;
 
@@ -13,17 +11,18 @@ public class MoveController : MonoBehaviour
     public bool isMoving = false;
     public event Action OnReached;
     public bool LastMoveSucceeded { get; private set; } = false;
-    private Coroutine arrivalRoutine = null;
-    private CancellationTokenSource arrivalCts = null;
-    private bool hasReachedEventFired = false;
+    private bool arrivalTickSubscribed = false;
+    private ITimeService timeService;
+    private bool repathOnMinuteSubscribed = false;
+
     // private bool useLockstepMovement = false; // 리플레이 결정성 강화를 위한 락스텝 옵션
     // private int lockstepFramesPerTick = 5; // 틱 전환 후 허용할 이동 프레임 수
 
     private Entity entity;
     private float baseMaxSpeed = 0f;
     // 마지막 목표 (거리 기반 도착 판정 보강용)
-    private Vector3? lastTargetPosition = null;
-    private Transform lastTargetTransform = null;
+    private Vector3? targetPosition = null;
+    private Transform targetTransform = null;
 
     public enum MoveMode
     {
@@ -50,9 +49,9 @@ public class MoveController : MonoBehaviour
             // 결정성 강화를 위해 자동 재경로 비활성화 및 위치 스무딩 제거
             try
             {
-                // var policy = followerEntity.autoRepath;
-                // policy.mode = Pathfinding.AutoRepathPolicy.Mode.Never;
-                // followerEntity.autoRepath = policy;
+                var policy = followerEntity.autoRepath;
+                policy.mode = Pathfinding.AutoRepathPolicy.Mode.Never;
+                followerEntity.autoRepath = policy;
             }
             catch
             {
@@ -97,22 +96,15 @@ public class MoveController : MonoBehaviour
             followerEntity.isStopped = false;
         }
         followerEntity?.SetDestination(vector);
-        lastTargetPosition = vector;
-        lastTargetTransform = null;
+        targetPosition = vector;
+        targetTransform = null;
 
         // 시뮬레이션 시간 배속에 따라 속도 보정
         //ApplyTimeScaledSpeed();
 
-        // 취소 토큰으로 이전 대기 작업 취소
-        if (arrivalCts != null) { arrivalCts.Cancel(); arrivalCts.Dispose(); arrivalCts = null; }
-        if (arrivalRoutine != null)
-        {
-            StopCoroutine(arrivalRoutine);
-            arrivalRoutine = null;
-        }
-        hasReachedEventFired = false;
-        arrivalCts = new CancellationTokenSource();
-        CheckArrivalAsync(arrivalCts.Token).Forget();
+        // 틱 기반 체크 + 분 이벤트 기반 리패스 등록
+        SubscribeArrivalTick();
+        SubscribeRepathOnMinute();
     }
 
     public void SetTarget(Transform transform)
@@ -136,129 +128,110 @@ public class MoveController : MonoBehaviour
             followerEntity?.SetDestination(transform.position);
         }
 
-        lastTargetTransform = transform;
-        lastTargetPosition = null;
+        targetTransform = transform;
+        targetPosition = null;
 
         // 시뮬레이션 시간 배속에 따라 속도 보정
         //ApplyTimeScaledSpeed();
 
-        if (arrivalCts != null) { arrivalCts.Cancel(); arrivalCts.Dispose(); arrivalCts = null; }
-        if (arrivalRoutine != null)
-        {
-            StopCoroutine(arrivalRoutine);
-            arrivalRoutine = null;
-        }
-        hasReachedEventFired = false;
-        arrivalCts = new CancellationTokenSource();
-        CheckArrivalAsync(arrivalCts.Token).Forget();
+        SubscribeArrivalTick();
+        SubscribeRepathOnMinute();
     }
 
-    private async UniTaskVoid CheckArrivalAsync(CancellationToken ct)
+    private void SubscribeArrivalTick()
     {
-        isMoving = true;
-        try
+        if (arrivalTickSubscribed) return;
+        timeService = Services.Get<ITimeService>();
+        if (timeService == null)
         {
-            if (followerEntity == null)
-                Debug.LogError("FollowerEntity is NULL");
+            Debug.LogError("ITimeService is NULL");
+            return;
+        }
+        timeService.SubscribeToTickEvent(OnArrivalTick);
+        arrivalTickSubscribed = true;
+        isMoving = true;
+    }
 
+    private void UnsubscribeArrivalTick()
+    {
+        if (!arrivalTickSubscribed) return;
+        try { timeService?.UnsubscribeFromTickEvent(OnArrivalTick); } catch { }
+        arrivalTickSubscribed = false;
+    }
 
-            // 리플레이 결정성 향상을 위해 GameTime 기반 루프
-            var timeService = Services.Get<ITimeService>();
+    private void SubscribeRepathOnMinute()
+    {
+        if (repathOnMinuteSubscribed) return;
+        timeService = Services.Get<ITimeService>();
+        if (timeService == null)
+        {
+            Debug.LogError("ITimeService is NULL");
+            return;
+        }
+        try { timeService.SubscribeToTimeEvent(OnGameMinuteChanged); repathOnMinuteSubscribed = true; } catch { }
+    }
 
-            while (true)
+    private void UnsubscribeRepathOnMinute()
+    {
+        if (!repathOnMinuteSubscribed) return;
+        try { timeService?.UnsubscribeFromTimeEvent(OnGameMinuteChanged); } catch { }
+        repathOnMinuteSubscribed = false;
+    }
+
+    private void OnGameMinuteChanged(GameTime _)
+    {
+        if (followerEntity == null) return;
+        followerEntity.SearchPath();
+    }
+
+    private void OnArrivalTick(double ticks)
+    {
+        if (followerEntity == null) return;
+
+        followerEntity.SearchPath();
+
+        bool reached = followerEntity.reachedCrowdedEndOfPath
+                    || followerEntity.reachedEndOfPath
+                    || followerEntity.reachedDestination;
+
+        if (!reached) return;
+
+        // 도착 판정 이후, 목표와의 실제 거리를 한 번 더 확인하여 성공/실패 결정
+        float threshold = 0.8f;
+        float thresholdSqr = threshold * threshold;
+
+        Vector3 currentPos = transform.position;
+
+        if (targetPosition.HasValue)
+        {
+            float sqrDist = MathExtension.SquaredDistance2D(currentPos, targetPosition.Value);
+            LastMoveSucceeded = sqrDist <= thresholdSqr;
+            if (!isTeleporting && !LastMoveSucceeded)
             {
-                if (ct.IsCancellationRequested) return;
-
-                // FixedUpdate의 시간 업데이트가 끝난 직후(LastFixedUpdate)마다 수행
-                await UniTask.Yield(PlayerLoopTiming.LastFixedUpdate, ct);
-
-                if (ct.IsCancellationRequested) return;
-
-                // Simulation 시간이 멈추면 이동도 일시정지
-                timeService = Services.Get<ITimeService>();
-                if (timeService != null && !timeService.IsTimeFlowing)
-                {
-                    if (followerEntity != null) followerEntity.isStopped = true;
-                    // 시간 재개 및 GameTime 틱 발생까지 대기
-                    while (true)
-                    {
-                        if (ct.IsCancellationRequested) return;
-                        timeService = Services.Get<ITimeService>();
-                        if (timeService != null && timeService.IsTimeFlowing)
-                        {
-                            break;
-                        }
-
-                        await UniTask.Yield(PlayerLoopTiming.LastFixedUpdate, ct);
-                    }
-                    if (followerEntity != null) followerEntity.isStopped = false;
-                }
-
-                bool reached = followerEntity.reachedCrowdedEndOfPath
-                          || followerEntity.reachedEndOfPath
-                          || followerEntity.reachedDestination;
-
-                if (reached)
-                    break;
+                var namePrefixWarn = entity != null ? entity.Name : gameObject.name;
+                float dist = Mathf.Sqrt(sqrDist);
+                Debug.LogWarning($"<b>[{namePrefixWarn}] 도착 전에 멈췄습니다. 목표까지 거리: {dist:F2}m (임계값 {threshold:F2}m)</b>");
             }
-
-            // 도착 판정 이후, 목표와의 실제 거리를 한 번 더 확인하여 성공/실패 결정
-            float threshold = 0.8f;
-            float thresholdSqr = threshold * threshold;
-
-            Vector3 currentPos = followerEntity != null ? followerEntity.transform.position : transform.position;
-            Vector3? finalTargetPos = null;
-            if (lastTargetTransform != null)
-                finalTargetPos = lastTargetTransform.position;
-            else if (lastTargetPosition.HasValue)
-                finalTargetPos = lastTargetPosition.Value;
-
-            if (finalTargetPos.HasValue)
+            else if (isTeleporting)
             {
-                float sqrDist = MathExtension.SquaredDistance2D(currentPos, finalTargetPos.Value);
-                LastMoveSucceeded = sqrDist <= thresholdSqr;
-                if (!isTeleporting && !LastMoveSucceeded)
-                {
-                    var namePrefixWarn = entity != null ? entity.Name : gameObject.name;
-                    float dist = Mathf.Sqrt(sqrDist);
-                    Debug.LogWarning($"<b>[{namePrefixWarn}] 도착 전에 멈췄습니다. 목표까지 거리: {dist:F2}m (임계값 {threshold:F2}m)</b>");
-                }
-                else if (isTeleporting)
-                {
-                    LastMoveSucceeded = true;
-                    isTeleporting = false;
-                }
-            }
-            else
-            {
-                // 목표 정보를 알 수 없으면 기존 도착 판정에 따름 (보수적으로 성공 처리)
                 LastMoveSucceeded = true;
                 isTeleporting = false;
             }
+        }
+        else
+        {
+            // 목표 정보를 알 수 없으면 기존 도착 판정에 따름 (보수적으로 성공 처리)
+            LastMoveSucceeded = true;
+            isTeleporting = false;
+        }
 
-            // 완료 처리: 취소가 아니라면 콜백 실행
-            isMoving = false;
-            arrivalRoutine = null;
-            if (!ct.IsCancellationRequested)
-            {
-                OnReachTarget();
-            }
-        }
-        catch (OperationCanceledException)
-        {
-            Debug.Log($"<color=green>MoveController.CheckArrivalAsync 취소됨</color>");
-            throw;
-        }
-        finally
-        {
-            isMoving = false;
-            arrivalRoutine = null;
-        }
+        isMoving = false;
+        UnsubscribeArrivalTick();
+        UnsubscribeRepathOnMinute();
+        OnReachTarget();
     }
     private void OnReachTarget()
     {
-        if (hasReachedEventFired) return;
-        hasReachedEventFired = true;
 
         var namePrefix = entity != null ? entity.Name : gameObject.name;
         Debug.Log($"[{namePrefix}] REACH!!");
@@ -307,28 +280,19 @@ public class MoveController : MonoBehaviour
             CurrentMoveMode = MoveMode.Walk;
         }
 
-        if (arrivalCts != null) { arrivalCts.Cancel(); arrivalCts.Dispose(); arrivalCts = null; }
-        if (arrivalRoutine != null)
-        {
-            StopCoroutine(arrivalRoutine);
-            arrivalRoutine = null;
-        }
+        UnsubscribeArrivalTick();
+        UnsubscribeRepathOnMinute();
         isMoving = false;
-        hasReachedEventFired = false;
 
-        lastTargetTransform = null;
-        lastTargetPosition = null;
+        targetTransform = null;
+        targetPosition = null;
 
         OnReached = null;
     }
 
     private void OnDestroy()
     {
-        if (arrivalCts != null)
-        {
-            arrivalCts.Cancel();
-            arrivalCts.Dispose();
-            arrivalCts = null;
-        }
+        UnsubscribeArrivalTick();
+        UnsubscribeRepathOnMinute();
     }
 }
