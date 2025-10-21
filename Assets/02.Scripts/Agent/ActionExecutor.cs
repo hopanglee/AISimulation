@@ -46,9 +46,15 @@ public class ActionExecutor
                 }
                 return Success($"Action {action.ActionType} executed successfully");
             }
+            catch (OperationCanceledException)
+            {
+                Debug.Log($"<color=green>[ActionExecutor] ExecuteActionAsync 취소됨</color>");
+                throw;
+            }
             catch (Exception ex)
             {
-                return Fail($"Error: {ex.Message}");
+                Debug.LogError($"<color=red>[ActionExecutor] ExecuteActionAsync 오류: {ex.Message}</color>");
+                throw;
             }
         }
         return Fail($"Action handler not found: {action.ActionType}");

@@ -235,6 +235,11 @@ public class Brain
 
             return perceptionResult;
         }
+        catch (OperationCanceledException)
+        {
+            Debug.Log($"<color=green>[{actor.Name}] Perception 취소됨</color>");
+            throw;
+        }
         catch (System.Exception ex)
         {
             Debug.LogError($"[{actor.Name}] Perception 실행 중 오류: {ex.Message}");
@@ -316,7 +321,11 @@ public class Brain
                     SimulationController.Instance.SetActorActivityText(actor.Name, text);
                 }
             }
-            catch { }
+            catch (OperationCanceledException)
+            {
+                Debug.Log($"<color=green>[{actor.Name}] UpdateRelationship 취소됨</color>");
+                throw;
+            }
 
             // Enhanced Memory System: ActSelector 결과를 Short Term Memory에 직접 추가
             if (selection != null)
@@ -403,6 +412,11 @@ public class Brain
                 // 성공 STM은 각 핸들러에서 컨텍스트에 맞게 기록한다.
                 mainActor.CurrentActivity = "Idle";
             }
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.Log($"<color=green>[{actor.Name}] Act 취소됨 ({paramResult.ActType})</color>");
+            throw;
         }
         catch (Exception ex)
         {

@@ -289,7 +289,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
         var result = PickUp(item);
         if (this is MainActor main)
         {
-            try { main.brain?.memoryManager?.AddShortTermMemory($"'{item?.Name}'을(를) 받아서 {result.Item2}", "", main?.curLocation?.GetSimpleKey()); } catch { }
+            main.brain?.memoryManager?.AddShortTermMemory($"'{item?.Name}'을(를) 받아서 {result.Item2}", "", main?.curLocation?.GetSimpleKey());
         }
         return result.Item1;
     }
@@ -577,7 +577,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
             // 이미 벗고 있다고 단기기억 추가 (MainActor만)
             if (this is MainActor mainActorNull)
             {
-                try { mainActorNull.brain?.memoryManager?.AddShortTermMemory("옷을 벗으려 했지만 이미 아무것도 입고 있지 않다.", "", mainActorNull?.curLocation?.GetSimpleKey()); } catch { }
+                mainActorNull.brain?.memoryManager?.AddShortTermMemory("옷을 벗으려 했지만 이미 아무것도 입고 있지 않다.", "", mainActorNull?.curLocation?.GetSimpleKey());
             }
             return false;
         }
