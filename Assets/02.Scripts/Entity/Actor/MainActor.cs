@@ -209,18 +209,17 @@ public abstract class MainActor : Actor
 	protected override void OnEnable()
 	{
 		base.OnEnable();
-		timeService = Services.Get<ITimeService>();
-		if (timeService != null)
-			timeService.SubscribeToTimeEvent(OnSimulationTimeChanged);
 
 		legacyAnimation = GetComponent<Animation>();
 	}
 
 
-	private void OnDisable()
+	protected override void OnDestroy()
 	{
 		if (timeService != null)
 			timeService.UnsubscribeFromTimeEvent(OnSimulationTimeChanged);
+
+		base.OnDestroy();
 	}
 
 	#region Update Function
@@ -362,7 +361,7 @@ public abstract class MainActor : Actor
 			Debug.LogError($"[{Name}] StartDayPlan 실패: {ex.Message}");
 		}
 		TimeManager.EndTimeStop();
-		
+
 		// Think/Act 루프 시작 (백그라운드) - 예외 방어
 		try
 		{

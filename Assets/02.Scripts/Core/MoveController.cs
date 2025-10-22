@@ -103,10 +103,11 @@ public class MoveController : MonoBehaviour
         //ApplyTimeScaledSpeed();
 
         // 틱 기반 체크 + 분 이벤트 기반 리패스 등록
-        SubscribeArrivalTick();
-        SubscribeRepathOnMinute();
+        // SubscribeArrivalTick();
+        //SubscribeRepathOnMinute();
     }
 
+    /*
     public void SetTarget(Transform transform)
     {
         if (transform == null)
@@ -134,59 +135,62 @@ public class MoveController : MonoBehaviour
         // 시뮬레이션 시간 배속에 따라 속도 보정
         //ApplyTimeScaledSpeed();
 
-        SubscribeArrivalTick();
-        SubscribeRepathOnMinute();
+        //SubscribeArrivalTick();
+        //SubscribeRepathOnMinute();
     }
+*/
+    // public void SubscribeArrivalTick()
+    // {
+    //     if (arrivalTickSubscribed) return;
+    //     timeService = Services.Get<ITimeService>();
+    //     if (timeService == null)
+    //     {
+    //         Debug.LogError("ITimeService is NULL");
+    //         return;
+    //     }
+    //     timeService.SubscribeToTickEvent(OnArrivalTick);
+    //     arrivalTickSubscribed = true;
+    //     isMoving = true;
+    // }
 
-    private void SubscribeArrivalTick()
-    {
-        if (arrivalTickSubscribed) return;
-        timeService = Services.Get<ITimeService>();
-        if (timeService == null)
-        {
-            Debug.LogError("ITimeService is NULL");
-            return;
-        }
-        timeService.SubscribeToTickEvent(OnArrivalTick);
-        arrivalTickSubscribed = true;
-        isMoving = true;
-    }
+    // private void UnsubscribeArrivalTick()
+    // {
+    //     if (!arrivalTickSubscribed) return;
+    //     try { timeService?.UnsubscribeFromTickEvent(OnArrivalTick); } catch { }
+    //     arrivalTickSubscribed = false;
+    // }
 
-    private void UnsubscribeArrivalTick()
-    {
-        if (!arrivalTickSubscribed) return;
-        try { timeService?.UnsubscribeFromTickEvent(OnArrivalTick); } catch { }
-        arrivalTickSubscribed = false;
-    }
+    // public void SubscribeRepathOnMinute()
+    // {
+    //     if (repathOnMinuteSubscribed) return;
+    //     timeService = Services.Get<ITimeService>();
+    //     if (timeService == null)
+    //     {
+    //         Debug.LogError("ITimeService is NULL");
+    //         return;
+    //     }
+    //     try { timeService.SubscribeToTimeEvent(OnGameMinuteChanged); repathOnMinuteSubscribed = true; } catch { }
+    // }
 
-    private void SubscribeRepathOnMinute()
-    {
-        if (repathOnMinuteSubscribed) return;
-        timeService = Services.Get<ITimeService>();
-        if (timeService == null)
-        {
-            Debug.LogError("ITimeService is NULL");
-            return;
-        }
-        try { timeService.SubscribeToTimeEvent(OnGameMinuteChanged); repathOnMinuteSubscribed = true; } catch { }
-    }
+    // private void UnsubscribeRepathOnMinute()
+    // {
+    //     if (!repathOnMinuteSubscribed) return;
+    //     try { timeService?.UnsubscribeFromTimeEvent(OnGameMinuteChanged); } catch { }
+    //     repathOnMinuteSubscribed = false;
+    // }
 
-    private void UnsubscribeRepathOnMinute()
-    {
-        if (!repathOnMinuteSubscribed) return;
-        try { timeService?.UnsubscribeFromTimeEvent(OnGameMinuteChanged); } catch { }
-        repathOnMinuteSubscribed = false;
-    }
-
-    private void OnGameMinuteChanged(GameTime _)
+    public void OnGameMinuteChanged(GameTime _)
     {
         if (followerEntity == null) return;
+        if (targetPosition == null && targetTransform == null) return;
+        
         followerEntity.SearchPath();
     }
 
-    private void OnArrivalTick(double ticks)
+    public void OnArrivalTick(double ticks)
     {
         if (followerEntity == null) return;
+        if (targetPosition == null && targetTransform == null) return;
 
         followerEntity.SearchPath();
 
@@ -226,8 +230,8 @@ public class MoveController : MonoBehaviour
         }
 
         isMoving = false;
-        UnsubscribeArrivalTick();
-        UnsubscribeRepathOnMinute();
+        //UnsubscribeArrivalTick();
+        //UnsubscribeRepathOnMinute();
         OnReachTarget();
     }
     private void OnReachTarget()
@@ -280,8 +284,8 @@ public class MoveController : MonoBehaviour
             CurrentMoveMode = MoveMode.Walk;
         }
 
-        UnsubscribeArrivalTick();
-        UnsubscribeRepathOnMinute();
+        //UnsubscribeArrivalTick();
+        //UnsubscribeRepathOnMinute();
         isMoving = false;
 
         targetTransform = null;
@@ -292,7 +296,9 @@ public class MoveController : MonoBehaviour
 
     private void OnDestroy()
     {
-        UnsubscribeArrivalTick();
-        UnsubscribeRepathOnMinute();
+        //UnsubscribeArrivalTick();
+        //UnsubscribeRepathOnMinute();
+        try { timeService?.UnsubscribeFromTickEvent(OnArrivalTick); } catch { }
+        try { timeService?.UnsubscribeFromTimeEvent(OnGameMinuteChanged); } catch { }
     }
 }

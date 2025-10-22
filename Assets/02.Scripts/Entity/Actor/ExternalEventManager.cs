@@ -13,7 +13,7 @@ public interface IExternalEventService : IService
     void CheckActorLocationChanges();
     void NotifyiPhoneNotification(Actor targetActor, string notificationContent);
     void NotifyActorAreaChanged(Actor movedActor, Area fromArea, Area toArea);
-    void Update(double tick = 0);
+    //void OnTick(double tick = 0);
 }
 
 /// <summary>
@@ -78,11 +78,7 @@ public class ExternalEventService : IExternalEventService
             previousNearbyActors[actor] = GetNearbyActorNames(actor);
         }
 
-        var timeService = Services.Get<ITimeService>();
-        if (timeService != null)
-        {
-            timeService.SubscribeToTickEvent(Update);
-        }
+        
     }
 
     public void OnDestroy()
@@ -90,7 +86,7 @@ public class ExternalEventService : IExternalEventService
         var timeService = Services.Get<ITimeService>();
         if (timeService != null)
         {
-            timeService.UnsubscribeFromTickEvent(Update);
+            timeService.UnsubscribeFromTickEvent(OnTick);
         }
     }
 
@@ -395,7 +391,7 @@ public class ExternalEventService : IExternalEventService
     /// <summary>
     /// 주기적으로 호출되어 지역 변화를 확인
     /// </summary>
-    public void Update(double tick = 0)
+    public void OnTick(double tick = 0)
     {
         CheckActorLocationChanges();
     }

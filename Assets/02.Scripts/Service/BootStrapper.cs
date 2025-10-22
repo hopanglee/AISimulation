@@ -29,6 +29,7 @@ public class BootStrapper : MonoBehaviour
     var actorManager = new ActorManager();
     var externalEventService = new ExternalEventService();
     var localizationService = new LocalizationService();
+    var tickHub = new TickEventHub();
 
     // 언어 설정은 SimulationController에서 처리됨
 
@@ -41,44 +42,53 @@ public class BootStrapper : MonoBehaviour
     Services.Provide<IActorService>(actorManager);
     Services.Provide<IExternalEventService>(externalEventService);
     Services.Provide<ILocalizationService>(localizationService);
-    //   Debug.Log("[BootStrapper] 모든 서비스가 성공적으로 등록되었습니다");
+    Services.Provide<ITickEventHub>(tickHub);
+
 
     // 서비스 초기화
     gameService.Initialize();
-    //  Debug.Log("[BootStrapper] GameService가 성공적으로 초기화되었습니다");
+
     gptApprovalService.Initialize();
-    //  Debug.Log("[BootStrapper] GPTApprovalService가 성공적으로 초기화되었습니다");
+
     locationService.Initialize();
-    //  Debug.Log("[BootStrapper] LocationService가 성공적으로 초기화되었습니다");
+
     pathfindingService.Initialize();
-    //  Debug.Log("[BootStrapper] PathfindingService가 성공적으로 초기화되었습니다");
+
     timeService.Initialize();
-    // Debug.Log("[BootStrapper] TimeService가 성공적으로 초기화되었습니다");
+
     actorManager.Initialize();
-    // Debug.Log("[BootStrapper] ActorManager가 성공적으로 초기화되었습니다");
+
     externalEventService.Initialize();
-    //Debug.Log("[BootStrapper] ExternalEventService가 성공적으로 초기화되었습니다");
+
     localizationService.Initialize();
-    //Debug.Log("[BootStrapper] LocalizationService가 성공적으로 초기화되었습니다");
+    tickHub.Initialize();
 
-    // Debug.Log("[BootStrapper] 모든 서비스가 성공적으로 초기화되었습니다");
+    // AIMovementSystemGroup을 TimeManager의 Tick에 맞춰 한 번씩만 실행하도록 브릿지 컴포넌트 추가
+    var aiMovementTickBridge = this.gameObject.AddComponent<AIMovementTickBridge>();
+    aiMovementTickBridge.Initialize();
 
-    // // 모든 Entity(비활성 포함) LocationService 등록
-    // try
-    // {
-    //     var locationSvc = Services.Get<ILocationService>();
-    //     if (locationSvc != null)
-    //     {
-    //         var entities = Object.FindObjectsByType<Entity>(FindObjectsSortMode.None);
-    //         for (int i = 0; i < entities.Length; i++)
-    //         {
-    //             var e = entities[i];
-    //             if (e == null) continue;
-    //             e.RegisterToLocationService();
-    //         }
-    //     }
-    // }
-    // catch { }
+    #region Time Event Subscription
+    timeService.SubscribeToTickEvent(tickHub.Publish);
+    timeService.SubscribeToTickEvent(aiMovementTickBridge.OnTick);
+
+    timeService.SubscribeToTimeEvent(gameService.OnTimeChanged);
+
+    var actors = FindObjectsByType<Actor>(FindObjectsSortMode.None);
+    foreach (var actor in actors)
+    {
+      timeService.SubscribeToTimeEvent(actor.MoveController.OnGameMinuteChanged);
+      timeService.SubscribeToTickEvent(actor.MoveController.OnArrivalTick);
+
+      if (actor is MainActor mainActor)
+      {
+        timeService.SubscribeToTimeEvent(mainActor.OnSimulationTimeChanged);
+      }
+    }
+
+    timeService.SubscribeToTickEvent(externalEventService.OnTick);
+    #endregion
+
+
     var userPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
     var authPath = $"{userPath}/.openai/auth.json";
     if (File.Exists(authPath))

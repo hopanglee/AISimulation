@@ -100,7 +100,7 @@ public class GameService : MonoBehaviour, IGameService
             Application.targetFrameRate = 30; // 필요 시 옵션화 가능
 
             // FixedUpdate도 30fps에 맞춰 조정 (더 안정적인 물리/시간 업데이트)
-            Time.fixedDeltaTime = 1/32f;//1f / Application.targetFrameRate; // 0.0333333초
+            Time.fixedDeltaTime = 1 / 32f;//1f / Application.targetFrameRate; // 0.0333333초
 
             Debug.Log($"[GameService] Frame lock applied: targetFrameRate={Application.targetFrameRate}, vSyncCount={QualitySettings.vSyncCount}, fixedDeltaTime={Time.fixedDeltaTime:F6}");
         }
@@ -176,7 +176,9 @@ public class GameService : MonoBehaviour, IGameService
 
         // 서비스 가져오기
         timeService = Services.Get<ITimeService>();
-
+        // 시간 이벤트 구독
+        //timeService.SubscribeToTimeEvent(OnTimeChanged);
+    
         // 모든 Actor 찾기
         FindAllActors();
 
@@ -186,6 +188,7 @@ public class GameService : MonoBehaviour, IGameService
             if (actor != null && actor is MainActor thinkingActor)
             {
                 thinkingActor.brain.SetLoggingEnabled(enableGPTLogging);
+
             }
         }
 
@@ -201,8 +204,7 @@ public class GameService : MonoBehaviour, IGameService
 
         // ExternalEventService는 BootStrapper에서 초기화됨
 
-        // 시간 이벤트 구독
-        timeService.SubscribeToTimeEvent(OnTimeChanged);
+
 
         // 기상 시 하루 계획 루틴 시작 (DayPlan이 끝난 후에만 Think 루틴 시작)
         //_ = RunDayPlanningRoutine(true); // 항상 startThinkAfter는 true로, enableThinkRoutine으로 제어
@@ -340,7 +342,7 @@ public class GameService : MonoBehaviour, IGameService
     /// <summary>
     /// 시간 변경 이벤트 핸들러
     /// </summary>
-    private void OnTimeChanged(GameTime newTime)
+    public void OnTimeChanged(GameTime newTime)
     {
     }
 
@@ -350,7 +352,7 @@ public class GameService : MonoBehaviour, IGameService
     private void FindAllActors()
     {
         allActors.Clear();
-        var actors = Object.FindObjectsByType<Actor>(FindObjectsSortMode.None);
+        var actors = FindObjectsByType<Actor>(FindObjectsSortMode.None);
         allActors.AddRange(actors);
 
         Debug.Log($"[GameService] Found {allActors.Count} actors in the scene");

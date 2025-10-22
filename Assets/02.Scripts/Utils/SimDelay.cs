@@ -31,8 +31,8 @@ public static class SimDelay
 		}
 		
 		// 개선된 로직: 시뮬레이션 시간(틱 단위) 기반 정밀 지연
-		var timeService = Services.Get<ITimeService>();
-		if (timeService == null || simMinutes <= 0)
+        var timeService = Services.Get<ITimeService>();
+        if (timeService == null || simMinutes <= 0)
 		{
 			await UniTask.Yield(PlayerLoopTiming.FixedUpdate);
 			return;
@@ -44,7 +44,8 @@ public static class SimDelay
 		// 이벤트 기반 대기: 매 분 변경 이벤트가 발생할 때마다 확인
 		var tcs = new System.Threading.Tasks.TaskCompletionSource<bool>(System.Threading.Tasks.TaskCreationOptions.RunContinuationsAsynchronously);
 		CancellationTokenRegistration ctr = default;
-		System.Action<double> onTickChanged = null;
+        System.Action<double> onTickChanged = null;
+        var tickHub = Services.Get<ITickEventHub>();
 		try
 		{
 			onTickChanged = tick =>
@@ -54,7 +55,10 @@ public static class SimDelay
 					tcs.TrySetResult(true);
 				}
 			};
-			timeService.SubscribeToTickEvent(onTickChanged);
+            if (tickHub != null)
+                tickHub.Subscribe(onTickChanged);
+            // else
+            //     timeService.SubscribeToTickEvent(onTickChanged);
 
 			// 즉시 충족된 경우 빠르게 종료
 			if (timeService.GetTotalTicks() >= targetTicks)
@@ -71,10 +75,13 @@ public static class SimDelay
 		}
 		finally
 		{
-			if (onTickChanged != null)
-			{
-				timeService.UnsubscribeFromTickEvent(onTickChanged);
-			}
+            if (onTickChanged != null)
+            {
+                if (tickHub != null)
+                    tickHub.Unsubscribe(onTickChanged);
+                // else
+                //     timeService.UnsubscribeFromTickEvent(onTickChanged);
+            }
 			ctr.Dispose();
 		}
 	}
