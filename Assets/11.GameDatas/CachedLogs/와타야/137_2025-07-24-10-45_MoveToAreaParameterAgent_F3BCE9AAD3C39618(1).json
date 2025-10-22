@@ -1,0 +1,21 @@
+﻿{
+  "payload": {
+    "payload": {
+      "area_name": "복도",
+      "move_mode": "Run"
+    },
+    "tools": [
+      {
+        "name": "FindBuildingAreaPath",
+        "argsJson": "{\"buildingName\":\"모카하우스\"}"
+      },
+      {
+        "name": "FindShortestAreaPathFromActor",
+        "argsJson": "{\"targetAreaKey\":\"도쿄:신주쿠:가부키초:1-chome-3\"}"
+      }
+    ]
+  },
+  "tools": [],
+  "cachedTicks": 17577915.0,
+  "cachedGameTimeIso": "2025-07-24T10:45:00Z"
+}

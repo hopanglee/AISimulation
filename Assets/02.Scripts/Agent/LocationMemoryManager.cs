@@ -127,7 +127,7 @@ public class LocationMemoryManager
         locationData.buildings = buildings ?? new List<string>();
         locationData.connectedAreas = connectedAreas ?? new List<string>();
 
-        SaveLocationMemory();
+        //SaveLocationMemory();
     }
 
     /// <summary>

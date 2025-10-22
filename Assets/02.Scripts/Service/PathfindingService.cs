@@ -240,7 +240,7 @@ public class PathfindingService : IPathfindingService
                 buildings = locationManager.GetAllBuildings().Select(b => b.locationName).ToList().Distinct();
                 if (buildings.Contains(tailLeaf))
                 { // 그냥 빌딩 이름만 
-                    if (building != null && building.locationName == tailLeaf)
+                    if (building != null && tailLeaf.Length >= 3 && building.locationName.IndexOf(tailLeaf) >= 0)
                     {
                         isTargetFound = true;
                     }

@@ -5,7 +5,6 @@ using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
-
 public interface ITimeService : IService
 {
     /// <summary>
@@ -210,6 +209,16 @@ public struct GameTime : IComparable<GameTime>, IComparable
             && a.day == b.day
             && a.hour == b.hour
             && a.minute == b.minute;
+    }
+
+    public bool IsSameTime(GameTime other)
+    {
+        return year == other.year &&
+            month == other.month &&
+            day == other.day &&
+            hour == other.hour &&
+            minute == other.minute&&
+            second == other.second;
     }
 
     public static bool operator !=(GameTime a, GameTime b)
@@ -456,7 +465,7 @@ public struct GameTime : IComparable<GameTime>, IComparable
     /// </summary>
     public string ToIsoString()
     {
-        return ToDateTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
+        return ToDateTime().ToString("yyyy-MM-ddTHH:mm:ssZ", System.Globalization.CultureInfo.InvariantCulture);
     }
 
     public bool IsYesterday()
