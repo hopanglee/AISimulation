@@ -316,10 +316,10 @@ public abstract class LLMClient
                                         {
                                             targetNow = gtNow;
                                         }
-                                        if (!targetNow.Equals(gtNow)) // 불일치시
+                                        if (!targetNow.IsSameTime(gtNow)) // 불일치시
                                         {
                                             //현재 파일의 tick을 수정
-                                            Debug.Log($"<b><i>[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 타임 보정 필요: {targetNow} -> {gtNow.ToIsoString()}</i></b>");
+                                            Debug.Log($"<b><i>[{agentTypeOverride ?? "Unknown"}][{actorName}] 캐시 파일 타임 보정 필요: {targetNow.ToSimpleString()} -> {gtNow.ToSimpleString()}</i></b>");
 
                                             // 캐시 파일의 tick을 현재 시간으로 업데이트
                                             obj["cachedTicks"] = currentTicks;

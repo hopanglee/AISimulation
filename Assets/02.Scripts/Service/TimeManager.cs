@@ -120,6 +120,11 @@ public struct GameTime : IComparable<GameTime>, IComparable
         this.second = second;
     }
 
+
+    public string ToSimpleString()
+    {
+        return $"{hour:D2}:{minute:D2}:{second:D2}";
+    }
     public override string ToString()
     {
         return $"{year:D4}-{month:D2}-{day:D2} {hour:D2}:{minute:D2}";
