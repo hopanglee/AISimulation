@@ -11,9 +11,9 @@ public class MoveController : MonoBehaviour
     public bool isMoving = false;
     public event Action OnReached;
     public bool LastMoveSucceeded { get; private set; } = false;
-    private bool arrivalTickSubscribed = false;
+    //private bool arrivalTickSubscribed = false;
     private ITimeService timeService;
-    private bool repathOnMinuteSubscribed = false;
+    //private bool repathOnMinuteSubscribed = false;
 
     // private bool useLockstepMovement = false; // 리플레이 결정성 강화를 위한 락스텝 옵션
     // private int lockstepFramesPerTick = 5; // 틱 전환 후 허용할 이동 프레임 수
