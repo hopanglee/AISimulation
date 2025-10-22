@@ -168,7 +168,7 @@ public class ExternalEventService : IExternalEventService
     /// </summary>
     public void NotifyiPhoneNotification(Actor targetActor, string notificationContent)
     {
-        Debug.Log($"<color=yellow>[ExternalEventService] {targetActor.Name}</color> 아이폰 알람 받음");
+        //Debug.Log($"<color=yellow>[ExternalEventService] {targetActor.Name}</color> 아이폰 알람 받음");
         // iPhone이 손(Hand)이나 인벤토리에 있을 때에만 외부 이벤트 전송
         if (CanSendEvent(targetActor) && IsIPhoneHeldOrInInventory(targetActor))
         {
@@ -181,7 +181,7 @@ public class ExternalEventService : IExternalEventService
             };
 
             SendExternalEvent(externalEvent);
-            Debug.Log($"<color=yellow>[ExternalEventService]</color> {targetActor.Name}에게 iPhone 알림 이벤트 발생: {notificationContent}");
+            //Debug.Log($"<color=yellow>[ExternalEventService]</color> {targetActor.Name}에게 iPhone 알림 이벤트 발생: {notificationContent}");
         }
     }
 
@@ -278,13 +278,13 @@ public class ExternalEventService : IExternalEventService
                     if (timeService != null)
                     {
                         lastEventTimes[targetActor] = timeService.CurrentTime;
-                        Debug.Log($"<color=yellow>[ExternalEventService] {targetActor.Name}</color> 이벤트 시간 기록: {timeService.CurrentTime}");
+                        //Debug.Log($"<color=yellow>[ExternalEventService] {targetActor.Name}</color> 이벤트 시간 기록: {timeService.CurrentTime}");
                     }
                 }
                 catch { }
 
                 mainActor.MoveController.Reset();
-                Debug.LogWarning($"<color=yellow>[ExternalEventService] {mainActor.Name}</color>의 이동이 중단되었습니다.");
+                //Debug.LogWarning($"<color=yellow>[ExternalEventService] {mainActor.Name}</color>의 이동이 중단되었습니다.");
 
                 // Brain에 외부 이벤트 설명과 함께 전달
                 mainActor.brain.OnExternalEvent(externalEvent.AdditionalInfo);

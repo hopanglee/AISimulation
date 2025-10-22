@@ -113,7 +113,7 @@ public class PerceptionAgentGroup
     {
         try
         {
-            Debug.Log($"[PerceptionAgent {actor.Name}] 3-에이전트 구조로 시각정보 해석 시작");
+            //Debug.Log($"[PerceptionAgent {actor.Name}] 3-에이전트 구조로 시각정보 해석 시작");
             var timeService = Services.Get<ITimeService>();
             var currentDate = timeService.CurrentTime;
 
@@ -126,7 +126,7 @@ public class PerceptionAgentGroup
                 var cachedEgo = LoadResultIfExists<EgoResult>(currentDate, "ego");
                 if (cachedEgo != null)
                 {
-                    Debug.Log($"[PerceptionAgent {actor.Name}] 캐시된 Ego 결과 사용");
+                    //Debug.Log($"[PerceptionAgent {actor.Name}] 캐시된 Ego 결과 사용");
                     return new PerceptionResult
                     {
                         situation_interpretation = cachedEgo.situation_interpretation,
@@ -148,7 +148,7 @@ public class PerceptionAgentGroup
 
             // 3. 자아 에이전트로 타협 (두 결과가 모두 준비된 후 실행)
             var egoResult = await egoAgent.MediateAsync(superegoResult, idResult);
-            Debug.Log($"[PerceptionAgent {actor.Name}] 자아 에이전트 완료");
+            //Debug.Log($"[PerceptionAgent {actor.Name}] 자아 에이전트 완료");
 
             if (
                 !string.IsNullOrEmpty(egoResult?.situation_interpretation)
@@ -174,7 +174,7 @@ public class PerceptionAgentGroup
                 emotions = egoResult.emotions ?? new List<Emotions>(),
             };
 
-            Debug.Log($"[PerceptionAgent {actor.Name}] 3-에이전트 해석 완료");
+            //Debug.Log($"[PerceptionAgent {actor.Name}] 3-에이전트 해석 완료");
             return finalResult;
         }
         catch (Exception ex)

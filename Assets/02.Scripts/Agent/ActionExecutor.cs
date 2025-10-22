@@ -32,7 +32,7 @@ public class ActionExecutor
             return Fail("No action provided");
 
         var action = reasoning.Action;
-        Log($"Executing action: {action.ActionType}");
+        //Log($"Executing action: {action.ActionType}");
 
         if (actionHandlers.TryGetValue(action.ActionType, out var handler))
         {
@@ -48,7 +48,7 @@ public class ActionExecutor
             }
             catch (OperationCanceledException)
             {
-                Debug.Log($"<color=green>[ActionExecutor] ExecuteActionAsync 취소됨</color>");
+                //Debug.Log($"<color=green>[ActionExecutor] ExecuteActionAsync 취소됨</color>");
                 throw;
             }
             catch (Exception ex)
@@ -62,7 +62,7 @@ public class ActionExecutor
 
     private void Log(string message)
     {
-        Debug.Log($"[ActionExecutor] {message}");
+        //Debug.Log($"[ActionExecutor] {message}");
     }
 
     private ActionExecutionResult Success(string message, string feedback = null, object data = null)

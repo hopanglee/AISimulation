@@ -61,7 +61,7 @@ public class ActionPerformer
         try
         {
             currentToken = token; // 현재 토큰 저장
-            Debug.Log($"[{actor.Name}] 액션 실행: {action.ActionType}");
+            //Debug.Log($"[{actor.Name}] 액션 실행: {action.ActionType}");
 
             // ActionReasoning으로 래핑하여 ActionExecutor에 전달
             var actionReasoning = new ActionReasoning
@@ -74,7 +74,7 @@ public class ActionPerformer
 
             if (result.Success)
             {
-                Debug.Log($"[{actor.Name}] 액션 완료: {action.ActionType} - {result.Message}");
+                //Debug.Log($"[{actor.Name}] 액션 완료: {action.ActionType} - {result.Message}");
                 if (!string.IsNullOrEmpty(result.Feedback))
                 {
                     Debug.Log($"[{actor.Name}] 피드백: {result.Feedback}");

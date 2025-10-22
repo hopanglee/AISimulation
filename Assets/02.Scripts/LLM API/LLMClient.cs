@@ -297,8 +297,25 @@ public abstract class LLMClient
                                     {
                                         var currentTicks = timeService.GetTotalTicks();
                                         var gtNow = timeService.CurrentTime;
-                                        var targetNowString = obj["cachedGameTimeIso"]?.ToString();
-                                        var targetNow = GameTime.FromIsoString(targetNowString ?? "");
+                                        var cachedIsoToken = obj["cachedGameTimeIso"];
+                                        GameTime targetNow;
+                                        if (cachedIsoToken != null)
+                                        {
+                                            // Newtonsoft can parse ISO dates into JTokenType.Date; avoid culture-specific ToString (e.g., "오전/오후").
+                                            if (cachedIsoToken.Type == Newtonsoft.Json.Linq.JTokenType.Date)
+                                            {
+                                                var dt = cachedIsoToken.Value<System.DateTime>();
+                                                targetNow = GameTime.FromDateTime(System.DateTime.SpecifyKind(dt, System.DateTimeKind.Utc).ToUniversalTime());
+                                            }
+                                            else
+                                            {
+                                                targetNow = GameTime.FromIsoString(cachedIsoToken.ToString());
+                                            }
+                                        }
+                                        else
+                                        {
+                                            targetNow = gtNow;
+                                        }
                                         if (!targetNow.Equals(gtNow)) // 불일치시
                                         {
                                             //현재 파일의 tick을 수정

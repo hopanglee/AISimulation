@@ -832,7 +832,7 @@ public class TimeManager : ITimeService
     {
         StartTimeStop();
 
-        Debug.Log($"[TimeManager] API call started (pause count: {apiPauseCount})");
+        //Debug.Log($"[TimeManager] API call started (pause count: {apiPauseCount})");
     }
 
     /// <summary>
@@ -841,7 +841,7 @@ public class TimeManager : ITimeService
     public void EndAPICall()
     {
         EndTimeStop();
-        Debug.Log($"[TimeManager] API call ended (pause count: {apiPauseCount})");
+        //Debug.Log($"[TimeManager] API call ended (pause count: {apiPauseCount})");
     }
 
     public static void StartTimeStop()

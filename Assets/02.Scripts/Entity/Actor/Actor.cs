@@ -1711,7 +1711,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 return "단기 기억이 null입니다.";
             }
 
-            Debug.Log($"[Actor] shortTermMemories Count: {shortTermMemories.Count}");
+            //Debug.Log($"[Actor] shortTermMemories Count: {shortTermMemories.Count}");
 
             if (shortTermMemories.Count > 0)
             {

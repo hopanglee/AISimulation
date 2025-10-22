@@ -18,7 +18,7 @@ public static class SimDelay
 		// UseGPT가 false인 경우 Task.Delay 사용 (Debug 모드)
 		if (IsDebugMode())
 		{
-			Debug.Log($"[Debug Mode] {simMinutes}분 지연 시작");
+			//Debug.Log($"[Debug Mode] {simMinutes}분 지연 시작");
 			// 시뮬레이션 시간 1분당 실제 시간 1초
 			
 			float delaySeconds = simMinutes * 1f;
@@ -27,7 +27,7 @@ public static class SimDelay
 		}
 		else
 		{
-			Debug.Log($"[Simulation Mode] {simMinutes}분 지연 시작");
+			//Debug.Log($"[Simulation Mode] {simMinutes}분 지연 시작");
 		}
 		
 		// 개선된 로직: 시뮬레이션 시간(틱 단위) 기반 정밀 지연
