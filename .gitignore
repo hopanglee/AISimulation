@@ -74,6 +74,8 @@ crashlytics-build.properties
 
 # Sample Assets and Third-party Assets
 Assets/11.GameDatas/Backup/
+Assets/11.GameDatas/Backup/*
+Assets/11.GameDatas/Backup/Character/
 
 Assets/14.Sample Assets/
 Assets/Citizens PRO/
