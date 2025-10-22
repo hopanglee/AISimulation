@@ -14,7 +14,17 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     // Brain과 Sensor는 ThinkingActor로 이동
     #region Component
     private MoveController moveController;
-    public MoveController MoveController => moveController;
+    public MoveController MoveController
+    {
+        get
+        {
+            if (moveController == null)
+            {
+                moveController = GetComponent<MoveController>();
+            }
+            return moveController;
+        }
+    }
     #endregion
     #region Variable
     // Money와 iPhone은 ThinkingActor로 이동
@@ -135,7 +145,6 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
     protected override void Awake()
     {
         base.Awake();
-        moveController = GetComponent<MoveController>();
         // 공통 센서 초기화 (MainActor/NPC 공용)
         sensor = new Sensor(this);
 
@@ -190,11 +199,7 @@ public abstract class Actor : Entity, ILocationAware, IInteractable
                 CreateDefaultNpcOutfit();
             }
         }
-    }
 
-    protected virtual void Start()
-    {
-        // ActorManager(IActorService)에 등록
         try
         {
             var actorService = Services.Get<IActorService>();

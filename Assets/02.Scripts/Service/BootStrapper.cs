@@ -67,25 +67,28 @@ public class BootStrapper : MonoBehaviour
     var aiMovementTickBridge = this.gameObject.AddComponent<AIMovementTickBridge>();
     aiMovementTickBridge.Initialize();
 
-    #region Time Event Subscription
-    timeService.SubscribeToTimeEvent(gameService.OnTimeChanged);
+    #region Time Event Subscription 동시실행시 TickEvent -> TimeEvent 순서로 실행
+
+
+    timeService.SubscribeToTickEvent(tickHub.Publish, -9999); // SimDelay
+    timeService.SubscribeToTickEvent(aiMovementTickBridge.OnTick, -9998); // 이동 도착 판정
+
+    timeService.SubscribeToTickEvent(externalEventService.OnTick, -1); // 외부 이벤트
 
     var actors = FindObjectsByType<Actor>(FindObjectsSortMode.None);
     foreach (var actor in actors)
     {
+      actor.MoveController.Inititalize();
+      timeService.SubscribeToTickEvent(actor.MoveController.OnArrivalTick, -9997);
+      timeService.SubscribeToTimeEvent(actor.MoveController.OnSearchPath, -9000);
+
       if (actor is MainActor mainActor)
       {
-        timeService.SubscribeToTimeEvent(mainActor.OnSimulationTimeChanged);
+        timeService.SubscribeToTimeEvent(mainActor.OnSimulationTimeChanged, 0); // 생일, state 변화 등
       }
-
-      timeService.SubscribeToTimeEvent(actor.MoveController.OnGameMinuteChanged);
-      timeService.SubscribeToTickEvent(actor.MoveController.OnArrivalTick);
     }
 
-    timeService.SubscribeToTickEvent(tickHub.Publish);
-    timeService.SubscribeToTickEvent(aiMovementTickBridge.OnTick);
-
-    timeService.SubscribeToTickEvent(externalEventService.OnTick);
+    timeService.SubscribeToTimeEvent(gameService.OnTimeChanged, 0);
     #endregion
 
 

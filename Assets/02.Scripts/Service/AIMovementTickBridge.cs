@@ -5,7 +5,7 @@ using UnityEngine;
 // TimeManager의 Tick마다 Pathfinding.ECS.AIMovementSystemGroup을 한 번만 실행시키는 브릿지
 public class AIMovementTickBridge : MonoBehaviour
 {
-    private TickRateManager tickRateManager;
+    private GatedTimeScaledRateManager tickRateManager;
 
     public void Initialize()
     {
@@ -18,7 +18,7 @@ public class AIMovementTickBridge : MonoBehaviour
 
         var group = world.GetOrCreateSystemManaged<Pathfinding.ECS.AIMovementSystemGroup>();
         // 그룹의 RateManager를 커스텀 매니저로 교체 (OnTick에서만 실행)
-        tickRateManager = new TickRateManager();
+        tickRateManager = new GatedTimeScaledRateManager();
         group.RateManager = tickRateManager;
     }
 
@@ -35,19 +35,19 @@ public class AIMovementTickBridge : MonoBehaviour
 }
 
 // 수동 트리거 방식의 RateManager 구현
-public sealed class TickRateManager : IRateManager
+// A* 그룹이 TimeScaledRateManager의 기능에 의존하므로 이를 상속해 게이트만 추가
+public sealed class GatedTimeScaledRateManager : Pathfinding.ECS.AIMovementSystemGroup.TimeScaledRateManager, IRateManager
 {
     private volatile bool shouldUpdate;
 
-    public float Timestep { get; set; }
-
     public void TriggerOnce() => shouldUpdate = true;
 
-    public bool ShouldGroupUpdate(ComponentSystemGroup group)
+    bool IRateManager.ShouldGroupUpdate(ComponentSystemGroup group)
     {
         if (!shouldUpdate) return false;
         shouldUpdate = false;
-        return true;
+        // 원래 시간 푸시/큐 로직을 유지하기 위해 base 호출
+        return base.ShouldGroupUpdate(group);
     }
 }
 

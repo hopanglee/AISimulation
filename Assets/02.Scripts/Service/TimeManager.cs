@@ -53,22 +53,22 @@ public interface ITimeService : IService
     /// <summary>
     /// 시간 이벤트 구독
     /// </summary>
-    void SubscribeToTimeEvent(Action<GameTime> callback);
+    // void SubscribeToTimeEvent(Action<GameTime> callback);
 
     /// <summary>
     /// 시간 이벤트 구독 (우선순위 포함, 낮을수록 먼저 호출)
     /// </summary>
-    void SubscribeToTimeEvent(Action<GameTime> callback, int priority);
+    void SubscribeToTimeEvent(Action<GameTime> callback, int priority = 0);
 
     /// <summary>
     /// 시간 이벤트 구독
     /// </summary>
-    void SubscribeToTickEvent(Action<double> callback);
+    // void SubscribeToTickEvent(Action<double> callback);
 
     /// <summary>
     /// 틱 이벤트 구독 (우선순위 포함, 낮을수록 먼저 호출)
     /// </summary>
-    void SubscribeToTickEvent(Action<double> callback, int priority);
+    void SubscribeToTickEvent(Action<double> callback, int priority = 0);
 
     /// <summary>
     /// 시간 이벤트 구독 해제
@@ -233,7 +233,7 @@ public struct GameTime : IComparable<GameTime>, IComparable
             month == other.month &&
             day == other.day &&
             hour == other.hour &&
-            minute == other.minute&&
+            minute == other.minute &&
             second == other.second;
     }
 
@@ -697,12 +697,12 @@ public class TimeManager : ITimeService
         Debug.Log($"[TimeManager] Time set to {currentTime}");
     }
 
-    public void SubscribeToTimeEvent(Action<GameTime> callback)
-    {
-        onTimeChanged += callback;
-    }
+    // public void SubscribeToTimeEvent(Action<GameTime> callback)
+    // {
+    //     onTimeChanged += callback;
+    // }
 
-    public void SubscribeToTimeEvent(Action<GameTime> callback, int priority)
+    public void SubscribeToTimeEvent(Action<GameTime> callback, int priority = 0)
     {
         timeHandlers.Add((priority, callback));
         timeHandlers.Sort((a, b) => a.priority.CompareTo(b.priority));
@@ -714,6 +714,24 @@ public class TimeManager : ITimeService
         // Remove from prioritized list if present
         int idx = timeHandlers.FindIndex(h => h.handler == callback);
         if (idx >= 0) timeHandlers.RemoveAt(idx);
+    }
+
+    // public void SubscribeToTickEvent(Action<double> callback)
+    // {
+    //     onTickChanged += callback;
+    // }
+
+    public void SubscribeToTickEvent(Action<double> callback, int priority = 0)
+    {
+        tickHandlers.Add((priority, callback));
+        tickHandlers.Sort((a, b) => a.priority.CompareTo(b.priority));
+    }
+
+    public void UnsubscribeFromTickEvent(Action<double> callback)
+    {
+        onTickChanged -= callback;
+        int idx = tickHandlers.FindIndex(h => h.handler == callback);
+        if (idx >= 0) tickHandlers.RemoveAt(idx);
     }
 
     /// <summary>
@@ -733,13 +751,15 @@ public class TimeManager : ITimeService
         // 시간 누적 (초 단위)
         newAccumulatedTime += deltaTime * timeScale;
 
+        // 초 → 분/시/일/월/년 반영
+        int minutesToAdd = 0;
+
         if (newAccumulatedTime >= 1d)
         {
             int secondsToAdd = (int)Math.Floor(newAccumulatedTime);
             newAccumulatedTime -= secondsToAdd;
 
-            // 초 → 분/시/일/월/년 반영
-            int minutesToAdd = 0;
+
             int totalSeconds = newTime.second + secondsToAdd;
             if (totalSeconds >= 60)
             {
@@ -785,17 +805,6 @@ public class TimeManager : ITimeService
             currentTime = newTime;
             accumulatedTime = newAccumulatedTime;
 
-            // 분 단위 변경 시에만 이벤트 발생 (이전 동작 유지)
-            if (minutesToAdd > 0)
-            {
-                var timeChangedHandler2 = onTimeChanged;
-                timeChangedHandler2?.Invoke(currentTime);
-                if (timeHandlers.Count > 0)
-                {
-                    var snapshot = timeHandlers.ToArray();
-                    for (int i = 0; i < snapshot.Length; i++) snapshot[i].handler(currentTime);
-                }
-            }
         }
         else
         {
@@ -810,6 +819,18 @@ public class TimeManager : ITimeService
             var ticks = GetTotalTicks();
             var snapshot = tickHandlers.ToArray();
             for (int i = 0; i < snapshot.Length; i++) snapshot[i].handler(ticks);
+        }
+
+        // 분 단위 변경 시에만 이벤트 발생 (이전 동작 유지)
+        if (minutesToAdd > 0)
+        {
+            var timeChangedHandler2 = onTimeChanged;
+            timeChangedHandler2?.Invoke(currentTime);
+            if (timeHandlers.Count > 0)
+            {
+                var snapshot = timeHandlers.ToArray();
+                for (int i = 0; i < snapshot.Length; i++) snapshot[i].handler(currentTime);
+            }
         }
     }
 
@@ -1034,22 +1055,6 @@ public class TimeManager : ITimeService
         SetTime(nextYear, nextMonth, nextDay, 0, 0);
     }
 
-    public void SubscribeToTickEvent(Action<double> callback)
-    {
-        onTickChanged += callback;
-    }
 
-    public void SubscribeToTickEvent(Action<double> callback, int priority)
-    {
-        tickHandlers.Add((priority, callback));
-        tickHandlers.Sort((a, b) => a.priority.CompareTo(b.priority));
-    }
-
-    public void UnsubscribeFromTickEvent(Action<double> callback)
-    {
-        onTickChanged -= callback;
-        int idx = tickHandlers.FindIndex(h => h.handler == callback);
-        if (idx >= 0) tickHandlers.RemoveAt(idx);
-    }
 
 }

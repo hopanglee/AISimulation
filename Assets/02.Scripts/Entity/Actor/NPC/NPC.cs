@@ -19,8 +19,8 @@ public class PriceItem
 }
 public interface IPaymentable
 {
-    public List<PriceItem> priceList {get; set;}
-    public int totalRevenue{get; set;} // 총 수익
+    public List<PriceItem> priceList { get; set; }
+    public int totalRevenue { get; set; } // 총 수익
 }
 
 /// <summary>
@@ -67,19 +67,6 @@ public abstract partial class NPC : Actor
     {
         base.Awake();
         InitializeNPC();
-    }
-
-    protected override void OnEnable()
-    {
-        base.OnEnable();
-
-        // TimeService 가져오기
-        timeService = Services.Get<ITimeService>();
-    }
-
-    protected override void Start()
-    {
-        base.Start();
 
         // Animator가 활성화되어 있을 때만 idle1 재생
         var animator = GetComponent<Animator>();
@@ -89,6 +76,14 @@ public abstract partial class NPC : Actor
         }
     }
 
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+
+        // TimeService 가져오기
+        timeService = Services.Get<ITimeService>();
+    }
+    
     protected virtual void OnValidate()
     {
         // ActionType이 변경되었을 때 파라미터 예시 로그 출력
@@ -140,7 +135,7 @@ public abstract partial class NPC : Actor
 
         // NPCActionDecision 관련 코드 제거됨 - 더 이상 사용하지 않음
 
-       // Debug.Log($"[{Name}] AI Agent 초기화 완료 - 역할: {npcRole}");
+        // Debug.Log($"[{Name}] AI Agent 초기화 완료 - 역할: {npcRole}");
     }
 
 
@@ -174,8 +169,8 @@ public abstract partial class NPC : Actor
             // 새로운 흐름: 선택 + 파라미터 생성 (Agent는 선택만, 파라미터는 NPC에서 생성)
             TimeManager.StartTimeStop();
             var selection = await actionAgent.SelectActAsync();
-            
-            
+
+
             // 파라미터 생성
             var parameters = await GenerateActionParameters(selection);
             TimeManager.EndTimeStop();
@@ -494,7 +489,7 @@ public abstract partial class NPC : Actor
         }
 
         var examples = GetParameterExamples(debugActionType);
-//        Debug.Log($"[{Name}] {debugActionType} 액션 파라미터 예시: {examples}");
+        //        Debug.Log($"[{Name}] {debugActionType} 액션 파라미터 예시: {examples}");
     }
 
     /// <summary>

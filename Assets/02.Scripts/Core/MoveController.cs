@@ -37,7 +37,7 @@ public class MoveController : MonoBehaviour
     {
         isTeleporting = value;
     }
-    private void Awake()
+    public void Inititalize()
     {
         followerEntity = GetComponent<FollowerEntity>();
         aIDestinationSetter = GetComponent<AIDestinationSetter>();
@@ -179,7 +179,7 @@ public class MoveController : MonoBehaviour
     //     repathOnMinuteSubscribed = false;
     // }
 
-    public void OnGameMinuteChanged(GameTime _)
+    public void OnSearchPath(GameTime _)
     {
         if (followerEntity == null) return;
         if (targetPosition == null && targetTransform == null) return;
@@ -191,8 +191,6 @@ public class MoveController : MonoBehaviour
     {
         if (followerEntity == null) return;
         if (targetPosition == null && targetTransform == null) return;
-
-        followerEntity.SearchPath();
 
         bool reached = followerEntity.reachedCrowdedEndOfPath
                     || followerEntity.reachedEndOfPath
@@ -299,6 +297,6 @@ public class MoveController : MonoBehaviour
         //UnsubscribeArrivalTick();
         //UnsubscribeRepathOnMinute();
         try { timeService?.UnsubscribeFromTickEvent(OnArrivalTick); } catch { }
-        try { timeService?.UnsubscribeFromTimeEvent(OnGameMinuteChanged); } catch { }
+        try { timeService?.UnsubscribeFromTimeEvent(OnSearchPath); } catch { }
     }
 }
