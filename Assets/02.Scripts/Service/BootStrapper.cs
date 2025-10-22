@@ -68,22 +68,22 @@ public class BootStrapper : MonoBehaviour
     aiMovementTickBridge.Initialize();
 
     #region Time Event Subscription
-    timeService.SubscribeToTickEvent(tickHub.Publish);
-    timeService.SubscribeToTickEvent(aiMovementTickBridge.OnTick);
-
     timeService.SubscribeToTimeEvent(gameService.OnTimeChanged);
 
     var actors = FindObjectsByType<Actor>(FindObjectsSortMode.None);
     foreach (var actor in actors)
     {
-      timeService.SubscribeToTimeEvent(actor.MoveController.OnGameMinuteChanged);
-      timeService.SubscribeToTickEvent(actor.MoveController.OnArrivalTick);
-
       if (actor is MainActor mainActor)
       {
         timeService.SubscribeToTimeEvent(mainActor.OnSimulationTimeChanged);
       }
+
+      timeService.SubscribeToTimeEvent(actor.MoveController.OnGameMinuteChanged);
+      timeService.SubscribeToTickEvent(actor.MoveController.OnArrivalTick);
     }
+
+    timeService.SubscribeToTickEvent(tickHub.Publish);
+    timeService.SubscribeToTickEvent(aiMovementTickBridge.OnTick);
 
     timeService.SubscribeToTickEvent(externalEventService.OnTick);
     #endregion
