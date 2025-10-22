@@ -616,7 +616,8 @@ public class TimeManager : ITimeService
 
     private double accumulatedTime = 0d;
     private Action<GameTime> onTimeChanged;
-    private readonly List<(int priority, Action<GameTime> handler)> timeHandlers = new();
+    private long seqCounter;
+    private readonly List<(int priority, long seq, Action<GameTime> handler)> timeHandlers = new();
 
     // API 호출 중인 Actor 수 추적 (정지/감속 개별 관리)
     private static int apiPauseCount = 0;
@@ -636,7 +637,7 @@ public class TimeManager : ITimeService
     public bool IsTimeFlowing => isTimeFlowing;
 
     private Action<double> onTickChanged;
-    private readonly List<(int priority, Action<double> handler)> tickHandlers = new();
+    private readonly List<(int priority, long seq, Action<double> handler)> tickHandlers = new();
 
     public void Initialize()
     {
@@ -704,8 +705,12 @@ public class TimeManager : ITimeService
 
     public void SubscribeToTimeEvent(Action<GameTime> callback, int priority = 0)
     {
-        timeHandlers.Add((priority, callback));
-        timeHandlers.Sort((a, b) => a.priority.CompareTo(b.priority));
+        timeHandlers.Add((priority, seqCounter++, callback));
+        timeHandlers.Sort((a, b) =>
+        {
+            int c = a.priority.CompareTo(b.priority);
+            return c != 0 ? c : a.seq.CompareTo(b.seq);
+        });
     }
 
     public void UnsubscribeFromTimeEvent(Action<GameTime> callback)
@@ -723,8 +728,12 @@ public class TimeManager : ITimeService
 
     public void SubscribeToTickEvent(Action<double> callback, int priority = 0)
     {
-        tickHandlers.Add((priority, callback));
-        tickHandlers.Sort((a, b) => a.priority.CompareTo(b.priority));
+        tickHandlers.Add((priority, seqCounter++, callback));
+        tickHandlers.Sort((a, b) =>
+        {
+            int c = a.priority.CompareTo(b.priority);
+            return c != 0 ? c : a.seq.CompareTo(b.seq);
+        });
     }
 
     public void UnsubscribeFromTickEvent(Action<double> callback)
@@ -812,24 +821,30 @@ public class TimeManager : ITimeService
             accumulatedTime = newAccumulatedTime;
         }
 
-        var tickHandler = onTickChanged;
-        tickHandler?.Invoke(GetTotalTicks());
+        // 통합 실행: tick + (분 변경 시) time 이벤트를 우선순위/등록순으로 병합 호출
+        var ticksNow = GetTotalTicks();
+        var merged = new List<(int priority, long seq, bool isTick, Action<double> tick, Action<GameTime> time)>();
         if (tickHandlers.Count > 0)
         {
-            var ticks = GetTotalTicks();
-            var snapshot = tickHandlers.ToArray();
-            for (int i = 0; i < snapshot.Length; i++) snapshot[i].handler(ticks);
+            var ts = tickHandlers.ToArray();
+            for (int i = 0; i < ts.Length; i++) merged.Add((ts[i].priority, ts[i].seq, true, ts[i].handler, null));
         }
-
-        // 분 단위 변경 시에만 이벤트 발생 (이전 동작 유지)
-        if (minutesToAdd > 0)
+        if (minutesToAdd > 0 && timeHandlers.Count > 0)
         {
-            var timeChangedHandler2 = onTimeChanged;
-            timeChangedHandler2?.Invoke(currentTime);
-            if (timeHandlers.Count > 0)
+            var ss = timeHandlers.ToArray();
+            for (int i = 0; i < ss.Length; i++) merged.Add((ss[i].priority, ss[i].seq, false, null, ss[i].handler));
+        }
+        if (merged.Count > 0)
+        {
+            merged.Sort((a, b) =>
             {
-                var snapshot = timeHandlers.ToArray();
-                for (int i = 0; i < snapshot.Length; i++) snapshot[i].handler(currentTime);
+                int c = a.priority.CompareTo(b.priority);
+                return c != 0 ? c : a.seq.CompareTo(b.seq);
+            });
+            for (int i = 0; i < merged.Count; i++)
+            {
+                if (merged[i].isTick) merged[i].tick?.Invoke(ticksNow);
+                else merged[i].time?.Invoke(currentTime);
             }
         }
     }

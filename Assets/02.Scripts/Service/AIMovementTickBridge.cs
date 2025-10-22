@@ -6,6 +6,7 @@ using UnityEngine;
 public class AIMovementTickBridge : MonoBehaviour
 {
     private GatedTimeScaledRateManager tickRateManager;
+    private int lastTriggerFrame = -1;
 
     public void Initialize()
     {
@@ -30,7 +31,18 @@ public class AIMovementTickBridge : MonoBehaviour
     public void OnTick(double _)
     {
         // 틱마다 한 번 업데이트하도록 트리거
+        lastTriggerFrame = Time.frameCount;
         tickRateManager?.TriggerOnce();
+        //Debug.Log($"[{gameObject.name}] OnTick");
+    }
+
+    void Update()
+    {
+        // 업데이트 순서 상 OnTick이 늦게 불려 그룹 업데이트를 놓치는 프레임을 대비한 안전 장치
+        if (tickRateManager != null && lastTriggerFrame != Time.frameCount)
+        {
+            tickRateManager.TriggerOnce();
+        }
     }
 }
 

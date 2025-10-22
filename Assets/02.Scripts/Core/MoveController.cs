@@ -89,102 +89,26 @@ public class MoveController : MonoBehaviour
 
     public void SetTarget(Vector3 vector)
     {
-        if (followerEntity != null)
-        {
-            // Ensure movement can resume after a forced stop
-            followerEntity.simulateMovement = true;
-            followerEntity.isStopped = false;
-        }
-        followerEntity?.SetDestination(vector);
         targetPosition = vector;
         targetTransform = null;
 
-        // 시뮬레이션 시간 배속에 따라 속도 보정
-        //ApplyTimeScaledSpeed();
-
-        // 틱 기반 체크 + 분 이벤트 기반 리패스 등록
-        // SubscribeArrivalTick();
-        //SubscribeRepathOnMinute();
-    }
-
-    /*
-    public void SetTarget(Transform transform)
-    {
-        if (transform == null)
-            Debug.LogError("Target Transform is NULL");
-
         if (followerEntity != null)
         {
             // Ensure movement can resume after a forced stop
             followerEntity.simulateMovement = true;
+            followerEntity?.SetDestination(vector);
             followerEntity.isStopped = false;
         }
 
-        if (aIDestinationSetter != null)
-        {
-            aIDestinationSetter.target = transform;
-        }
-        else
-        {
-            followerEntity?.SetDestination(transform.position);
-        }
-
-        targetTransform = transform;
-        targetPosition = null;
-
-        // 시뮬레이션 시간 배속에 따라 속도 보정
-        //ApplyTimeScaledSpeed();
-
-        //SubscribeArrivalTick();
-        //SubscribeRepathOnMinute();
+        followerEntity.SearchPath();
     }
-*/
-    // public void SubscribeArrivalTick()
-    // {
-    //     if (arrivalTickSubscribed) return;
-    //     timeService = Services.Get<ITimeService>();
-    //     if (timeService == null)
-    //     {
-    //         Debug.LogError("ITimeService is NULL");
-    //         return;
-    //     }
-    //     timeService.SubscribeToTickEvent(OnArrivalTick);
-    //     arrivalTickSubscribed = true;
-    //     isMoving = true;
-    // }
-
-    // private void UnsubscribeArrivalTick()
-    // {
-    //     if (!arrivalTickSubscribed) return;
-    //     try { timeService?.UnsubscribeFromTickEvent(OnArrivalTick); } catch { }
-    //     arrivalTickSubscribed = false;
-    // }
-
-    // public void SubscribeRepathOnMinute()
-    // {
-    //     if (repathOnMinuteSubscribed) return;
-    //     timeService = Services.Get<ITimeService>();
-    //     if (timeService == null)
-    //     {
-    //         Debug.LogError("ITimeService is NULL");
-    //         return;
-    //     }
-    //     try { timeService.SubscribeToTimeEvent(OnGameMinuteChanged); repathOnMinuteSubscribed = true; } catch { }
-    // }
-
-    // private void UnsubscribeRepathOnMinute()
-    // {
-    //     if (!repathOnMinuteSubscribed) return;
-    //     try { timeService?.UnsubscribeFromTimeEvent(OnGameMinuteChanged); } catch { }
-    //     repathOnMinuteSubscribed = false;
-    // }
-
+    
     public void OnSearchPath(GameTime _)
     {
         if (followerEntity == null) return;
         if (targetPosition == null && targetTransform == null) return;
-        
-        followerEntity.SearchPath();
+        //Debug.Log($"[{entity.Name}] SearchPath");
+        if (!followerEntity.pathPending) followerEntity.SearchPath();
     }
 
     public void OnArrivalTick(double ticks)
@@ -196,6 +120,11 @@ public class MoveController : MonoBehaviour
                     || followerEntity.reachedEndOfPath
                     || followerEntity.reachedDestination;
 
+        Debug.Log($"[{entity.Name}] OnArrivalTick desiredVelocity: {followerEntity.desiredVelocity}, velocity: {followerEntity.velocity}");
+        Debug.Log($"[{entity.Name}] SetTarget: {targetPosition}, simulateMovement: {followerEntity.simulateMovement}");
+        Debug.Log($"[{entity.Name}] isStopped: {followerEntity.isStopped}");
+        Debug.Log($"[{entity.Name}] maxSpeed: {followerEntity.maxSpeed}");
+        Debug.Log($"[{entity.Name}] destination: {followerEntity.destination}");
         if (!reached) return;
 
         // 도착 판정 이후, 목표와의 실제 거리를 한 번 더 확인하여 성공/실패 결정
@@ -228,21 +157,24 @@ public class MoveController : MonoBehaviour
         }
 
         isMoving = false;
-        //UnsubscribeArrivalTick();
-        //UnsubscribeRepathOnMinute();
         OnReachTarget();
     }
     private void OnReachTarget()
     {
 
         var namePrefix = entity != null ? entity.Name : gameObject.name;
-        Debug.Log($"[{namePrefix}] REACH!!");
+        if (LastMoveSucceeded)
+        {
+            Debug.Log($"[{namePrefix}] REACH!!");
+        }
+        else
+        {
+            Debug.Log($"[{namePrefix}] NOT REACH!!");
+        }
 
         OnReached?.Invoke();
 
         Reset();
-
-        //OnReached = null;
     }
 
     public void Pause()
@@ -290,6 +222,8 @@ public class MoveController : MonoBehaviour
         targetPosition = null;
 
         OnReached = null;
+
+        Debug.Log($"[{entity.Name}] Reset isMoving: {isMoving}, {targetPosition}");
     }
 
     private void OnDestroy()
