@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 //[DefaultExecutionOrder(-9999)]
 public class BootStrapper : MonoBehaviour
@@ -83,6 +84,7 @@ public class BootStrapper : MonoBehaviour
       if (actor is MainActor mainActor)
       {
         timeService.SubscribeToTimeEvent(mainActor.OnSimulationTimeChanged, 0); // 생일, state 변화 등
+        timeService.SubscribeToTickEvent(mainActor.TickAnimation, int.MaxValue);
       }
     }
 

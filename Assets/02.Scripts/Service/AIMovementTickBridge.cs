@@ -33,7 +33,7 @@ public class AIMovementTickBridge : MonoBehaviour
         // 틱마다 한 번 업데이트하도록 트리거
         lastTriggerFrame = Time.frameCount;
         tickRateManager?.TriggerOnce();
-        //Debug.Log($"[{gameObject.name}] OnTick");
+        //Debug.Log($"<color=red> ___________ true __________ </color>");
     }
 
     void Update()
@@ -56,6 +56,7 @@ public sealed class GatedTimeScaledRateManager : Pathfinding.ECS.AIMovementSyste
 
     bool IRateManager.ShouldGroupUpdate(ComponentSystemGroup group)
     {
+        //Debug.Log($"<color=blue>_________{shouldUpdate}__________</color>");
         if (!shouldUpdate) return false;
         shouldUpdate = false;
         // 원래 시간 푸시/큐 로직을 유지하기 위해 base 호출

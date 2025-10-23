@@ -211,7 +211,8 @@ public class MoveController : MonoBehaviour
             // Restore base walking speed
             if (baseMaxSpeed > 0f)
                 followerEntity.maxSpeed = baseMaxSpeed;
-            CurrentMoveMode = MoveMode.Walk;
+            //CurrentMoveMode = MoveMode.Walk;
+            SetMoveMode(MoveMode.Walk);
         }
 
         //UnsubscribeArrivalTick();

@@ -186,7 +186,6 @@ public abstract class MainActor : Actor
 	[Header("Manual Think Act Control")]
 	[SerializeField] private ManualActionController manualActionController = new();
 
-	private ITimeService timeService;
 
 	[SerializeField] protected GameTime yesterdaySleepTime;
 	[SerializeField] protected string yesterdaySleepLocation;
@@ -216,6 +215,7 @@ public abstract class MainActor : Actor
 
 	protected override void OnDestroy()
 	{
+		var timeService = Services.Get<ITimeService>();
 		if (timeService != null)
 			timeService.UnsubscribeFromTimeEvent(OnSimulationTimeChanged);
 
@@ -228,7 +228,7 @@ public abstract class MainActor : Actor
 
 	private void LateUpdate()
 	{
-		UpdateMovementAnimation();
+		// Animation update moved to GameService tick callback
 	}
 
 	#region Sleep System
@@ -577,6 +577,44 @@ public abstract class MainActor : Actor
 			legacyAnimation.CrossFade(clipName, 0.15f);
 			lastPlayedClip = clipName;
 		}
+	}
+
+	public void TickAnimation(double _)
+	{
+		var timeService = Services.Get<ITimeService>();
+		if (timeService == null) return;
+		bool isFlowing = timeService.IsTimeFlowing;
+
+		SetAnimationPaused(!isFlowing);
+		if (isFlowing)
+			TickMovementAnimation();
+
+	}
+
+	public void TickMovementAnimation()
+	{
+		UpdateMovementAnimation();
+	}
+
+	private bool animationPaused = false;
+
+	public void SetAnimationPaused(bool paused)
+	{
+		if (legacyAnimation == null)
+		{
+			animationPaused = paused;
+			return;
+		}
+		if (animationPaused == paused) return;
+		animationPaused = paused;
+		try
+		{
+			foreach (AnimationState state in legacyAnimation)
+			{
+				state.speed = paused ? 0f : 1f;
+			}
+		}
+		catch { }
 	}
 
 	private void EnsureAnimationClipsRegistered()
