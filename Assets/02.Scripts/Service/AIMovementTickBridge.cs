@@ -36,14 +36,14 @@ public class AIMovementTickBridge : MonoBehaviour
         //Debug.Log($"<color=red> ___________ true __________ </color>");
     }
 
-    void Update()
-    {
-        // 업데이트 순서 상 OnTick이 늦게 불려 그룹 업데이트를 놓치는 프레임을 대비한 안전 장치
-        if (tickRateManager != null && lastTriggerFrame != Time.frameCount)
-        {
-            tickRateManager.TriggerOnce();
-        }
-    }
+    // void Update()
+    // {
+    //     // 업데이트 순서 상 OnTick이 늦게 불려 그룹 업데이트를 놓치는 프레임을 대비한 안전 장치
+    //     if (tickRateManager != null && lastTriggerFrame != Time.frameCount)
+    //     {
+    //         tickRateManager.TriggerOnce();
+    //     }
+    // }
 }
 
 // 수동 트리거 방식의 RateManager 구현
