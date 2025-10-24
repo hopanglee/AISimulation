@@ -570,28 +570,29 @@ public abstract class MainActor : Actor
 			desired = idleAnimation ?? walkAnimation ?? runAnimation;
 		}
 
+		//Debug.Log($"[{Name}] UpdateMovementAnimation: {desired?.name ?? "null"}");
 		if (desired == null) return;
+
 		string clipName = desired.name;
 		if (!legacyAnimation.IsPlaying(clipName) || lastPlayedClip != clipName)
 		{
 			legacyAnimation.CrossFade(clipName, 0.15f);
 			lastPlayedClip = clipName;
+			//Debug.Log($"[{Name}] CrossFade: {clipName}");
 		}
 	}
 
-	public void TickAnimation(double _)
+	public void TickAnimation()
 	{
 		var timeService = Services.Get<ITimeService>();
 		if (timeService == null) return;
 		bool isFlowing = timeService.IsTimeFlowing;
 
 		SetAnimationPaused(!isFlowing);
-		if (isFlowing)
-			TickMovementAnimation();
-
+		//Debug.Log($"[{Name}] TickAnimation: {isFlowing}");
 	}
 
-	public void TickMovementAnimation()
+	public void TickMovementAnimation(double _)
 	{
 		UpdateMovementAnimation();
 	}
@@ -612,6 +613,7 @@ public abstract class MainActor : Actor
 			foreach (AnimationState state in legacyAnimation)
 			{
 				state.speed = paused ? 0f : 1f;
+				Debug.Log($"[{Name}] SetAnimationPaused: {state.name} - {state.speed}");
 			}
 		}
 		catch { }

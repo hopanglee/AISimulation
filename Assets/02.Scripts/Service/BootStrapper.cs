@@ -84,7 +84,12 @@ public class BootStrapper : MonoBehaviour
       if (actor is MainActor mainActor)
       {
         timeService.SubscribeToTimeEvent(mainActor.OnSimulationTimeChanged, 0); // 생일, state 변화 등
-        timeService.SubscribeToTickEvent(mainActor.TickAnimation, int.MaxValue);
+        timeService.SubscribeToTickEvent(mainActor.TickMovementAnimation, int.MaxValue);
+        timeService.SubscribeToTimeStopStartEvent(mainActor.TickAnimation, int.MaxValue);
+        timeService.SubscribeToTimeStopEndEvent(mainActor.TickAnimation, int.MaxValue);
+
+        timeService.SubscribeToTimeStopStartEvent(mainActor.MoveController.Pause, int.MinValue);
+        timeService.SubscribeToTimeStopEndEvent(mainActor.MoveController.Resume, int.MinValue);
       }
     }
 

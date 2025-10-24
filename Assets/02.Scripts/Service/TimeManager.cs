@@ -81,6 +81,23 @@ public interface ITimeService : IService
     void UnsubscribeFromTickEvent(Action<double> callback);
 
     /// <summary>
+    /// 시간 정지 시작 이벤트 구독
+    /// </summary>
+    void SubscribeToTimeStopStartEvent(Action callback, int priority = 0);
+    /// <summary>
+    /// 시간 정지 시작 이벤트 구독 해제
+    /// </summary>
+    void UnsubscribeFromTimeStopStartEvent(Action callback);
+    /// <summary>
+    /// 시간 정지 종료 이벤트 구독
+    /// </summary>
+    void SubscribeToTimeStopEndEvent(Action callback, int priority = 0);
+    /// <summary>
+    /// 시간 정지 종료 이벤트 구독 해제
+    /// </summary>
+    void UnsubscribeFromTimeStopEndEvent(Action callback);
+
+    /// <summary>
     /// 시간 업데이트 (GameService에서 호출)
     /// </summary>
     void UpdateTime(float deltaTime);
@@ -629,6 +646,9 @@ public class TimeManager : ITimeService
     [SerializeField, Range(1f, 20f)] private float apiSlowdownFactor = 100f; // API 대기 중 시간 100배 느리게
 
     public GameTime CurrentTime => currentTime;
+
+    private static readonly List<(int priority, Action handler)> onTimeStopStartHandlers = new();
+    private static readonly List<(int priority, Action handler)> onTimeStopEndHandlers = new();
     public float TimeScale
     {
         get => timeScale;
@@ -741,6 +761,45 @@ public class TimeManager : ITimeService
         onTickChanged -= callback;
         int idx = tickHandlers.FindIndex(h => h.handler == callback);
         if (idx >= 0) tickHandlers.RemoveAt(idx);
+    }
+
+    /// <summary>
+    /// 시간 정지 시작 이벤트 구독
+    /// </summary>
+    public void SubscribeToTimeStopStartEvent(Action callback, int priority = 0)
+    {
+        onTimeStopStartHandlers.Add((priority, callback));
+        onTimeStopStartHandlers.Sort((a, b) =>
+        {
+            return a.priority.CompareTo(b.priority);
+        });
+    }
+    /// <summary>
+    /// 시간 정지 시작 이벤트 구독 해제
+    /// </summary>
+    public void UnsubscribeFromTimeStopStartEvent(Action callback)
+    {
+        int idx = onTimeStopStartHandlers.FindIndex(h => h.handler == callback);
+        if (idx >= 0) onTimeStopStartHandlers.RemoveAt(idx);
+    }
+    /// <summary>
+    /// 시간 정지 종료 이벤트 구독
+    /// </summary>
+    public void SubscribeToTimeStopEndEvent(Action callback, int priority = 0)
+    {
+        onTimeStopEndHandlers.Add((priority, callback));
+        onTimeStopEndHandlers.Sort((a, b) =>
+        {
+            return a.priority.CompareTo(b.priority);
+        });
+    }
+    /// <summary>
+    /// 시간 정지 종료 이벤트 구독 해제
+    /// </summary>
+    public void UnsubscribeFromTimeStopEndEvent(Action callback)
+    {
+        int idx = onTimeStopEndHandlers.FindIndex(h => h.handler == callback);
+        if (idx >= 0) onTimeStopEndHandlers.RemoveAt(idx);
     }
 
     /// <summary>
@@ -938,6 +997,10 @@ public class TimeManager : ITimeService
                 if (isTimeFlowing)
                 {
                     isTimeFlowing = false;
+                    foreach (var handler in onTimeStopStartHandlers)
+                    {
+                        handler.handler?.Invoke();
+                    }
                     Debug.Log($"[TimeManager] Time paused for Stop call (Call count: {apiPauseCount})");
                 }
             }
@@ -964,6 +1027,10 @@ public class TimeManager : ITimeService
                 if (wasTimeFlowingBeforeAPI)
                 {
                     isTimeFlowing = true;
+                    foreach (var handler in onTimeStopEndHandlers)
+                    {
+                        handler.handler?.Invoke();
+                    }
                     //Debug.Log("[TimeManager] All API pauses completed - time resumed");
                 }
             }

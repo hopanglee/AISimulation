@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.ComponentModel.DataAnnotations;
 using Pathfinding;
 using UnityEngine;
 
@@ -33,12 +34,14 @@ public class MoveController : MonoBehaviour
     public MoveMode CurrentMoveMode { get; private set; } = MoveMode.Walk;
 
     public bool isTeleporting = false;
+    private bool isPaused = false;
     public void SetTeleporting(bool value)
     {
         isTeleporting = value;
     }
     public void Inititalize()
     {
+        timeService = Services.Get<ITimeService>();
         followerEntity = GetComponent<FollowerEntity>();
         aIDestinationSetter = GetComponent<AIDestinationSetter>();
         //followerEntity.stopDistance = 0f; // 목적지와 1m 거리에서도 멈추도록 설정
@@ -100,9 +103,10 @@ public class MoveController : MonoBehaviour
             followerEntity.isStopped = false;
         }
 
+        isMoving = true;
         followerEntity.SearchPath();
     }
-    
+
     public void OnSearchPath(GameTime _)
     {
         if (followerEntity == null) return;
@@ -120,11 +124,11 @@ public class MoveController : MonoBehaviour
                     || followerEntity.reachedEndOfPath
                     || followerEntity.reachedDestination;
 
-        Debug.Log($"[{entity.Name}] OnArrivalTick desiredVelocity: {followerEntity.desiredVelocity}, velocity: {followerEntity.velocity}");
-        Debug.Log($"[{entity.Name}] SetTarget: {targetPosition}, simulateMovement: {followerEntity.simulateMovement}");
-        Debug.Log($"[{entity.Name}] isStopped: {followerEntity.isStopped}");
-        Debug.Log($"[{entity.Name}] maxSpeed: {followerEntity.maxSpeed}");
-        Debug.Log($"[{entity.Name}] destination: {followerEntity.destination}");
+        // Debug.Log($"[{entity.Name}] OnArrivalTick desiredVelocity: {followerEntity.desiredVelocity}, velocity: {followerEntity.velocity}");
+        // Debug.Log($"[{entity.Name}] SetTarget: {targetPosition}, simulateMovement: {followerEntity.simulateMovement}");
+        // Debug.Log($"[{entity.Name}] isStopped: {followerEntity.isStopped}");
+        // Debug.Log($"[{entity.Name}] maxSpeed: {followerEntity.maxSpeed}");
+        // Debug.Log($"[{entity.Name}] destination: {followerEntity.destination}");
         if (!reached) return;
 
         // 도착 판정 이후, 목표와의 실제 거리를 한 번 더 확인하여 성공/실패 결정
@@ -179,17 +183,21 @@ public class MoveController : MonoBehaviour
 
     public void Pause()
     {
-        if (followerEntity != null)
+        if (followerEntity != null && !isPaused)
         {
             followerEntity.isStopped = true;
+            followerEntity.simulateMovement = false;
+            isPaused = true;
         }
     }
 
     public void Resume()
     {
-        if (followerEntity != null)
+        if (followerEntity != null && isPaused)
         {
             followerEntity.isStopped = false;
+            followerEntity.simulateMovement = true;
+            isPaused = false;
         }
     }
 
